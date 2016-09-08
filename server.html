@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html ng-app="triviaServer">
+	<head>
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="css/trivia.css"/>
+		<link rel="stylesheet" href="css/circle.css"/>
+		<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+
+		<script src="https://www.youtube.com/iframe_api"></script>
+
+		<script src="js/ext/angular.min.js"></script>
+		<script src="js/ext/angular-route.min.js"></script>
+		<script src="js/ext/peer.min.js"></script>
+		<script src="js/ext/pizzicato.min.js"></script>
+		<script src="js/ext/qcode-decoder.min.js"></script>
+
+		<script src="js/server.js"></script>
+		<script src="js/connection.js"></script>
+		<script src="js/movies.js"></script>
+		<script src="js/game.js"></script>
+		<script src="js/lobby.js"></script>
+		<script src="js/results.js"></script>
+	</head>
+	<body id="server">
+		<div id="main">
+			<div ng-view></div>
+		</div>
+	</body>
+</html>

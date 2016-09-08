@@ -1,0 +1,27 @@
+<div class="container">
+	<div class="row">
+		<div class="col-md-8">
+			<h1 class="text-center">Results </h1>
+			<ul class="list-group results">
+				<li class="list-group-item" ng-repeat="(index,score) in scores" ng-class="{'gold' : index == 0, 'silver' : index == 1, 'bronze' : index == 2}">
+					<span ng-class="index == 0 ? 'fa-4x' : 'fa-2x'"><i class="fa fa-fw" ng-class="{'fa-trophy' : index <= 2, 'fa-trash' : index > 2}"></i> {{ score.name }}</span>
+					<div class="score fa fa-2x fa-star">{{ score.score }}</div>
+				</li>
+			</ul>
+
+			<div class="text-center">
+				<a href="#/" class="btn btn-primary fa-4x"><i class="fa fa-fw fa-repeat"></i>Back to Lobby</a>
+			</div>
+
+			<h2 class="text-center">Content attribution</h2>
+			<ul class="list-group attribution">
+				<li class="list-group-item" ng-repeat="attr in attribution">
+					<span class="title">{{ attr.title }}</span>
+					<span class="links">
+						<a href="{{ link }}" class="fa fa-2x" ng-repeat="link in attr.links" ng-class="{'fa-youtube' : domain(link) == 'www.youtube.com', 'tmdb' : domain(link) == 'www.themoviedb.org' }"></a>
+					</span>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>

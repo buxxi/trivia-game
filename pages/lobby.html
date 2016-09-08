@@ -1,0 +1,80 @@
+<div class="row">
+	<div class="col-md-8 text-center">
+		<h1>Game lobby</h1>
+		<div ng-if="peerid() == null">
+			<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
+			<span class="fa-3x">Loading...</span>
+		</div>
+		<div ng-if="peerid() != null">
+			<div class="form-group">
+				<h3>Join by code</h3>
+				<p class="bg-primary"><big>{{ peerid() }}</big></p>
+			</div>
+			<div class="form-group">
+				<h3>or Join by QR</h3>
+				<img src="https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl={{ peerid() }}&choe=UTF-8"/>
+			</div>
+			<div class="text-center">
+				<a class="btn btn-success fa-4x" ng-click="start()" ng-disabled="!readyToStart()"><i class="fa fa-fw fa-play"></i>Start</a>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<h3><i class="fa fa-fw fa-cogs"></i>Settings</h3>
+		<div>
+			<form>
+				<div class="form-group">
+					<label for="questions"><i class="fa fa-fw fa-question-circle-o"></i>Number of questions</label>
+					<input type="number" class="form-control" id="questions" step="5" ng-min="1" ng-model="config.questions">
+				</div>
+
+				<div class="form-group">
+					<label for="time"><i class="fa fa-fw fa-clock-o"></i>Seconds to answer</label>
+					<input type="number" class="form-control" id="time" step="5" ng-min="1" ng-model="config.time">
+					<div class="checkbox">
+						<label for="stop"><input type="checkbox" id="stop" ng-model="config.stopOnAnswers"> Stop after all answered</label>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="points"><i class="fa fa-fw fa-star"></i>Points per round</label>
+					<input type="number" class="form-control" id="points" step="100" ng-min="1" ng-model="config.pointsPerRound">
+					<div class="checkbox">
+						<label for="multiplier"><input type="checkbox" id="multiplier" ng-model="config.allowMultiplier"> Use multipliers</label>
+					</div>
+				</div>
+
+				<div class="form-group" id="categories">
+					<label for="points"><i class="fa fa-fw fa-list-ul"></i>Categories</label>
+					<ul class="list-group">
+						<li class="list-group-item checkbox" ng-class="{'list-group-item-success' : preloading['movies'].done}">
+							<label><input type="checkbox" id="movies" ng-model="config.categories['movies']" ng-change="preload('movies')"> <i class="fa fa-film"></i> Movies</label>
+							<div class="progress" ng-if="config.categories['movies'] && !preloading['movies'].done">
+								<div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ preloading['movies'].percentage() }}%">{{ preloading['movies'].current }}/{{ preloading['movies'].total }}</div>
+							</div>
+							<i class="fa fa-fw fa-check" ng-if="config.categories.movies"></i>
+						</li>
+						<li class="list-group-item checkbox disabled">
+							<label><input type="checkbox" id="music" ng-model="config.categories.music" disabled="disabled"> <i class="fa fa-music"></i> Music (Coming Soon)</label>
+						</li>
+					</ul>
+				</div>
+
+				<div class="checkbox">
+					<label for="music"><input type="checkbox" id="music" ng-model="config.backgroundMusic" ng-change="toggleMusic()"> Play background music</label>
+				</div>
+
+				<div class="form-group" ng-if="message">
+					<div class="alert alert-info">{{ message }}</div>
+				</div>
+			</form>
+		</div>
+
+		<h3><i class="fa fa-fw fa-users"></i>Players ({{ players().length }})</h3>
+		<ul class="list-group">
+			<li ng-repeat="player in players()" class="list-group-item">
+				<i class="fa fa-fw fa-user"></i><span>{{ player.name }}</span>
+			</li>
+		</ul>
+	</div>
+</div>
