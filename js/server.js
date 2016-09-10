@@ -115,9 +115,9 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 					question : question //TODO: only send answers
 				});
 
-				game.startTimer().then(function() {
+				game.startTimer().then(function(pointsThisRound) {
 					player.stop();
-					return resolve();
+					return resolve(pointsThisRound);
 				});
 				sound.pause();
 			});
@@ -138,6 +138,7 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 				$scope.state = 'post-question';
 				$scope.pointChanges = pointsThisRound;
 				$scope.hasGuessed = {};
+				console.log(pointsThisRound);
 			});
 			$timeout(function() {
 				$scope.$apply(function() {

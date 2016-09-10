@@ -70,7 +70,7 @@ triviaApp.service('music', function($http, $interval, apikeys) {
 		function parseTitle(title) {
 			var original = title;
 
-			var junked = /(.*?) (\(|-|\[)[^\(\-\[]*(Remaster|Studio|Best of|acoustic|Re-recorded|feat.|Radio Edit|Radio Mix|Club Mix).*/i.exec(title);
+			var junked = /(.*?) (\(|-|\[)[^\(\-\[]*(Remaster|Studio|Best of|acoustic|Re-recorded|feat.|Radio Edit|Radio Mix|Club Mix|Original Mix|Original Version).*/i.exec(title);
 			if (junked) {
 				title = junked[1];
 			}
