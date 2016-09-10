@@ -57,7 +57,7 @@ triviaApp.service('sound', function() {
 			}
 		}
 
-		self.sound = function(count) {
+		self.beep = function(count) {
 			var beep = new Pizzicato.Sound('sound/beep.mp3', function() {
 				beep.play();
 				beep.sourceNode.playbackRate.value = 1.5 + (0.5 * count);
@@ -68,7 +68,7 @@ triviaApp.service('sound', function() {
 	return new BackgroundMusic();
 });
 
-triviaApp.controller('serverController', function($scope, $location, $timeout, connection, game, sound) {
+triviaApp.controller('serverController', function($scope, $location, $timeout, connection, game, playback, sound) {
 	$scope.timer = game.timer();
 	$scope.players = game.players();
 	$scope.title = "";
@@ -107,14 +107,18 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 		return new Promise(function(resolve, reject) {
 			console.log(question);
 
-			playVideo(question.view.videoId).then(function() {
+			var player = playback.player(question.view);
+			player.start().then(function() {
 				$scope.state = 'question';
 
 				connection.sendAll({
 					question : question //TODO: only send answers
 				});
 
-				game.startTimer().then(resolve);
+				game.startTimer().then(function() {
+					player.stop();
+					return resolve();
+				});
 				sound.pause();
 			});
 		});
@@ -144,33 +148,6 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 				});
 				resolve();
 			}, 3000);
-		});
-	}
-
-	function playVideo(videoId) {
-		return new Promise(function(resolve, reject) {
-			document.getElementById('content').innerHTML = '<div id="player"></div>';
-
-			player = new YT.Player('player', {
-				height: '100%',
-				width: '100%',
-				videoId: videoId,
-				playerVars : {
-					autoplay : 1,
-					showinfo : 0,
-					controls : 0,
-					hd : 1
-				},
-				events: {
-					onStateChange: function(state) {
-						if (state.data == 1) {
-							resolve();
-						} else {
-							reject('got youtube state: ' + state.data);
-						}
-					}
-				}
-			});
 		});
 	}
 

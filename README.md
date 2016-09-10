@@ -10,10 +10,12 @@ Using PeerJS to establish a P2P connection between the phone and computer and th
 - qcode-decode: https://github.com/cirocosta/qcode-decoder
 - pizzicato: https://alemangui.github.io/pizzicato
 - css circular progress bar: http://www.cssscript.com/pure-css-circular-percentage-bar
+- wavesurfer: https://wavesurfer-js.org/
 
 ### API's used:
 - Youtube: https://developers.google.com/youtube/v3
 - The movie database: http://docs.themoviedb.apiary.io
+- Spotify: https://developer.spotify.com/web-api/
 
 ### Clips from: 
 - https://www.youtube.com/user/movieclips/videos

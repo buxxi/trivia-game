@@ -1,0 +1,13 @@
+<html>
+	<head>
+	</head>
+	<script type="text/javascript">
+		function resolve() {
+			setTimeout(function() {
+				window.opener.postMessage(window.location.hash, 'https://buxxi.se');
+			}, 1000);
+		}
+	</script>
+	<body onload="resolve()">
+	</body>
+</html>

@@ -59,6 +59,14 @@
 	background-color : #333333;
 }
 
+.wavesurfer {
+	position: fixed;
+	top: 40%;
+	bottom: 40%;
+	left: 10%;
+	right: 10%;
+}
+
 .container.question #content.pre-question iframe {
 	opacity : 0;
 }

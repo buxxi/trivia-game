@@ -1,4 +1,4 @@
-triviaApp.controller('lobbyController', function($rootScope, $scope, $location, connection, game, movies, sound) {
+triviaApp.controller('lobbyController', function($rootScope, $scope, $location, connection, game, categories, sound) {
 	var config = config = {
 		questions : 10,
 		time : 30,
@@ -9,6 +9,7 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 		categories : {}
 	};
 
+	$scope.availableCategories = categories.available();
 	$scope.preloading = {};
 	$scope.config = config;
 	$scope.peerid = connection.peerid;
@@ -36,7 +37,7 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 
 		$scope.preloading[type] = preload;
 
-		movies.preload(preload.progress).then(function() {
+		categories.preload(type, preload.progress).then(function() {
 			$scope.$apply(function() {
 				preload.done = true;
 			});
@@ -44,10 +45,12 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	}
 
 	$scope.readyToStart = function() {
+		/*
 		if (Object.keys(game.players()).length == 0) {
 			console.log("Not enough players");
 			return false;
 		}
+		*/
 
 		var categories = Object.keys(config.categories).filter(function(cat) { return config.categories[cat] });
 		if (categories.length == 0) {

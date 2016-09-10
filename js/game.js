@@ -1,4 +1,4 @@
-triviaApp.service('game', function($rootScope, $interval, movies) {
+triviaApp.service('game', function($rootScope, $interval, categories) {
 	function Game() {
 		var self = this;
 		var players = {};
@@ -123,7 +123,7 @@ triviaApp.service('game', function($rootScope, $interval, movies) {
 
 		self.nextQuestion = function() {
 			return new Promise(function(resolve, reject) {
-				movies.randomQuestion().then(function(question) {
+				categories.randomQuestion(config.categories).then(function(question) {
 					currentQuestion = question;
 					function randomSplice() {
 						return question.answers.splice(Math.floor(Math.random() * question.answers.length), 1)[0];

@@ -3,6 +3,14 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 		var self = this;
 		var movies = [];
 
+		self.describe = function() {
+			return {
+				type : 'movies',
+				name : 'Movies',
+				icon : 'fa-film'
+			};
+		}
+
 		self.preload = function(progress) {
 			return new Promise(function(resolve, reject) {
 				loadYoutubeVideos(progress).then(parseTitles).then(function(data) {

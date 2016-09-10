@@ -47,21 +47,18 @@
 				<div class="form-group" id="categories">
 					<label for="points"><i class="fa fa-fw fa-list-ul"></i>Categories</label>
 					<ul class="list-group">
-						<li class="list-group-item checkbox" ng-class="{'list-group-item-success' : preloading['movies'].done}">
-							<label><input type="checkbox" id="movies" ng-model="config.categories['movies']" ng-change="preload('movies')"> <i class="fa fa-film"></i> Movies</label>
-							<div class="progress" ng-if="config.categories['movies'] && !preloading['movies'].done">
-								<div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ preloading['movies'].percentage() }}%">{{ preloading['movies'].current }}/{{ preloading['movies'].total }}</div>
+						<li class="list-group-item checkbox" ng-class="{'list-group-item-success' : preloading[category.type].done}" ng-repeat="category in availableCategories">
+							<label><input type="checkbox" id="{{ category.type }}" ng-model="config.categories[category.type]" ng-change="preload(category.type)"> <i class="fa {{ category.icon }}"></i> {{ category.name }}</label>
+							<div class="progress" ng-if="config.categories[category.type] && !preloading[category.type].done">
+								<div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ preloading[category.type].percentage() }}%">{{ preloading[category.type].current }}/{{ preloading[category.type].total }}</div>
 							</div>
-							<i class="fa fa-fw fa-check" ng-if="config.categories.movies"></i>
-						</li>
-						<li class="list-group-item checkbox disabled">
-							<label><input type="checkbox" id="music" ng-model="config.categories.music" disabled="disabled"> <i class="fa fa-music"></i> Music (Coming Soon)</label>
+							<i class="fa fa-fw fa-check" ng-if="config.categories[category.type] && preloading[category.type].done"></i>
 						</li>
 					</ul>
 				</div>
 
 				<div class="checkbox">
-					<label for="music"><input type="checkbox" id="music" ng-model="config.backgroundMusic" ng-change="toggleMusic()"> Play background music</label>
+					<label for="backgroundMusic"><input type="checkbox" id="backgroundMusic" ng-model="config.backgroundMusic" ng-change="toggleMusic()"> Play background music</label>
 				</div>
 
 				<div class="form-group" ng-if="message">
