@@ -6,7 +6,7 @@ Using PeerJS to establish a P2P connection between the phone and computer and th
 - Angular.js: https://angularjs.org
 - Bootstrap: http://getbootstrap.com
 - FontAwesome: http://fontawesome.io/
-- PeerJS: http://peerjs.com
+- PeerJS: http://peerjs.com (using this fork: https://github.com/nttcom/peerjs)
 - qcode-decode: https://github.com/cirocosta/qcode-decoder
 - pizzicato: https://alemangui.github.io/pizzicato
 - css circular progress bar: http://www.cssscript.com/pure-css-circular-percentage-bar

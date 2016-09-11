@@ -13,7 +13,16 @@ triviaApp.service('connection', function($rootScope) {
 
 		self.connect = function() {
 			return new Promise(function(resolve, reject) {
-				peer = new Peer({ host : window.location.host, port : 443, path : '/peer' });
+				peer = new Peer({
+					host : window.location.host,
+					port : 443,
+					path : '/peer',
+					config: {
+						iceServers: [
+  							{ url: 'stun:stun1.l.google.com:19302' }
+						]
+					}
+				});
 
 				peer.on('open', function(id) {
 					resolve();
@@ -48,7 +57,7 @@ triviaApp.service('connection', function($rootScope) {
 					reject(err);
 				});
 
-				host = peer.connect(peerid);
+				host = peer.connect(peerid.toLowerCase());
 
 				host.on('open', function() {
 					host.on('data', function(data) {
@@ -62,6 +71,10 @@ triviaApp.service('connection', function($rootScope) {
 
 					host.send({
 						join : { name : name }
+					});
+
+					host.on('close', function() {
+						$rootScope.$broadcast('host-disconnected');
 					});
 				});
 			});

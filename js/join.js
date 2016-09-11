@@ -1,10 +1,13 @@
-triviaApp.controller('joinController', function($scope, $location, connection) {
+triviaApp.controller('joinController', function($scope, $location, $routeParams, connection) {
 	var config = {
 		code : "",
 		name : ""
 	};
 
 	$scope.config = config;
+	if ($routeParams.disconnected) {
+		$scope.message = "The host closed the connection";
+	}
 
 	$scope.join = function() {
 		connection.connect().then(function() {

@@ -42,9 +42,9 @@ triviaApp.service('music', function($http, $interval, apikeys) {
 			});
 		}
 
-		self.randomQuestion = function() {
+		self.nextQuestion = function(random) {
 			return new Promise(function(resolve, reject) {
-				var song = randomFromArray(tracks);
+				var song = random.fromArray(tracks);
 				var similar = tracks.filter(function(s) {
 					return s.category == song.category && s.title != song.title;
 				});
@@ -144,10 +144,6 @@ triviaApp.service('music', function($http, $interval, apikeys) {
 
 				var popup = window.open(url, 'spotify', 'width=600,height=600');
 			});
-		}
-
-		function randomFromArray(arr) { //TODO: duplicate with movies.js
-			return arr[arr.length * Math.random() << 0];
 		}
 	}
 

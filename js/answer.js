@@ -27,6 +27,12 @@ triviaApp.controller('answerController', function($scope, $location, connection)
 		});
 	});
 
+	$scope.$on('host-disconnected', function() {
+		$scope.$apply(function() {
+			$location.path('/').search({disconnected : true});
+		});
+	});
+
 	$scope.answers = {};
 
 	$scope.guess = function(answer) {

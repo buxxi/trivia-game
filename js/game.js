@@ -123,24 +123,10 @@ triviaApp.service('game', function($rootScope, $interval, categories) {
 
 		self.nextQuestion = function() {
 			return new Promise(function(resolve, reject) {
-				categories.randomQuestion(config.categories).then(function(question) {
+				categories.nextQuestion(config.categories).then(function(question) {
 					currentQuestion = question;
-					function randomSplice() {
-						return question.answers.splice(Math.floor(Math.random() * question.answers.length), 1)[0];
-					}
-
-					var answers = {
-						A : randomSplice(),
-						B : randomSplice(),
-						C : randomSplice(),
-						D : randomSplice(),
-					};
-
-					question.answers = answers;
-
-					resolve(currentQuestion);
+					resolve(question);
 				});
-
 			});
 		}
 	}

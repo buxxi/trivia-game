@@ -235,6 +235,8 @@ body, button {
 big {
 	padding : 1em;
 	display : inline-block;
+	font-size: 2em;
+	text-transform: uppercase;
 }
 
 .results .gold span {

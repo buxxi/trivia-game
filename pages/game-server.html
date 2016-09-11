@@ -18,7 +18,7 @@
 	<div class="navbar navbar-default navbar-fixed-bottom">
 		<div class="container">
 			<div class="panel" ng-repeat="(peerid, player) in players" ng-class="{'panel-primary' : hasGuessed[peerid], 'panel-default' : !hasGuessed[peerid]}">
-				<div class="panel-heading" data-multiplier="{{ player.multiplier }}" data-score="{{ player.score }}">{{ player.name }}</div>
+				<div class="panel-heading" data-multiplier="{{ player.multiplier }}" data-score="{{ player.score }}"><i class="fa fa-fw fa-user"></i>{{ player.name }}</div>
 				<div ng-class="{'score-change-positive': pointChanges[peerid] > 0, 'score-change-negative': pointChanges[peerid] < 0}" ng-if="pointChanges[peerid]">{{ pointChanges[peerid] }}</div>
 			</div>
 		</div>

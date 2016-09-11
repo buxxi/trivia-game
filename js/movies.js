@@ -20,15 +20,16 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 			});
 		}
 
-		self.randomQuestion = function() {
+		self.nextQuestion = function(random) {
 			return new Promise(function(resolve, reject) {
-				var title = randomFromArray(Object.keys(movies));
-				var videoId = randomFromArray(movies[title].videos);
+				var title = random.fromArray(Object.keys(movies));
+				var videoId = random.fromArray(movies[title].videos);
 				var attribution = ['http://www.youtube.com/watch?v=' + videoId];
 
 				checkEmbedStatus(videoId, 'SE').then(function() { //TODO: country code from where?
 					return loadSimilarMovies(title, movies[title].year, attribution);
 				}).then(function(similar) {
+					similar = fillArrayWithTitles(similar, random);
 					resolve({
 						text : "What is the title of this movie?",
 						answers : [
@@ -46,15 +47,11 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 					});
 				}).catch(function(err) {
 					console.log(videoId + ": " + err);
-					self.randomQuestion().then(function(question) {
+					self.nextQuestion(random).then(function(question) {
 						resolve(question);
 					});
 				});
 			});
-		}
-
-		function randomFromArray(arr) {
-			return arr[arr.length * Math.random() << 0];
 		}
 
 		function parseTitle(input) {
@@ -221,18 +218,18 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 						});
 
 						attribution.push("http://www.themoviedb.org/movie/" + id);
-						resolve(makeUniqueAnswers(titles));
+						resolve(titles);
 					});
 				});
 			});
 		}
 
-		function makeUniqueAnswers(answers, title) {
+		function fillArrayWithTitles(answers, title, random) {
 			answers = answers.filter(function(item, i, array) { return item != title && array.indexOf(item) == i });
 
 			while (answers.length < 3) {
-				var randomTitle = randomFromArray(Object.keys(movies));
-				if (randomTitle != title) {
+				var randomTitle = random.fromArray(Object.keys(movies));
+				if (answers.indexOf(randomTitle) == -1) {
 					answers.push(randomTitle);
 				}
 			}

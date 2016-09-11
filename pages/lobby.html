@@ -1,6 +1,6 @@
 <div class="row">
-	<div class="col-md-8 text-center">
-		<h1>Game lobby</h1>
+	<div class="col-md-4 text-center">
+		<h1><i class="fa fa-fw fa-gamepad"></i>Game lobby</h1>
 		<div ng-if="peerid() == null">
 			<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
 			<span class="fa-3x">Loading...</span>
@@ -8,7 +8,7 @@
 		<div ng-if="peerid() != null">
 			<div class="form-group">
 				<h3>Join by code</h3>
-				<p class="bg-primary"><big>{{ peerid() }}</big></p>
+				<p class="bg-primary text-uppercase"><big>{{ peerid() }}</big></p>
 			</div>
 			<div class="form-group">
 				<h3>or Join by QR</h3>
@@ -18,6 +18,14 @@
 				<a class="btn btn-success fa-4x" ng-click="start()" ng-disabled="!readyToStart()"><i class="fa fa-fw fa-play"></i>Start</a>
 			</div>
 		</div>
+	</div>
+	<div class="col-md-4">
+		<h3><i class="fa fa-fw fa-users"></i>Players ({{ players().length }})</h3>
+		<ul class="list-group">
+			<li ng-repeat="player in players()" class="list-group-item">
+				<i class="fa fa-fw fa-user"></i><span>{{ player.name }}</span>
+			</li>
+		</ul>
 	</div>
 	<div class="col-md-4">
 		<h3><i class="fa fa-fw fa-cogs"></i>Settings</h3>
@@ -66,12 +74,5 @@
 				</div>
 			</form>
 		</div>
-
-		<h3><i class="fa fa-fw fa-users"></i>Players ({{ players().length }})</h3>
-		<ul class="list-group">
-			<li ng-repeat="player in players()" class="list-group-item">
-				<i class="fa fa-fw fa-user"></i><span>{{ player.name }}</span>
-			</li>
-		</ul>
 	</div>
 </div>

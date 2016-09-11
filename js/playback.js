@@ -49,6 +49,7 @@ triviaApp.service('playback', function(movies, music) {
 				});
 
 				player.on('ready', function () {
+					player.setVolume(0.3);
 					player.play();
 					resolve();
 				});
