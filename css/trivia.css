@@ -59,12 +59,10 @@
 	background-color : #333333;
 }
 
-.wavesurfer {
-	position: fixed;
-	top: 40%;
-	bottom: 40%;
-	left: 10%;
-	right: 10%;
+.container.question #player {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
 }
 
 .container.question #content.pre-question iframe {

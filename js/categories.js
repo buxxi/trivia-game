@@ -1,7 +1,7 @@
-triviaApp.service('categories', function(movies, music) {
+triviaApp.service('categories', function(movies, music, geography) {
 	function Categories() {
 		var self = this;
-		var categories = [movies, music];
+		var categories = [movies, music, geography];
 		var random = {
 			fromArray : function(arr) {
 				return arr[arr.length * Math.random() << 0];

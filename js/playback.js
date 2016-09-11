@@ -1,4 +1,18 @@
 triviaApp.service('playback', function(movies, music) {
+	function ImageViewer(url) {
+		var self = this;
+
+		self.start = function() {
+			return new Promise(function(resolve, reject) {
+				document.getElementById('content').innerHTML = '<div id="player"><img src="' + url + '"/></div>';
+				resolve();
+			});
+		}
+
+
+		self.stop = function() {}
+	}
+
 	function YoutubePlayer(videoId) {
 		var self = this;
 		var player = {};
@@ -69,7 +83,8 @@ triviaApp.service('playback', function(movies, music) {
 
 		var players = {
 			youtube : function(view) { return new YoutubePlayer(view.videoId) },
-			mp3 : function(view) { return new Mp3Player(view.mp3) }
+			mp3 : function(view) { return new Mp3Player(view.mp3) },
+			image : function(view) { return new ImageViewer(view.url)}
 		}
 
 		self.player = function(view) {

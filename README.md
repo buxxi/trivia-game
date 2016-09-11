@@ -16,6 +16,7 @@ Using PeerJS to establish a P2P connection between the phone and computer and th
 - Youtube: https://developers.google.com/youtube/v3
 - The movie database: http://docs.themoviedb.apiary.io
 - Spotify: https://developer.spotify.com/web-api/
+- REST Countries: https://restcountries.eu
 
 ### Clips from: 
 - https://www.youtube.com/user/movieclips/videos
@@ -23,3 +24,6 @@ Using PeerJS to establish a P2P connection between the phone and computer and th
 ### Music & sound from:
 - http://soundbible.com/tags-beep.html
 - http://www.purple-planet.com/
+
+### Flags from:
+- http://flagpedia.net/

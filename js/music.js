@@ -1,4 +1,4 @@
-triviaApp.service('music', function($http, $interval, apikeys) {
+triviaApp.service('music', function($http, apikeys) {
 	function MusicQuestions() {
 		var self = this;
 		var tracks = [];
@@ -120,7 +120,7 @@ triviaApp.service('music', function($http, $interval, apikeys) {
 						Authorization : 'Bearer ' + accessToken
 					}
 				}).then(function(response) {
-					resolve(response.data.genres);
+					resolve(['punk']); //response.data.genres);
 				});
 
 			});
