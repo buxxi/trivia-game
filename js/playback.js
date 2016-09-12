@@ -1,4 +1,16 @@
 triviaApp.service('playback', function(movies, music) {
+	function BlankPlayer() {
+		var self = this;
+
+		this.start = function() {
+			return new Promise(function(resolve, reject) {
+				resolve();
+			});
+		}
+
+		this.stop = function() {}
+	}
+
 	function ImageViewer(url) {
 		var self = this;
 
@@ -88,6 +100,9 @@ triviaApp.service('playback', function(movies, music) {
 		}
 
 		self.player = function(view) {
+			if (!view.player) {
+				return new BlankPlayer();
+			}
 			return players[view.player](view);
 		}
 	}

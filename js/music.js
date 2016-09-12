@@ -120,7 +120,7 @@ triviaApp.service('music', function($http, apikeys) {
 						Authorization : 'Bearer ' + accessToken
 					}
 				}).then(function(response) {
-					resolve(['punk']); //response.data.genres);
+					resolve(response.data.genres);
 				});
 
 			});
