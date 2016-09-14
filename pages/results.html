@@ -1,18 +1,20 @@
 <div class="container">
 	<div class="row">
-		<div class="col-md-8">
-			<h1 class="text-center">Results </h1>
+		<div class="col-md-6">
+			<h2 class="text-center">Results </h1>
 			<ul class="list-group results">
 				<li class="list-group-item" ng-repeat="(index,score) in scores" ng-class="{'gold' : index == 0, 'silver' : index == 1, 'bronze' : index == 2}">
-					<span ng-class="index == 0 ? 'fa-4x' : 'fa-2x'"><i class="fa fa-fw" ng-class="{'fa-trophy' : index <= 2, 'fa-trash' : index > 2}"></i> {{ score.name }}</span>
-					<div class="score fa fa-2x fa-star">{{ score.score }}</div>
+					<h4 ng-class="index == 0 ? 'fa-4x' : 'fa-2x'">
+						<i class="fa fa-fw" ng-class="{'fa-trophy' : index <= 2, 'fa-trash' : index > 2}"></i> {{ score.name }}
+					</h4>
+					<hr/>
+					<span class="text-primary"><i class="fa fa-fw fa-star"></i>{{ score.score }}</span>
+					<span class="text-success"><i class="fa fa-fw fa-thumbs-up"></i>{{ score.correct }}</span>
+					<span class="text-danger"><i class="fa fa-fw fa-thumbs-down"></i>{{ score.wrong }}</span>
 				</li>
 			</ul>
-
-			<div class="text-center">
-				<a href="#/" class="btn btn-primary fa-4x"><i class="fa fa-fw fa-repeat"></i>Back to Lobby</a>
-			</div>
-
+		</div>
+		<div class="col-md-4">
 			<h2 class="text-center">Content attribution</h2>
 			<ul class="list-group attribution">
 				<li class="list-group-item" ng-repeat="attr in attribution">
@@ -22,6 +24,10 @@
 					</span>
 				</li>
 			</ul>
+		</div>
+		<div class="col-md-2 text-center">
+			<h2></h2>
+			<a href="#/" class="btn btn-primary fa-2x"><i class="fa fa-fw fa-repeat"></i>Back to Lobby</a>
 		</div>
 	</div>
 </div>

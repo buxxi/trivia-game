@@ -38,6 +38,8 @@ triviaApp.service('music', function($http, apikeys) {
 							resolve();
 						});
 					});
+				}).catch(function(err) {
+					reject();
 				});
 			});
 		}
@@ -109,6 +111,15 @@ triviaApp.service('music', function($http, apikeys) {
 					});
 					localStorage.setItem('spotify-' + category, JSON.stringify(result));
 					resolve(result);
+				}).catch(function(err) {
+					if (err.status == 429) {
+						var time = parseInt((err.headers()['retry-after']) + 1) * 1000;
+						setTimeout(function() {
+							loadCategory(accessToken, category).then(resolve).catch(reject);
+						}, time);
+						return;
+					}
+					reject();
 				});
 			});
 		}
@@ -137,7 +148,11 @@ triviaApp.service('music', function($http, apikeys) {
 					var accessToken = /access_token=([^&]+)/.exec(event.data);
 					popup.close();
 					window.removeEventListener('message', accessTokenListener, false);
-					resolve(accessToken[1]);
+					if (accessToken) {
+						resolve(accessToken[1]);
+					} else {
+						reject();
+					}
 				}
 
 				window.addEventListener('message', accessTokenListener, false);

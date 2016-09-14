@@ -5,7 +5,7 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 		pointsPerRound : 1000,
 		stopOnAnswers : true,
 		allowMultiplier : true,
-		backgroundMusic : true,
+		backgroundMusic : false,
 		categories : {}
 	};
 
@@ -14,7 +14,8 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	$scope.config = config;
 	$scope.peerid = connection.peerid;
 	$scope.players = function() {
-		return Object.values(game.players());
+		var arr = game.players();
+		return Object.keys(arr).map(function(p) { return arr[p]; });
 	};
 
 	$scope.toggleMusic = function() {
@@ -22,16 +23,24 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	}
 
 	$scope.preload = function(type) {
+		if ($scope.preloading[type]) {
+			return;
+		}
+
 		var preload = {
 			current : 0,
 			total : 0,
 			done : false,
+			failed : false,
 			progress : function(current, total) {
 				preload.current = current;
 				preload.total = total;
 			},
 			percentage : function() {
 				return Math.ceil(preload.current / preload.total * 100);
+			},
+			showProgress : function() {
+				return !preload.done || !preload.failed;
 			}
 		};
 
@@ -40,6 +49,10 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 		categories.preload(type, preload.progress).then(function() {
 			$scope.$apply(function() {
 				preload.done = true;
+			});
+		}).catch(function(err) {
+			$scope.$apply(function() {
+				preload.failed = true;
 			});
 		});
 	}

@@ -31,6 +31,7 @@ triviaApp.service('game', function($rootScope, $interval, categories) {
 					var pointsThisRound = timerPoints(guesses[peerid].time) * players[peerid].multiplier;
 					result[peerid] = pointsThisRound;
 					players[peerid].score += pointsThisRound;
+					players[peerid].correct++;
 					if (config.allowMultiplier) {
 						players[peerid].multiplier++;
 					}
@@ -38,6 +39,7 @@ triviaApp.service('game', function($rootScope, $interval, categories) {
 					var pointsThisRound = timerPoints(guesses[peerid].time);
 					result[peerid] = -pointsThisRound;
 					players[peerid].score -= pointsThisRound;
+					players[peerid].wrong++;
 					players[peerid].multiplier = 1;
 					if (players[peerid].score < 0) {
 						players[peerid].score = 0;
@@ -57,12 +59,15 @@ triviaApp.service('game', function($rootScope, $interval, categories) {
 			players[peerid] = {
 				name : name,
 				score : 0,
-				multiplier : 1
+				multiplier : 1,
+				correct : 0,
+				wrong : 0
 			};
 		}
 
 		self.configure = function(cfg) {
 			config = cfg;
+			categories.configure(cfg.categories);
 		}
 
 		self.hasGuessed = function(peerid) {
@@ -123,7 +128,7 @@ triviaApp.service('game', function($rootScope, $interval, categories) {
 
 		self.nextQuestion = function() {
 			return new Promise(function(resolve, reject) {
-				categories.nextQuestion(config.categories).then(function(question) {
+				categories.nextQuestion().then(function(question) {
 					currentQuestion = question;
 					resolve(question);
 				});

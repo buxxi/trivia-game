@@ -25,12 +25,11 @@ triviaApp.run(function($http, apikeys) {
 triviaApp.service('sound', function() {
 	function BackgroundMusic() {
 		var self = this;
-		var enabled = true;
+		var enabled = false;
 
 		var sound = new Pizzicato.Sound('sound/background.mp3', function() {
 			sound.volume = 0.10;
 			sound.loop = true;
-			sound.play();
 		});
 
 		self.play = function() {

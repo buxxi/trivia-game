@@ -55,9 +55,10 @@
 				<div class="form-group" id="categories">
 					<label for="points"><i class="fa fa-fw fa-list-ul"></i>Categories</label>
 					<ul class="list-group">
-						<li class="list-group-item checkbox" ng-class="{'list-group-item-success' : preloading[category.type].done}" ng-repeat="category in availableCategories">
+						<li class="list-group-item checkbox" ng-class="{'list-group-item-success' : preloading[category.type].done, 'list-group-item-danger' : preloading[category.type].failed}" ng-repeat="category in availableCategories">
 							<label><input type="checkbox" id="{{ category.type }}" ng-model="config.categories[category.type]" ng-change="preload(category.type)"> <i class="fa {{ category.icon }}"></i> {{ category.name }}</label>
-							<div class="progress" ng-if="config.categories[category.type] && !preloading[category.type].done">
+
+							<div class="progress" ng-if="config.categories[category.type] && !preloading[category.type].done && !preloading[category.type].failed">
 								<div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ preloading[category.type].percentage() }}%">{{ preloading[category.type].current }}/{{ preloading[category.type].total }}</div>
 							</div>
 							<i class="fa fa-fw fa-check" ng-if="config.categories[category.type] && preloading[category.type].done"></i>

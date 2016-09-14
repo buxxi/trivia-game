@@ -60,9 +60,10 @@
 }
 
 .container.question #player {
-	position: relative;
+	position: absolute;
 	top: 50%;
-	transform: translateY(-50%);
+	left : 50%;
+	transform: translateY(-50%) translateX(-50%);
 }
 
 .container.question #content.pre-question iframe {
@@ -237,22 +238,17 @@ big {
 	text-transform: uppercase;
 }
 
-.results .gold span {
+.results .gold h4 i {
 	color : #FFD700;
 	animation: gold 4s linear infinite;
 }
 
-.results .silver span {
+.results .silver h4 i {
 	color : #C0C0C0;
 }
 
-.results .bronze span {
+.results .bronze h4 i {
 	color : #CD7F32;
-}
-
-.results .score {
-	float : right;
-	display : inline-block;
 }
 
 .attribution .title {

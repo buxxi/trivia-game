@@ -1,16 +1,20 @@
 triviaApp.service('categories', function(movies, music, geography) {
+	function Random() {
+		var self = this;
+
+		self.fromArray = function(arr) {
+			return arr[arr.length * Math.random() << 0];
+		};
+
+		self.splice = function(arr) {
+			return arr.splice(Math.floor(Math.random() * arr.length), 1)[0];
+		};
+	}
+
 	function Categories() {
 		var self = this;
 		var categories = [movies, music, geography];
-		var random = {
-			fromArray : function(arr) {
-				return arr[arr.length * Math.random() << 0];
-			},
-
-			splice : function (arr) {
-				return arr.splice(Math.floor(Math.random() * arr.length), 1)[0];
-			}
-		};
+		var enabledCategories = [];
 
 		self.available = function() {
 			return categories.map(function(category) {
@@ -22,10 +26,14 @@ triviaApp.service('categories', function(movies, music, geography) {
 			return categoryByType(category).preload(progress);
 		}
 
-		self.nextQuestion = function(categories) {
-			var enabledCategories = Object.keys(categories).filter(function(category) {
+		self.configure = function(categories) {
+			enabledCategories = Object.keys(categories).filter(function(category) {
 				return categories[category];
 			});
+		}
+
+		self.nextQuestion = function() {
+			var random = new Random();
 			return categoryByType(random.fromArray(enabledCategories)).nextQuestion(random).then(shuffleAnswers);
 		}
 
@@ -40,6 +48,8 @@ triviaApp.service('categories', function(movies, music, geography) {
 
 		function shuffleAnswers(question) {
 			return new Promise(function(resolve, reject) {
+				var random = new Random();
+
 				var answers = {
 					A : random.splice(question.answers),
 					B : random.splice(question.answers),
