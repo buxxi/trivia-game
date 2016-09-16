@@ -61,7 +61,8 @@ triviaApp.service('game', function($rootScope, $interval, categories) {
 				score : 0,
 				multiplier : 1,
 				correct : 0,
-				wrong : 0
+				wrong : 0,
+				color : randomColor()
 			};
 		}
 

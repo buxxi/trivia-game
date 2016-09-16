@@ -23,7 +23,7 @@
 		<h3><i class="fa fa-fw fa-users"></i>Players ({{ players().length }})</h3>
 		<ul class="list-group">
 			<li ng-repeat="player in players()" class="list-group-item">
-				<i class="fa fa-fw fa-user"></i><span>{{ player.name }}</span>
+				<i class="fa fa-fw fa-user" style="color : {{ player.color }}"></i><span>{{ player.name }}</span>
 			</li>
 		</ul>
 	</div>

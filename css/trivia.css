@@ -92,6 +92,11 @@
 	animation : resize-correct 0.5s linear normal;
 }
 
+.container.question .title {
+	font-size: 6em;
+	transform : scale(0.5) translateY(-50%);
+}
+
 .container.question .title.full {
 	position : fixed;
 	top : 50%;
@@ -108,29 +113,6 @@
 	position : fixed;
 	top : 1em;
 	right : 1em;
-}
-
-.container.question .navbar-fixed-bottom .panel {
-	display : inline-block;
-	margin : 0.2em 0.2em;
-	text-align: left;
-}
-
-.container.question .navbar-fixed-bottom .panel-heading:before {
-	content : 'x' attr(data-multiplier);
-	font-size : 1.5em;
-	line-height: 0.9em;
-	font-weight: bold;
-	float : right;
-	margin-left : 0.5em;
-}
-
-.container.question .navbar-fixed-bottom .panel-heading:after {
-	content : attr(data-score) 'p';
-	font-size : 1.5em;
-	line-height: 0.9em;
-	float : right;
-	margin-left : 0.5em;
 }
 
 .container.question #correct {
@@ -187,15 +169,51 @@
 	border-color : #8b6b02;
 }
 
-.score-change-positive {
-    position: relative;
-    bottom: 75px;
-    color: green;
-    font-weight: bold;
-    font-size: 1.5em;
-    text-align: center;
-    text-shadow: 0px 1px 1px lime;
+.player {
+	background-color: white;
+	display: inline-block;
+	border-radius: 2em;
+	border-style : solid;
+	border-width : 3px;
+	padding: 0.3em 3em 0.3em 0.5em;
+}
+
+.player .summary {
+	white-space: nowrap;
+	text-align: left;
+	color : #333333;
+	font-size: 1.3em;
+	font-weight: bold;
+	text-align: left;
+	position: relative;
+	top: -5px;
+}
+
+.player .fa-user {
+	float: left;
+	font-size: 2em;
+	padding-top : 0.25em;
+}
+
+.player .name {
+	color : #333333;
+	font-size: 0.85em;
+	margin-right: 0.85em;
+	margin-bottom: 0;
+	display : inline;
+}
+
+.player .multiplier {
+	margin-left : 0.5em;
+}
+
+.score-change-positive, .score-change-negative {
+    position: absolute;
 	animation: splash 0.5s linear normal;
+}
+.score-change-positive {
+    color: green;
+    text-shadow: 0px 1px 1px lime;
 }
 
 .score-change-positive:before {
@@ -203,14 +221,12 @@
 }
 
 .score-change-negative {
-    position: relative;
-    bottom: 75px;
     color: #800a00;
-    font-weight: bold;
-    font-size: 1.5em;
-    text-align: center;
     text-shadow: 0px 1px 1px #ff4e00;
-	animation: splash 0.5s linear normal;
+}
+
+.score-change-negative ~ .score, .score-change-positive ~ .score {
+	color : white;
 }
 
 #categories .progress {
@@ -271,11 +287,11 @@ big {
 }
 
 @keyframes resize-title {
-   0% { transform : scale(1) translateY(-50%); }
-  10% { transform : scale(4) translateY(-50%); }
-  20% { transform : scale(2) translateY(-50%); }
-  90% { transform : scale(2) translateY(-50%); }
-  100% { transform : scale(2) translateY(-50%); }
+   0% { transform : scale(0.5) translateY(-50%); }
+  10% { transform : scale(2) translateY(-50%); }
+  20% { transform : scale(1) translateY(-50%); }
+  90% { transform : scale(1) translateY(-50%); }
+  100% { transform : scale(1) translateY(-50%); }
 }
 
 @keyframes resize-correct {
