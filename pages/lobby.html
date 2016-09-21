@@ -12,7 +12,7 @@
 			</div>
 			<div class="form-group">
 				<h3>or Join by QR</h3>
-				<img src="https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl={{ peerid() }}&choe=UTF-8"/>
+				<img src="https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl={{ url() }}&choe=UTF-8"/>
 			</div>
 			<div class="text-center">
 				<a class="btn btn-success fa-4x" ng-click="start()" ng-disabled="!readyToStart()"><i class="fa fa-fw fa-play"></i>Start</a>
@@ -20,9 +20,10 @@
 		</div>
 	</div>
 	<div class="col-md-4">
-		<h3><i class="fa fa-fw fa-users"></i>Players ({{ players().length }})</h3>
+		<h3><i class="fa fa-fw fa-users"></i>Players</h3>
 		<ul class="list-group">
-			<li ng-repeat="player in players()" class="list-group-item">
+			<li ng-repeat="(peerid,player) in players()" class="list-group-item">
+				<a href="" ng-click="kickPlayer(peerid)" class="kick"><i class="fa fa-fw fa-user-times"></i></a>
 				<i class="fa fa-fw fa-user" style="color : {{ player.color }}"></i><span>{{ player.name }}</span>
 			</li>
 		</ul>
@@ -56,12 +57,11 @@
 					<label for="points"><i class="fa fa-fw fa-list-ul"></i>Categories</label>
 					<ul class="list-group">
 						<li class="list-group-item checkbox" ng-class="{'list-group-item-success' : preloading[category.type].done, 'list-group-item-danger' : preloading[category.type].failed}" ng-repeat="category in availableCategories">
-							<label><input type="checkbox" id="{{ category.type }}" ng-model="config.categories[category.type]" ng-change="preload(category.type)"> <i class="fa {{ category.icon }}"></i> {{ category.name }}</label>
-
 							<div class="progress" ng-if="config.categories[category.type] && !preloading[category.type].done && !preloading[category.type].failed">
 								<div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ preloading[category.type].percentage() }}%">{{ preloading[category.type].current }}/{{ preloading[category.type].total }}</div>
 							</div>
 							<i class="fa fa-fw fa-check" ng-if="config.categories[category.type] && preloading[category.type].done"></i>
+							<label><input type="checkbox" id="{{ category.type }}" ng-model="config.categories[category.type]" ng-change="preload(category.type)"> <i class="fa {{ category.icon }}"></i> {{ category.name }}</label>
 						</li>
 					</ul>
 				</div>

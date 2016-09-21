@@ -1,5 +1,5 @@
 triviaApp.controller('lobbyController', function($rootScope, $scope, $location, connection, game, categories, sound) {
-	var config = config = {
+	var config = {
 		questions : 10,
 		time : 30,
 		pointsPerRound : 1000,
@@ -13,10 +13,17 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	$scope.preloading = {};
 	$scope.config = config;
 	$scope.peerid = connection.peerid;
-	$scope.players = function() {
-		var arr = game.players();
-		return Object.keys(arr).map(function(p) { return arr[p]; });
-	};
+
+	$scope.url = function() {
+		return encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?code=" + $scope.peerid());
+	}
+
+	$scope.players = game.players;
+
+	$scope.kickPlayer = function(peerid) {
+		game.removePlayer(peerid);
+		connection.close(peerid);
+	}
 
 	$scope.toggleMusic = function() {
 		sound.toggle(config.backgroundMusic);
@@ -58,12 +65,10 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	}
 
 	$scope.readyToStart = function() {
-		/*
 		if (Object.keys(game.players()).length == 0) {
 			console.log("Not enough players");
 			return false;
 		}
-		*/
 
 		var categories = Object.keys(config.categories).filter(function(cat) { return config.categories[cat] });
 		if (categories.length == 0) {
@@ -86,6 +91,7 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 
 	$scope.start = function() {
 		game.configure(config);
+		game.resetScores();
 		connection.disconnect();
 		$location.path('/game');
 	}
@@ -93,10 +99,17 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	connection.connect().then(connection.host).then(function() {
 		$scope.$on('data-join', function(event, conn, data) {
 			$scope.$apply(function() {
-				game.addPlayer(conn.peer, data.name);
-			});
-			conn.send({
-				wait : {}
+				try {
+					game.addPlayer(conn.peer, data.name);
+					conn.send({
+						wait : {}
+					});
+				} catch (e) {
+					conn.send({
+						kicked : e.message
+					});
+					console.log(e);
+				}
 			});
 		});
 		$scope.$digest();

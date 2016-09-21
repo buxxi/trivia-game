@@ -11,6 +11,7 @@ Using PeerJS to establish a P2P connection between the phone and computer and th
 - pizzicato: https://alemangui.github.io/pizzicato
 - css circular progress bar: http://www.cssscript.com/pure-css-circular-percentage-bar
 - wavesurfer: https://wavesurfer-js.org/
+- randomColor: https://github.com/davidmerfield/randomColor
 
 ### API's used:
 - Youtube: https://developers.google.com/youtube/v3

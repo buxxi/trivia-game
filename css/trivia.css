@@ -193,11 +193,11 @@
 	float: left;
 	font-size: 2em;
 	padding-top : 0.25em;
+	text-shadow : 0 0 1px black;
 }
 
 .player .name {
 	color : #333333;
-	font-size: 0.85em;
 	margin-right: 0.85em;
 	margin-bottom: 0;
 	display : inline;
@@ -241,6 +241,11 @@
 	float : right;
 	clear : both;
 	padding : 0;
+}
+
+.kick {
+	color : red;
+	float : right;
 }
 
 body, button {

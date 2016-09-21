@@ -1,10 +1,12 @@
 triviaApp.controller('joinController', function($scope, $location, $routeParams, connection) {
 	var config = {
-		code : "",
+		code : $routeParams.code,
 		name : ""
 	};
 
 	$scope.config = config;
+	$scope.supportsCamera = QCodeDecoder().hasGetUserMedia();
+
 	if ($routeParams.disconnected) {
 		$scope.message = "The host closed the connection";
 	}
@@ -47,7 +49,7 @@ triviaApp.controller('joinController', function($scope, $location, $routeParams,
 			decoder.decodeFromCamera(video, function(er,res) {
 				if (res) {
 					$scope.$apply(function() {
-						config.code = res;
+						config.code = /.*\?code=(.*)/.exec(res)[1];
 
 						if (!!config.name) {
 							$scope.join();

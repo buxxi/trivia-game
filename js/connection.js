@@ -45,6 +45,7 @@ triviaApp.service('connection', function($rootScope) {
 					conn.on('data', function(data) {
 						dataEvent(conn, data);
 					});
+					//TODO: handle disconnected peer
 				});
 
 				resolve();
@@ -64,9 +65,15 @@ triviaApp.service('connection', function($rootScope) {
 						dataEvent(host, data);
 					});
 
-					var removeListener = $rootScope.$on('data-wait', function() {
+					var removeWait = $rootScope.$on('data-wait', function() {
 						resolve();
-						removeListener();
+						removeWait();
+					});
+
+					var removeError = $rootScope.$on('data-kicked', function(event, conn, params) {
+						host.close();
+						reject(params);
+						removeError();
 					});
 
 					host.send({
@@ -77,6 +84,17 @@ triviaApp.service('connection', function($rootScope) {
 						$rootScope.$broadcast('host-disconnected');
 					});
 				});
+			});
+		}
+
+		self.close = function(peerid) {
+			clients.filter(function(conn) {
+				return conn.peer == peerid;
+			}).forEach(function(conn) {
+				conn.close();
+			});
+			clients = clients.filter(function(conn) {
+				return conn.peer != peerid;
 			});
 		}
 

@@ -56,14 +56,28 @@ triviaApp.service('game', function($rootScope, $interval, categories) {
 		}
 
 		self.addPlayer = function(peerid, name) {
+			var uniqueName = Object.keys(players).map(function(id) { return players[id].name; }).indexOf(name) == -1;
+			if (!uniqueName) {
+				throw new Error("The name " + name + " is already in use");
+			}
+
 			players[peerid] = {
 				name : name,
-				score : 0,
-				multiplier : 1,
-				correct : 0,
-				wrong : 0,
 				color : randomColor()
 			};
+		}
+
+		self.removePlayer = function(peerid) {
+			delete players[peerid];
+		}
+
+		self.resetScores = function() {
+			Object.keys(players).forEach(function(peerid) {
+				players[peerid].score = 0;
+				players[peerid].multiplier = 1;
+				players[peerid].correct = 0;
+				players[peerid].wrong = 0;
+			});
 		}
 
 		self.configure = function(cfg) {
