@@ -1,4 +1,4 @@
-triviaApp.service('categories', function(movies, music, geography, quotes) {
+triviaApp.service('categories', function(movies, music, geography, quotes, videogames) {
 	function Random() {
 		var self = this;
 
@@ -13,7 +13,7 @@ triviaApp.service('categories', function(movies, music, geography, quotes) {
 
 	function Categories() {
 		var self = this;
-		var categories = [movies, music, geography, quotes];
+		var categories = [movies, music, geography, quotes, videogames];
 		var enabledCategories = [];
 
 		self.available = function() {

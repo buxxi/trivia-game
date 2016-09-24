@@ -137,7 +137,6 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 				$scope.state = 'post-question';
 				$scope.pointChanges = pointsThisRound;
 				$scope.hasGuessed = {};
-				console.log(pointsThisRound);
 			});
 			$timeout(function() {
 				$scope.$apply(function() {

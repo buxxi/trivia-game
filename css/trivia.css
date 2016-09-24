@@ -70,6 +70,10 @@
 	width : 90%;
 }
 
+.image img {
+	min-width: 800px;
+}
+
 .quote {
 	color : white;
 }
@@ -334,6 +338,12 @@ big {
 
 .attribution .links .tmdb:before {
 	content : "TMDb";
+	font-family: Ubuntu;
+	font-size: 0.5em;
+}
+
+.attribution .links .igdb:before {
+	content : "IGDB";
 	font-family: Ubuntu;
 	font-size: 0.5em;
 }

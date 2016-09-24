@@ -16,7 +16,7 @@ triviaApp.service('playback', function(movies, music) {
 
 		self.start = function() {
 			return new Promise(function(resolve, reject) {
-				document.getElementById('content').innerHTML = '<div id="player"><img src="' + url + '"/></div>';
+				document.getElementById('content').innerHTML = '<div class="image" id="player"><img src="' + url + '"/></div>';
 				resolve();
 			});
 		}

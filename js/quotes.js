@@ -42,10 +42,6 @@ triviaApp.service('quotes', function($http, apikeys) {
 					return quote.author != q.author;
 				});
 
-				console.log(quotes);
-				console.log(similar);
-				console.log(quote);
-
 				resolve({
 					text : "Who said this famous quote?",
 					answers : [

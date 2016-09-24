@@ -18,6 +18,8 @@ Using PeerJS to establish a P2P connection between the phone and computer and th
 - The movie database: http://docs.themoviedb.apiary.io
 - Spotify: https://developer.spotify.com/web-api/
 - REST Countries: https://restcountries.eu
+- IBGD: https://www.igdb.com/api
+- Random Famous Quotes: https://market.mashape.com/andruxnet/random-famous-quotes
 
 ### Clips from: 
 - https://www.youtube.com/user/movieclips/videos
