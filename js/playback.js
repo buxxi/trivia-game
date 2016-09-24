@@ -90,13 +90,29 @@ triviaApp.service('playback', function(movies, music) {
 		}
 	}
 
+	function QuoteText(quote) {
+		var self = this;
+
+		self.start = function() {
+			return new Promise(function(resolve, reject) {
+				document.getElementById('content').innerHTML = '<div class="quote" id="player"><i class="fa fa-fw fa-quote-left"></i><p>' + quote + '</p><i class="fa fa-fw fa-quote-right"></i></div>';
+				resolve();
+			});
+		}
+
+		self.stop = function() {
+			//Do nothing
+		}
+	}
+
 	function Playback() {
 		var self = this;
 
 		var players = {
 			youtube : function(view) { return new YoutubePlayer(view.videoId) },
 			mp3 : function(view) { return new Mp3Player(view.mp3) },
-			image : function(view) { return new ImageViewer(view.url)}
+			image : function(view) { return new ImageViewer(view.url) },
+			quote : function(view) { return new QuoteText(view.quote) }
 		}
 
 		self.player = function(view) {

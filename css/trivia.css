@@ -66,6 +66,33 @@
 	transform: translateY(-50%) translateX(-50%);
 }
 
+.wavesurfer {
+	width : 90%;
+}
+
+.quote {
+	color : white;
+}
+
+.quote .fa-quote-left {
+	float : left;
+	font-size : 4em;
+	position : relative;
+	left : -1em;
+}
+
+.quote p {
+	clear : both;
+	font-size : 3em;
+}
+
+.quote .fa-quote-right {
+	float : right;
+	font-size : 4em;
+	position : relative;
+	right : -1em;
+}
+
 .container.question #content.pre-question iframe {
 	opacity : 0;
 }
@@ -113,6 +140,19 @@
 	position : fixed;
 	top : 1em;
 	right : 1em;
+}
+
+.timer-score {
+    float: left;
+    color: #307bbb;
+    background-color: white;
+    padding: 0.5em 1.5em 0.5em 1em;
+    position: relative;
+    top: 1.5em;
+    left: 1em;
+    border: 5px solid #cccccc;
+    border-radius: 10px 0 0 10px;
+    font-weight: bold;
 }
 
 .container.question #correct {
@@ -175,7 +215,11 @@
 	border-radius: 2em;
 	border-style : solid;
 	border-width : 3px;
-	padding: 0.3em 3em 0.3em 0.5em;
+	padding: 0.3em 0.5em;
+}
+
+.player > * {
+	float : left;
 }
 
 .player .summary {
@@ -184,27 +228,35 @@
 	color : #333333;
 	font-size: 1.3em;
 	font-weight: bold;
-	text-align: left;
 	position: relative;
 	top: -5px;
 }
 
 .player .fa-user {
-	float: left;
 	font-size: 2em;
 	padding-top : 0.25em;
 	text-shadow : 0 0 1px black;
 }
 
 .player .name {
-	color : #333333;
-	margin-right: 0.85em;
-	margin-bottom: 0;
-	display : inline;
+	margin: 0;
+	display : inline-block;
+	text-shadow: 0 0 1px black;
+	text-align: left;
+	width : 100%;
+}
+
+.player .score {
+	display : inline-block;
+	width : 50%;
+	margin : 0;
 }
 
 .player .multiplier {
-	margin-left : 0.5em;
+	padding-right : 0.5em;
+	text-align: right;
+	width : 50%;
+	display : inline-block;
 }
 
 .score-change-positive, .score-change-negative {
@@ -241,11 +293,6 @@
 	float : right;
 	clear : both;
 	padding : 0;
-}
-
-.kick {
-	color : red;
-	float : right;
 }
 
 body, button {

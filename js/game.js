@@ -16,6 +16,9 @@ triviaApp.service('game', function($rootScope, $interval, categories) {
 			},
 			percentageLeft : function() {
 				return Math.ceil((this.end - new Date().getTime()) / (this.end - this.start) * 100);
+			},
+			score : function() {
+				return timerPoints(new Date().getTime())
 			}
 		};
 		var config = {};

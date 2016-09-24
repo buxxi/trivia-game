@@ -4,7 +4,7 @@
 	<script type="text/javascript">
 		function resolve() {
 			setTimeout(function() {
-				window.opener.postMessage(window.location.hash, 'https://buxxi.se');
+				window.opener.postMessage(window.location.hash, window.location.href.toString().substr(0, window.location.href.toString().indexOf(window.location.pathname)));
 			}, 1000);
 		}
 	</script>
