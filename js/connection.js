@@ -3,7 +3,6 @@ triviaApp.service('connection', function($rootScope) {
 		var self = this;
 		var peer = { id : null };
 		var clients = [];
-		var host = null;
 
 		function dataEvent(conn, data) {
 			var command = Object.keys(data)[0];
@@ -58,32 +57,33 @@ triviaApp.service('connection', function($rootScope) {
 					reject(err);
 				});
 
-				host = peer.connect(peerid.toLowerCase());
+				var host = peer.connect(peerid.toLowerCase());
+
+				host.on('data', function(data) {
+					dataEvent(host, data);
+				});
+
+				host.on('close', function() {
+					$rootScope.$broadcast('host-disconnected');
+				});
+
+				var removeWait = $rootScope.$on('data-wait', function() {
+					resolve();
+					removeWait();
+				});
+
+				var removeError = $rootScope.$on('data-kicked', function(event, conn, params) {
+					host.close();
+					reject(params);
+					removeError();
+				});
 
 				host.on('open', function() {
-					host.on('data', function(data) {
-						dataEvent(host, data);
-					});
-
-					var removeWait = $rootScope.$on('data-wait', function() {
-						resolve();
-						removeWait();
-					});
-
-					var removeError = $rootScope.$on('data-kicked', function(event, conn, params) {
-						host.close();
-						reject(params);
-						removeError();
-					});
-
 					host.send({
 						join : { name : name }
 					});
-
-					host.on('close', function() {
-						$rootScope.$broadcast('host-disconnected');
-					});
 				});
+				clients.push(host);
 			});
 		}
 
@@ -98,11 +98,7 @@ triviaApp.service('connection', function($rootScope) {
 			});
 		}
 
-		self.sendHost = function(data) {
-			host.send(data);
-		}
-
-		self.sendAll = function(data) {
+		self.send = function(data) {
 			clients.forEach(function(conn) {
 				conn.send(data);
 			});

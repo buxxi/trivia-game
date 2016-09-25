@@ -23,7 +23,7 @@
 		<h3><i class="fa fa-fw fa-users"></i>Players</h3>
 		<ul class="list-group">
 			<li ng-repeat="(peerid,player) in players()" class="list-group-item">
-				<a href="" ng-click="kickPlayer(peerid)" class="kick"><i class="fa fa-fw fa-user-times"></i></a>
+				<a href="" ng-click="kickPlayer(peerid)" class="btn btn-xs btn-danger pull-right"><i class="fa fa-fw fa-user-times"></i></a>
 				<i class="fa fa-fw fa-user" style="color : {{ player.color }}"></i><span>{{ player.name }}</span>
 			</li>
 		</ul>

@@ -7,9 +7,9 @@ triviaApp.controller('answerController', function($scope, $location, connection)
 		$location.path('/');
 	}
 
-	$scope.$on('data-question', function(event, conn, data) {
+	$scope.$on('data-answers', function(event, conn, data) {
 		$scope.$apply(function() {
-			$scope.answers = data.answers;
+			$scope.answers = data;
 			correct = null;
 			guess = null;
 		});
@@ -17,7 +17,7 @@ triviaApp.controller('answerController', function($scope, $location, connection)
 
 	$scope.$on('data-correct', function(event, conn, data) {
 		$scope.$apply(function() {
-			correct = data.answer;
+			correct = data;
 		});
 	});
 
@@ -37,10 +37,8 @@ triviaApp.controller('answerController', function($scope, $location, connection)
 
 	$scope.guess = function(answer) {
 		guess = answer;
-		connection.sendHost({
-			guess : {
-				answer : answer
-			}
+		connection.send({
+			guess : answer
 		});
 	}
 

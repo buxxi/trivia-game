@@ -74,18 +74,15 @@ triviaApp.service('game', function($rootScope, $interval, categories) {
 			delete players[peerid];
 		}
 
-		self.resetScores = function() {
+		self.configure = function(cfg) {
+			config = cfg;
+			categories.configure(cfg.categories);
 			Object.keys(players).forEach(function(peerid) {
 				players[peerid].score = 0;
 				players[peerid].multiplier = 1;
 				players[peerid].correct = 0;
 				players[peerid].wrong = 0;
 			});
-		}
-
-		self.configure = function(cfg) {
-			config = cfg;
-			categories.configure(cfg.categories);
 		}
 
 		self.hasGuessed = function(peerid) {

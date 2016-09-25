@@ -22,51 +22,6 @@ triviaApp.run(function($http, apikeys) {
 	});
 });
 
-triviaApp.service('sound', function() {
-	function BackgroundMusic() {
-		var self = this;
-		var enabled = false;
-
-		var sound = new Pizzicato.Sound('sound/background.mp3', function() {
-			sound.volume = 0.10;
-			sound.loop = true;
-		});
-
-		self.play = function() {
-			if (!enabled) {
-				return;
-			}
-			sound.play();
-		}
-
-		self.pause = function() {
-			if (!enabled) {
-				return;
-			}
-			sound.pause();
-		}
-
-		self.toggle = function(enable) {
-			if (enable) {
-				sound.play();
-				enabled = true;
-			} else {
-				sound.pause();
-				enabled = false;
-			}
-		}
-
-		self.beep = function(count) {
-			var beep = new Pizzicato.Sound('sound/beep.mp3', function() {
-				beep.play();
-				beep.sourceNode.playbackRate.value = 1.5 + (0.5 * count);
-			});
-		}
-	}
-
-	return new BackgroundMusic();
-});
-
 triviaApp.controller('serverController', function($scope, $location, $timeout, connection, game, playback, sound) {
 	$scope.timer = game.timer();
 	$scope.players = game.players();
@@ -77,7 +32,7 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 
 	$scope.$on("data-guess", function(event, conn, data) {
 		$scope.$apply(function() {
-			game.guess(conn.peer, data.answer);
+			game.guess(conn.peer, data);
 			$scope.hasGuessed[conn.peer] = true;
 			sound.beep(Object.keys($scope.hasGuessed).length);
 		});
@@ -110,8 +65,8 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 			player.start().then(function() {
 				$scope.state = 'question';
 
-				connection.sendAll({
-					question : question //TODO: only send answers
+				connection.send({
+					answers : question.answers
 				});
 
 				game.startTimer().then(function(pointsThisRound) {
@@ -128,8 +83,8 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 			sound.play();
 			var correct = game.correctAnswer();
 			document.getElementById('content').innerHTML = '';
-			connection.sendAll({
-				correct : { answer : correct.key }
+			connection.send({
+				correct : correct.key
 			});
 			$scope.$apply(function() {
 				$scope.title = "The correct answer was:";
@@ -142,7 +97,7 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 				$scope.$apply(function() {
 					$scope.pointChanges = {};
 				})
-				connection.sendAll({
+				connection.send({
 					wait : {}
 				});
 				resolve();

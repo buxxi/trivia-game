@@ -91,7 +91,6 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 
 	$scope.start = function() {
 		game.configure(config);
-		game.resetScores();
 		connection.disconnect();
 		$location.path('/game');
 	}
