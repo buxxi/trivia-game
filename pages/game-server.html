@@ -18,12 +18,12 @@
 	<div id="correct" ng-if="state == 'post-question'" ng-class="'btn-' + correct['key']">{{ correct['answer'] }}</div>
 	<div class="navbar navbar-default navbar-fixed-bottom">
 		<div class="container">
-			<div class="player" ng-repeat="(peerid, player) in players" ng-class="{'guessed' : hasGuessed[peerid]}" style="border-color : {{ player.color }}; color : {{ player.color }}">
+			<div class="player" ng-repeat="(pairCode, player) in players" ng-class="{'guessed' : hasGuessed[pairCode]}" style="border-color : {{ player.color }}; color : {{ player.color }}">
 				<i class="fa fa-fw fa-user"></i>
 				<div>
 					<h3 class="name">{{ player.name }}</h3>
 					<div class="summary">
-						<span ng-class="{'score-change-positive': pointChanges[peerid] > 0, 'score-change-negative': pointChanges[peerid] < 0}" ng-if="pointChanges[peerid]">{{ pointChanges[peerid] }}</span>
+						<span ng-class="{'score-change-positive': pointChanges[pairCode] > 0, 'score-change-negative': pointChanges[pairCode] < 0}" ng-if="pointChanges[pairCode]">{{ pointChanges[pairCode] }}</span>
 						<span class="score"><i class="fa fa-star"></i>{{ player.score }}</span>
 						<span class="multiplier"><i class="fa fa-times"></i>{{ player.multiplier }}</span>
 					</div>

@@ -1,6 +1,6 @@
 # WebRTC Trivia
 A trivia game where it shows you a movie clip on your computer and then you use your phone as a controller to answer what movie it was.
-Using PeerJS to establish a P2P connection between the phone and computer and then has all the logic on the client.
+Using SocketPeer to establish a P2P connection between the phone and computer and then has all the logic on the client.
 
 ### Libraries used:
 - Angular.js: https://angularjs.org
