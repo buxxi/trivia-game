@@ -3,7 +3,7 @@ triviaApp.controller('answerController', function($scope, $location, connection)
 	var guess = null;
 	var answers = {};
 
-	if (!connection.peerid()) {
+	if (!connection.code()) {
 		$location.path('/');
 	}
 
@@ -27,7 +27,7 @@ triviaApp.controller('answerController', function($scope, $location, connection)
 		});
 	});
 
-	$scope.$on('host-disconnected', function() {
+	$scope.$on('data-kicked', function() {
 		$scope.$apply(function() {
 			$location.path('/').search({disconnected : true});
 		});

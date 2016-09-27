@@ -12,17 +12,21 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	$scope.availableCategories = categories.available();
 	$scope.preloading = {};
 	$scope.config = config;
-	$scope.peerid = connection.peerid;
+	$scope.code = connection.code;
 
 	$scope.url = function() {
-		return encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?code=" + $scope.peerid());
+		return encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?code=" + $scope.code());
 	}
 
 	$scope.players = game.players;
 
-	$scope.kickPlayer = function(peerid) {
-		game.removePlayer(peerid);
-		connection.close(peerid);
+	$scope.kickPlayer = function(pairCode) {
+		game.removePlayer(pairCode);
+		connection.close(pairCode);
+	}
+
+	$scope.usingFallbackConnection = function(pairCode) {
+		return connection.usingFallback(pairCode);
 	}
 
 	$scope.toggleMusic = function() {
@@ -95,26 +99,29 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 		$location.path('/game');
 	}
 
-	connection.connect().then(connection.host).then(function() {
+	connection.host().then(function() {
 		$scope.$on('data-join', function(event, conn, data) {
 			$scope.$apply(function() {
 				try {
-					game.addPlayer(conn.peer, data.name);
+					game.addPlayer(conn.pairCode, data.name);
 					conn.send({
 						wait : {}
 					});
+					conn.on('upgrade', function(data) {
+						$scope.$digest();
+					});
 				} catch (e) {
+					console.log(e);
 					conn.send({
 						kicked : e.message
 					});
-					console.log(e);
 				}
 			});
 		});
 		$scope.$digest();
 	}).catch(function(err) {
 		$scope.$apply(function() {
-			$scope.message = "Error when creating PeerJS connection: " + err;
+			$scope.message = "Error when creating connection: " + err;
 		});
 	});
 });

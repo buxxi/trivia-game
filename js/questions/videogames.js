@@ -72,7 +72,7 @@ triviaApp.service('videogames', function($http, apikeys) {
 
 				$http.get('https://igdbcom-internet-game-database-v1.p.mashape.com/games/', {
 					params : {
-						fields : 'name,url,first_release_date,release_dates,screenshots',
+						fields : 'name,url,first_release_date,release_dates,screenshots,keywords,themes,genres',
 						limit : 50,
 						offset : 0,
 						order : 'aggregated_rating:desc',
@@ -83,12 +83,31 @@ triviaApp.service('videogames', function($http, apikeys) {
 						'X-Mashape-Key' : apikeys.mashape
 					}
 				}).then(function(response) {
+					function tag(prefix, arr) {
+						if (!arr) {
+							return [];
+						}
+
+						return arr.map(function(i) {
+							return prefix + i;
+						});
+					}
+
 					var games = response.data.map(function(game) {
+						function release_date() {
+							try {
+								return new Date(game.first_release_date).toISOString();
+							} catch (e) {
+								return new Date(0).toISOString();
+							}
+						}
+
 						return {
 							name : game.name,
-							release_date : new Date(game.first_release_date).toISOString(),
+							release_date : release_date(),
 							screenshots : game.screenshots.map(function(ss) { return ss.cloudinary_id; }),
 							platforms : game.release_dates.map(function(rd) { return platforms[rd.platform] ? platforms[rd.platform].name : null; }).filter(function(p) { return p != null; }),
+							tags : [].concat(tag('k', game.keywords)).concat(tag('t', game.themes)).concat(tag('g', game.genres)),
 							attribution : game.url
 						};
 					});
@@ -153,7 +172,7 @@ triviaApp.service('videogames', function($http, apikeys) {
 			}).map(function(g) {
 				return {
 					game : g,
-					score : levenshteinDistance(titleWords, wordsFromString(g.name)) + dateDistance(game.release_date, g.release_date)
+					score : levenshteinDistance(titleWords, wordsFromString(g.name)) + levenshteinDistance(game.tags, g.tags) + dateDistance(game.release_date, g.release_date)
 				};
 			});
 			tmp.sort(function(a, b) {
@@ -185,7 +204,7 @@ triviaApp.service('videogames', function($http, apikeys) {
 		}
 
 		function levenshteinDistance(a, b) { //copied from and modified to use array instead: https://gist.github.com/andrei-m/982927
-			if(!a || !b) {
+			if(a.length == 0 || b.length == 0) {
 				return (a || b).length;
 			}
 			var m = [];

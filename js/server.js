@@ -32,8 +32,8 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 
 	$scope.$on("data-guess", function(event, conn, data) {
 		$scope.$apply(function() {
-			game.guess(conn.peer, data);
-			$scope.hasGuessed[conn.peer] = true;
+			game.guess(conn.pairCode, data);
+			$scope.hasGuessed[conn.pairCode] = true;
 			sound.beep(Object.keys($scope.hasGuessed).length);
 		});
 	});

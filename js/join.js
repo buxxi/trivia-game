@@ -12,9 +12,7 @@ triviaApp.controller('joinController', function($scope, $location, $routeParams,
 	}
 
 	$scope.join = function() {
-		connection.connect().then(function() {
-			return connection.join(config.code, config.name);
-		}).then(function() {
+		connection.join(config.code, config.name).then(function() {
 			$scope.$apply(function() {
 				$location.path('/game');
 			});

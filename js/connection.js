@@ -1,8 +1,9 @@
 triviaApp.service('connection', function($rootScope) {
 	function Connection() {
 		var self = this;
-		var peer = { id : null };
-		var clients = [];
+		var currentPairCode = null;
+		var serverUrl = window.location.href.toString().substr(0, window.location.href.toString().indexOf(window.location.pathname));
+		var peers = [];
 
 		function dataEvent(conn, data) {
 			var command = Object.keys(data)[0];
@@ -10,102 +11,118 @@ triviaApp.service('connection', function($rootScope) {
 			$rootScope.$broadcast('data-' + command, conn, params);
 		}
 
-		self.connect = function() {
-			return new Promise(function(resolve, reject) {
-				peer = new Peer({
-					host : window.location.host,
-					port : 443,
-					path : '/peer',
-					config: {
-						iceServers: [
-  							{ url: 'stun:stun1.l.google.com:19302' }
-						]
-					}
-				});
-
-				peer.on('open', function(id) {
-					resolve();
-				});
-
-				peer.on('error', function(err) {
-					reject(err);
-				});
-			});
-		}
-
 		self.disconnect = function() {
-			peer.disconnect();
+			//TODO:
 		}
 
 		self.host = function() {
 			return new Promise(function(resolve, reject) {
-				peer.on('connection', function(conn) {
-					clients.push(conn);
-					conn.on('data', function(data) {
-						dataEvent(conn, data);
-					});
-					//TODO: handle disconnected peer
-				});
+				function openNextSlot(result) {
+					var peer = createPeer(result + "-" + (peers.length + 1));
 
-				resolve();
+					peer.on('data', function(data) {
+						dataEvent(peer, data);
+					});
+
+					peer.on('connect', function() {
+						peers.push(peer);
+						openNextSlot(result);
+					});
+
+					currentPairCode = peer.pairCode;
+					peer.connect();
+				}
+
+				new Fingerprint2().get(function(result) {
+					openNextSlot(result);
+
+					resolve();
+				});
 			});
 		}
 
-		self.join = function(peerid, name) {
+		self.join = function(pairCode, name) {
 			return new Promise(function(resolve, reject) {
+				var peer = createPeer(pairCode);
+				currentPairCode = pairCode;
+
 				peer.on('error', function(err) {
 					reject(err);
 				});
 
-				var host = peer.connect(peerid.toLowerCase());
-
-				host.on('data', function(data) {
-					dataEvent(host, data);
+				peer.on('data', function(data) {
+					dataEvent(peer, data);
 				});
 
-				host.on('close', function() {
-					$rootScope.$broadcast('host-disconnected');
-				});
+				var timeout = setTimeout(function() {
+					peer.close();
+					reject("No one listening on Pair Code " + pairCode);
+				}, 3000);
 
 				var removeWait = $rootScope.$on('data-wait', function() {
 					resolve();
 					removeWait();
+					clearTimeout(timeout);
 				});
 
 				var removeError = $rootScope.$on('data-kicked', function(event, conn, params) {
-					host.close();
+					peer.close();
 					reject(params);
 					removeError();
 				});
 
-				host.on('open', function() {
-					host.send({
+				peer.on('connect', function() {
+					peers.push(peer);
+					peer.send({
 						join : { name : name }
 					});
 				});
-				clients.push(host);
+
+				peer.connect();
 			});
 		}
 
-		self.close = function(peerid) {
-			clients.filter(function(conn) {
-				return conn.peer == peerid;
-			}).forEach(function(conn) {
-				conn.close();
+		self.close = function(pairCode) {
+			var peer = peerFromPairCode(pairCode);
+			peer.send({
+				kicked : "The host kicked you"
 			});
-			clients = clients.filter(function(conn) {
-				return conn.peer != peerid;
-			});
+			peer.close();
 		}
 
 		self.send = function(data) {
-			clients.forEach(function(conn) {
-				conn.send(data);
+			peers.forEach(function(peer) {
+				peer.send(data);
 			});
 		}
 
-		self.peerid = function() {
-			return peer.id;
+		self.code = function() {
+			return currentPairCode;
+		}
+
+		self.usingFallback = function(pairCode) {
+			return !peerFromPairCode(pairCode).rtcConnected;
+		}
+
+		function createPeer(pairCode) {
+			return new SocketPeer({
+				pairCode: pairCode.toLowerCase(),
+				socketFallback: true,
+				url: serverUrl + '/socketpeer/',
+				reconnect: false,
+				autoconnect: false,
+				serveLibrary: false,
+				debug: false
+			});
+		}
+
+		function peerFromPairCode(pairCode) {
+			for (var i = 0; i < peers.length; i++) {
+				if (peers[i].pairCode == pairCode) {
+					return peers[i];
+				}
+			}
+			throw new Error("No peer with Pair Code: " + pairCode);
 		}
 	};
 
