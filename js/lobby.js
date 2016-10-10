@@ -1,4 +1,4 @@
-triviaApp.controller('lobbyController', function($rootScope, $scope, $location, connection, game, categories, sound) {
+triviaApp.controller('lobbyController', function($rootScope, $scope, $location, avatars, connection, game, categories, sound) {
 	var config = {
 		questions : 10,
 		time : 30,
@@ -13,6 +13,7 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	$scope.preloading = {};
 	$scope.config = config;
 	$scope.code = connection.code;
+	$scope.avatars = avatars;
 
 	$scope.url = function() {
 		return encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?code=" + $scope.code());
@@ -99,24 +100,13 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 		$location.path('/game');
 	}
 
-	connection.host().then(function() {
-		$scope.$on('data-join', function(event, conn, data) {
-			$scope.$apply(function() {
-				try {
-					game.addPlayer(conn.pairCode, data.name);
-					conn.send({
-						wait : {}
-					});
-					conn.on('upgrade', function(data) {
-						$scope.$digest();
-					});
-				} catch (e) {
-					console.log(e);
-					conn.send({
-						kicked : e.message
-					});
-				}
-			});
+	connection.host(function(data) {
+		game.addPlayer(data.pairCode, data.name);
+
+		$scope.$apply(function() {});
+	}).then(function() {
+		$scope.$on("connection-upgraded", function(event, conn) {
+			$scope.$digest();
 		});
 		$scope.$digest();
 	}).catch(function(err) {

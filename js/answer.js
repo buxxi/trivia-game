@@ -7,7 +7,7 @@ triviaApp.controller('answerController', function($scope, $location, connection)
 		$location.path('/');
 	}
 
-	$scope.$on('data-answers', function(event, conn, data) {
+	$scope.$on('data-answers', function(event, pairCode, data) {
 		$scope.$apply(function() {
 			$scope.answers = data;
 			correct = null;
@@ -15,19 +15,19 @@ triviaApp.controller('answerController', function($scope, $location, connection)
 		});
 	});
 
-	$scope.$on('data-correct', function(event, conn, data) {
+	$scope.$on('data-correct', function(event, pairCode, data) {
 		$scope.$apply(function() {
 			correct = data;
 		});
 	});
 
-	$scope.$on('data-wait', function(event, conn, data) {
+	$scope.$on('data-wait', function(event, pairCode, data) {
 		$scope.$apply(function() {
 			$scope.answers = {};
 		});
 	});
 
-	$scope.$on('data-kicked', function() {
+	$scope.$on('connection-closed', function() {
 		$scope.$apply(function() {
 			$location.path('/').search({disconnected : true});
 		});

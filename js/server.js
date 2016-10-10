@@ -13,6 +13,33 @@ triviaApp.config(function($routeProvider) {
 		});
 });
 
+triviaApp.constant('avatars', {
+	monkey : '\uD83D\uDC35',
+	dog : '\uD83D\uDC36',
+	wolf : '\uD83D\uDC3A',
+	cat : '\uD83D\uDC31',
+	lion : '\uD83E\uDD81',
+	tiger : '\uD83D\uDC2F',
+	horse : '\uD83D\uDC34',
+	cow : '\uD83D\uDC2E',
+	dragon : '\uD83D\uDC32',
+	pig : '\uD83D\uDC37',
+	mouse : '\uD83D\uDC2D',
+	hamster : '\uD83D\uDC39',
+	rabbit : '\uD83D\uDC30',
+	bear : '\uD83D\uDC3B',
+	panda : '\uD83D\uDC3C',
+	frog : '\uD83D\uDC38',
+	octopus : '\uD83D\uDC19'
+});
+triviaApp.run(function(avatars) {
+	Object.keys(avatars).forEach(function(avatar) {
+		avatars[avatar] = {
+			code : avatars[avatar],
+			url : /src=\"(.*?)\"/.exec(twemoji.parse(avatars[avatar]))[1]
+		}
+	});
+});
 triviaApp.constant('apikeys', {});
 triviaApp.run(function($http, apikeys) {
 	$http.get('js/api-keys.json').then(function(response) {
@@ -22,18 +49,19 @@ triviaApp.run(function($http, apikeys) {
 	});
 });
 
-triviaApp.controller('serverController', function($scope, $location, $timeout, connection, game, playback, sound) {
+triviaApp.controller('serverController', function($scope, $location, $timeout, connection, game, playback, sound, avatars) {
 	$scope.timer = game.timer();
 	$scope.players = game.players();
 	$scope.title = "";
 	$scope.pointChanges = {};
 	$scope.state = "loading";
 	$scope.hasGuessed = {};
+	$scope.avatars = avatars;
 
-	$scope.$on("data-guess", function(event, conn, data) {
+	$scope.$on("data-guess", function(event, pairCode, data) {
 		$scope.$apply(function() {
-			game.guess(conn.pairCode, data);
-			$scope.hasGuessed[conn.pairCode] = true;
+			game.guess(pairCode, data);
+			$scope.hasGuessed[pairCode] = true;
 			sound.beep(Object.keys($scope.hasGuessed).length);
 		});
 	});
@@ -50,8 +78,10 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 			$scope.$apply(function() {
 				$scope.state = 'pre-question';
 				$scope.title = question.text;
+				sound.speak(question.text);
 			});
 			$timeout(function() {
+				sound.stopSpeaking();
 				resolve(question);
 			}, 3000);
 		});

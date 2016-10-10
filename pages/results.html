@@ -5,7 +5,9 @@
 			<ul class="list-group results">
 				<li class="list-group-item" ng-repeat="(index,score) in scores" ng-class="{'gold' : index == 0, 'silver' : index == 1, 'bronze' : index == 2}">
 					<h4 ng-class="index == 0 ? 'fa-4x' : 'fa-2x'">
-						<i class="fa fa-fw" ng-class="{'fa-trophy' : index <= 2, 'fa-trash' : index > 2}"></i> {{ score.name }}
+						<i class="fa fa-fw" ng-class="{'fa-trophy' : index <= 2, 'fa-trash' : index > 2}"></i>
+						<div class="avatar" style="background-color : {{score.color}}"><img src="{{ avatars[score.avatar].url }}"/></div>
+						{{ score.name }}
 					</h4>
 					<hr/>
 					<span class="text-primary"><i class="fa fa-fw fa-star"></i>{{ score.score }}</span>

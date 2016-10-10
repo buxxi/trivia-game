@@ -33,10 +33,22 @@ triviaApp.service('sound', function() {
 		}
 
 		self.beep = function(count) {
-			var beep = new Pizzicato.Sound('sound/beep.mp3', function() {
-				beep.play();
-				beep.sourceNode.playbackRate.value = 1.5 + (0.5 * count);
-			});
+			if (enabled) {
+				var beep = new Pizzicato.Sound('sound/beep.mp3', function() {
+					beep.play();
+					beep.sourceNode.playbackRate.value = 1.5 + (0.5 * count);
+				});
+			}
+		}
+
+		self.speak = function(text) {
+			if (enabled) {
+				responsiveVoice.speak(text, "US English Male", {rate : 1.1, pitch : 0.9});
+			}
+		}
+
+		self.stopSpeaking = function() {
+			//responsiveVoice.cancel();
 		}
 	}
 

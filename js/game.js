@@ -1,4 +1,4 @@
-triviaApp.service('game', function($rootScope, $interval, categories) {
+triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 	function Game() {
 		var self = this;
 		var players = {};
@@ -54,6 +54,15 @@ triviaApp.service('game', function($rootScope, $interval, categories) {
 			return result;
 		}
 
+		function randomAvatar() {
+			var unusedAvatars = Object.keys(avatars).filter(function(avatar) {
+				return Object.keys(players).map(function(peerid) {
+					return players[peerid].avatar;
+				}).indexOf(avatar) == -1;
+			});
+			return unusedAvatars[unusedAvatars.length * Math.random() << 0];
+		}
+
 		self.players = function() {
 			return players;
 		}
@@ -66,7 +75,8 @@ triviaApp.service('game', function($rootScope, $interval, categories) {
 
 			players[peerid] = {
 				name : name,
-				color : randomColor()
+				color : randomColor(),
+				avatar : randomAvatar()
 			};
 		}
 

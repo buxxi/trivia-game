@@ -1,41 +1,63 @@
 triviaApp.service('connection', function($rootScope) {
 	function Connection() {
 		var self = this;
-		var currentPairCode = null;
+		var mediator = { pairCode : null };
 		var serverUrl = window.location.href.toString().substr(0, window.location.href.toString().indexOf(window.location.pathname));
 		var peers = [];
 
-		function dataEvent(conn, data) {
+		function dataEvent(pairCode, data) {
 			var command = Object.keys(data)[0];
 			var params = data[command];
-			$rootScope.$broadcast('data-' + command, conn, params);
+			$rootScope.$broadcast('data-' + command, pairCode, params);
 		}
 
 		self.disconnect = function() {
-			//TODO:
+			mediator.close();
 		}
 
-		self.host = function() {
+		self.host = function(joinCallback) {
 			return new Promise(function(resolve, reject) {
-				function openNextSlot(result) {
-					var peer = createPeer(result + "-" + (peers.length + 1));
+				new Fingerprint2().get(function(id) {
+					mediator = createPeer(id);
 
-					peer.on('data', function(data) {
-						dataEvent(peer, data);
+					mediator.on('error', function(err) {
+						reject(err);
 					});
 
-					peer.on('connect', function() {
-						peers.push(peer);
-						openNextSlot(result);
+					mediator.on('data', function(data) {
+						if (data.join) {
+							mediator.close();
+
+							var peer = createPeer(data.join.pairCode);
+							peer.on('connect', function() {
+								try {
+									joinCallback(data.join);
+									peers.push(peer);
+									peer.send({
+										join : true
+									});
+								} catch (e) {
+									console.log(e);
+									peer.send({
+										join : e.message
+									})
+									peer.close();
+								}
+								mediator.connect();
+							});
+							peer.on('data', function(data) {
+								dataEvent(peer.pairCode, data);
+							});
+
+							peer.on('upgrade', function() {
+								$rootScope.$broadcast('connection-upgraded', peer);
+							});
+
+							peer.connect();
+						}
 					});
 
-					currentPairCode = peer.pairCode;
-					peer.connect();
-				}
-
-				new Fingerprint2().get(function(result) {
-					openNextSlot(result);
-
+					mediator.connect();
 					resolve();
 				});
 			});
@@ -43,65 +65,78 @@ triviaApp.service('connection', function($rootScope) {
 
 		self.join = function(pairCode, name) {
 			return new Promise(function(resolve, reject) {
-				var peer = createPeer(pairCode);
-				currentPairCode = pairCode;
+				new Fingerprint2().get(function(id) {
+					mediator = createPeer(pairCode);
 
-				peer.on('error', function(err) {
-					reject(err);
-				});
-
-				peer.on('data', function(data) {
-					dataEvent(peer, data);
-				});
-
-				var timeout = setTimeout(function() {
-					peer.close();
-					reject("No one listening on Pair Code " + pairCode);
-				}, 3000);
-
-				var removeWait = $rootScope.$on('data-wait', function() {
-					resolve();
-					removeWait();
-					clearTimeout(timeout);
-				});
-
-				var removeError = $rootScope.$on('data-kicked', function(event, conn, params) {
-					peer.close();
-					reject(params);
-					removeError();
-				});
-
-				peer.on('connect', function() {
-					peers.push(peer);
-					peer.send({
-						join : { name : name }
+					mediator.on('error', function(err) {
+						reject(err);
 					});
-				});
 
-				peer.connect();
+					var timeout = setTimeout(function() {
+						mediator.close();
+						reject("No one listening on Pair Code " + pairCode);
+					}, 3000);
+
+					mediator.on('connect', function() {
+						mediator.send({
+							join : { name : name, pairCode : id }
+						});
+
+						mediator.close();
+
+						var peer = createPeer(id);
+						peer.on('connect', function() {
+							clearTimeout(timeout);
+							fixCloseEvent(peer);
+							peers.push(peer);
+
+							peer.on('data', function(data) {
+								dataEvent(peer.pairCode, data);
+							});
+
+							$rootScope.$on('data-join', function(event, id, data) {
+								if (data === true) {
+									resolve();
+								} else {
+									reject(data);
+								}
+							});
+						});
+
+						peer.on('close', function() {
+							$rootScope.$broadcast('connection-closed', peer);
+						});
+
+						peer.connect();
+					});
+
+					mediator.connect();
+				});
 			});
 		}
 
 		self.close = function(pairCode) {
 			var peer = peerFromPairCode(pairCode);
-			peer.send({
-				kicked : "The host kicked you"
-			});
 			peer.close();
 		}
 
 		self.send = function(data) {
+			console.log("Sending: " + JSON.stringify(data) + " to " + peers.length + " peers");
 			peers.forEach(function(peer) {
 				peer.send(data);
 			});
 		}
 
 		self.code = function() {
-			return currentPairCode;
+			return mediator.pairCode;
 		}
 
 		self.usingFallback = function(pairCode) {
-			return !peerFromPairCode(pairCode).rtcConnected;
+			try {
+				return !peerFromPairCode(pairCode).rtcConnected;
+			} catch (e) {
+				return true;
+			}
 		}
 
 		function createPeer(pairCode) {
@@ -114,6 +149,14 @@ triviaApp.service('connection', function($rootScope) {
 				serveLibrary: false,
 				debug: false
 			});
+		}
+
+		function fixCloseEvent(peer) { //TODO: make a bug report that this is not triggered, server also modified to actually close the connection
+			var old = peer.socket.onclose;
+			peer.socket.onclose = function() {
+				peer.emit('close');
+				old();
+			};
 		}
 
 		function peerFromPairCode(pairCode) {

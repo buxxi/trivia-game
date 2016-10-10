@@ -1,4 +1,4 @@
-triviaApp.controller('resultController', function($scope, $location, game) {
+triviaApp.controller('resultController', function($scope, $location, game, avatars) {
 	$scope.scores = Object.values(game.players()).sort(function(a, b) {
 		return b.score - a.score;
 	});
@@ -13,4 +13,6 @@ triviaApp.controller('resultController', function($scope, $location, game) {
 	$scope.domain = function(link) {
 		return new URL(link).hostname;
 	}
+
+	$scope.avatars = avatars;
 });
