@@ -13,6 +13,7 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 - wavesurfer: https://wavesurfer-js.org/
 - randomColor: https://github.com/davidmerfield/randomColor
 - Fingerprint2: https://github.com/Valve/fingerprintjs2
+- Twemoji: https://github.com/twitter/twemoji
 
 ### API's used:
 - Youtube: https://developers.google.com/youtube/v3
@@ -21,6 +22,7 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 - REST Countries: https://restcountries.eu
 - IBGD: https://www.igdb.com/api
 - Random Famous Quotes: https://market.mashape.com/andruxnet/random-famous-quotes
+- Reponsive Voice: http://responsivevoice.org/api/
 
 ### Clips from: 
 - https://www.youtube.com/user/movieclips/videos
