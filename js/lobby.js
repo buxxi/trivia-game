@@ -1,11 +1,11 @@
-triviaApp.controller('lobbyController', function($rootScope, $scope, $location, avatars, connection, game, categories, sound) {
+triviaApp.controller('lobbyController', function($rootScope, $scope, $location, connection, game, categories, sound) {
 	var config = {
 		questions : 10,
 		time : 30,
 		pointsPerRound : 1000,
 		stopOnAnswers : true,
 		allowMultiplier : true,
-		backgroundMusic : false,
+		sound : sound.enabled(),
 		categories : {}
 	};
 
@@ -13,7 +13,6 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	$scope.preloading = {};
 	$scope.config = config;
 	$scope.code = connection.code;
-	$scope.avatars = avatars;
 
 	$scope.url = function() {
 		return encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?code=" + $scope.code());
@@ -30,8 +29,8 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 		return connection.usingFallback(pairCode);
 	}
 
-	$scope.toggleMusic = function() {
-		sound.toggle(config.backgroundMusic);
+	$scope.toggleSound = function() {
+		sound.configure(config.sound);
 	}
 
 	$scope.preload = function(type) {

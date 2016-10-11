@@ -29,6 +29,9 @@
 .container.answer .btn {
 	height : 25%;
 	text-align: left;
+	margin-top : 0 !important;
+	border-radius : 0 !important;
+	white-space : normal;
 }
 
 .container.answer .btn:disabled {
@@ -173,10 +176,11 @@
 	margin-right : 1em;
 	color : white;
 	font-weight: bold;
-	padding : 0.85em 1em;
+	padding : 0.7em 1em;
 	border-radius: 2em;
 	border-width: 1px;
 	border-style : solid;
+	display : inline-block;
 }
 
 .container.join video {
@@ -215,7 +219,8 @@
 
 .player-lobby span {
 	vertical-align : top;
-	line-height: 3em;
+	line-height: 2em;
+	font-size: 1.5em;
 }
 
 .player-lobby .avatar {
@@ -267,13 +272,20 @@
     width: 5em;
     text-align: center;
     font-weight: bold;
-    color: white;
-	background-color : inherit;
-	text-shadow: 0 0 2px black;
+    color: #307bbb;
+	background-color : white;
+	border-style : solid;
+	border-width : 0.25em;
+	border-color : inherit;
 }
 
 .avatar.guessed img {
     filter: invert(100%);
+}
+
+.avatar.guessed::after {
+	color : white;
+	background-color : #307bbb;
 }
 
 .score-change-positive, .score-change-negative {
@@ -283,10 +295,14 @@
 	margin-left: -4.5em;
 	margin-top: 3.5em;
 	z-index: 2;
-	background-color: inherit;
+	border-style : solid;
+	border-width : 0.25em;
+	border-color : inherit;
+	color : white;
+
 }
 .score-change-positive {
-    color: green;
+    background-color : green;
     text-shadow: 0px 1px 1px lime;
 }
 
@@ -295,7 +311,7 @@
 }
 
 .score-change-negative {
-    color: #800a00;
+    background-color: #800a00;
     text-shadow: 0px 1px 1px #ff4e00;
 }
 

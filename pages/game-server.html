@@ -18,7 +18,7 @@
 	<div id="correct" ng-if="state == 'post-question'" ng-class="'btn-' + correct['key']">{{ correct['answer'] }}</div>
 	<div class="navbar navbar-default navbar-fixed-bottom">
 		<div class="container">
-			<div class="avatar" data-score="{{player.score}}" data-multiplier="{{player.multiplier}}" ng-repeat="(pairCode, player) in players" ng-class="{'guessed' : hasGuessed[pairCode]}" style="background-color : {{player.color}}">
+			<div class="avatar" data-score="{{player.score}}" data-multiplier="{{player.multiplier}}" ng-repeat="(pairCode, player) in players" ng-class="{'guessed' : hasGuessed[pairCode]}" style="background-color : {{player.color}}; border-color : {{player.color}}">
 				<img src="{{ avatars[player.avatar].url }}"/>
 				<span ng-class="{'score-change-positive': pointChanges[pairCode] > 0, 'score-change-negative': pointChanges[pairCode] < 0}" ng-if="pointChanges[pairCode]">{{ pointChanges[pairCode] }}</span>
 			</div>

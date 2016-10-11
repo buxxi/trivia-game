@@ -75,7 +75,7 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 
 			players[peerid] = {
 				name : name,
-				color : randomColor(),
+				color : randomColor({ luminosity: 'dark' }),
 				avatar : randomAvatar()
 			};
 		}

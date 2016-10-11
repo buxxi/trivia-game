@@ -56,7 +56,7 @@
 				</div>
 
 				<div class="form-group" id="categories">
-					<label for="points"><i class="fa fa-fw fa-list-ul"></i>Categories</label>
+					<label><i class="fa fa-fw fa-list-ul"></i>Categories</label>
 					<ul class="list-group">
 						<li class="list-group-item checkbox" ng-class="{'list-group-item-success' : preloading[category.type].done, 'list-group-item-danger' : preloading[category.type].failed}" ng-repeat="category in availableCategories">
 							<div class="progress" ng-if="config.categories[category.type] && !preloading[category.type].done && !preloading[category.type].failed">
@@ -68,8 +68,19 @@
 					</ul>
 				</div>
 
-				<div class="checkbox">
-					<label for="backgroundMusic"><input type="checkbox" id="backgroundMusic" ng-model="config.backgroundMusic" ng-change="toggleMusic()"> Play background music, TTS and sound effects</label>
+				<div class="form-group" id="sound">
+					<label><i class="fa fa-fw fa-music"></i>Sound</label>
+					<ul class="list-group">
+						<li class="list-group-item checkbox">
+							<label for="backgroundMusic"><input type="checkbox" id="backgroundMusic" ng-model="config.sound.backgroundMusic" ng-change="toggleSound()"><i class="fa fa-fw fa-music"></i> Background music</label>
+						</li>
+						<li class="list-group-item checkbox">
+							<label for="text2Speech"><input type="checkbox" id="text2Speech" ng-model="config.sound.text2Speech" ng-change="toggleSound()"><i class="fa fa-fw fa-commenting-o"></i> Text-2-speech of questions</label>
+						</li>
+						<li class="list-group-item checkbox">
+							<label for="soundEffects"><input type="checkbox" id="soundEffects" ng-model="config.sound.soundEffects" ng-change="toggleSound()"><i class="fa fa-fw fa-exclamation"></i> Sound effects</label>
+						</li>
+					</ul>
 				</div>
 
 				<div class="form-group" ng-if="message">

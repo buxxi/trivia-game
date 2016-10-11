@@ -2,13 +2,15 @@ triviaApp.service('playback', function(movies, music) {
 	function BlankPlayer() {
 		var self = this;
 
-		this.start = function() {
+		self.start = function() {
 			return new Promise(function(resolve, reject) {
 				resolve();
 			});
 		}
 
-		this.stop = function() {}
+		self.stop = function() {}
+
+		self.pauseMusic = false;
 	}
 
 	function ImageViewer(url) {
@@ -23,6 +25,8 @@ triviaApp.service('playback', function(movies, music) {
 
 
 		self.stop = function() {}
+
+		self.pauseMusic = false;
 	}
 
 	function YoutubePlayer(videoId) {
@@ -59,6 +63,8 @@ triviaApp.service('playback', function(movies, music) {
 		self.stop = function() {
 			player.stopVideo();
 		}
+
+		self.pauseMusic = true;
 	}
 
 	function Mp3Player(mp3) {
@@ -88,6 +94,8 @@ triviaApp.service('playback', function(movies, music) {
 			player.stop();
 			player.destroy();
 		}
+
+		self.pauseMusic = true;
 	}
 
 	function QuoteText(quote) {
@@ -103,6 +111,8 @@ triviaApp.service('playback', function(movies, music) {
 		self.stop = function() {
 			//Do nothing
 		}
+
+		self.pauseMusic = true;
 	}
 
 	function Playback() {

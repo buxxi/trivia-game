@@ -32,13 +32,14 @@ triviaApp.constant('avatars', {
 	frog : '\uD83D\uDC38',
 	octopus : '\uD83D\uDC19'
 });
-triviaApp.run(function(avatars) {
+triviaApp.run(function($rootScope, avatars) {
 	Object.keys(avatars).forEach(function(avatar) {
 		avatars[avatar] = {
 			code : avatars[avatar],
 			url : /src=\"(.*?)\"/.exec(twemoji.parse(avatars[avatar]))[1]
 		}
 	});
+	$rootScope.avatars = avatars;
 });
 triviaApp.constant('apikeys', {});
 triviaApp.run(function($http, apikeys) {
@@ -78,11 +79,22 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 			$scope.$apply(function() {
 				$scope.state = 'pre-question';
 				$scope.title = question.text;
-				sound.speak(question.text);
+			});
+
+			var spoked = false;
+			var timelimit = false;
+
+			sound.speak(question.text, function() {
+				spoken = true;
+				if (timelimit) {
+					resolve(question);
+				}
 			});
 			$timeout(function() {
-				sound.stopSpeaking();
-				resolve(question);
+				timelimit = true;
+				if (spoken) {
+					resolve(question);
+				}
 			}, 3000);
 		});
 	}
@@ -93,7 +105,9 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 
 			var player = playback.player(question.view);
 			player.start().then(function() {
-				$scope.state = 'question';
+				$scope.$apply(function() {
+					$scope.state = 'question';
+				});
 
 				connection.send({
 					answers : question.answers
@@ -103,7 +117,9 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 					player.stop();
 					return resolve(pointsThisRound);
 				});
-				sound.pause();
+				if (player.pauseMusic) {
+					sound.pause();
+				}
 			});
 		});
 	}

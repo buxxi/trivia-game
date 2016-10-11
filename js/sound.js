@@ -1,39 +1,43 @@
 triviaApp.service('sound', function() {
-	function BackgroundMusic() {
+	function SoundController() {
 		var self = this;
-		var enabled = false;
 
-		var sound = new Pizzicato.Sound('sound/background.mp3', function() {
-			sound.volume = 0.10;
-			sound.loop = true;
+		var enabled = {
+			backgroundMusic : false,
+			soundEffects : true,
+			text2Speech : true
+		}
+
+		var backgroundMusic = new Pizzicato.Sound('sound/background.mp3', function() {
+			backgroundMusic.volume = 0.10;
+			backgroundMusic.loop = true;
 		});
 
 		self.play = function() {
-			if (!enabled) {
+			if (!enabled.backgroundMusic) {
 				return;
 			}
-			sound.play();
+			backgroundMusic.play();
 		}
 
 		self.pause = function() {
-			if (!enabled) {
+			if (!enabled.backgroundMusic) {
 				return;
 			}
-			sound.pause();
+			backgroundMusic.pause();
 		}
 
-		self.toggle = function(enable) {
-			if (enable) {
-				sound.play();
-				enabled = true;
+		self.configure = function(config) {
+			enabled = config;
+			if (enabled.backgroundMusic) {
+				backgroundMusic.play();
 			} else {
-				sound.pause();
-				enabled = false;
+				backgroundMusic.pause();
 			}
 		}
 
 		self.beep = function(count) {
-			if (enabled) {
+			if (enabled.soundEffects) {
 				var beep = new Pizzicato.Sound('sound/beep.mp3', function() {
 					beep.play();
 					beep.sourceNode.playbackRate.value = 1.5 + (0.5 * count);
@@ -41,16 +45,18 @@ triviaApp.service('sound', function() {
 			}
 		}
 
-		self.speak = function(text) {
-			if (enabled) {
-				responsiveVoice.speak(text, "US English Male", {rate : 1.1, pitch : 0.9});
+		self.speak = function(text, callback) {
+			if (enabled.text2Speech) {
+				responsiveVoice.speak(text, "US English Male", {rate : 1.1, pitch : 0.9, onend : callback});
+			} else {
+				callback();
 			}
 		}
 
-		self.stopSpeaking = function() {
-			//responsiveVoice.cancel();
+		self.enabled = function() {
+			return enabled;
 		}
 	}
 
-	return new BackgroundMusic();
+	return new SoundController();
 });
