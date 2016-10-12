@@ -23,6 +23,7 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 - IBGD: https://www.igdb.com/api
 - Random Famous Quotes: https://market.mashape.com/andruxnet/random-famous-quotes
 - Reponsive Voice: http://responsivevoice.org/api/
+- The Cocktail DB: http://www.thecocktaildb.com/api/json/v1/1/random.php
 
 ### Clips from: 
 - https://www.youtube.com/user/movieclips/videos

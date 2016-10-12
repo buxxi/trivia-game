@@ -112,7 +112,24 @@ triviaApp.service('playback', function(movies, music) {
 			//Do nothing
 		}
 
-		self.pauseMusic = true;
+		self.pauseMusic = false;
+	}
+
+	function ListViewer(list) {
+		var self = this;
+
+		self.start = function() {
+			return new Promise(function(resolve, reject) {
+				document.getElementById('content').innerHTML = '<div class="list" id="player"><ul><li>' + list.join("</li><li>") + '</li></ul></i></div>';
+				resolve();
+			});
+		}
+
+		self.stop = function() {
+			//Do nothing
+		}
+
+		self.pauseMusic = false;
 	}
 
 	function Playback() {
@@ -122,7 +139,8 @@ triviaApp.service('playback', function(movies, music) {
 			youtube : function(view) { return new YoutubePlayer(view.videoId) },
 			mp3 : function(view) { return new Mp3Player(view.mp3) },
 			image : function(view) { return new ImageViewer(view.url) },
-			quote : function(view) { return new QuoteText(view.quote) }
+			quote : function(view) { return new QuoteText(view.quote) },
+			list : function(view) { return new ListViewer(view.list) }
 		}
 
 		self.player = function(view) {
