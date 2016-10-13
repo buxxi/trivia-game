@@ -1,4 +1,23 @@
 triviaApp.service('categories', function(movies, music, geography, quotes, videogames, drinks) {
+	function Cache(primaryKey) {
+		var self = this;
+
+		self.get = function(subKey, promiseFunction) {
+			return new Promise(function(resolve, reject) {
+				var key = primaryKey + "-" + subKey;
+				var result = localStorage.getItem(key);
+				if (result) {
+					resolve(JSON.parse(result));
+				} else {
+					promiseFunction(function(result) {
+						localStorage.setItem(key, JSON.stringify(result));
+						resolve(result);
+					}, reject);
+				}
+			});
+		}
+	}
+
 	function Random() {
 		var self = this;
 
@@ -23,7 +42,7 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 		}
 
 		self.preload = function(category, progress) {
-			return categoryByType(category).preload(progress);
+			return categoryByType(category).preload(progress, new Cache(category));
 		}
 
 		self.configure = function(categories) {

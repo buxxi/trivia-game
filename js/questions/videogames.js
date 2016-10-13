@@ -12,16 +12,16 @@ triviaApp.service('videogames', function($http, apikeys) {
 			};
 		}
 
-		self.preload = function(progress) {
+		self.preload = function(progress, cache) {
 			return new Promise(function(resolve, reject) {
-				loadPlatforms().then(function(result) {
+				loadPlatforms(cache).then(function(result) {
 					platforms = result;
 					var total = Object.keys(platforms).length * 50;
 
 					progress(games.length, total);
 
 					var promises = Object.keys(platforms).map(function(platform) {
-						return loadGames(platform);
+						return loadGames(platform, cache);
 					});
 
 					for (var i = 0; i < (promises.length - 1); i++) {
@@ -62,14 +62,8 @@ triviaApp.service('videogames', function($http, apikeys) {
 			});
 		}
 
-		function loadGames(platform) {
-			return new Promise(function(resolve, reject) {
-				var result = localStorage.getItem('igdb-' + platform);
-				if (result) {
-					resolve(JSON.parse(result));
-					return;
-				}
-
+		function loadGames(platform, cache) {
+			return cache.get(platform, function(resolve, reject) {
 				$http.get('https://igdbcom-internet-game-database-v1.p.mashape.com/games/', {
 					params : {
 						fields : 'name,url,first_release_date,release_dates,screenshots,keywords,themes,genres',
@@ -111,13 +105,12 @@ triviaApp.service('videogames', function($http, apikeys) {
 							attribution : game.url
 						};
 					});
-					localStorage.setItem('igdb-' + platform, JSON.stringify(games));
 					resolve(games);
 				});
 			});
 		}
 
-		function loadPlatforms() {
+		function loadPlatforms(cache) {
 			var loadPage = function(offset) {
 				return $http.get('https://igdbcom-internet-game-database-v1.p.mashape.com/platforms/', {
 					params : {
@@ -131,13 +124,7 @@ triviaApp.service('videogames', function($http, apikeys) {
 				})
 			};
 
-			return new Promise(function(resolve, reject) {
-				var result = localStorage.getItem('igdb-platforms');
-				if (result) {
-					resolve(JSON.parse(result));
-					return;
-				}
-
+			return cache.get('platforms', function(resolve, reject) {
 				result = [];
 				var callback = function(response) {
 					result = result.concat(response.data);
@@ -156,7 +143,6 @@ triviaApp.service('videogames', function($http, apikeys) {
 								games : platform.games ? platform.games.length : 0
 							}
 						});
-						localStorage.setItem('igdb-platforms', JSON.stringify(object));
 						resolve(object);
 					}
 				};

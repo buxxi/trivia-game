@@ -12,14 +12,9 @@ triviaApp.service('drinks', function($http, apikeys) {
 			};
 		}
 
-		self.preload = function(progress) {
-			return new Promise(function(resolve, reject) {
-				var result = localStorage.getItem('cocktaildb');
-				if (result) {
-					drinks = JSON.parse(result);
-					resolve();
-					return;
-				}
+		self.preload = function(progress, cache) {
+			return cache.get('drinks', function(resolve, reject) {
+				var result = [];
 
 				function parseDrink(response) {
 					var data = response.data.drinks[0];
@@ -28,7 +23,7 @@ triviaApp.service('drinks', function($http, apikeys) {
 						ingredients : Object.keys(data).filter(function(k) { return k.indexOf("strIngredient") > -1; }).map(function(k) { return data[k]; }).filter(function(v) { return !!v; }),
 						image : data['strDrinkThumb']
 					}
-					drinks.push(drink);
+					result.push(drink);
 				}
 
 				progress(0, TOTAL_DRINKS);
@@ -40,15 +35,16 @@ triviaApp.service('drinks', function($http, apikeys) {
 				for (var i = 0; i < (promises.length - 1); i++) {
 					promises[i].then(function(response) {
 						parseDrink(response);
-						progress(drinks.length, TOTAL_DRINKS);
+						progress(result.length, TOTAL_DRINKS);
 						return promises[i + 1];
 					});
 				}
 				promises[promises.length - 1].then(function(response) {
 					parseDrink(response);
-					localStorage.setItem('cocktaildb', JSON.stringify(drinks));
-					resolve();
+					resolve(result);
 				});
+			}).then(function(data) {
+				drinks = data;
 			});
 		}
 
@@ -74,7 +70,7 @@ triviaApp.service('drinks', function($http, apikeys) {
 					view : {
 						player : 'list',
 						list : drink.ingredients
-					}
+					} //TODO: attribution
 				});
 			});
 		}
@@ -93,5 +89,6 @@ triviaApp.service('drinks', function($http, apikeys) {
 			}, 0);
 		}
 	}
+
 	return new DrinksQuestions();
 });

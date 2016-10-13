@@ -46,10 +46,10 @@ triviaApp.service('geography', function($http) {
 			};
 		}
 
-		self.preload = function(progress) {
-			return new Promise(function(resolve, reject) {
+		self.preload = function(progress, cache) {
+			return cache.get('countries', function(resolve, reject) {
 				$http.get('https://restcountries.eu/rest/v1/all').then(function(response) {
-					countries = response.data.map(function(country) {
+					var result = response.data.map(function(country) {
 						return {
 							code : country.alpha2Code,
 							region : country.subregion,
@@ -58,8 +58,10 @@ triviaApp.service('geography', function($http) {
 							capital : country.capital
 						}
 					});
-					resolve();
+					resolve(result);
 				});
+			}).then(function(data) {
+				countries = data;
 			});
 		}
 

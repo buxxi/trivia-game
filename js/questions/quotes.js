@@ -12,25 +12,28 @@ triviaApp.service('quotes', function($http, apikeys) {
 			};
 		}
 
-		self.preload = function(progress) {
-			return new Promise(function(resolve, reject) {
+		self.preload = function(progress, cache) {
+			return cache.get('quotes', function(resolve, reject) {
 				progress(0, TOTAL_QUOTES);
 
 				var promises = [];
+				var result = [];
 				for (var i = 0; i < TOTAL_QUOTES; i++) {
 					promises.push(loadRandomQuote());
 				}
 				for (var i = 0; i < (promises.length - 1); i++) {
 					promises[i].then(function(response) {
-						quotes.push(response.data);
-						progress(quotes.length, TOTAL_QUOTES);
+						result.push(response.data);
+						progress(result.length, TOTAL_QUOTES);
 						return promises[i + 1];
 					});
 				}
 				promises[promises.length - 1].then(function(response) {
-					quotes.push(response.data);
-					resolve();
+					result.push(response.data);
+					resolve(result);
 				});
+			}).then(function(data) {
+				quotes = data;
 			});
 		}
 
@@ -46,9 +49,9 @@ triviaApp.service('quotes', function($http, apikeys) {
 					text : "Who said this famous quote?",
 					answers : [
 						quote.author,
-						similar[0].author,
-						similar[1].author,
-						similar[2].author
+						random.splice(similar).author,
+						random.splice(similar).author,
+						random.splice(similar).author
 					],
 					correct : quote.author,
 					view : {

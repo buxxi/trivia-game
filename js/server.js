@@ -81,7 +81,7 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 				$scope.title = question.text;
 			});
 
-			var spoked = false;
+			var spoken = false;
 			var timelimit = false;
 
 			sound.speak(question.text, function() {

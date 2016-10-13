@@ -12,18 +12,18 @@ triviaApp.service('music', function($http, apikeys) {
 			};
 		}
 
-		self.preload = function(progress) {
+		self.preload = function(progress, cache) {
 			return new Promise(function(resolve, reject) {
 				if (tracks.length != 0) {
 					resolve();
 					return;
 				}
 				loadSpotifyAccessToken().then(function(accessToken) {
-					loadSpotifyCategories(accessToken).then(function(categories) {
+					loadSpotifyCategories(accessToken, cache).then(function(categories) {
 						progress(tracks.length, categories.length * TRACKS_BY_CATEGORY);
 
 						var promises = categories.map(function(category) {
-							return loadCategory(accessToken, category);
+							return loadCategory(accessToken, category, cache);
 						});
 
 						for (var i = 0; i < (promises.length - 1); i++) {
@@ -80,14 +80,8 @@ triviaApp.service('music', function($http, apikeys) {
 			return title;
 		}
 
-		function loadCategory(accessToken, category) {
-			return new Promise(function(resolve, reject) {
-				var result = localStorage.getItem('spotify-' + category);
-				if (result) {
-					resolve(JSON.parse(result));
-					return;
-				}
-
+		function loadCategory(accessToken, category, cache) {
+			return cache.get(category, function(resolve, reject) {
 				$http.get('https://api.spotify.com/v1/recommendations', {
 					params : {
 						seed_genres : category,
@@ -109,7 +103,6 @@ triviaApp.service('music', function($http, apikeys) {
 							category : category
 						};
 					});
-					localStorage.setItem('spotify-' + category, JSON.stringify(result));
 					resolve(result);
 				}).catch(function(err) {
 					if (err.status == 429) {
@@ -124,8 +117,8 @@ triviaApp.service('music', function($http, apikeys) {
 			});
 		}
 
-		function loadSpotifyCategories(accessToken) {
-			return new Promise(function(resolve, reject) {
+		function loadSpotifyCategories(accessToken, cache) {
+			return cache.get('categories', function(resolve, reject) {
 				$http.get('https://api.spotify.com/v1/recommendations/available-genre-seeds', {
 					headers : {
 						Authorization : 'Bearer ' + accessToken
@@ -133,7 +126,6 @@ triviaApp.service('music', function($http, apikeys) {
 				}).then(function(response) {
 					resolve(response.data.genres);
 				});
-
 			});
 		}
 
