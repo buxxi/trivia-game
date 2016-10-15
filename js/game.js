@@ -121,6 +121,17 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 			return timer;
 		}
 
+		self.session = function() {
+			return {
+				index : function() {
+					return previousQuestions.length + 1;
+				},
+				total : function() {
+					return config.questions;
+				}
+			}
+		}
+
 		self.startTimer = function() {
 			return new Promise(function(resolve, reject) {
 				timer.start = new Date().getTime();

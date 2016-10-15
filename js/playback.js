@@ -18,8 +18,12 @@ triviaApp.service('playback', function(movies, music) {
 
 		self.start = function() {
 			return new Promise(function(resolve, reject) {
-				document.getElementById('content').innerHTML = '<div class="image" id="player"><img src="' + url + '"/></div>';
-				resolve();
+				var img = new Image();
+				img.onload = function() {
+					document.getElementById('content').innerHTML = '<div class="image" id="player"><img src="' + url + '"/></div>';
+					resolve();
+				};
+				img.src = url;
 			});
 		}
 

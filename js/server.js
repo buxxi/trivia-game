@@ -53,6 +53,7 @@ triviaApp.run(function($http, apikeys) {
 triviaApp.controller('serverController', function($scope, $location, $timeout, connection, game, playback, sound, avatars) {
 	$scope.timer = game.timer();
 	$scope.players = game.players();
+	$scope.session = game.session();
 	$scope.title = "";
 	$scope.pointChanges = {};
 	$scope.state = "loading";
@@ -154,7 +155,9 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 	function gameLoop() {
 		showLoadingNextQuestion().then(function() {
 			if (game.hasMoreQuestions()) {
-				game.nextQuestion().then(showPreQuestion).then(showQuestion).then(showPostQuestion).then(gameLoop);
+				game.nextQuestion().then(showPreQuestion).then(showQuestion).then(showPostQuestion).then(gameLoop).catch(function(err) {
+					console.log(err);
+				});
 				return;
 			}
 			$scope.$apply(function() {

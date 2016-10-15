@@ -1,6 +1,10 @@
 <div class="container question">
 	<div class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
+			<div class="index">
+				<span class="current">{{ session.index() }}</span>
+				<span class="total">{{ session.total() }}</span>
+			</div>
 			<div class="title" ng-class="{'full' : state == 'pre-question'}">{{ title }}</div>
 			<div class="timer" ng-if="timer.running">
 				<div class="timer-score"><i class="fa fa-fw fa-star"></i>{{ timer.score() }}</div>

@@ -20,7 +20,7 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 - The movie database: http://docs.themoviedb.apiary.io
 - Spotify: https://developer.spotify.com/web-api/
 - REST Countries: https://restcountries.eu
-- IBGD: https://www.igdb.com/api
+- IGDB: https://www.igdb.com/api
 - Random Famous Quotes: https://market.mashape.com/andruxnet/random-famous-quotes
 - Reponsive Voice: http://responsivevoice.org/api/
 - The Cocktail DB: http://www.thecocktaildb.com/api/json/v1/1/random.php
@@ -34,3 +34,6 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 
 ### Flags from:
 - http://flagpedia.net/
+
+### Background pattern from:
+- http://subtlepatterns.com/
