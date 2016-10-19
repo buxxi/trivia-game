@@ -63,6 +63,7 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 			});
 		}).catch(function(err) {
 			$scope.$apply(function() {
+				console.log(err);
 				preload.failed = true;
 			});
 		});

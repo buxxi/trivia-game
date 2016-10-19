@@ -152,17 +152,26 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 		});
 	}
 
+	function showError(err) {
+		console.log(err);
+		$scope.$apply(function() {
+			$scope.error = err.toString();
+		});
+		$timeout(function() {
+			delete $scope.error;
+			gameLoop();
+		}, 3000);
+	}
+
 	function gameLoop() {
 		showLoadingNextQuestion().then(function() {
 			if (game.hasMoreQuestions()) {
-				game.nextQuestion().then(showPreQuestion).then(showQuestion).then(showPostQuestion).then(gameLoop).catch(function(err) {
-					console.log(err);
-				});
-				return;
+				game.nextQuestion().then(showPreQuestion).then(showQuestion).then(showPostQuestion).catch(showError);
+			} else {
+				$scope.$apply(function() {
+					$location.path('/results');
+				})
 			}
-			$scope.$apply(function() {
-				$location.path('/results');
-			})
 		});
 	}
 

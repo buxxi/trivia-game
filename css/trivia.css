@@ -126,6 +126,10 @@
 	width : 100%;
 }
 
+.container.question .navbar .alert {
+	margin : 1em 10% 0 10%;
+}
+
 .container.question .title, .container.question #correct {
 	font-weight: bold;
 	font-size: 3em;

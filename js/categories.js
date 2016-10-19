@@ -53,7 +53,9 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 
 		self.nextQuestion = function() {
 			var random = new Random();
-			return categoryByType(random.fromArray(enabledCategories)).nextQuestion(random).then(shuffleAnswers);
+			var category = categoryByType(random.fromArray(enabledCategories));
+
+			return category.nextQuestion(random).then(shuffleAnswers);
 		}
 
 		function categoryByType(type) {

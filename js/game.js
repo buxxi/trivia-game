@@ -167,7 +167,7 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 				categories.nextQuestion().then(function(question) {
 					currentQuestion = question;
 					resolve(question);
-				});
+				}).catch(reject);
 			});
 		}
 	}
