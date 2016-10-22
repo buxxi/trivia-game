@@ -38,22 +38,16 @@ triviaApp.service('quotes', function($http, apikeys) {
 		}
 
 
-		self.nextQuestion = function(random) {
+		self.nextQuestion = function(selector) {
 			return new Promise(function(resolve, reject) {
-				var quote = random.fromArray(quotes);
-				var similar = quotes.filter(function(q) {
-					return quote.author != q.author;
-				});
+				var quote = selector.fromArray(quotes);
+
+				function resolveAuthor(q) { return q.author; }
 
 				resolve({
 					text : "Who said this famous quote?",
-					answers : [
-						quote.author,
-						random.splice(similar).author,
-						random.splice(similar).author,
-						random.splice(similar).author
-					],
-					correct : quote.author,
+					answers : selector.alternatives(quotes, quote, resolveAuthor, selector.splice),
+					correct : resolveAuthor(quote),
 					view : {
 						player : 'quote',
 						quote : quote.quote

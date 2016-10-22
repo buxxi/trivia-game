@@ -18,7 +18,7 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 		}
 	}
 
-	function Random() {
+	function QuestionSelector() {
 		var self = this;
 
 		self.fromArray = function(arr) {
@@ -28,6 +28,66 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 		self.splice = function(arr) {
 			return arr.splice(Math.floor(Math.random() * arr.length), 1)[0];
 		};
+
+		self.first = function(arr) {
+			return arr.shift();
+		}
+
+		self.alternatives = function(list, correct, toString, picker) {
+			var list = list.slice();
+			var result = [toString(correct)];
+			while (result.length < 4) {
+				var e = toString(picker(list));
+				if (result.indexOf(e) == -1) {
+					result.push(e);
+				}
+			}
+			return result;
+		}
+
+		self.countCommon = function(arr1, arr2) {
+			return arr1.reduce(function(acc, cur) {
+				if (arr2.indexOf(cur) > -1) {
+					return acc + 1;
+				} else {
+					return acc;
+				}
+			}, 0);
+		}
+
+		self.wordsFromString = function(s) {
+			return s.split(/[^a-zA-Z0-9]/).filter(function(s) { return s.length > 0 }).map(function(s) { return s.toLowerCase(); });
+		}
+
+		self.dateDistance = function(a, b) {
+			var dist = Math.abs(new Date(Date.parse(a)).getFullYear() - new Date(Date.parse(b)).getFullYear());
+			return Math.floor(Math.log(Math.max(dist, 1)));
+		}
+
+		self.levenshteinDistance = function(a, b) { //copied from and modified to use array instead: https://gist.github.com/andrei-m/982927
+			if(a.length == 0 || b.length == 0) {
+				return (a || b).length;
+			}
+			var m = [];
+			for(var i = 0; i <= b.length; i++){
+				m[i] = [i];
+				if(i === 0) {
+					continue;
+				}
+				for(var j = 0; j <= a.length; j++){
+					m[0][j] = j;
+					if(j === 0) {
+						continue;
+					}
+					m[i][j] = b[i - 1] == a[j - 1] ? m[i - 1][j - 1] : Math.min(
+						m[i-1][j-1] + 1,
+						m[i][j-1] + 1,
+						m[i-1][j] + 1
+					);
+				}
+			}
+			return m[b.length][a.length];
+		}
 	}
 
 	function Categories() {
@@ -52,10 +112,10 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 		}
 
 		self.nextQuestion = function() {
-			var random = new Random();
-			var category = categoryByType(random.fromArray(enabledCategories));
+			var selector = new QuestionSelector();
+			var category = categoryByType(selector.fromArray(enabledCategories));
 
-			return category.nextQuestion(random).then(shuffleAnswers);
+			return category.nextQuestion(selector).then(shuffleAnswers);
 		}
 
 		function categoryByType(type) {
@@ -69,13 +129,13 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 
 		function shuffleAnswers(question) {
 			return new Promise(function(resolve, reject) {
-				var random = new Random();
+				var selector = new QuestionSelector();
 
 				var answers = {
-					A : random.splice(question.answers),
-					B : random.splice(question.answers),
-					C : random.splice(question.answers),
-					D : random.splice(question.answers),
+					A : selector.splice(question.answers),
+					B : selector.splice(question.answers),
+					C : selector.splice(question.answers),
+					D : selector.splice(question.answers),
 				};
 
 				question.answers = answers;

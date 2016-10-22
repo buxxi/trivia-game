@@ -44,22 +44,21 @@ triviaApp.service('music', function($http, apikeys) {
 			});
 		}
 
-		self.nextQuestion = function(random) {
+		self.nextQuestion = function(selector) {
 			return new Promise(function(resolve, reject) {
-				var song = random.fromArray(tracks);
+				var song = selector.fromArray(tracks);
 				var similar = tracks.filter(function(s) {
-					return s.category == song.category && s.title != song.title;
+					return s.category == song.category;
 				});
+
+				function resolveTitle(song) {
+					return song.title;
+				}
 
 				resolve({
 					text : "What is the name of this song? (" + song.category + ")",
-					answers : [
-						song.title,
-						similar[0].title,
-						similar[1].title,
-						similar[2].title
-					],
-					correct : song.title,
+					answers : selector.alternatives(similar, song, resolveTitle, selector.splice),
+					correct : resolveTitle(song),
 					view : {
 						player : 'mp3',
 						mp3 : song.audio,

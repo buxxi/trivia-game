@@ -17,7 +17,7 @@ triviaApp.service('geography', function($http) {
 				correct : randomCountry,
 				similar : similarCountries,
 				load : function(correct) {
-					return loadImage('https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + correct.code + '&chco=333333|307bbb&chf=bg,s,333333&cht=map:auto=50,50,50,50');
+					return loadImage('https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + correct.code + '&chco=000000|307bbb&chf=bg,s,000000&cht=map:auto=50,50,50,50');
 				}
 			},
 			highpopulation : {
@@ -65,43 +65,38 @@ triviaApp.service('geography', function($http) {
 			});
 		}
 
-		self.nextQuestion = function(random) {
+		self.nextQuestion = function(selector) {
 			return new Promise(function(resolve, reject) {
-				var type = random.fromArray(Object.keys(types));
+				var type = selector.fromArray(Object.keys(types));
 
-				var correct = types[type].correct(random);
+				var correct = types[type].correct(selector);
 				var similar = types[type].similar(correct);
 				var title = types[type].title(correct);
+
+				console.log(similar);
+
+				function resolveName(c) {
+					return c.name;
+				}
 
 				types[type].load(correct).then(function(view) {
 					resolve({
 						text : title,
-						answers : [
-							correct.name,
-							similar[0],
-							similar[1],
-							similar[2]
-						],
-						correct : correct.name,
+						answers : selector.alternatives(similar, correct, resolveName, selector.first),
+						correct : resolveName(correct),
 						view : view
 					});
-				}).catch(function(err) {
-					self.nextQuestion(random).then(function(question) {
-						resolve(question);
-					});
-				});
+				}).catch(reject);
 			});
 		}
 
-		function randomCountry(random) {
-			return random.fromArray(countries);
+		function randomCountry(selector) {
+			return selector.fromArray(countries);
 		}
 
 		function similarCountries(country) {
 			return countries.filter(function(c) {
-				return c.code != country.code && country.region == c.region;
-			}).map(function(c) {
-				return c.name;
+				return country.region == c.region;
 			});
 		}
 
@@ -110,14 +105,11 @@ triviaApp.service('geography', function($http) {
 				return Math.floor(Math.log(c.population));
 			}
 
-			var similar = countries.filter(function(c) {
-				return c.code != country.code && c.population < country.population;
+			return countries.filter(function(c) {
+				return c.population < country.population;
 			}).sort(function(a, b) {
 				return populationSort(b) - populationSort(a);
-			}).map(function(c) {
-				return c.name;
 			});
-			return similar;
 		}
 
 		function loadImage(url) {

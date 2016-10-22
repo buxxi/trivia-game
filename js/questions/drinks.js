@@ -49,24 +49,16 @@ triviaApp.service('drinks', function($http, apikeys) {
 		}
 
 
-		self.nextQuestion = function(random) {
+		self.nextQuestion = function(selector) {
 			return new Promise(function(resolve, reject) {
-				var drink = random.fromArray(drinks);
-				var similar = drinks.filter(function(d) {
-					return drink.name != d.name;
-				}).sort(function(a, b) {
-					return countCommon(drink.ingredients, b.ingredients) - countCommon(drink.ingredients, a.ingredients);
-				});
+				var drink = selector.fromArray(drinks);
+
+				function resolveName(d) { return d.name; }
 
 				resolve({
 					text : "What drink do you get if you mix the following ingredients?",
-					answers : [
-						drink.name,
-						similar[0].name,
-						similar[1].name,
-						similar[2].name
-					],
-					correct : drink.name,
+					answers : selector.alternatives(similar(drink, selector), drink, resolveName, selector.first),
+					correct : resolveName(drink),
 					view : {
 						player : 'list',
 						list : drink.ingredients
@@ -75,18 +67,14 @@ triviaApp.service('drinks', function($http, apikeys) {
 			});
 		}
 
-		function loadRandomDrink() {
-			return $http.get('https://www.thecocktaildb.com/api/json/v1/1/random.php');
+		function similar(drink, selector) {
+			return drinks.slice().sort(function (a, b) {
+					return selector.countCommon(drink.ingredients, b.ingredients) - selector.countCommon(drink.ingredients, a.ingredients);
+			});
 		}
 
-		function countCommon(arr1, arr2) {
-			return arr1.reduce(function(acc, cur) {
-				if (arr2.indexOf(cur) > -1) {
-					return acc + 1;
-				} else {
-					return acc;
-				}
-			}, 0);
+		function loadRandomDrink() {
+			return $http.get('https://www.thecocktaildb.com/api/json/v1/1/random.php');
 		}
 	}
 

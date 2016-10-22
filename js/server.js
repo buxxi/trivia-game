@@ -166,7 +166,7 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 	function gameLoop() {
 		showLoadingNextQuestion().then(function() {
 			if (game.hasMoreQuestions()) {
-				game.nextQuestion().then(showPreQuestion).then(showQuestion).then(showPostQuestion).catch(showError);
+				game.nextQuestion().then(showPreQuestion).then(showQuestion).then(showPostQuestion).then(gameLoop).catch(showError);
 			} else {
 				$scope.$apply(function() {
 					$location.path('/results');

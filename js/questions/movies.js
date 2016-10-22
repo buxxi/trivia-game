@@ -20,37 +20,31 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 			});
 		}
 
-		self.nextQuestion = function(random) {
+		self.nextQuestion = function(selector) {
 			return new Promise(function(resolve, reject) {
-				var title = random.fromArray(Object.keys(movies));
-				var videoId = random.fromArray(movies[title].videos);
+				var title = selector.fromArray(Object.keys(movies));
+				var videoId = selector.fromArray(movies[title].videos);
 				var attribution = ['http://www.youtube.com/watch?v=' + videoId];
 
 				checkEmbedStatus(videoId, 'SE').then(function() { //TODO: country code from where?
 					return loadSimilarMovies(title, movies[title].year, attribution);
 				}).then(function(similar) {
-					similar = fillArrayWithTitles(similar, random);
+					function resolveTitle(m) {
+						return m;
+					}
+
+					similar = fillArrayWithTitles(similar, selector);
 					resolve({
 						text : "What is the title of this movie?",
-						answers : [
-							title,
-							similar[0],
-							similar[1],
-							similar[2]
-						],
-						correct : title,
+						answers : selector.alternatives(similar, title, resolveTitle, selector.first),
+						correct : resolveTitle(title),
 						view : {
 							player : 'youtube',
 							videoId : videoId,
 							attribution : attribution
 						}
 					});
-				}).catch(function(err) {
-					console.log(videoId + ": " + err);
-					self.nextQuestion(random).then(function(question) {
-						resolve(question);
-					});
-				});
+				}).catch(reject);
 			});
 		}
 
@@ -138,7 +132,6 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 						var current = result.length;
 						var total = response.data.pageInfo.totalResults;
 						progress(current, total);
-						console.log("Loading Youtube videos: " + current + "/" + total);
 						var nextPage = response.data.nextPageToken;
 
 						result = result.concat(response.data.items.map(function(item) {
