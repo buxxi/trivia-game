@@ -21,7 +21,7 @@ triviaApp.service('drinks', function($http, apikeys) {
 					var drink = {
 						name : data['strDrink'],
 						ingredients : Object.keys(data).filter(function(k) { return k.indexOf("strIngredient") > -1; }).map(function(k) { return data[k]; }).filter(function(v) { return !!v; }),
-						image : data['strDrinkThumb']
+						url : 'https://www.thecocktaildb.com/drink.php?c=' + data['idDrink']
 					}
 					result.push(drink);
 				}
@@ -61,8 +61,9 @@ triviaApp.service('drinks', function($http, apikeys) {
 					correct : resolveName(drink),
 					view : {
 						player : 'list',
-						list : drink.ingredients
-					} //TODO: attribution
+						list : drink.ingredients,
+						attribution : [drink.url]
+					}
 				});
 			});
 		}

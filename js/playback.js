@@ -23,6 +23,7 @@ triviaApp.service('playback', function(movies, music) {
 					document.getElementById('content').innerHTML = '<div class="image" id="player"><img src="' + url + '"/></div>';
 					resolve();
 				};
+				img.onerror = function() { reject("Could not load image " + url); };
 				img.src = url;
 			});
 		}
@@ -71,13 +72,13 @@ triviaApp.service('playback', function(movies, music) {
 		self.pauseMusic = true;
 	}
 
-	function Mp3Player(mp3) {
+	function Mp3Player(category, mp3) {
 		var self = this;
 		var player = {};
 
 		self.start = function() {
 			return new Promise(function(resolve, reject) {
-				document.getElementById('content').innerHTML = '<div class="wavesurfer" id="player"></div>';
+				document.getElementById('content').innerHTML = '<h1>' + category + '</h1><div class="wavesurfer" id="player"></div>';
 				player = WaveSurfer.create({
 					container: '#player',
 					waveColor: 'white',
@@ -141,7 +142,7 @@ triviaApp.service('playback', function(movies, music) {
 
 		var players = {
 			youtube : function(view) { return new YoutubePlayer(view.videoId) },
-			mp3 : function(view) { return new Mp3Player(view.mp3) },
+			mp3 : function(view) { return new Mp3Player(view.category, view.mp3) },
 			image : function(view) { return new ImageViewer(view.url) },
 			quote : function(view) { return new QuoteText(view.quote) },
 			list : function(view) { return new ListViewer(view.list) }

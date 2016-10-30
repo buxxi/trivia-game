@@ -2,6 +2,22 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 	function MovieQuestions() {
 		var self = this;
 		var movies = [];
+		var YOUTUBE_REGION = 'SE';
+
+		var types = {
+			title : {
+				title : function(correct) { return "What is the title of this movie?" },
+				correct : randomMovie,
+				similar : loadSimilarMovies,
+				format : movieTitle,
+			},
+			year : {
+				title : function(correct) { return "What year is this movie from?" },
+				correct : randomMovie,
+				similar : loadSimilarYears,
+				format : movieYear,
+			}
+		};
 
 		self.describe = function() {
 			return {
@@ -22,29 +38,33 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 
 		self.nextQuestion = function(selector) {
 			return new Promise(function(resolve, reject) {
-				var title = selector.fromArray(Object.keys(movies));
-				var videoId = selector.fromArray(movies[title].videos);
+				var type = types[selector.fromArray(Object.keys(types))];
+
+				var movie = type.correct(selector);
+				var videoId = selector.fromArray(movie.videos);
 				var attribution = ['http://www.youtube.com/watch?v=' + videoId];
 
-				checkEmbedStatus(videoId, 'SE').then(function() { //TODO: country code from where?
-					return loadSimilarMovies(title, movies[title].year, attribution);
+				checkEmbedStatus(videoId).then(function() {
+					return type.similar(movie, attribution, selector);
 				}).then(function(similar) {
-					function resolveTitle(m) {
-						return m;
-					}
-
-					similar = fillArrayWithTitles(similar, selector);
 					resolve({
-						text : "What is the title of this movie?",
-						answers : selector.alternatives(similar, title, resolveTitle, selector.first),
-						correct : resolveTitle(title),
+						text : type.title(movie),
+						answers : selector.alternatives(similar, movie, type.format, selector.first),
+						correct : type.format(movie),
 						view : {
 							player : 'youtube',
 							videoId : videoId,
 							attribution : attribution
 						}
 					});
-				}).catch(reject);
+				}).catch(function(err) {
+					if (typeof(err) == 'string') {
+						console.log(movie.title + " got handled error " + err + ", trying another one");
+						return self.nextQuestion(selector).then(resolve, reject);
+					} else {
+						reject(err);
+					}
+				});
 			});
 		}
 
@@ -90,7 +110,7 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 						var movie = movies[metadata.title];
 						if (!movie) {
 							movies[metadata.title] = {
-								year : metadata.year,
+								year : parseInt(metadata.year),
 								videos : []
 							}
 							movie = movies[metadata.title];
@@ -98,6 +118,15 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 						movie.videos.push(video.id);
 					}
 				});
+
+				movies = Object.keys(movies).map(function(title) {
+					return {
+						title : title,
+						year : movies[title].year,
+						videos : movies[title].videos
+					}
+				});
+
 				resolve(movies);
 			});
 		}
@@ -152,7 +181,7 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 			});
 		}
 
-		function checkEmbedStatus(videoId, countryCode) {
+		function checkEmbedStatus(videoId) {
 			return new Promise(function(resolve, reject) {
 				$http.get('https://www.googleapis.com/youtube/v3/videos', {
 					params : {
@@ -167,11 +196,11 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 					}
 					var regionRestriction = item.contentDetails.regionRestriction;
 					if (regionRestriction) {
-						if (regionRestriction.blocked && regionRestriction.blocked.indexOf(countryCode) != -1) {
-							return reject("Video is not available in " + countryCode);
+						if (regionRestriction.blocked && regionRestriction.blocked.indexOf(YOUTUBE_REGION) != -1) {
+							return reject("Video is not available in " + YOUTUBE_REGION);
 						}
-						if (regionRestriction.allowed && regionRestriction.allowed.indexOf(countryCode) == -1) {
-							return reject("Video is not available in " + countryCode);
+						if (regionRestriction.allowed && regionRestriction.allowed.indexOf(YOUTUBE_REGION) == -1) {
+							return reject("Video is not available in " + YOUTUBE_REGION);
 						}
 					}
 					resolve();
@@ -179,19 +208,17 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 			});
 		}
 
-		function loadSimilarMovies(title, year, attribution) {
+		function loadSimilarMovies(movie, attribution, selector) {
 			return new Promise(function(resolve, reject) {
 				$http.get('https://api.themoviedb.org/3/search/movie', {
 					params : {
 						api_key : apikeys.tmdb,
-						query : title,
-						year : year
+						query : movie.title,
+						year : movie.year
 					}
 				}).then(function(response) {
-					if (response.data.results.length == 0) {
-						return new Promise(function(resolve, reject) {
-							resolve({ data : { results : [] } });  //TODO reject instead?
-						});
+					if (response.data.results.length != 1) {
+						return reject("Didn't find an exact match for the movie metadata");
 					}
 					var id = response.data.results[0].id;
 
@@ -200,28 +227,40 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 							api_key : apikeys.tmdb
 						}
 					}).then(function(response) {
-						var titles = response.data.results.map(function(item) {
-							return item.title;
+						if (response.data.results.length < 3) {
+							return reject("Got less than 3 similar movies");
+						}
+
+						var similar = response.data.results.map(function(item) {
+							return {
+								title : item.title,
+								year : new Date(item.release_date).getFullYear()
+							};
 						});
 
 						attribution.push("http://www.themoviedb.org/movie/" + id);
-						resolve(titles);
+						return resolve(similar);
 					});
 				});
 			});
 		}
 
-		function fillArrayWithTitles(answers, title, random) {
-			answers = answers.filter(function(item, i, array) { return item != title && array.indexOf(item) == i });
+		function loadSimilarYears(movie, attribute, selector) {
+			return new Promise(function(resolve, reject) {
+				resolve(selector.yearAlternatives(movie.year, 3).map(function(year) { return { year : year }; }));
+			});
+		}
 
-			while (answers.length < 3) {
-				var randomTitle = random.fromArray(Object.keys(movies));
-				if (answers.indexOf(randomTitle) == -1) {
-					answers.push(randomTitle);
-				}
-			}
+		function randomMovie(selector) {
+			return selector.fromArray(movies);
+		}
 
-			return answers.slice(0, 3);
+		function movieTitle(movie) {
+			return movie.title;
+		}
+
+		function movieYear(movie) {
+			return movie.year;
 		}
 	}
 

@@ -73,8 +73,6 @@ triviaApp.service('geography', function($http) {
 				var similar = types[type].similar(correct);
 				var title = types[type].title(correct);
 
-				console.log(similar);
-
 				function resolveName(c) {
 					return c.name;
 				}
@@ -114,7 +112,7 @@ triviaApp.service('geography', function($http) {
 
 		function loadImage(url) {
 			return new Promise(function(resolve, reject) {
-				var img = new Image();
+				var img = new Image(); //TODO: handled in playback.js instead
 				img.onload = function() {
 					resolve({
 						player : 'image',

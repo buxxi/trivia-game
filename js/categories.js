@@ -88,6 +88,23 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 			}
 			return m[b.length][a.length];
 		}
+
+		self.yearAlternatives = function(year, maxJump) {
+			var min = year;
+			var max = min;
+			var result = [];
+			while (result.length < 3) {
+				var diff = Math.floor(Math.random() * ((maxJump * 2) + 1)) - maxJump;
+				if (diff < 0) {
+					min = min + diff;
+					result.unshift(min);
+				} else if (diff > 0 && max < new Date().getFullYear()) {
+					max = max + diff;
+					result.push(max);
+				}
+			}
+			return result;
+		}
 	}
 
 	function Categories() {

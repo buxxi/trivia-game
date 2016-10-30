@@ -121,7 +121,7 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 				if (player.pauseMusic) {
 					sound.pause();
 				}
-			});
+			}).catch(reject);
 		});
 	}
 

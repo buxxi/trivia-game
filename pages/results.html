@@ -22,7 +22,7 @@
 				<li class="list-group-item" ng-repeat="attr in attribution">
 					<span class="title">{{ attr.title }}</span>
 					<span class="links">
-						<a href="{{ link }}" class="fa fa-2x" ng-repeat="link in attr.links" ng-class="{'fa-youtube' : domain(link) == 'www.youtube.com', 'tmdb' : domain(link) == 'www.themoviedb.org', 'fa-spotify' : domain(link) == 'open.spotify.com', 'igdb' : domain(link) == 'www.igdb.com' }"></a>
+						<a href="{{ link }}" class="fa fa-2x" ng-repeat="link in attr.links" ng-class="{'fa-youtube' : domain(link) == 'www.youtube.com', 'tmdb' : domain(link) == 'www.themoviedb.org', 'fa-spotify' : domain(link) == 'open.spotify.com', 'igdb' : domain(link) == 'www.igdb.com', 'fa-glass' : domain(link) == 'www.thecocktaildb.com' }"></a>
 					</span>
 				</li>
 			</ul>

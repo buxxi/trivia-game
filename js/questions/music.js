@@ -4,6 +4,27 @@ triviaApp.service('music', function($http, apikeys) {
 		var tracks = [];
 		var TRACKS_BY_CATEGORY = 50;
 
+		var types = {
+			title : {
+				title : function(correct) { return "What is the name of this song?" },
+				correct : randomTrack,
+				similar : similarTracks,
+				format : trackTitle,
+			},
+			artist : {
+				title : function(correct) { return "Which artist is this?" },
+				correct : randomTrack,
+				similar : similarTracks,
+				format : artistName
+			},
+			album : {
+				title : function(correct) { return "From which album is this song?" },
+				correct : randomTrack,
+				similar : similarTracks,
+				format : albumName
+			}
+		};
+
 		self.describe = function() {
 			return {
 				type : 'music',
@@ -46,23 +67,18 @@ triviaApp.service('music', function($http, apikeys) {
 
 		self.nextQuestion = function(selector) {
 			return new Promise(function(resolve, reject) {
-				var song = selector.fromArray(tracks);
-				var similar = tracks.filter(function(s) {
-					return s.category == song.category;
-				});
-
-				function resolveTitle(song) {
-					return song.title;
-				}
+				var type = types[selector.fromArray(Object.keys(types))];
+				var track = type.correct(selector);
 
 				resolve({
-					text : "What is the name of this song? (" + song.category + ")",
-					answers : selector.alternatives(similar, song, resolveTitle, selector.splice),
-					correct : resolveTitle(song),
+					text : type.title(track),
+					answers : selector.alternatives(type.similar(track, selector), track, type.format, selector.splice),
+					correct : type.format(track),
 					view : {
 						player : 'mp3',
-						mp3 : song.audio,
-						attribution : [song.attribution]
+						category : track.category,
+						mp3 : track.audio,
+						attribution : [track.attribution]
 					}
 				});
 			});
@@ -150,6 +166,28 @@ triviaApp.service('music', function($http, apikeys) {
 
 				var popup = window.open(url, 'spotify', 'width=600,height=600');
 			});
+		}
+
+		function randomTrack(selector) {
+			return selector.fromArray(tracks);
+		}
+
+		function similarTracks(track, selector) {
+			return tracks.filter(function(s) {
+				return s.category == track.category;
+			});
+		}
+
+		function trackTitle(track) {
+			return track.title;
+		}
+
+		function artistName(track) {
+			return track.artist;
+		}
+
+		function albumName(track) {
+			return track.album;
 		}
 	}
 
