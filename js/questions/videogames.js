@@ -225,13 +225,21 @@ triviaApp.service('videogames', function($http, apikeys) {
 			return {
 				player : 'image',
 				url : 'https://res.cloudinary.com/igdb/image/upload/t_screenshot_huge/' + selector.fromArray(game.screenshots) + '.jpg',
-				attribution : [game.attribution]
+				attribution : {
+					title : "Screenshot of",
+					name : gameTitle(game) + " (" + gameYear(game) + ")",
+					links : [game.attribution]
+				}
 			}
 		}
 
 		function blank(game, selector) {
 			return {
-				attribution : [game.attribution]
+				attribution : {
+					title : "Featured game",
+					name : gameTitle(game) + " (" + gameYear(game) + ")",
+					links : [game.attribution]
+				}
 			}
 		}
 

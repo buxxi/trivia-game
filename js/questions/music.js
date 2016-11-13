@@ -2,7 +2,8 @@ triviaApp.service('music', function($http, apikeys) {
 	function MusicQuestions() {
 		var self = this;
 		var tracks = [];
-		var TRACKS_BY_CATEGORY = 50;
+		var TRACKS_BY_CATEGORY = 100;
+		var FILTER_GENRES = ["alternative","alt-rock","bluegrass","blues","classical","country","dance","death-metal","drum-and-bass","dubstep","emo","folk","funk","grunge","hard-rock","hardcore","heavy-metal","hip-hop","house","indie","indie-pop","metal","pop","punk","punk-rock", "r-n-b","reggae","rock","rock-n-roll","rockabilly","ska","soul","techno","trance"];
 
 		var types = {
 			title : {
@@ -78,7 +79,11 @@ triviaApp.service('music', function($http, apikeys) {
 						player : 'mp3',
 						category : track.category,
 						mp3 : track.audio,
-						attribution : [track.attribution]
+						attribution : {
+							title : "Music by",
+							name : track.artist + " - " + track.title,
+							links : [track.attribution]
+						}
 					}
 				});
 			});
@@ -100,6 +105,7 @@ triviaApp.service('music', function($http, apikeys) {
 				$http.get('https://api.spotify.com/v1/recommendations', {
 					params : {
 						seed_genres : category,
+						max_popularity : 50,
 						limit : TRACKS_BY_CATEGORY
 					},
 					headers : {
@@ -139,7 +145,10 @@ triviaApp.service('music', function($http, apikeys) {
 						Authorization : 'Bearer ' + accessToken
 					}
 				}).then(function(response) {
-					resolve(response.data.genres);
+					var genres = response.data.genres.filter(function(g) {
+						return FILTER_GENRES.indexOf(g) > -1;
+					});
+					resolve(genres);
 				});
 			});
 		}

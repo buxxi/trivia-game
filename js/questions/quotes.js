@@ -50,7 +50,12 @@ triviaApp.service('quotes', function($http, apikeys) {
 					correct : resolveAuthor(quote),
 					view : {
 						player : 'quote',
-						quote : quote.quote
+						quote : quote.quote,
+						attribution : {
+							title : "Quoted",
+							name : quote.author,
+							links : []
+						}
 					}
 				});
 			});

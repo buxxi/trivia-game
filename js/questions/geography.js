@@ -78,6 +78,12 @@ triviaApp.service('geography', function($http) {
 				}
 
 				types[type].load(correct).then(function(view) {
+					view.attribution = {
+						title : "Featured country",
+						name : correct.name,
+						links : ['https://restcountries.eu', 'https://flagpedia.net?q=' + correct.code]
+					}
+
 					resolve({
 						text : title,
 						answers : selector.alternatives(similar, correct, resolveName, selector.first),

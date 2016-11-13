@@ -1,35 +1,35 @@
-<div class="container">
-	<div class="row">
-		<div class="col-md-6">
-			<h2 class="text-center">Results </h1>
-			<ul class="list-group results">
-				<li class="list-group-item" ng-repeat="(index,score) in scores" ng-class="{'gold' : index == 0, 'silver' : index == 1, 'bronze' : index == 2}">
-					<h4 ng-class="index == 0 ? 'fa-4x' : 'fa-2x'">
-						<i class="fa fa-fw" ng-class="{'fa-trophy' : index <= 2, 'fa-trash' : index > 2}"></i>
-						<div class="avatar" style="background-color : {{score.color}}"><img src="{{ avatars[score.avatar].url }}"/></div>
-						{{ score.name }}
-					</h4>
-					<hr/>
-					<span class="text-primary"><i class="fa fa-fw fa-star"></i>{{ score.score }}</span>
-					<span class="text-success"><i class="fa fa-fw fa-thumbs-up"></i>{{ score.correct }}</span>
-					<span class="text-danger"><i class="fa fa-fw fa-thumbs-down"></i>{{ score.wrong }}</span>
-				</li>
-			</ul>
+<div class="container credits">
+	<div ng-repeat="(index,score) in scores" ng-class="{'winner' : index == 0, 'loser' : index != 0}">
+		<h1 ng-if="index == 0"><i class="fa fa-fw fa-trophy"></i> Winner</h1>
+		<h1 ng-if="index != 0">Loser</h1>
+		<div class="avatar" data-score="{{ score.score }}" style="background-color : {{score.color}}; border-color : {{score.color}}">
+			<img src="{{ avatars[score.avatar].url }}"/>
 		</div>
-		<div class="col-md-4">
-			<h2 class="text-center">Content attribution</h2>
-			<ul class="list-group attribution">
-				<li class="list-group-item" ng-repeat="attr in attribution">
-					<span class="title">{{ attr.title }}</span>
-					<span class="links">
-						<a href="{{ link }}" class="fa fa-2x" ng-repeat="link in attr.links" ng-class="{'fa-youtube' : domain(link) == 'www.youtube.com', 'tmdb' : domain(link) == 'www.themoviedb.org', 'fa-spotify' : domain(link) == 'open.spotify.com', 'igdb' : domain(link) == 'www.igdb.com', 'fa-glass' : domain(link) == 'www.thecocktaildb.com' }"></a>
-					</span>
-				</li>
-			</ul>
-		</div>
-		<div class="col-md-2 text-center">
-			<h2></h2>
-			<a href="#/" class="btn btn-primary fa-2x"><i class="fa fa-fw fa-repeat"></i>Back to Lobby</a>
+		<div class="summary">
+			<h2>{{ score.name }}</h2>
+			<span class="text-success"><i class="fa fa-fw fa-thumbs-up"></i>{{ score.correct }}</span>
+			<span class="text-danger"><i class="fa fa-fw fa-thumbs-down"></i>{{ score.wrong }}</span>
 		</div>
 	</div>
+
+	<div class="attribution" ng-repeat="attr in attribution">
+		<h1>{{ attr.title }}</h1>
+		<span>{{ attr.name }}</span>
+		<ul>
+			<li ng-repeat="link in attr.links">
+				<a href="{{link}}">Lookup at {{domain(link)}} <i class="fa fa-fw fa-external-link"></i></a>
+			</li>
+		</ul>
+	</div>
+
+	<div class="attribution">
+		<h1>A game made by</h1>
+		<span>BuXXi</span>
+		<ul>
+			<li>
+				<a href="https://github.com/buxxi/webrtc-trivia">Lookup at github.com <i class="fa fa-fw fa-external-link"></i></a>
+			</li>
+		</ul>
+	</div>
+	<a href="#/" class="restart btn btn-primary fa-2x"><i class="fa fa-fw fa-repeat"></i></a>
 </div>

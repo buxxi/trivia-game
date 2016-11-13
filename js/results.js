@@ -4,10 +4,7 @@ triviaApp.controller('resultController', function($scope, $location, game) {
 	});
 
 	$scope.attribution = game.previousQuestions().map(function(question) {
-		return {
-			title : question.correct,
-			links : question.view.attribution
-		}
+		return question.view.attribution;
 	});
 
 	$scope.domain = function(link) {

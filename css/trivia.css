@@ -3,6 +3,15 @@
 	height : 20%;
 }
 
+.lobby {
+	background : white;
+	position : fixed;
+	top : 0;
+	bottom : 0;
+	left : 0;
+	right : 0;
+}
+
 #attribution img {
 	max-height : 100%;
 	max-width : 25%;
@@ -59,7 +68,6 @@
 	padding-left : 1%;
 	padding-right : 1%;
 	text-align : center;
-	background : black url('../img/simple_dashed.png');
 }
 
 .container.question #player {
@@ -67,6 +75,85 @@
 	top: 50%;
 	left : 50%;
 	transform: translateY(-50%) translateX(-50%);
+}
+
+.credits {
+	color : white;
+	text-align: center;
+	width : 100%;
+	animation : 20s scroll linear infinite;
+	position : relative;
+}
+
+.credits:hover {
+	animation-play-state: paused;
+}
+
+.credits .restart {
+	position : fixed;
+	right : 1em;
+	top : 1em;
+}
+
+.credits .winner h1 {
+	font-size: 6em;
+}
+
+.credits .winner h1 i {
+	animation: gold 4s linear infinite;
+}
+
+.credits .loser h1, .credits .attribution h1 {
+	font-size: 4em;
+	color : #aaaaaa;
+}
+
+.credits .attribution h1::after {
+    content: "";
+    display: block;
+    border: 2px solid #307bbb;
+    width: 20%;
+    position: absolute;
+    left: 40%;
+    margin-top: 0.1em;
+}
+
+.credits .attribution a {
+	font-weight: bold;
+}
+
+.credits .attribution:hover ul {
+	visibility: visible;
+}
+
+.credits .attribution ul {
+	visibility: hidden;
+	list-style: none;
+}
+
+.credits .attribution span {
+	font-size: 6em;
+}
+
+.credits > div {
+	height : 50vh;
+}
+
+.credits .avatar {
+	font-size: 2em;
+	margin : 1em;
+}
+
+.credits .summary {
+	display : inline-block;
+	font-size: 2em;
+	padding-bottom: 1em;
+	position: relative;
+	top : -2em;
+}
+
+.credits h2 {
+	font-size: 2em;
 }
 
 .wavesurfer {
@@ -370,49 +457,16 @@ body, button {
 	font-family: FontAwesome, Ubuntu !important;
 }
 
+body#server {
+	background : black url('../img/simple_dashed.png');
+	overflow : hidden;
+}
+
 big {
 	padding : 1em;
 	display : inline-block;
 	font-size: 2em;
 	text-transform: uppercase;
-}
-
-.results .gold h4 i {
-	color : #FFD700;
-	animation: gold 4s linear infinite;
-}
-
-.results .silver h4 i {
-	color : #C0C0C0;
-}
-
-.results .bronze h4 i {
-	color : #CD7F32;
-}
-
-.attribution .title {
-	font-size : 1.5em;
-}
-
-.attribution .links {
-	float : right;
-	clear : both;
-}
-
-.attribution .links a {
-	padding-left : 0.5em;
-}
-
-.attribution .links .tmdb:before {
-	content : "TMDb";
-	font-family: Ubuntu;
-	font-size: 0.5em;
-}
-
-.attribution .links .igdb:before {
-	content : "IGDB";
-	font-family: Ubuntu;
-	font-size: 0.5em;
 }
 
 @keyframes resize-title {
@@ -447,4 +501,9 @@ big {
    0% { transform : rotateY(0deg) rotateZ(0deg); }
   50% { transform : rotateY(180deg) rotateZ(180deg); }
   100% { transform : rotateY(360deg) rotateZ(360deg); }
+}
+
+@keyframes scroll {
+	0% { top : 100vh; }
+	100% { top : -100%; }
 }

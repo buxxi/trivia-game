@@ -62,7 +62,11 @@ triviaApp.service('drinks', function($http, apikeys) {
 					view : {
 						player : 'list',
 						list : drink.ingredients,
-						attribution : [drink.url]
+						attribution : {
+							title : "Featured drink",
+							name : drink.name,
+							links : [drink.url]
+						}
 					}
 				});
 			});

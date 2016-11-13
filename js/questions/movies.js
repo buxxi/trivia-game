@@ -54,7 +54,11 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 						view : {
 							player : 'youtube',
 							videoId : videoId,
-							attribution : attribution
+							attribution : {
+								title : "Clips from",
+								name : movie.title + " (" + movie.year + ")",
+								links : attribution
+							}
 						}
 					});
 				}).catch(function(err) {
