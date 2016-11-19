@@ -7,7 +7,7 @@
 			</div>
 			<div class="alert alert-danger" ng-if="error">{{ error }}</div>
 			<div class="title" ng-class="{'full' : state == 'pre-question'}">{{ title }}</div>
-			<div class="timer" ng-if="timer.running">
+			<div class="timer" ng-if="timer.running()">
 				<div class="timer-score"><i class="fa fa-fw fa-star"></i>{{ timer.score() }}</div>
 				<div class="c100 p{{ timer.percentageLeft() }} small">
 					<span>{{ timer.timeLeft() }}</span>

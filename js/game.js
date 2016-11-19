@@ -1,37 +1,105 @@
 triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
+	function Session(totalQuestions) {
+		var self = this;
+		var currentQuestion = {
+			answers : {}
+		};
+		var previousQuestions = [];
+
+		self.index = function() {
+			return previousQuestions.length + 1;
+		}
+
+		self.total = function() {
+			return totalQuestions;
+		}
+
+		self.newQuestion = function(question) {
+			previousQuestions.forEach(function(q) {
+				if (q.title == question.title && q.correct == question.correct) {
+					throw new Error("Duplicate question");
+				}
+			});
+			currentQuestion = question;
+		}
+
+		self.endQuestion = function() {
+			previousQuestions.push(currentQuestion);
+		}
+
+		self.finished = function() {
+			return previousQuestions.length < totalQuestions;
+		}
+
+		self.history = function() {
+			return previousQuestions;
+		}
+
+		self.question = function() {
+			return currentQuestion;
+		}
+	}
+
+	function Timer(timePerQuestion, pointsPerRound) {
+		var self = this;
+		var start = 0;
+		var end = 0;
+		var running = false;
+
+		self.timeLeft = function() {
+			return Math.ceil((end - new Date().getTime()) / 1000);
+		}
+
+		self.percentageLeft = function() {
+			return Math.ceil((end - new Date().getTime()) / (end - start) * 100);
+		}
+
+		self.score = function(time) {
+			if (time == undefined) {
+				time = new Date().getTime();
+			}
+			return Math.ceil((end - time) / (end - start) * pointsPerRound);
+		}
+
+		self.run = function(onStop) {
+			start = new Date().getTime();
+			end = start + (1000 * timePerQuestion);
+			running = true;
+
+			var cancel = $interval(function() {
+				if (new Date().getTime() > end) {
+					console.log("interval stopping");
+					self.stop();
+				}
+			}, 100);
+
+			self.stop = function() {
+				running = false;
+				$interval.cancel(cancel);
+				onStop();
+			}
+		}
+
+		self.stop = function() {}
+
+		self.running = function() {
+			return running;
+		}
+	}
+
 	function Game() {
 		var self = this;
 		var players = {};
-		var currentQuestion = { answers : {} };
 		var guesses = {};
-		var previousQuestions = [];
-
-		var timer = {
-			start : 0,
-			end : 0,
-			running : false,
-
-			timeLeft : function() {
-				return Math.ceil((this.end - new Date().getTime()) / 1000);
-			},
-			percentageLeft : function() {
-				return Math.ceil((this.end - new Date().getTime()) / (this.end - this.start) * 100);
-			},
-			score : function() {
-				return timerPoints(new Date().getTime());
-			}
-		};
 		var config = {};
-
-		function timerPoints(guessTime) {
-			return Math.ceil((timer.end - guessTime) / (timer.end - timer.start) * config.pointsPerRound);
-		}
+		var session = {};
+		var timer = {};
 
 		function calculatePoints() {
 			var result = {};
 			Object.keys(players).forEach(function(peerid) {
 				if (self.hasGuessed(peerid) && guesses[peerid].answer == self.correctAnswer()['key']) {
-					var pointsThisRound = timerPoints(guesses[peerid].time) * players[peerid].multiplier;
+					var pointsThisRound = timer.score(guesses[peerid].time) * players[peerid].multiplier;
 					result[peerid] = pointsThisRound;
 					players[peerid].score += pointsThisRound;
 					players[peerid].correct++;
@@ -39,7 +107,7 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 						players[peerid].multiplier++;
 					}
 				} else if (self.hasGuessed(peerid)) {
-					var pointsThisRound = timerPoints(guesses[peerid].time);
+					var pointsThisRound = timer.score(guesses[peerid].time);
 					result[peerid] = -pointsThisRound;
 					players[peerid].score -= pointsThisRound;
 					players[peerid].wrong++;
@@ -93,6 +161,8 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 				players[peerid].correct = 0;
 				players[peerid].wrong = 0;
 			});
+			session = new Session(config.questions);
+			timer = new Timer(config.time, config.pointsPerRound);
 		}
 
 		self.hasGuessed = function(peerid) {
@@ -110,9 +180,10 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 		}
 
 		self.correctAnswer = function() {
-			var correct = currentQuestion.correct;
+			var question = session.question();
+			var correct = question.correct;
 			return {
-				key : Object.keys(currentQuestion.answers).filter(function(key) { return currentQuestion.answers[key] == correct; })[0],
+				key : Object.keys(question.answers).filter(function(key) { return question.answers[key] == correct; })[0],
 				answer : correct
 			}
 		}
@@ -122,50 +193,29 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 		}
 
 		self.session = function() {
-			return {
-				index : function() {
-					return previousQuestions.length + 1;
-				},
-				total : function() {
-					return config.questions;
-				}
-			}
+			return session;
 		}
 
 		self.startTimer = function() {
 			return new Promise(function(resolve, reject) {
-				timer.start = new Date().getTime();
-				timer.end = timer.start + (1000 * config.time);
-				timer.running = true;
-
-				var stop = $interval(function() {
-					if (new Date().getTime() > timer.end) {
-						timer.stop();
-					}
-				}, 100);
-				timer.stop = function() {
-					timer.running = false;
-					$interval.cancel(stop);
+				timer.run(function() {
 					var pointsThisRound = calculatePoints();
 					guesses = {};
-					previousQuestions.push(currentQuestion);
+					session.endQuestion();
 					resolve(pointsThisRound);
-				};
+				});
 			});
 		}
 
-		self.previousQuestions = function() {
-			return previousQuestions;
-		}
 
 		self.hasMoreQuestions = function() {
-			return previousQuestions.length < config.questions;
+			return session.finished()
 		}
 
 		self.nextQuestion = function() {
 			return new Promise(function(resolve, reject) {
 				categories.nextQuestion().then(function(question) {
-					currentQuestion = question;
+					session.newQuestion(question);
 					resolve(question);
 				}).catch(reject);
 			});

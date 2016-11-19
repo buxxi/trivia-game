@@ -3,7 +3,7 @@ triviaApp.controller('resultController', function($scope, $location, game) {
 		return b.score - a.score;
 	});
 
-	$scope.attribution = game.previousQuestions().map(function(question) {
+	$scope.attribution = game.session().history().map(function(question) {
 		return question.view.attribution;
 	});
 
