@@ -34,13 +34,13 @@ triviaApp.service('playback', function(movies, music) {
 		self.pauseMusic = false;
 	}
 
-	function YoutubePlayer(videoId) {
+	function YoutubePlayer(videoId, playerClass) {
 		var self = this;
 		var player = {};
 
 		self.start = function() {
 			return new Promise(function(resolve, reject) {
-				document.getElementById('content').innerHTML = '<div id="player"></div>';
+				document.getElementById('content').innerHTML = '<div class="' + playerClass + '" id="player"></div>';
 
 				player = new YT.Player('player', {
 					height: '100%',
@@ -141,7 +141,8 @@ triviaApp.service('playback', function(movies, music) {
 		var self = this;
 
 		var players = {
-			youtube : function(view) { return new YoutubePlayer(view.videoId) },
+			youtube : function(view) { return new YoutubePlayer(view.videoId, view.player) },
+			youtubeaudio : function(view) { return new YoutubePlayer(view.videoId, view.player) },
 			mp3 : function(view) { return new Mp3Player(view.category, view.mp3) },
 			image : function(view) { return new ImageViewer(view.url) },
 			quote : function(view) { return new QuoteText(view.quote) },

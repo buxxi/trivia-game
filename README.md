@@ -27,6 +27,7 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 
 ### Clips from: 
 - https://www.youtube.com/user/movieclips/videos
+- https://www.youtube.com/user/SupraDarky/videos
 
 ### Music & sound from:
 - http://soundbible.com/tags-beep.html

@@ -1,4 +1,4 @@
-triviaApp.service('movies', function($http, $interval, apikeys) {
+triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 	function MovieQuestions() {
 		var self = this;
 		var movies = [];
@@ -44,7 +44,7 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 				var videoId = selector.fromArray(movie.videos);
 				var attribution = ['http://www.youtube.com/watch?v=' + videoId];
 
-				checkEmbedStatus(videoId).then(function() {
+				youtube.checkEmbedStatus(videoId).then(function() {
 					return type.similar(movie, attribution, selector);
 				}).then(function(similar) {
 					resolve({
@@ -137,78 +137,7 @@ triviaApp.service('movies', function($http, $interval, apikeys) {
 
 		function loadYoutubeVideos(progress, cache) {
 			return cache.get('videos', function(resolve, reject) {
-				var result = [];
-
-				function loadUploads() {
-					$http.get('https://www.googleapis.com/youtube/v3/channels', {
-						params : {
-							id : 'UC3gNmTGu-TTbFPpfSs5kNkg',
-							key : apikeys.youtube,
-							part : 'contentDetails'
-						}
-					}).then(function(response) {
-						loadPage(response.data.items[0].contentDetails.relatedPlaylists.uploads);
-					});
-				}
-
-				function loadPage(playListId, pageToken) {
-					$http.get('https://www.googleapis.com/youtube/v3/playlistItems', {
-						params : {
-							key : apikeys.youtube,
-							playlistId : playListId,
-							part : 'id,snippet,contentDetails',
-							maxResults : 50,
-							pageToken : pageToken
-						}
-					}).
-					then(function(response) {
-						var current = result.length;
-						var total = response.data.pageInfo.totalResults;
-						progress(current, total);
-						var nextPage = response.data.nextPageToken;
-
-						result = result.concat(response.data.items.map(function(item) {
-							return {
-								id : item.contentDetails.videoId,
-								title : item.snippet.title
-							}
-						}));
-						if (nextPage) {
-							loadPage(playListId, nextPage);
-						} else {
-							resolve(result);
-						}
-					});
-				}
-
-				loadUploads();
-			});
-		}
-
-		function checkEmbedStatus(videoId) {
-			return new Promise(function(resolve, reject) {
-				$http.get('https://www.googleapis.com/youtube/v3/videos', {
-					params : {
-						key : apikeys.youtube,
-						id : videoId,
-						part : 'status,contentDetails'
-					}
-				}).then(function(response) {
-					var item = response.data.items[0];
-					if (!item.status.embeddable) {
-						return reject("Video not embeddable");
-					}
-					var regionRestriction = item.contentDetails.regionRestriction;
-					if (regionRestriction) {
-						if (regionRestriction.blocked && regionRestriction.blocked.indexOf(YOUTUBE_REGION) != -1) {
-							return reject("Video is not available in " + YOUTUBE_REGION);
-						}
-						if (regionRestriction.allowed && regionRestriction.allowed.indexOf(YOUTUBE_REGION) == -1) {
-							return reject("Video is not available in " + YOUTUBE_REGION);
-						}
-					}
-					resolve();
-				});
+				youtube.loadChannel('UC3gNmTGu-TTbFPpfSs5kNkg', progress).then(resolve).catch(reject);
 			});
 		}
 

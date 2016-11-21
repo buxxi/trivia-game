@@ -164,6 +164,10 @@
 	min-width: 800px;
 }
 
+#player.youtubeaudio {
+	visibility : hidden;
+}
+
 #player.list {
 	color : white;
 }

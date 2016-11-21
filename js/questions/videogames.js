@@ -1,4 +1,4 @@
-triviaApp.service('videogames', function($http, apikeys) {
+triviaApp.service('videogames', function($http, youtube, apikeys) {
 	function VideoGameQuestions() {
 		var self = this;
 		var platforms = {};
@@ -35,6 +35,13 @@ triviaApp.service('videogames', function($http, apikeys) {
 				similar : similarPlatformYears,
 				view : blank,
 				format : platformYear
+			},
+			song : {
+				title : function(correct) { return "From which games soundtrack is this song?" },
+				correct : randomGameWithSong,
+				similar : similarGames,
+				view : songVideo,
+				format : gameTitle
 			}
 		}
 
@@ -68,7 +75,17 @@ triviaApp.service('videogames', function($http, apikeys) {
 					}
 					promises[promises.length - 1].then(function(data) {
 						games = games.concat(data);
-						resolve();
+						loadVideos(progress, cache).then(function(videos) {
+							parseTitles(videos).filter(function(t) {
+								games.forEach(function(g) {
+									if (compareAlphaNumeric(g.name, t.title)) {
+										g.songs = g.songs || [];
+										g.songs.push(t.id);
+									}
+								});
+							})
+							resolve();
+						}).catch(reject);
 					});
 				});
 			});
@@ -76,7 +93,7 @@ triviaApp.service('videogames', function($http, apikeys) {
 
 		self.nextQuestion = function(selector) {
 			return new Promise(function(resolve, reject) {
-				var type = types[selector.fromArray(Object.keys(types))];
+				var type = types['song'];//types[selector.fromArray(Object.keys(types))];
 				var correct = type.correct(selector);
 				var similar = type.similar(correct, selector);
 
@@ -89,6 +106,12 @@ triviaApp.service('videogames', function($http, apikeys) {
 			});
 		}
 
+		function loadVideos(progress, cache) {
+			return cache.get('songs', function(resolve, reject) {
+				youtube.loadChannel('UC6iBH7Pmiinoe902-JqQ7aQ', progress).then(resolve).catch(reject);
+			});
+		}
+
 		function loadGames(platform, cache) {
 			return cache.get(platform, function(resolve, reject) {
 				$http.get('https://igdbcom-internet-game-database-v1.p.mashape.com/games/', {
@@ -96,7 +119,7 @@ triviaApp.service('videogames', function($http, apikeys) {
 						fields : 'name,url,first_release_date,release_dates,screenshots,keywords,themes,genres',
 						limit : GAMES_PER_PLATFORM,
 						offset : 0,
-						order : 'aggregated_rating:desc',
+						order : 'rating:desc',
 						'filter[screenshots][exists]' : '',
 						'filter[release_dates.platform][eq]' : platform
 					},
@@ -174,8 +197,34 @@ triviaApp.service('videogames', function($http, apikeys) {
 			});
 		}
 
+		function parseTitles(videos) {
+			return videos.map(function(v) {
+				var match = v.title.match(/Best VGM [0-9]+ - (.*?)( - ).*/);
+				if (!match) {
+					return null;
+				}
+
+				return {
+					id : v.id,
+					title : match[1]
+				};
+			}).filter(function(v) { return v != null; });
+		}
+
+		function compareAlphaNumeric(str1, str2) {
+			var x = /[^a-z0-9]/g;
+			var a = str1.toLowerCase().replace(x, '')
+			var b = str2.toLowerCase().replace(x, '');
+
+			return a == b;
+		}
+
 		function randomGame(selector) {
 			return selector.fromArray(games);
+		}
+
+		function randomGameWithSong(selector) {
+			return selector.fromArray(games.filter(function(g) { return g.songs }));
 		}
 
 		function randomPlatform(selector) {
@@ -229,6 +278,20 @@ triviaApp.service('videogames', function($http, apikeys) {
 					title : "Screenshot of",
 					name : gameTitle(game) + " (" + gameYear(game) + ")",
 					links : [game.attribution]
+				}
+			}
+		}
+
+		function songVideo(game, selector) {
+			var videoId = selector.fromArray(game.songs);
+
+			return {
+				player : 'youtubeaudio',
+				videoId : videoId,
+				attribution : {
+					title : "Music from",
+					name : gameTitle(game) + " (" + gameYear(game) + ")",
+					links : [game.attribution, 'http://www.youtube.com/watch?v=' + videoId]
 				}
 			}
 		}
