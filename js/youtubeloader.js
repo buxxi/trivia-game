@@ -1,6 +1,7 @@
 triviaApp.service('youtube', function($http, apikeys) {
 	function YoutubeLoader() {
 		var self = this;
+		var YOUTUBE_REGION = 'SE';
 
 		self.loadChannel = function(channelId, progress) {
 			return new Promise(function(resolve, reject) {

@@ -2,7 +2,6 @@ triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 	function MovieQuestions() {
 		var self = this;
 		var movies = [];
-		var YOUTUBE_REGION = 'SE';
 
 		var types = {
 			title : {

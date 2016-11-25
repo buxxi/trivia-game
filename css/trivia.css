@@ -1,33 +1,13 @@
-#attribution {
-	text-align: center;
-	height : 20%;
+h1::after {
+    content: "";
+    display: block;
+    border: 2px solid #307bbb;
+    width: 60%;
+    margin-left: 20%;
+    margin-top: 0.1em;
 }
 
-.lobby {
-	background : white;
-	position : fixed;
-	top : 0;
-	bottom : 0;
-	left : 0;
-	right : 0;
-}
-
-#attribution img {
-	max-height : 100%;
-	max-width : 25%;
-}
-
-.container.menu {
-	text-align: center;
-	margin-top : 20px;
-}
-
-.container.menu h1 {
-	font-size : 12em;
-	animation: rotate-logo 4s linear infinite;
-}
-
-.container.answer .btn-group-vertical {
+.answer .btn-group-vertical {
 	position : absolute;
 	left : 0;
 	right : 0;
@@ -35,7 +15,7 @@
 	bottom : 0;
 }
 
-.container.answer .btn {
+.answer .btn {
 	height : 25%;
 	text-align: left;
 	margin-top : 0 !important;
@@ -43,34 +23,28 @@
 	white-space : normal;
 }
 
-.container.answer .btn:disabled {
+.answer .btn:disabled {
 	opacity : 1;
 }
 
-.container.answer .btn-default:disabled {
+.answer .btn-default:disabled {
 	color : #777;
 }
 
-.container.answer .alert {
+.answer .alert {
 	margin-top : 25%;
 }
 
-.container.question {
-	width : 100%;
-}
-
-.container.question #content {
+.question #content {
 	position : fixed;
-	top : 5%;
-	bottom : 5%;
-	left : 0;
-	right : 0;
-	padding-left : 1%;
-	padding-right : 1%;
+	top : 5em;
+	bottom : 8em;
+	left : 2em;
+	right : 2em;
 	text-align : center;
 }
 
-.container.question #player {
+.question #player {
 	position: absolute;
 	top: 50%;
 	left : 50%;
@@ -91,8 +65,16 @@
 
 .credits .restart {
 	position : fixed;
-	right : 1em;
-	top : 1em;
+	right : 0;
+	top : 0;
+	background-color : #307bbb;
+	border: 3px solid #133451;
+	border-radius: 1em;
+	padding : 1em;
+	font-size: 2em;
+	margin : 1em;
+	cursor : pointer;
+	color : white;
 }
 
 .credits .winner h1 {
@@ -108,18 +90,10 @@
 	color : #aaaaaa;
 }
 
-.credits .attribution h1::after {
-    content: "";
-    display: block;
-    border: 2px solid #307bbb;
-    width: 20%;
-    position: absolute;
-    left: 40%;
-    margin-top: 0.1em;
-}
-
 .credits .attribution a {
+	color : #307bbb;
 	font-weight: bold;
+	text-decoration: none;
 }
 
 .credits .attribution:hover ul {
@@ -152,6 +126,16 @@
 	top : -2em;
 }
 
+.credits .summary .correct {
+	color : #008800;
+	text-shadow : 1px 1px 2px #004400;
+}
+
+.credits .summary .failed {
+	color : #880000;
+	text-shadow : 1px 1px 2px #440000;
+}
+
 .credits h2 {
 	font-size: 2em;
 }
@@ -172,7 +156,7 @@
 	color : white;
 }
 
-#player.list ul {
+#player.list ol {
     text-align: left;
     font-size: 2.5em;
     text-shadow: 1px 1px 2px black;
@@ -201,11 +185,11 @@
 	right : -1em;
 }
 
-.container.question #content.pre-question iframe {
+.question #content.pre-question iframe {
 	opacity : 0;
 }
 
-.container.question .navbar {
+.question .navbar {
 	height : 5%;
 	text-align : center;
 	background : transparent;
@@ -213,34 +197,32 @@
 	background : black;
 }
 
-.container.question .navbar .container {
-	width : 100%;
+.question h3 {
+    color: grey;
+    font-size: 2em;
+    font-weight: 100;
 }
 
-.container.question .navbar .alert {
-	margin : 1em 10% 0 10%;
-}
-
-.container.question .title, .container.question #correct {
+.question .title, .question #correct {
 	font-weight: bold;
 	font-size: 3em;
 	color : white;
-	text-shadow: 1px 1px 2px black;
+	text-shadow: 2px 2px 2px grey;
+	text-align: center;
 }
 
-.container.question #correct {
+.question #correct {
 	animation : resize-correct 0.5s linear normal;
 }
 
-.container.question .title {
+.question .title {
 	font-size: 6em;
 	transform : scale(0.5) translateY(-50%);
 }
 
-.container.question .title.full {
+.question .title.full {
 	position : fixed;
 	top : 50%;
-	text-align: center;
 	width : 100%;
 	display : block;
 	transform : scale(2) translateY(-50%);
@@ -248,10 +230,142 @@
 	opacity : 1;
 }
 
-.container.question .index {
+.question .index {
     position: fixed;
     top: 1em;
     left: 0.5em;
+}
+
+.lobby {
+	color : white;
+}
+
+.lobby .connect, .lobby .settings {
+	float : left;
+	width : 30%;
+	text-align: center;
+}
+
+.lobby .players {
+	float : left;
+	width : 40%;
+	text-align: center;
+}
+
+.connect .qr img {
+	border-radius: 1em 1em 0 0;
+	margin-bottom : -5px;
+}
+
+.connect .code {
+	width : 400px;
+	text-transform: uppercase;
+	background-color : #307bbb;
+	display : inline-block;
+	padding : 1em 0;
+	margin : 0;
+	border-radius : 0 0 1em 1em;
+	font-weight: bold;
+	font-size: 1.1em;
+}
+
+.connect ol {
+	width : 400px;
+	font-size: 1.5em;
+}
+
+ol {
+	display: inline-block;
+	counter-reset: help;
+	list-style: none;
+	padding-left : 1em;
+}
+
+ol li {
+	text-align: left;
+	height : 2em;
+	margin-bottom : 0.5em;
+}
+
+ol li:before {
+	position : absolute;
+	margin-left : -2em;
+	margin-top : -0.25em;
+	counter-increment: help;
+	content : counter(help);
+	background-color : #133451;
+	border: 0.1em solid #307bbb;
+	width : 1em;
+	height : 1em;
+	margin-right : 0.5em;
+	padding : 0.25em;
+	display : inline-block;
+	text-align: center;
+	border-radius: 1em;
+	font-weight: bold;
+	line-height: 1em;
+}
+
+.playerlist li {
+	list-style : none;
+	display: inline-block;
+	margin: 1em;
+}
+
+.playerlist {
+	min-height: 9em;
+}
+
+.playerlist .kick:hover {
+	opacity : 0.5;
+}
+
+.fallback .avatar {
+    box-shadow: 1px 1px 10px red;
+}
+
+.lobby .play {
+	position: fixed;
+	bottom: 0;
+	right : 0;
+	height: 10%;
+	padding : 1em;
+}
+
+.lobby .play a[disabled='disabled'] {
+	background-color : #880000;
+	border : 3px solid #440000;
+	opacity : 0.5;
+	cursor : not-allowed;
+}
+
+.play a {
+	border : 3px solid #004400;
+	background-color : #008800;
+	border-radius: 1em;
+	padding : 1em;
+	font-size: 2em;
+	cursor : pointer;
+	display : inline-block;
+}
+
+.numeric-input {
+	font-size: 2em;
+	color : #307bbb;
+}
+
+.numeric-input input {
+	background-color: transparent;
+	font-size: 1em;
+	border : 0;
+	width : 3.5em;
+	color : white;
+	padding-bottom: 0.5em;
+	height : 1.5em;
+	font-weight: bold;
+	-moz-appearance : textfield;
+	-webkit-appearance : textfield;
+	appearance : textfield;
 }
 
 .index {
@@ -267,10 +381,16 @@
 	content : " /";
 }
 
-.container.question .timer {
+.question .timer {
 	position : fixed;
 	top : 0.5em;
 	right : 0.5em;
+}
+
+.question .top {
+	position : fixed;
+	z-index: 2;
+	width : 100%;
 }
 
 .timer-score {
@@ -286,7 +406,7 @@
     font-weight: bold;
 }
 
-.container.question #correct {
+.question #correct {
 	position : fixed;
 	z-index: 3;
 	top : 50%;
@@ -307,7 +427,7 @@
 	display : inline-block;
 }
 
-.container.join video {
+.join video {
 	position : fixed;
 	display : none;
 	top : 0;
@@ -351,7 +471,14 @@
 	font-size: 0.5em;
 }
 
-.navbar-fixed-bottom .avatar {
+.bottom {
+	position : fixed;
+	bottom : 0;
+	width : 100%;
+	text-align: center;
+}
+
+.bottom .avatar {
 	margin: -2.3em 1em 1em 0;
 }
 
@@ -377,9 +504,9 @@
     border-radius: 2em;
     padding: 0.25em;
     position: absolute;
-    width: 1.8em;
-    margin-left: -1.2em;
-    margin-top: -1.2em;
+    width: 1.2em;
+    margin-left: -1em;
+    margin-top: -0.8em;
     color: white;
     font-weight: bold;
 	text-align : center;
@@ -393,7 +520,7 @@
     margin-left: -0.5em;
     margin-top: -0.5em;
     display: block;
-    width: 5em;
+    width: 4.5em;
     text-align: center;
     font-weight: bold;
     color: #307bbb;
@@ -401,6 +528,7 @@
 	border-style : solid;
 	border-width : 0.25em;
 	border-color : inherit;
+	overflow : hidden;
 }
 
 .avatar.guessed img {
@@ -415,9 +543,9 @@
 .score-change-positive, .score-change-negative {
 	position: absolute;
 	animation: splash 0.5s linear normal;
-	width: 5em;
+	width: 4.5em;
 	margin-left: -4.5em;
-	margin-top: 3.5em;
+	margin-top: 3.7em;
 	z-index: 2;
 	border-style : solid;
 	border-width : 0.25em;
@@ -443,18 +571,49 @@
 	color : white;
 }
 
-#categories .progress {
+.circle-checkboxes li {
+	list-style : none;
+	font-size: 2em;
 	display : inline-block;
-	width : 300px;
-	float : right;
-	clear : both;
+	vertical-align : top;
 }
 
-#categories .fa-check {
+.circle-checkboxes .selected label {
+	border-color : #004400;
+	background-color : #008800;
+}
+
+.circle-checkboxes .loaded label {
+	background-color : #307bbb;
+}
+
+.circle-checkboxes .failed label {
+	border-color : #440000;
+	background-color : #880000;
+}
+
+.circle-checkboxes .progress {
+    text-align: center;
+    font-size: 0.8em;
+}
+
+.circle-checkboxes label {
+	cursor : pointer;
+	border-radius: 10em;
+	padding : 0.35em;
+	border : 3px solid #307bbb;
+	margin : 0.25em;
 	display : inline-block;
-	float : right;
-	clear : both;
-	padding : 0;
+	width : 1em;
+	height : 1em;
+	line-height: 1em;
+}
+
+.circle-checkboxes input[type='checkbox'] {
+	visibility: hidden;
+	width : 0;
+	height : 0;
+	position : absolute;
 }
 
 body, button {
@@ -499,12 +658,6 @@ big {
    0% { text-shadow: 1px 1px 1px white; color : #907900; }
   50% { text-shadow : 1px 1px 10px #FFD700; color : #FFD700; }
   100% { text-shadow: 1px 1px 1px white; color : #907900; }
-}
-
-@keyframes rotate-logo {
-   0% { transform : rotateY(0deg) rotateZ(0deg); }
-  50% { transform : rotateY(180deg) rotateZ(180deg); }
-  100% { transform : rotateY(360deg) rotateZ(360deg); }
 }
 
 @keyframes scroll {

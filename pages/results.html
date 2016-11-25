@@ -1,4 +1,4 @@
-<div class="container credits">
+<div class="credits">
 	<div ng-repeat="(index,score) in scores" ng-class="{'winner' : index == 0, 'loser' : index != 0}">
 		<h1 ng-if="index == 0"><i class="fa fa-fw fa-trophy"></i> Winner</h1>
 		<h1 ng-if="index != 0">Loser</h1>
@@ -7,8 +7,8 @@
 		</div>
 		<div class="summary">
 			<h2>{{ score.name }}</h2>
-			<span class="text-success"><i class="fa fa-fw fa-thumbs-up"></i>{{ score.correct }}</span>
-			<span class="text-danger"><i class="fa fa-fw fa-thumbs-down"></i>{{ score.wrong }}</span>
+			<span class="correct"><i class="fa fa-fw fa-thumbs-up"></i>{{ score.correct }}</span>
+			<span class="failed"><i class="fa fa-fw fa-thumbs-down"></i>{{ score.wrong }}</span>
 		</div>
 	</div>
 

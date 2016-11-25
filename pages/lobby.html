@@ -1,92 +1,102 @@
-<div class="row lobby">
-	<div class="col-md-4 text-center">
-		<h1><i class="fa fa-fw fa-gamepad"></i>Game lobby</h1>
+<div class="lobby">
+	<div class="connect">
+		<h1>WebRTC Trivia</h1>
 		<div ng-if="code() == null">
 			<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
 			<span class="fa-3x">Loading...</span>
 		</div>
 		<div ng-if="code() != null">
-			<div class="form-group">
-				<h3>Join by code</h3>
-				<p class="bg-primary text-uppercase"><big>{{ code() }}</big></p>
-			</div>
-			<div class="form-group">
-				<h3>or Join by QR</h3>
+			<div class="qr">
 				<img src="https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl={{ url() }}&choe=UTF-8"/>
 			</div>
-			<div class="text-center">
-				<a class="btn btn-success fa-4x" ng-click="start()" ng-disabled="!readyToStart()"><i class="fa fa-fw fa-play"></i>Start</a>
+			<div class="code">{{ code() }}</div>
+		</div>
+		<ol>
+			<li>Open the browser on your phone</li>
+			<li>Go to {{serverUrl()}}</li>
+			<li>Scan the QR code or enter the code manually</li>
+		</ol>
+	</div>
+	<div class="players">
+		<h1><i class="fa fa-fw fa-users"></i>Players</h1>
+		<ul class="playerlist">
+			<li ng-if="">foo</li>
+			<li ng-repeat="(peerid,player) in players()" ng-class="{'fallback' : usingFallbackConnection(peerid)}">
+				<a href="" ng-click="kickPlayer(peerid)" class="kick" title="Kick player">
+					<div class="avatar" data-score="{{player.name}}" style="background-color : {{player.color}}; border-color : {{player.color}}"><img src="{{ avatars[player.avatar].url }}"/></div>
+				</a>
+			</li>
+		</ul>
+		<div class="rules">
+			<h1><i class="fa fa-fw fa-cogs"></i>Settings</h1>
+			<div>
+				<form>
+					<div class="general">
+						<div class="numeric-input">
+							<label for="questions" title="Number of questions"><i class="fa fa-fw fa-question-circle-o"></i></label>
+							<input type="number" id="questions" step="5" ng-min="1" ng-model="config.questions">
+						</div>
+
+						<div class="numeric-input">
+							<label for="time" title="Seconds to answer"><i class="fa fa-fw fa-clock-o"></i></label>
+							<input type="number"id="time" step="5" ng-min="1" ng-model="config.time">
+						</div>
+
+						<div class="numeric-input">
+							<label for="points" title="Points per round"><i class="fa fa-fw fa-star"></i></label>
+							<input type="number" id="points" step="100" ng-min="1" ng-model="config.pointsPerRound">
+						</div>
+
+						<ul class="circle-checkboxes">
+							<li ng-class="{'selected' : config.stopOnAnswers}">
+								<label for="stop" title="Stop after all answered"><input type="checkbox" id="stop" ng-model="config.stopOnAnswers"><i class="fa fa-stop"></i></label>
+							</li>
+							<li ng-class="{'selected' : config.allowMultiplier}">
+								<label for="multiplier" title="Use multipliers"><input type="checkbox" id="multiplier" ng-model="config.allowMultiplier"><i class="fa fa-times"></i></label>
+							</li>
+							<li ng-class="{'selected' : config.sound.backgroundMusic}">
+								<label for="backgroundMusic" title="Background music"><input type="checkbox" id="backgroundMusic" ng-model="config.sound.backgroundMusic" ng-change="toggleSound()"><i class="fa fa-music"></i></label>
+							</li>
+							<li ng-class="{'selected' : config.sound.text2Speech}">
+								<label for="text2Speech" title="Text-2-speech of questions"><input type="checkbox" id="text2Speech" ng-model="config.sound.text2Speech" ng-change="toggleSound()"><i class="fa fa-commenting-o"></i></label>
+							</li>
+							<li ng-class="{'selected' : config.sound.soundEffects}">
+								<label for="soundEffects" title="Sound effects"><input type="checkbox" id="soundEffects" ng-model="config.sound.soundEffects" ng-change="toggleSound()"><i class="fa fa-exclamation"></i></label>
+							</li>
+						</ul>
+					</div>
+
+					<div id="categories">
+						<h1><i class="fa fa-fw fa-list-ul"></i>Categories</h1>
+						<ul class="circle-checkboxes">
+							<li ng-class="{'selected' : config.categories[category.type] && preloading[category.type].done, 'loaded' : !config.categories[category.type] && preloading[category.type].done, 'failed' : preloading[category.type].failed}" ng-repeat="category in availableCategories">
+								<label title="{{ category.name }}"><input type="checkbox" id="{{ category.type }}" ng-model="config.categories[category.type]" ng-change="preload(category.type)"><i class="fa {{ category.icon }}"></i></label>
+								<div class="progress" ng-if="config.categories[category.type] && !preloading[category.type].done && !preloading[category.type].failed">{{ preloading[category.type].percentage() }}%</div>
+							</li>
+						</ul>
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>
-	<div class="col-md-4">
-		<h3><i class="fa fa-fw fa-users"></i>Players</h3>
-		<ul class="list-group player-lobby">
-			<li ng-repeat="(peerid,player) in players()" class="list-group-item">
-				<a href="" ng-click="kickPlayer(peerid)" class="btn btn-xs btn-danger pull-right"><i class="fa fa-fw fa-user-times"></i></a>
-				<span class="pull-right" ng-if="usingFallbackConnection(peerid)"><i class="fa fa-fw fa-wheelchair"></i></span>
-				<div class="avatar" style="background-color : {{player.color}}"><img src="{{ avatars[player.avatar].url }}"/></div>
-				<span>{{ player.name }}</span>
-			</li>
-		</ul>
-	</div>
-	<div class="col-md-4">
-		<h3><i class="fa fa-fw fa-cogs"></i>Settings</h3>
-		<div>
-			<form>
-				<div class="form-group">
-					<label for="questions"><i class="fa fa-fw fa-question-circle-o"></i>Number of questions</label>
-					<input type="number" class="form-control" id="questions" step="5" ng-min="1" ng-model="config.questions">
-				</div>
-
-				<div class="form-group">
-					<label for="time"><i class="fa fa-fw fa-clock-o"></i>Seconds to answer</label>
-					<input type="number" class="form-control" id="time" step="5" ng-min="1" ng-model="config.time">
-					<div class="checkbox">
-						<label for="stop"><input type="checkbox" id="stop" ng-model="config.stopOnAnswers"> Stop after all answered</label>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label for="points"><i class="fa fa-fw fa-star"></i>Points per round</label>
-					<input type="number" class="form-control" id="points" step="100" ng-min="1" ng-model="config.pointsPerRound">
-					<div class="checkbox">
-						<label for="multiplier"><input type="checkbox" id="multiplier" ng-model="config.allowMultiplier"> Use multipliers</label>
-					</div>
-				</div>
-
-				<div class="form-group" id="categories">
-					<label><i class="fa fa-fw fa-list-ul"></i>Categories</label>
-					<ul class="list-group">
-						<li class="list-group-item checkbox" ng-class="{'list-group-item-success' : preloading[category.type].done, 'list-group-item-danger' : preloading[category.type].failed}" ng-repeat="category in availableCategories">
-							<div class="progress" ng-if="config.categories[category.type] && !preloading[category.type].done && !preloading[category.type].failed">
-								<div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ preloading[category.type].percentage() }}%">{{ preloading[category.type].current }}/{{ preloading[category.type].total }}</div>
-							</div>
-							<i class="fa fa-fw fa-check" ng-if="config.categories[category.type] && preloading[category.type].done"></i>
-							<label><input type="checkbox" id="{{ category.type }}" ng-model="config.categories[category.type]" ng-change="preload(category.type)"> <i class="fa {{ category.icon }}"></i> {{ category.name }}</label>
-						</li>
-					</ul>
-				</div>
-
-				<div class="form-group" id="sound">
-					<label><i class="fa fa-fw fa-music"></i>Sound</label>
-					<ul class="list-group">
-						<li class="list-group-item checkbox">
-							<label for="backgroundMusic"><input type="checkbox" id="backgroundMusic" ng-model="config.sound.backgroundMusic" ng-change="toggleSound()"><i class="fa fa-fw fa-music"></i> Background music</label>
-						</li>
-						<li class="list-group-item checkbox">
-							<label for="text2Speech"><input type="checkbox" id="text2Speech" ng-model="config.sound.text2Speech" ng-change="toggleSound()"><i class="fa fa-fw fa-commenting-o"></i> Text-2-speech of questions</label>
-						</li>
-						<li class="list-group-item checkbox">
-							<label for="soundEffects"><input type="checkbox" id="soundEffects" ng-model="config.sound.soundEffects" ng-change="toggleSound()"><i class="fa fa-fw fa-exclamation"></i> Sound effects</label>
-						</li>
-					</ul>
-				</div>
-
-				<div class="form-group" ng-if="message">
-					<div class="alert alert-info">{{ message }}</div>
-				</div>
-			</form>
+	<div class="settings">
+		<h1><i class="fa fa-fw fa-gavel"></i>Rules</h1>
+		<ol>
+			<li>Use your phone to select the answer you think is correct</li>
+			<li>A correct answer gives you points</li>
+			<li>An incorrect answer removes points</li>
+			<li>You can't go below 0, so make wild guesses if you're that low on score</li>
+			<li>You are awarded more points for answering quicker</li>
+			<li ng-if="config.allowMultiplier">A correct answer will increase the point-multiplier for the next question</li>
+			<li ng-if="config.allowMultiplier">An invalid answer will reset the point-multiplier to 1x</li>
+			<li ng-if="config.allowMultiplier">Not answering will reset the point-miltiplier to 1x</li>
+			<li>You have {{config.time}} seconds to answer each question</li>
+		</ol>
+		<div ng-if="message">
+			<div class="alert alert-info">{{ message }}</div>
 		</div>
+	</div>
+	<div class="play">
+		<a ng-click="start()" ng-disabled="!readyToStart()"><i class="fa fa-fw fa-play"></i></a>
 	</div>
 </div>

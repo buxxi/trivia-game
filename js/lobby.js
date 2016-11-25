@@ -14,6 +14,10 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	$scope.config = config;
 	$scope.code = connection.code;
 
+	$scope.serverUrl = function() {
+		return window.location.hostname + "/trivia";
+	}
+
 	$scope.url = function() {
 		return encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?code=" + $scope.code());
 	}
@@ -48,7 +52,7 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 				preload.total = total;
 			},
 			percentage : function() {
-				return Math.ceil(preload.current / preload.total * 100);
+				return Math.ceil(preload.current / Math.max(preload.total, 1) * 100);
 			},
 			showProgress : function() {
 				return !preload.done || !preload.failed;

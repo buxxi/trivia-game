@@ -1,24 +1,14 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" href="css/bootstrap.min.css" />
-		<link rel="stylesheet" href="css/font-awesome.min.css" />
-		<link rel="stylesheet" href="css/trivia.css"/>
-		<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
-		<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+		<script type="text/javascript">
+			if (/Mobi/.test(navigator.userAgent)) {
+				self.location = 'client.html';
+			} else {
+				self.location = 'server.html';
+			}
+		</script>
 	</head>
 	<body>
-		<div class="container menu">
-			<h1><i class="fa-question-circle fa"></i></h1>
-			<div class="btn-group-vertical">
-				<a href="client.html" class="btn btn-primary fa-3x"><i class="fa fa-fw fa-sign-in"></i>Join Game</a>
-				<a href="server.html" class="btn btn-default fa-3x"><i class="fa fa-fw fa-globe"></i>Host Game</a>
-			</div>
-		</div>
-		<div id="attribution" class="navbar navbar-default navbar-fixed-bottom">
-			<img src="img/tmdb.png" title="This product uses the TMDb API but is not endorsed or certified by TMDb"/>
-			<img src="img/ytube.png"/>
-			<img src="img/spotify.png"/>
-		</div>
 	</body>
 </html>

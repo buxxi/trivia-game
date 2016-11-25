@@ -93,7 +93,7 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 
 		self.nextQuestion = function(selector) {
 			return new Promise(function(resolve, reject) {
-				var type = types['song'];//types[selector.fromArray(Object.keys(types))];
+				var type = types[selector.fromArray(Object.keys(types))];
 				var correct = type.correct(selector);
 				var similar = type.similar(correct, selector);
 
