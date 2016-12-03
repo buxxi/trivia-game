@@ -44,13 +44,13 @@ triviaApp.controller('answerController', function($scope, $location, connection)
 
 	$scope.buttonClass = function(answer) {
 		if (correct && correct == answer) {
-			return "btn-success";
+			return "correct";
 		} else if (correct && answer == guess && correct != guess) {
-			return "btn-danger";
+			return "incorrect";
 		} else if (!correct && answer == guess) {
-			return "btn-primary";
+			return "selected";
 		} else {
-			return "btn-default";
+			return "";
 		}
 	}
 

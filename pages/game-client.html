@@ -1,11 +1,15 @@
-<div class="container answer">
-	<div class="alert alert-info text-center" ng-if="!answers.A && !answers.B && !answers.C && !answers.D">
-		<i class="fa fa-television fa-5x" aria-hidden="true"></i><h3>Waiting for next question</h3>
+<div class="answer">
+	<div ng-if="!answers.A && !answers.B && !answers.C && !answers.D">
+		<div class="fa-stack fa-lg fa-5x">
+			<i class="fa fa-television fa-stack-2x"></i>
+			<i class="fa fa-eye fa-stack-1x"></i>
+		</div>
+		<h3>Waiting for next question</h3>
 	</div>
-	<div class="btn-group-vertical" ng-if="answers.A && answers.B && answers.C && answers.D">
-		<button type="button" class="btn btn-lg btn-A" ng-click="guess('A')" ng-class="buttonClass('A')" ng-disabled="hasGuessed()">{{ answers['A'] }}</button>
-		<button type="button" class="btn btn-lg btn-B" ng-click="guess('B')" ng-class="buttonClass('B')" ng-disabled="hasGuessed()">{{ answers['B'] }}</button>
-		<button type="button" class="btn btn-lg btn-C" ng-click="guess('C')" ng-class="buttonClass('C')" ng-disabled="hasGuessed()">{{ answers['C'] }}</button>
-		<button type="button" class="btn btn-lg btn-D" ng-click="guess('D')" ng-class="buttonClass('D')" ng-disabled="hasGuessed()">{{ answers['D'] }}</button>
+	<div ng-if="answers.A && answers.B && answers.C && answers.D">
+		<button type="button" class="btn-A" ng-click="guess('A')" ng-class="buttonClass('A')" ng-disabled="hasGuessed()">{{ answers['A'] }}</button>
+		<button type="button" class="btn-B" ng-click="guess('B')" ng-class="buttonClass('B')" ng-disabled="hasGuessed()">{{ answers['B'] }}</button>
+		<button type="button" class="btn-C" ng-click="guess('C')" ng-class="buttonClass('C')" ng-disabled="hasGuessed()">{{ answers['C'] }}</button>
+		<button type="button" class="btn-D" ng-click="guess('D')" ng-class="buttonClass('D')" ng-disabled="hasGuessed()">{{ answers['D'] }}</button>
 	</div>
 </div>

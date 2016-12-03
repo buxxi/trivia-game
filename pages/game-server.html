@@ -4,7 +4,7 @@
 				<span class="current">{{ session.index() }}</span>
 				<span class="total">{{ session.total() }}</span>
 			</div>
-			<div class="error" ng-if="error">{{ error }}</div>
+			<div class="message" ng-if="error">{{ error }}</div>
 			<div class="title" ng-class="{'full' : state == 'pre-question'}">{{ title }}</div>
 			<div class="timer" ng-if="timer.running()">
 				<div class="timer-score"><i class="fa fa-fw fa-star"></i>{{ timer.score() }}</div>
