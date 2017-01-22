@@ -9,12 +9,19 @@
 @font : #ffffff;
 @background : #000000;
 
-body {
+html {
 	background : @background url('../img/simple_dashed.png');
 	background-size: 2em;
+}
+
+body {
 	color : @font;
 	font-family: FontAwesome, Ubuntu !important;
 	overflow : hidden;
+
+	@media (max-width: 1600px), (max-height : 800px) {
+		font-size: 0.75em;
+	}
 }
 
 button {
@@ -29,6 +36,12 @@ big {
 }
 
 h1 {
+	color : @secondary_border;
+
+	i {
+		color : @primary;
+	}
+
 	&::after {
 		border: 2px solid @primary;
 		content: "";
@@ -115,26 +128,13 @@ h1 {
 }
 
 .credits {
-	animation : 20s scroll linear infinite;
+	animation : 1s scroll linear infinite;
 	color : @font;
 	position : relative;
 	text-align: center;
 	width : 100%;
 	&:hover {
 		animation-play-state: paused;
-	}
-	.restart {
-		background-color : @primary;
-		border-radius: 1em;
-		border: 3px solid @primary_border;
-		color : @font;
-		cursor : pointer;
-		font-size: 2em;
-		margin : 1em;
-		padding : 1em;
-		position : fixed;
-		right : 0;
-		top : 0;
 	}
 	.winner {
 		h1 {
@@ -146,13 +146,11 @@ h1 {
 	}
 	.loser {
 		h1 {
-			color : @secondary_border;
 			font-size: 4em;
 		}
 	}
 	.attribution {
 		h1 {
-			color : @secondary_border;
 			font-size: 4em;
 		}
 		a {
@@ -246,7 +244,7 @@ h1 {
 		text-align: center;
 		width : 30%;
 	}
-	.settings {
+	.rules {
 		float : left;
 		text-align: center;
 		width : 30%;
@@ -256,18 +254,82 @@ h1 {
 		text-align: center;
 		width : 40%;
 	}
-	.play {
-		bottom: 0;
-		height: 10%;
-		padding : 1em;
-		position: fixed;
-		right : 0;
-		a[disabled='disabled'] {
-			background-color : @incorrect;
-			border : 3px solid @incorrect_border;
-			cursor : not-allowed;
-			opacity : 0.5;
+	.carousel {
+		li {
+			list-style: none;
+			font-size: 2em;
+			animation: splash 0.5s linear normal;
+			display : none;
+			&.show {
+				display : block;
+			}
+
+			a {
+				color : white;
+				text-decoration: none;
+			}
 		}
+	}
+	.message {
+		position : absolute;
+		bottom : 2em;
+		left : 30%;
+		right : 30%;
+		white-space: nowrap;
+		text-align: center;
+	}
+}
+
+.instructions {
+	width : 397px;
+	height : 800px;
+
+	font-family: Arial;
+	background-image : url('../img/phone.png');
+	background-size: contain;
+	padding-top : 133px;
+	padding-left : 20px;
+	padding-right : 24px;
+	box-sizing: border-box;
+	transform: rotate3d(1, 2.0, 3.0, 10deg) scale(0.8);
+
+	&:before {
+		content : attr(data-url);
+		position : absolute;
+		color : black;
+		margin-top : -26px;
+		margin-left : -130px;
+		font-size: 1.1em;
+	}
+
+	div {
+		background-color : white;
+		color : black;
+		height : 570px;
+		padding : 5px;
+		line-height: 1.2em;
+		font-size: 1.7em;
+	}
+}
+
+#start a {
+	background-color : @primary;
+	border-radius: 1em;
+	border: 3px solid @primary_border;
+	color : @font;
+	cursor : pointer;
+	font-size: 2em;
+	margin : 1em;
+	padding : 1em;
+	position : fixed;
+	right : 0;
+	bottom : 0;
+
+	&[disabled='disabled'] {
+		background-color : @incorrect;
+		border : 3px solid @incorrect_border;
+		cursor : not-allowed;
+		opacity : 0.5;
 	}
 }
 
@@ -339,12 +401,6 @@ ol {
 	}
 }
 
-.fallback {
-	.avatar {
-		box-shadow: 1px 1px 10px @incorrect;
-	}
-}
-
 .play {
 	a {
 		background-color : @correct;
@@ -360,6 +416,8 @@ ol {
 .numeric-input {
 	color : @primary;
 	font-size: 2em;
+	display : inline-block;
+
 	input {
 		-moz-appearance : textfield;
 		-webkit-appearance : textfield;
@@ -371,7 +429,11 @@ ol {
 		font-weight: bold;
 		height : 1.5em;
 		padding-bottom: 0.5em;
-		width : 3.5em;
+		width : 3em;
+
+		&:invalid {
+			box-shadow : none;
+		}
 	}
 }
 
@@ -548,20 +610,11 @@ ol {
 
 .message {
 	background-color : @incorrect;
-	border : 1px solid @secondary_border;
+	border : 3px solid @incorrect_border;
 	color : @font;
 	padding : 0.5em;
-}
-
-.player-lobby {
-	span {
-		font-size: 1.5em;
-		line-height: 2em;
-		vertical-align : top;
-	}
-	.avatar {
-		font-size: 0.5em;
-	}
+	margin : 0.5em 0;
+	border-radius: 1em;
 }
 
 .bottom {
@@ -590,10 +643,8 @@ ol {
 		height: 4em;
 		width: 4em;
 	}
-}
 
-.avatar[data-multiplier] {
-	&::before {
+	&[data-multiplier]::before {
 		background-color : inherit;
 		border-radius: 2em;
 		color: @font;
@@ -607,10 +658,8 @@ ol {
 		text-shadow: 0 0 2px black;
 		width: 1.2em;
 	}
-}
 
-.avatar[data-score] {
-	&::after {
+	&[data-score]::after {
 		background-color : @secondary;
 		border-color : inherit;
 		border-style : solid;
@@ -626,15 +675,30 @@ ol {
 		text-align: center;
 		width: 4.5em;
 	}
-}
 
-.avatar.guessed {
-	img {
-		filter: invert(100%);
+	&.guessed {
+		img {
+			filter: invert(100%);
+		}
+		&::after {
+			background-color : @primary;
+			color : @font;
+		}
 	}
-	&::after {
-		background-color : @primary;
-		color : @font;
+
+	.fallback &::before {
+		background-color : inherit;
+		border-radius: 2em;
+		color: yellow;
+		content: "\f0e7";
+		font-weight: bold;
+		margin-left: -1em;
+		margin-top: -0.8em;
+		padding: 0.25em;
+		position: absolute;
+		text-align : center;
+		text-shadow: 0 0 4px black;
+		width: 1.2em;
 	}
 }
 
