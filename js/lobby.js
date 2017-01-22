@@ -6,7 +6,8 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 		stopOnAnswers : true,
 		allowMultiplier : true,
 		sound : sound.enabled(),
-		categories : {}
+		categories : {},
+		fullscreen : false
 	};
 
 	$scope.availableCategories = categories.available();
@@ -23,6 +24,19 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	}
 
 	$scope.players = game.players;
+	$scope.playerCount = function() { return Object.keys(game.players()).length; };
+
+	$scope.poweredBy = [
+		{ url: 'https://spotify.com', name: 'Spotify' },
+		{ url: 'https://youtube.com', name: 'YouTube' },
+		{ url: 'https://www.themoviedb.org', name: 'TheMovieDB' },
+		{ url: 'https://restcountries.eu', name: 'REST Countries' },
+		{ url: 'https://flagpedia.net', name: 'Flagpedia' },
+		{ url: 'https://developers.google.com/chart', name: 'Google Charts' },
+		{ url: 'https://market.mashape.com/andruxnet/random-famous-quotes', name: 'Mashape - Famous Random Quotes' },
+		{ url: 'https://www.igdb.com', name: 'IGDB' },
+		{ url: 'https://www.thecocktaildb.com', name: 'TheCocktailDB' }
+	]
 
 	$scope.kickPlayer = function(pairCode) {
 		game.removePlayer(pairCode);
@@ -33,8 +47,35 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 		return connection.usingFallback(pairCode);
 	}
 
-	$scope.toggleSound = function() {
-		sound.configure(config.sound);
+	$scope.toggleFullScreen = function() {
+		var fullScreenMode = function() { return document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen };
+		var notify = function() {
+			config.fullscreen = fullScreenMode();
+			document.removeEventListener("fullscreenchange", notify);
+   			document.removeEventListener("webkitfullscreenchange", notify);
+   			document.removeEventListener("mozfullscreenchange", notify);
+		}
+		document.addEventListener("fullscreenchange", notify);
+   		document.addEventListener("webkitfullscreenchange", notify);
+   		document.addEventListener("mozfullscreenchange", notify);
+		if (fullScreenMode()) {
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if (document.mozCancelFullScreen) {
+				document.mozCancelFullScreen();
+			} else if (document.webkitCancelFullScreen) {
+				document.webkitCancelFullScreen();
+			}
+		} else {
+			var e = document.documentElement;
+			if (e.requestFullscreen) {
+				e.requestFullscreen();
+			} else if (e.mozRequestFullScreen) {
+				e.mozRequestFullScreen();
+			} else if (e.webkitRequestFullScreen) {
+				e.webkitRequestFullScreen();
+			}
+		}
 	}
 
 	$scope.preload = function(type) {
@@ -75,13 +116,13 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 
 	$scope.readyToStart = function() {
 		if (Object.keys(game.players()).length == 0) {
-			console.log("Not enough players");
+			$scope.startTitle = "Not enough players";
 			return false;
 		}
 
 		var categories = Object.keys(config.categories).filter(function(cat) { return config.categories[cat] });
 		if (categories.length == 0) {
-			console.log("Not enough categories selected");
+			$scope.startTitle = "Not enough categories selected";
 			return false;
 		}
 
@@ -92,13 +133,16 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 		}, true);
 
 		if (!allPreloaded) {
-			console.log("Not all selected categories has preloaded");
+			$scope.startTitle = "Not all selected categories has preloaded";
+		} else {
+			$scope.startTitle = "The game is ready to start";
 		}
 
 		return allPreloaded;
 	}
 
 	$scope.start = function() {
+		sound.play();
 		game.configure(config);
 		connection.disconnect();
 		$location.path('/game');
@@ -118,4 +162,16 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 			$scope.message = "Error when creating connection: " + err;
 		});
 	});
+
+	function moveCarousel() {
+		var carousel = document.querySelector(".carousel");
+		var next = carousel.querySelector(".show + li") || carousel.querySelector("li");
+		carousel.querySelectorAll("li").forEach(function(li) {
+			li.classList.remove('show');
+		});
+		next.classList.add('show');
+		setTimeout(moveCarousel, 5000);
+	}
+
+	angular.element(document).ready(moveCarousel);
 });

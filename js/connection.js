@@ -57,8 +57,18 @@ triviaApp.service('connection', function($rootScope) {
 						}
 					});
 
+					sanityCheck = createPeer(id);
+					sanityCheck.on('upgrade', function() {
+						fixCloseEvent(sanityCheck);
+						sanityCheck.on('close', function() {
+							mediator.connect();
+							resolve();
+						});
+						mediator.close();
+						sanityCheck.close();
+					});
 					mediator.connect();
-					resolve();
+					sanityCheck.connect();
 				});
 			});
 		}

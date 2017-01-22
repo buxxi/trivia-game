@@ -11,35 +11,37 @@
 			</div>
 			<div class="code">{{ code() }}</div>
 		</div>
-		<ol>
-			<li>Open the browser on your phone</li>
-			<li>Go to {{serverUrl()}}</li>
-			<li>Scan the QR code or enter the code manually</li>
-		</ol>
+		<div class="instructions" data-url="{{serverUrl()}}">
+			<div>
+				<h3>Join on your Smartphone!</h3>
+				By QR Code or go to:<br/>
+				<b>{{serverUrl()}}</b>
+			</div>
+		</div>
 	</div>
 	<div class="players">
 		<h1><i class="fa fa-fw fa-users"></i>Players</h1>
 		<ul class="playerlist">
-			<li ng-if="">foo</li>
+			<li ng-if="playerCount() == 0">No players has joined yet, be the first!</li>
 			<li ng-repeat="(peerid,player) in players()" ng-class="{'fallback' : usingFallbackConnection(peerid)}">
 				<a href="" ng-click="kickPlayer(peerid)" class="kick" title="Kick player">
 					<div class="avatar" data-score="{{player.name}}" style="background-color : {{player.color}}; border-color : {{player.color}}"><img src="{{ avatars[player.avatar].url }}"/></div>
 				</a>
 			</li>
 		</ul>
-		<div class="rules">
+		<div class="settings">
 			<h1><i class="fa fa-fw fa-cogs"></i>Settings</h1>
 			<div>
 				<form>
 					<div class="general">
 						<div class="numeric-input">
-							<label for="questions" title="Number of questions"><i class="fa fa-fw fa-question-circle-o"></i></label>
+							<label for="questions" title="Number of questions"><i class="fa fa-fw fa-question"></i></label>
 							<input type="number" id="questions" step="5" ng-min="1" ng-model="config.questions">
 						</div>
 
 						<div class="numeric-input">
-							<label for="time" title="Seconds to answer"><i class="fa fa-fw fa-clock-o"></i></label>
-							<input type="number"id="time" step="5" ng-min="1" ng-model="config.time">
+							<label for="time" title="Seconds to answer"><i class="fa fa-fw fa-hourglass"></i></label>
+							<input type="number" id="time" step="5" ng-min="1" ng-model="config.time">
 						</div>
 
 						<div class="numeric-input">
@@ -55,13 +57,16 @@
 								<label for="multiplier" title="Use multipliers"><input type="checkbox" id="multiplier" ng-model="config.allowMultiplier"><i class="fa fa-times"></i></label>
 							</li>
 							<li ng-class="{'selected' : config.sound.backgroundMusic}">
-								<label for="backgroundMusic" title="Background music"><input type="checkbox" id="backgroundMusic" ng-model="config.sound.backgroundMusic" ng-change="toggleSound()"><i class="fa fa-music"></i></label>
+								<label for="backgroundMusic" title="Background music"><input type="checkbox" id="backgroundMusic" ng-model="config.sound.backgroundMusic"><i class="fa fa-music"></i></label>
 							</li>
 							<li ng-class="{'selected' : config.sound.text2Speech}">
-								<label for="text2Speech" title="Text-2-speech of questions"><input type="checkbox" id="text2Speech" ng-model="config.sound.text2Speech" ng-change="toggleSound()"><i class="fa fa-commenting-o"></i></label>
+								<label for="text2Speech" title="Text-2-speech of questions"><input type="checkbox" id="text2Speech" ng-model="config.sound.text2Speech"><i class="fa fa-commenting-o"></i></label>
 							</li>
 							<li ng-class="{'selected' : config.sound.soundEffects}">
-								<label for="soundEffects" title="Sound effects"><input type="checkbox" id="soundEffects" ng-model="config.sound.soundEffects" ng-change="toggleSound()"><i class="fa fa-exclamation"></i></label>
+								<label for="soundEffects" title="Sound effects"><input type="checkbox" id="soundEffects" ng-model="config.sound.soundEffects"><i class="fa fa-exclamation"></i></label>
+							</li>
+							<li  ng-class="{'selected' : config.fullscreen}">
+								<label for="fullscreen" title="Toggle fullscreen"><input type="checkbox" id="fullscreen" ng-model="config.fullscreen" ng-change="toggleFullScreen()"><i class="fa fa-window-maximize"></i></label>
 							</li>
 						</ul>
 					</div>
@@ -79,7 +84,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="settings">
+	<div class="rules">
 		<h1><i class="fa fa-fw fa-gavel"></i>Rules</h1>
 		<ol>
 			<li>Use your phone to select the answer you think is correct</li>
@@ -92,11 +97,16 @@
 			<li ng-if="config.allowMultiplier">Not answering will reset the point-miltiplier to 1x</li>
 			<li>You have {{config.time}} seconds to answer each question</li>
 		</ol>
-		<div ng-if="message">
-			<div class="alert alert-info">{{ message }}</div>
-		</div>
+
+		<h1><i class="fa fa-fw fa-heart" style="color : #aa0000"></i>Powered by</h1>
+		<ul class="carousel">
+			<li ng-repeat="site in poweredBy"><a href="{{ site.url }}">{{ site.name }}</a></li>
+		</ul>
 	</div>
-	<div class="play">
-		<a ng-click="start()" ng-disabled="!readyToStart()"><i class="fa fa-fw fa-play"></i></a>
+	<div ng-if="message">
+		<div class="message">{{ message }}</div>
+	</div>
+	<div id="start">
+		<a ng-click="start()" ng-disabled="!readyToStart()" title="{{ startTitle }}"><i class="fa fa-fw fa-play"></i></a>
 	</div>
 </div>

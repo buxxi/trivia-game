@@ -10,4 +10,6 @@ triviaApp.controller('resultController', function($scope, $location, game) {
 	$scope.domain = function(link) {
 		return new URL(link).hostname;
 	}
+
+	$scope.duration = ($scope.scores.length + $scope.attribution.length + 1) * 5;
 });

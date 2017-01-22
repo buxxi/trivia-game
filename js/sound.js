@@ -3,7 +3,7 @@ triviaApp.service('sound', function() {
 		var self = this;
 
 		var enabled = {
-			backgroundMusic : false,
+			backgroundMusic : true,
 			soundEffects : true,
 			text2Speech : true
 		}
@@ -25,15 +25,6 @@ triviaApp.service('sound', function() {
 				return;
 			}
 			backgroundMusic.pause();
-		}
-
-		self.configure = function(config) {
-			enabled = config;
-			if (enabled.backgroundMusic) {
-				backgroundMusic.play();
-			} else {
-				backgroundMusic.pause();
-			}
 		}
 
 		self.beep = function(count) {

@@ -1,4 +1,4 @@
-<div class="credits">
+<div class="credits" style="animation-duration: {{ duration }}s">
 	<div ng-repeat="(index,score) in scores" ng-class="{'winner' : index == 0, 'loser' : index != 0}">
 		<h1 ng-if="index == 0"><i class="fa fa-fw fa-trophy"></i> Winner</h1>
 		<h1 ng-if="index != 0">Loser</h1>
@@ -31,5 +31,7 @@
 			</li>
 		</ul>
 	</div>
-	<a href="#/" class="restart btn btn-primary fa-2x"><i class="fa fa-fw fa-repeat"></i></a>
+	<div id="start">
+		<a href="#/"><i class="fa fa-fw fa-repeat"></i></a>
+	</div>
 </div>
