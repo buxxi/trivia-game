@@ -2,6 +2,9 @@
 A trivia game where it shows you a movie clip on your computer and then you use your phone as a controller to answer what movie it was.
 Using SocketPeer to establish a P2P connection between the phone and computer and then has all the logic on the client.
 
+### Sample screenshot:
+![WebRTC Trivia Screenshot][screenshot]
+
 ### Libraries used:
 - Angular.js: https://angularjs.org
 - LessCSS: http://lesscss.org/
@@ -38,3 +41,5 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 
 ### Background pattern from:
 - http://subtlepatterns.com/
+
+ [screenshot]: https://github.com/buxxi/webrtc-trivia/blob/master/trivia_screenshot.gif
