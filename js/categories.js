@@ -1,4 +1,4 @@
-triviaApp.service('categories', function(movies, music, geography, quotes, videogames, drinks) {
+triviaApp.service('categories', function(movies, music, geography, quotes, videogames, drinks, genericloader) {
 	function Cache(primaryKey) {
 		var self = this;
 
@@ -133,6 +133,19 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 			var category = categoryByType(selector.fromArray(enabledCategories));
 
 			return category.nextQuestion(selector).then(shuffleAnswers);
+		}
+
+		self.load = function(file) {
+			return new Promise(function(resolve, reject) {
+				var reader = new FileReader(file);
+				reader.onload = function(e) {
+					var newCategory = genericloader.create(file.name, reader.result);
+					categories.push(newCategory);
+					resolve(newCategory.describe().type);
+				};
+
+				reader.readAsText(file, "UTF-8");
+			});
 		}
 
 		function categoryByType(type) {

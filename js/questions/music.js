@@ -11,18 +11,28 @@ triviaApp.service('music', function($http, apikeys) {
 				correct : randomTrack,
 				similar : similarTracks,
 				format : trackTitle,
+				view : mp3Track
 			},
 			artist : {
 				title : function(correct) { return "Which artist is this?" },
 				correct : randomTrack,
 				similar : similarTracks,
-				format : artistName
+				format : artistName,
+				view : mp3Track
 			},
 			album : {
 				title : function(correct) { return "From which album is this song?" },
 				correct : randomTrack,
 				similar : similarTracks,
-				format : albumName
+				format : albumName,
+				view : mp3Track
+			},
+			artistImage : {
+				title : function(correct) { return "Name the artist in the image" },
+				correct : randomTrack,
+				similar : similarTracks,
+				format : artistName,
+				view : artistImage
 			}
 		};
 
@@ -75,16 +85,7 @@ triviaApp.service('music', function($http, apikeys) {
 					text : type.title(track),
 					answers : selector.alternatives(type.similar(track, selector), track, type.format, selector.splice),
 					correct : type.format(track),
-					view : {
-						player : 'mp3',
-						category : track.category,
-						mp3 : track.audio,
-						attribution : {
-							title : "Music by",
-							name : track.artist + " - " + track.title,
-							links : [track.attribution]
-						}
-					}
+					view : type.view(track)
 				});
 			});
 		}
@@ -105,7 +106,7 @@ triviaApp.service('music', function($http, apikeys) {
 				$http.get('https://api.spotify.com/v1/recommendations', {
 					params : {
 						seed_genres : category,
-						max_popularity : 50,
+						max_popularity : 75,
 						limit : TRACKS_BY_CATEGORY
 					},
 					headers : {
@@ -117,15 +118,20 @@ triviaApp.service('music', function($http, apikeys) {
 					}).map(function(track) {
 						return {
 							title : parseTitle(track.name),
-							artist : track.artists[0].name,
+							artist : {
+								id : track.artists[0].id,
+								name : track.artists[0].name}
+							,
 							album : track.album.name,
 							attribution : track.external_urls.spotify,
 							audio : track.preview_url,
 							category : category
 						};
 					});
-					resolve(result);
-				}).catch(function(err) {
+					return result;
+				}).then(function(result) {
+					return loadArtistImages(result, accessToken);
+				}).then(resolve).catch(function(err) {
 					if (err.status == 429) {
 						var time = parseInt((err.headers()['retry-after']) + 1) * 1000;
 						setTimeout(function() {
@@ -177,13 +183,71 @@ triviaApp.service('music', function($http, apikeys) {
 			});
 		}
 
+		function loadArtistImages(result, accessToken) {
+			return new Promise(function(resolve, reject) {
+				var artistIds = result.map(function(track) {
+					return track.artist.id;
+				}).filter(function(item, pos, arr) {
+					return arr.indexOf(item) == pos;
+				});
+
+				var done = resolve;
+				var promises = [];
+				while (artistIds.length > 0) {
+					var chunkedIds = artistIds.splice(0, 50);
+					var i = promises.length;
+					promises.push(new Promise(function(resolveLocal, rejectLocal) {
+						$http.get('https://api.spotify.com/v1/artists', {
+							params : {
+								ids : chunkedIds.join(',')
+							},
+							headers : {
+								Authorization : 'Bearer ' + accessToken
+							}
+						}).then(function(response) {
+							var artists = response.data.artists;
+							for (var i = 0; i < artists.length; i++) {
+								for (var j = 0; j < result.length; j++) {
+									if (artists[i].id == result[j].artist.id) {
+										delete result[j].artist.id;
+										result[j].artist.image = artists[i].images[0].url;
+									}
+								}
+							}
+							resolveLocal();
+						});
+					}));
+				}
+
+				//TODO: reuse code below
+				for (var i = 0; i < (promises.length - 1); i++) {
+					promises[i].then(function() {
+						return promises[i + 1];
+					})
+				}
+
+				promises[promises.length - 1].then(function() {
+					resolve(result);
+				});
+			})
+		}
+
 		function randomTrack(selector) {
 			return selector.fromArray(tracks);
 		}
 
 		function similarTracks(track, selector) {
+			var allowedCategories = [track.category];
+			while (true) {
+				var category = selector.fromArray(tracks).category;
+				if (allowedCategories.indexOf(category) == -1) {
+					allowedCategories.push(category);
+					break;
+				}
+			}
+
 			return tracks.filter(function(s) {
-				return s.category == track.category;
+				return allowedCategories.indexOf(s.category) != -1;
 			});
 		}
 
@@ -192,11 +256,36 @@ triviaApp.service('music', function($http, apikeys) {
 		}
 
 		function artistName(track) {
-			return track.artist;
+			return track.artist.name;
 		}
 
 		function albumName(track) {
 			return track.album;
+		}
+
+		function artistImage(track) {
+			return {
+				player : 'image',
+				url : track.artist.image,
+				attribution : {
+					title : "Image of",
+					name : track.artist.name,
+					links : [track.attribution]
+				}
+			}
+		}
+
+		function mp3Track(track) {
+			return {
+				player : 'mp3',
+				category : track.category,
+				mp3 : track.audio,
+				attribution : {
+					title : "Music by",
+					name : track.artist.name + " - " + track.title,
+					links : [track.attribution]
+				}
+			}
 		}
 	}
 
