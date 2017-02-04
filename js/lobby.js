@@ -148,6 +148,18 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 		$location.path('/game');
 	}
 
+	$scope.addCategories = function(files) {
+		for (var i in files) {
+			categories.load(files[i]).then(function(type) {
+				$scope.$apply(function() {
+					$scope.availableCategories = categories.available();
+					$scope.preload(type);
+					config.categories[type] = true;
+				});
+			});
+		}
+	}
+
 	connection.host(function(data) {
 		game.addPlayer(data.pairCode, data.name);
 
