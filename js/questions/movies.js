@@ -9,12 +9,14 @@ triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 				correct : randomMovie,
 				similar : loadSimilarMovies,
 				format : movieTitle,
+				weight : 80
 			},
 			year : {
 				title : function(correct) { return "What year is this movie from?" },
 				correct : randomMovie,
 				similar : loadSimilarYears,
 				format : movieYear,
+				weight : 20
 			}
 		};
 
@@ -37,7 +39,7 @@ triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 
 		self.nextQuestion = function(selector) {
 			return new Promise(function(resolve, reject) {
-				var type = types[selector.fromArray(Object.keys(types))];
+				var type = selector.fromWeightedObject(types);
 
 				var movie = type.correct(selector);
 				var videoId = selector.fromArray(movie.videos);

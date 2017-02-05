@@ -11,28 +11,32 @@ triviaApp.service('music', function($http, apikeys) {
 				correct : randomTrack,
 				similar : similarTracks,
 				format : trackTitle,
-				view : mp3Track
+				view : mp3Track,
+				weight : 40
 			},
 			artist : {
 				title : function(correct) { return "Which artist is this?" },
 				correct : randomTrack,
 				similar : similarTracks,
 				format : artistName,
-				view : mp3Track
+				view : mp3Track,
+				weight : 30
 			},
 			album : {
 				title : function(correct) { return "From which album is this song?" },
 				correct : randomTrack,
 				similar : similarTracks,
 				format : albumName,
-				view : mp3Track
+				view : mp3Track,
+				weight : 10
 			},
 			artistImage : {
 				title : function(correct) { return "Name the artist in the image" },
 				correct : randomTrack,
 				similar : similarTracks,
 				format : artistName,
-				view : artistImage
+				view : artistImage,
+				weight : 20
 			}
 		};
 
@@ -78,7 +82,7 @@ triviaApp.service('music', function($http, apikeys) {
 
 		self.nextQuestion = function(selector) {
 			return new Promise(function(resolve, reject) {
-				var type = types[selector.fromArray(Object.keys(types))];
+				var type = selector.fromWeightedObject(types);
 				var track = type.correct(selector);
 
 				resolve({

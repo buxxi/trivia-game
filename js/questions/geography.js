@@ -10,7 +10,8 @@ triviaApp.service('geography', function($http) {
 				similar : similarCountries,
 				load : function(correct) {
 					return loadImage('https://flagpedia.net/data/flags/normal/' + correct.code.toLowerCase() + '.png');
-				}
+				},
+				weight : 40
 			},
 			shape : {
 				title : function(correct) { return "What country has this shape?" },
@@ -18,7 +19,8 @@ triviaApp.service('geography', function($http) {
 				similar : similarCountries,
 				load : function(correct) {
 					return loadImage('https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + correct.code + '&chco=000000|307bbb&chf=bg,s,000000&cht=map:auto=50,50,50,50');
-				}
+				},
+				weight : 30
 			},
 			highpopulation : {
 				title : function(correct) { return "Which country has the largest population?" },
@@ -26,7 +28,8 @@ triviaApp.service('geography', function($http) {
 				similar : similarPopulationCountries,
 				load : function(correct) {
 					return loadBlank();
-				}
+				},
+				weight : 10
 			},
 			capital : {
 				title : function(correct) { return "In what country is " + correct.capital + " the capital?" },
@@ -34,7 +37,8 @@ triviaApp.service('geography', function($http) {
 				similar : similarCountries,
 				load : function(correct) {
 					return loadBlank();
-				}
+				},
+				weight : 20
 			}
 		}
 
@@ -67,17 +71,17 @@ triviaApp.service('geography', function($http) {
 
 		self.nextQuestion = function(selector) {
 			return new Promise(function(resolve, reject) {
-				var type = selector.fromArray(Object.keys(types));
+				var type = selector.fromWeightedObject(types);
 
-				var correct = types[type].correct(selector);
-				var similar = types[type].similar(correct);
-				var title = types[type].title(correct);
+				var correct = type.correct(selector);
+				var similar = type.similar(correct);
+				var title = type.title(correct);
 
 				function resolveName(c) {
 					return c.name;
 				}
 
-				types[type].load(correct).then(function(view) {
+				type.load(correct).then(function(view) {
 					view.attribution = {
 						title : "Featured country",
 						name : correct.name,
@@ -118,18 +122,10 @@ triviaApp.service('geography', function($http) {
 
 		function loadImage(url) {
 			return new Promise(function(resolve, reject) {
-				var img = new Image(); //TODO: handled in playback.js instead
-				img.onload = function() {
-					resolve({
-						player : 'image',
-						url : url
-					});
-				};
-				img.onerror = function() {
-					console.log("Could not load " + img.src);
-					reject();
-				}
-				img.src = url;
+				resolve({
+					player : 'image',
+					url : url
+				});
 			});
 		}
 

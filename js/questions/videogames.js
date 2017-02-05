@@ -13,35 +13,40 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 				correct : randomGame,
 				similar : similarGames,
 				view : screenshot,
-				format : gameTitle
+				format : gameTitle,
+				weight : 45
 			},
 			year : {
 				title : function(correct) { return "In which year was '" + correct.name + "' first released?" },
 				correct : randomGame,
 				similar : similarGameYears,
 				view : blank,
-				format : gameYear
+				format : gameYear,
+				weight : 10
 			},
 			platform : {
 				title : function(correct) { return "'" + correct.name + "' was released to one of these platforms, which one?" },
 				correct : randomGame,
 				similar : similarPlatforms,
 				view : blank,
-				format : gamePlatform
+				format : gamePlatform,
+				weight : 10
 			},
 			platform_year : {
 				title : function(correct) { return "In which year was the system '" + correct.name + "' released?" },
 				correct : randomPlatform,
 				similar : similarPlatformYears,
 				view : blank,
-				format : platformYear
+				format : platformYear,
+				weight : 10
 			},
 			song : {
 				title : function(correct) { return "From which games soundtrack is this song?" },
 				correct : randomGameWithSong,
 				similar : similarGames,
 				view : songVideo,
-				format : gameTitle
+				format : gameTitle,
+				weight : 25
 			}
 		}
 
@@ -93,7 +98,7 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 
 		self.nextQuestion = function(selector) {
 			return new Promise(function(resolve, reject) {
-				var type = types[selector.fromArray(Object.keys(types))];
+				var type = selector.fromWeightedObject(types);
 				var correct = type.correct(selector);
 				var similar = type.similar(correct, selector);
 
@@ -176,6 +181,9 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 					} else {
 						var object = {};
 						result.forEach(function(platform) {
+							if (!platform.versions) {
+								platform.versions = [];
+							}
 							var release_dates = platform.versions.map(function(v) {
 								return v.release_dates ? v.release_dates.map(function(d) { return d.date; }) : []
 							}).reduce(function(a, b) {

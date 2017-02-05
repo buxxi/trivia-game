@@ -21,12 +21,35 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 	function QuestionSelector() {
 		var self = this;
 
+		self.random = function(max) {
+			return max * Math.random() << 0;
+		}
+
 		self.fromArray = function(arr) {
-			return arr[arr.length * Math.random() << 0];
+			return arr[self.random(arr.length)];
 		};
 
+		self.fromWeightedObject = function(obj) {
+			var keys = Object.keys(obj);
+			var total = keys.map(function(k) { return obj[k].weight }).reduce(function(a, b) {
+				return a + b;
+			}, 0);
+			var randomWeight = self.random(total);
+
+			var index = 0;
+			while (randomWeight > 0) {
+				randomWeight -= obj[keys[index]].weight;
+				index++;
+			}
+			if (randomWeight < 0) {
+				index--;
+			}
+
+			return obj[keys[index]];
+		}
+
 		self.splice = function(arr) {
-			return arr.splice(Math.floor(Math.random() * arr.length), 1)[0];
+			return arr.splice(self.random(arr.length), 1)[0];
 		};
 
 		self.first = function(arr) {
@@ -122,15 +145,29 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 			return categoryByType(category).preload(progress, new Cache(category));
 		}
 
-		self.configure = function(categories) {
-			enabledCategories = Object.keys(categories).filter(function(category) {
-				return categories[category];
-			});
+		self.configure = function(input) {
+			enabledCategories = Object.keys(input).filter(function(category) {
+				return input[category];
+			}).reduce(function(obj, value) {
+				obj[value] = {
+					weight : 1,
+					nextQuestion : categoryByType(value).nextQuestion
+				};
+
+				return obj;
+			}, {});
 		}
 
 		self.nextQuestion = function() {
 			var selector = new QuestionSelector();
-			var category = categoryByType(selector.fromArray(enabledCategories));
+			var category = selector.fromWeightedObject(enabledCategories);
+
+			Object.keys(enabledCategories).forEach(function(key) {
+				enabledCategories[key].weight++;
+			});
+			category.weight = 1;
+
+			console.log(enabledCategories);
 
 			return category.nextQuestion(selector).then(shuffleAnswers);
 		}
