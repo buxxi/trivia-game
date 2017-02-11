@@ -12,7 +12,6 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 - SocketPeer: https://github.com/cvan/socketpeer
 - qcode-decode: https://github.com/cirocosta/qcode-decoder
 - pizzicato: https://alemangui.github.io/pizzicato
-- css circular progress bar: http://www.cssscript.com/pure-css-circular-percentage-bar
 - wavesurfer: https://wavesurfer-js.org/
 - randomColor: https://github.com/davidmerfield/randomColor
 - Fingerprint2: https://github.com/Valve/fingerprintjs2

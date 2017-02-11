@@ -8,12 +8,11 @@
 			<div class="title" ng-class="{'full' : state == 'pre-question'}">{{ title }}</div>
 			<div class="timer" ng-if="timer.running()">
 				<div class="timer-score"><i class="fa fa-fw fa-star"></i>{{ timer.score() }}</div>
-				<div class="c100 p{{ timer.percentageLeft() }} small">
-					<span>{{ timer.timeLeft() }}</span>
-					<div class="slice">
-						<div class="bar"></div>
-						<div class="fill"></div>
-					</div>
+				<div class="timer-counter" data-seconds="{{ timer.timeLeft() }}" data-percentage="{{ timer.percentageLeft() }}">
+					<svg viewBox="0 0 38 38" preserveAspectRatio="true">
+					  <circle id="border" r="15.9155" cx="19" cy="19"></circle>
+					  <circle id="bar" r="15.9155" cx="19" cy="19" stroke-dasharray="100" stroke-dashoffset="{{(100 - timer.percentageLeft() )}}"></circle>
+					</svg>
 				</div>
 			</div>
 	</div>
