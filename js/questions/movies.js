@@ -56,7 +56,7 @@ triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 							player : 'youtube',
 							videoId : videoId,
 							attribution : {
-								title : "Clips from",
+								title : "Clip from",
 								name : movie.title + " (" + movie.year + ")",
 								links : attribution
 							}

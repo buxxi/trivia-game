@@ -108,6 +108,7 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 			player.start().then(function() {
 				$scope.$apply(function() {
 					$scope.state = 'question';
+					$scope.category = question.view.category;
 				});
 
 				connection.send({
@@ -134,7 +135,7 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 				correct : correct.key
 			});
 			$scope.$apply(function() {
-				$scope.title = "The correct answer was:";
+				$scope.title = "The correct answer was";
 				$scope.correct = correct;
 				$scope.state = 'post-question';
 				$scope.pointChanges = pointsThisRound;

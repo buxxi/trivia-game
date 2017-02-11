@@ -149,9 +149,11 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 			enabledCategories = Object.keys(input).filter(function(category) {
 				return input[category];
 			}).reduce(function(obj, value) {
+				var c = categoryByType(value);
 				obj[value] = {
 					weight : 1,
-					nextQuestion : categoryByType(value).nextQuestion
+					nextQuestion : c.nextQuestion,
+					name : c.describe().name
 				};
 
 				return obj;
@@ -167,9 +169,7 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 			});
 			category.weight = 1;
 
-			console.log(enabledCategories);
-
-			return category.nextQuestion(selector).then(shuffleAnswers);
+			return category.nextQuestion(selector).then(shuffleAnswers).then(attachCategory(category));
 		}
 
 		self.load = function(file) {
@@ -208,6 +208,19 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 				question.answers = answers;
 				resolve(question);
 			});
+		}
+
+		function attachCategory(category) {
+			return function(question) {
+				return new Promise(function(resolve, reject) {
+					if (question.view.category) {
+						question.view.category = category.name + ": " + question.view.category;
+					} else {
+						question.view.category = category.name;
+					}
+					resolve(question);
+				});
+			};
 		}
 	}
 

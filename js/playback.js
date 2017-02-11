@@ -78,7 +78,7 @@ triviaApp.service('playback', function(movies, music) {
 
 		self.start = function() {
 			return new Promise(function(resolve, reject) {
-				document.getElementById('content').innerHTML = '<h3>' + category + '</h3><div class="wavesurfer" id="player"></div>';
+				document.getElementById('content').innerHTML = '<div class="wavesurfer" id="player"></div>';
 				player = WaveSurfer.create({
 					container: '#player',
 					waveColor: 'white',

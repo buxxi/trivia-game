@@ -214,7 +214,10 @@ triviaApp.service('music', function($http, apikeys) {
 								for (var j = 0; j < result.length; j++) {
 									if (artists[i].id == result[j].artist.id) {
 										delete result[j].artist.id;
-										result[j].artist.image = artists[i].images[0].url;
+										var images = artists[i].images;
+										if (images.length > 0) {
+											result[j].artist.image = images[0].url;
+										}
 									}
 								}
 							}

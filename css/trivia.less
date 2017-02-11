@@ -437,13 +437,19 @@ ol {
 	}
 }
 
-.index {
+.infobox {
 	background-color: @secondary;
 	border-radius: 10px;
 	border: 5px solid @secondary_border;
 	color: @primary;
 	font-weight: bold;
-	padding: 0.5em 1.5em;
+	padding: 0.5em 1em;
+}
+
+.index {
+	.infobox {
+		float : left;
+	}
 	.current {
 		&:after {
 			content : " /";
@@ -451,13 +457,15 @@ ol {
 	}
 }
 
+.category {
+	position: relative;
+	left: -10px;
+	z-index: -1;
+	border-radius: 0 10px 10px 0;
+}
+
 .timer-score {
-	background-color: @secondary;
-	border-radius: 10px 0 0 10px;
-	border: 5px solid @secondary_border;
-	color: @primary;
 	float: left;
-	font-weight: bold;
 	left: 2em;
 	padding: 0.5em 2.5em 0.5em 1em;
 	position: relative;
@@ -512,6 +520,7 @@ ol {
 		line-height: 2em;
 		text-align: center;
 		display: block;
+		transform : scale(0.75);
 	}
 }
 
