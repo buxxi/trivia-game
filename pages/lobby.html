@@ -7,7 +7,7 @@
 		</div>
 		<div ng-if="code() != null">
 			<div class="qr">
-				<img src="https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl={{ url() }}&choe=UTF-8"/>
+				<img ng-src="https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl={{ url() }}&choe=UTF-8"/>
 			</div>
 			<div class="code">{{ code() }}</div>
 		</div>
@@ -25,7 +25,7 @@
 			<li ng-if="playerCount() == 0">No players has joined yet, be the first!</li>
 			<li ng-repeat="(peerid,player) in players()" ng-class="{'fallback' : usingFallbackConnection(peerid)}">
 				<a href="" ng-click="kickPlayer(peerid)" class="kick" title="Kick player">
-					<div class="avatar" data-score="{{player.name}}" style="background-color : {{player.color}}; border-color : {{player.color}}"><img src="{{ avatars[player.avatar].url }}"/></div>
+					<div class="avatar" data-score="{{player.name}}" style="background-color : {{player.color}}; border-color : {{player.color}}"><img ng-src="{{ avatars[player.avatar].url }}"/></div>
 				</a>
 			</li>
 		</ul>

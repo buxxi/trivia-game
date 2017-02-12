@@ -1,4 +1,4 @@
-triviaApp.controller('lobbyController', function($rootScope, $scope, $location, connection, game, categories, sound) {
+triviaApp.controller('lobbyController', function($rootScope, $scope, $location, $routeParams, connection, game, categories, sound) {
 	var config = {
 		questions : 10,
 		time : 30,
@@ -173,6 +173,12 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 		carousel.querySelectorAll("li").forEach((li) => li.classList.remove('show'));
 		next.classList.add('show');
 		setTimeout(moveCarousel, 5000);
+	}
+
+	if ($routeParams.fakePlayers) { //For debugging layout
+		for (var i = 1; i <= $routeParams.fakePlayers; i++) {
+			game.addPlayer(i, "Fake" + i);
+		}
 	}
 
 	angular.element(document).ready(moveCarousel);
