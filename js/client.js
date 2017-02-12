@@ -1,6 +1,6 @@
 var triviaApp = angular.module('triviaClient', ['ngRoute']);
 
-triviaApp.config(function($routeProvider) {
+triviaApp.config(($routeProvider) => {
 	$routeProvider.when('/', {
 			templateUrl : 'pages/join.html',
 			controller  : 'joinController'

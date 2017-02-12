@@ -13,14 +13,14 @@ triviaApp.service('drinks', function($http, apikeys) {
 		}
 
 		self.preload = function(progress, cache) {
-			return cache.get('drinks', function(resolve, reject) {
+			return cache.get('drinks', (resolve, reject) => {
 				var result = [];
 
 				function parseDrink(response) {
 					var data = response.data.drinks[0];
 					var drink = {
 						name : data['strDrink'],
-						ingredients : Object.keys(data).filter(function(k) { return k.indexOf("strIngredient") > -1; }).map(function(k) { return data[k]; }).filter(function(v) { return !!v; }),
+						ingredients : Object.keys(data).filter((k) => k.indexOf("strIngredient") > -1).map((k) => data[k]).filter((v) => !!v),
 						url : 'https://www.thecocktaildb.com/drink.php?c=' + data['idDrink']
 					}
 					result.push(drink);
@@ -33,24 +33,22 @@ triviaApp.service('drinks', function($http, apikeys) {
 					promises.push(loadRandomDrink());
 				}
 				for (var i = 0; i < (promises.length - 1); i++) {
-					promises[i].then(function(response) {
+					promises[i].then((response) => {
 						parseDrink(response);
 						progress(result.length, TOTAL_DRINKS);
 						return promises[i + 1];
 					});
 				}
-				promises[promises.length - 1].then(function(response) {
+				promises[promises.length - 1].then((response) => {
 					parseDrink(response);
 					resolve(result);
 				});
-			}).then(function(data) {
-				drinks = data;
-			});
+			}).then((data) => { drinks = data; });
 		}
 
 
 		self.nextQuestion = function(selector) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				var drink = selector.fromArray(drinks);
 
 				function resolveName(d) { return d.name; }
@@ -73,7 +71,7 @@ triviaApp.service('drinks', function($http, apikeys) {
 		}
 
 		function similar(drink, selector) {
-			return drinks.slice().sort(function (a, b) {
+			return drinks.slice().sort((a, b) => {
 					return selector.countCommon(drink.ingredients, b.ingredients) - selector.countCommon(drink.ingredients, a.ingredients);
 			});
 		}

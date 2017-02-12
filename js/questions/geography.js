@@ -5,39 +5,31 @@ triviaApp.service('geography', function($http) {
 
 		var types = {
 			flags : {
-				title : function(correct) { return "What country does this flag belong to?" },
+				title : (correct) => "What country does this flag belong to?",
 				correct : randomCountry,
 				similar : similarCountries,
-				load : function(correct) {
-					return loadImage('https://flagpedia.net/data/flags/normal/' + correct.code.toLowerCase() + '.png');
-				},
+				load : (correct) => loadImage('https://flagpedia.net/data/flags/normal/' + correct.code.toLowerCase() + '.png'),
 				weight : 40
 			},
 			shape : {
-				title : function(correct) { return "What country has this shape?" },
+				title : (correct) => "What country has this shape?",
 				correct : randomCountry,
 				similar : similarCountries,
-				load : function(correct) {
-					return loadImage('https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + correct.code + '&chco=000000|307bbb&chf=bg,s,000000&cht=map:auto=50,50,50,50');
-				},
+				load : (correct) => loadImage('https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + correct.code + '&chco=000000|307bbb&chf=bg,s,000000&cht=map:auto=50,50,50,50'),
 				weight : 30
 			},
 			highpopulation : {
-				title : function(correct) { return "Which country has the largest population?" },
+				title : (correct) => "Which country has the largest population?",
 				correct : randomCountry,
 				similar : similarPopulationCountries,
-				load : function(correct) {
-					return loadBlank();
-				},
+				load : (correct) => loadBlank(),
 				weight : 10
 			},
 			capital : {
-				title : function(correct) { return "In what country is " + correct.capital + " the capital?" },
+				title : (correct) => "In what country is " + correct.capital + " the capital?",
 				correct : randomCountry,
 				similar : similarCountries,
-				load : function(correct) {
-					return loadBlank();
-				},
+				load : (correct) => loadBlank(),
 				weight : 20
 			}
 		}
@@ -51,9 +43,9 @@ triviaApp.service('geography', function($http) {
 		}
 
 		self.preload = function(progress, cache) {
-			return cache.get('countries', function(resolve, reject) {
-				$http.get('https://restcountries.eu/rest/v1/all').then(function(response) {
-					var result = response.data.map(function(country) {
+			return cache.get('countries', (resolve, reject) => {
+				$http.get('https://restcountries.eu/rest/v1/all').then((response) => {
+					var result = response.data.map((country) => {
 						return {
 							code : country.alpha2Code,
 							region : country.subregion,
@@ -70,7 +62,7 @@ triviaApp.service('geography', function($http) {
 		}
 
 		self.nextQuestion = function(selector) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				var type = selector.fromWeightedObject(types);
 
 				var correct = type.correct(selector);
@@ -81,7 +73,7 @@ triviaApp.service('geography', function($http) {
 					return c.name;
 				}
 
-				type.load(correct).then(function(view) {
+				type.load(correct).then((view) => {
 					view.attribution = {
 						title : "Featured country",
 						name : correct.name,
@@ -113,15 +105,11 @@ triviaApp.service('geography', function($http) {
 				return Math.floor(Math.log(c.population));
 			}
 
-			return countries.filter(function(c) {
-				return c.population < country.population;
-			}).sort(function(a, b) {
-				return populationSort(b) - populationSort(a);
-			});
+			return countries.filter((c) => c.population < country.population).sort((a, b) => populationSort(b) - populationSort(a));
 		}
 
 		function loadImage(url) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				resolve({
 					player : 'image',
 					url : url
@@ -130,7 +118,7 @@ triviaApp.service('geography', function($http) {
 		}
 
 		function loadBlank() {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				resolve({});
 			});
 		}

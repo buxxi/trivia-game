@@ -24,7 +24,9 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	}
 
 	$scope.players = game.players;
-	$scope.playerCount = function() { return Object.keys(game.players()).length; };
+	$scope.playerCount = function() {
+		return Object.keys(game.players()).length;
+	};
 
 	$scope.poweredBy = [
 		{ url: 'https://spotify.com', name: 'Spotify' },
@@ -48,8 +50,8 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	}
 
 	$scope.toggleFullScreen = function() {
-		var fullScreenMode = function() { return document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen };
-		var notify = function() {
+		var fullScreenMode = () => document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen;
+		var notify = () => {
 			config.fullscreen = fullScreenMode();
 			document.removeEventListener("fullscreenchange", notify);
    			document.removeEventListener("webkitfullscreenchange", notify);
@@ -102,12 +104,10 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 
 		$scope.preloading[type] = preload;
 
-		categories.preload(type, preload.progress).then(function() {
-			$scope.$apply(function() {
-				preload.done = true;
-			});
-		}).catch(function(err) {
-			$scope.$apply(function() {
+		categories.preload(type, preload.progress).then(() => {
+			$scope.$apply(() => preload.done = true);
+		}).catch((err) => {
+			$scope.$apply(() => {
 				console.log(err);
 				preload.failed = true;
 			});
@@ -120,17 +120,13 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 			return false;
 		}
 
-		var categories = Object.keys(config.categories).filter(function(cat) { return config.categories[cat] });
+		var categories = Object.keys(config.categories).filter((cat) => config.categories[cat]);
 		if (categories.length == 0) {
 			$scope.startTitle = "Not enough categories selected";
 			return false;
 		}
 
-		var allPreloaded = categories.map(function(cat) {
-			return $scope.preloading[cat].done;
-		}).reduce(function(pre, cur) {
-			return pre && cur;
-		}, true);
+		var allPreloaded = categories.map((cat) => $scope.preloading[cat].done).reduce((pre, cur) => pre && cur, true);
 
 		if (!allPreloaded) {
 			$scope.startTitle = "Not all selected categories has preloaded";
@@ -150,8 +146,8 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 
 	$scope.addCategories = function(files) {
 		for (var i in files) {
-			categories.load(files[i]).then(function(type) {
-				$scope.$apply(function() {
+			categories.load(files[i]).then((type) => {
+				$scope.$apply(() => {
 					$scope.availableCategories = categories.available();
 					$scope.preload(type);
 					config.categories[type] = true;
@@ -160,27 +156,21 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 		}
 	}
 
-	connection.host(function(data) {
+	connection.host((data) => {
 		game.addPlayer(data.pairCode, data.name);
 
-		$scope.$apply(function() {});
-	}).then(function() {
-		$scope.$on("connection-upgraded", function(event, conn) {
-			$scope.$digest();
-		});
 		$scope.$digest();
-	}).catch(function(err) {
-		$scope.$apply(function() {
-			$scope.message = "Error when creating connection: " + err;
-		});
+	}).then(() => {
+		$scope.$on("connection-upgraded", (event, conn) => $scope.$digest());
+		$scope.$digest();
+	}).catch((err) => {
+		$scope.$apply(() => $scope.message = "Error when creating connection: " + err);
 	});
 
 	function moveCarousel() {
 		var carousel = document.querySelector(".carousel");
 		var next = carousel.querySelector(".show + li") || carousel.querySelector("li");
-		carousel.querySelectorAll("li").forEach(function(li) {
-			li.classList.remove('show');
-		});
+		carousel.querySelectorAll("li").forEach((li) => li.classList.remove('show'));
 		next.classList.add('show');
 		setTimeout(moveCarousel, 5000);
 	}

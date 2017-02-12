@@ -74,7 +74,7 @@ triviaApp.service('genericloader', function($http, $interpolate, $parse, apikeys
 		}
 
 		self.preload = function(progress) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				resolve(); //TODO: verify structure maybe?
 			});
 		}
@@ -83,7 +83,7 @@ triviaApp.service('genericloader', function($http, $interpolate, $parse, apikeys
 			var q = new GenericQuestion(selector.fromArray(questions));
 			var d = selector.fromArray(data);
 
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				resolve({
 					text : q.title(d),
 					answers : q.similar(d, data, selector),
@@ -94,7 +94,7 @@ triviaApp.service('genericloader', function($http, $interpolate, $parse, apikeys
 		}
 	}
 
-	return {
+	return { //TODO: extract to a 'class'
 		create : function(name, input) {
 			var parsed = JSON.parse(input);
 			var description = parsed.description;

@@ -15,7 +15,7 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 		}
 
 		self.newQuestion = function(question) {
-			previousQuestions.forEach(function(q) {
+			previousQuestions.forEach((q) => {
 				if (q.title == question.title && q.correct == question.correct) {
 					throw new Error("Duplicate question");
 				}
@@ -66,7 +66,7 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 			end = start + (1000 * timePerQuestion);
 			running = true;
 
-			var cancel = $interval(function() {
+			var cancel = $interval(() => {
 				if (new Date().getTime() > end) {
 					console.log("interval stopping");
 					self.stop();
@@ -97,7 +97,7 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 
 		function calculatePoints() {
 			var result = {};
-			Object.keys(players).forEach(function(peerid) {
+			Object.keys(players).forEach((peerid) => {
 				if (self.hasGuessed(peerid) && guesses[peerid].answer == self.correctAnswer()['key']) {
 					var pointsThisRound = timer.score(guesses[peerid].time) * players[peerid].multiplier;
 					result[peerid] = pointsThisRound;
@@ -123,8 +123,8 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 		}
 
 		function randomAvatar() {
-			var unusedAvatars = Object.keys(avatars).filter(function(avatar) {
-				return Object.keys(players).map(function(peerid) {
+			var unusedAvatars = Object.keys(avatars).filter((avatar) => {
+				return Object.keys(players).map((peerid) => {
 					return players[peerid].avatar;
 				}).indexOf(avatar) == -1;
 			});
@@ -136,7 +136,7 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 		}
 
 		self.addPlayer = function(peerid, name) {
-			var uniqueName = Object.keys(players).map(function(id) { return players[id].name; }).indexOf(name) == -1;
+			var uniqueName = Object.keys(players).map((id) => players[id].name).indexOf(name) == -1;
 			if (!uniqueName) {
 				throw new Error("The name " + name + " is already in use");
 			}
@@ -155,7 +155,7 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 		self.configure = function(cfg) {
 			config = cfg;
 			categories.configure(cfg.categories);
-			Object.keys(players).forEach(function(peerid) {
+			Object.keys(players).forEach((peerid) => {
 				players[peerid].score = 0;
 				players[peerid].multiplier = 1;
 				players[peerid].correct = 0;
@@ -183,7 +183,7 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 			var question = session.question();
 			var correct = question.correct;
 			return {
-				key : Object.keys(question.answers).filter(function(key) { return question.answers[key] == correct; })[0],
+				key : Object.keys(question.answers).filter((key) => question.answers[key] == correct)[0],
 				answer : correct
 			}
 		}
@@ -197,8 +197,8 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 		}
 
 		self.startTimer = function() {
-			return new Promise(function(resolve, reject) {
-				timer.run(function() {
+			return new Promise((resolve, reject) => {
+				timer.run(() => {
 					var pointsThisRound = calculatePoints();
 					guesses = {};
 					session.endQuestion();
@@ -213,8 +213,8 @@ triviaApp.service('game', function($rootScope, $interval, avatars, categories) {
 		}
 
 		self.nextQuestion = function() {
-			return new Promise(function(resolve, reject) {
-				categories.nextQuestion().then(function(question) {
+			return new Promise((resolve, reject) => {
+				categories.nextQuestion().then((question) => {
 					session.newQuestion(question);
 					resolve(question);
 				}).catch(reject);

@@ -3,12 +3,12 @@ triviaApp.service('playback', function(movies, music) {
 		var self = this;
 
 		self.start = function() {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				resolve();
 			});
 		}
 
-		self.stop = function() {}
+		self.stop = noop;
 
 		self.pauseMusic = false;
 	}
@@ -17,19 +17,21 @@ triviaApp.service('playback', function(movies, music) {
 		var self = this;
 
 		self.start = function() {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				var img = new Image();
-				img.onload = function() {
+				img.onload = () => {
 					document.getElementById('content').innerHTML = '<div class="image" id="player"><img src="' + url + '"/></div>';
 					resolve();
 				};
-				img.onerror = function() { reject("Could not load image " + url); };
+				img.onerror = () => {
+					reject("Could not load image " + url);
+				};
 				img.src = url;
 			});
 		}
 
 
-		self.stop = function() {}
+		self.stop = noop;
 
 		self.pauseMusic = false;
 	}
@@ -39,7 +41,7 @@ triviaApp.service('playback', function(movies, music) {
 		var player = {};
 
 		self.start = function() {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				document.getElementById('content').innerHTML = '<div class="' + playerClass + '" id="player"></div>';
 
 				player = new YT.Player('player', {
@@ -53,7 +55,7 @@ triviaApp.service('playback', function(movies, music) {
 						hd : 1
 					},
 					events: {
-						onStateChange: function(state) {
+						onStateChange: (state) => {
 							if (state.data == 1) {
 								resolve();
 							} else {
@@ -77,7 +79,7 @@ triviaApp.service('playback', function(movies, music) {
 		var player = {};
 
 		self.start = function() {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				document.getElementById('content').innerHTML = '<div class="wavesurfer" id="player"></div>';
 				player = WaveSurfer.create({
 					container: '#player',
@@ -85,7 +87,7 @@ triviaApp.service('playback', function(movies, music) {
 					progressColor: '#337ab7'
 				});
 
-				player.on('ready', function () {
+				player.on('ready', () => {
 					player.setVolume(0.3);
 					player.play();
 					resolve();
@@ -107,15 +109,13 @@ triviaApp.service('playback', function(movies, music) {
 		var self = this;
 
 		self.start = function() {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				document.getElementById('content').innerHTML = '<div class="quote" id="player"><i class="fa fa-fw fa-quote-left"></i><p>' + quote + '</p><i class="fa fa-fw fa-quote-right"></i></div>';
 				resolve();
 			});
 		}
 
-		self.stop = function() {
-			//Do nothing
-		}
+		self.stop = noop;
 
 		self.pauseMusic = false;
 	}
@@ -124,29 +124,29 @@ triviaApp.service('playback', function(movies, music) {
 		var self = this;
 
 		self.start = function() {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				document.getElementById('content').innerHTML = '<div class="list" id="player"><ol><li>' + list.join("</li><li>") + '</li></ol></i></div>';
 				resolve();
 			});
 		}
 
-		self.stop = function() {
-			//Do nothing
-		}
+		self.stop = noop;
 
 		self.pauseMusic = false;
 	}
+
+	function noop() {}
 
 	function Playback() {
 		var self = this;
 
 		var players = {
-			youtube : function(view) { return new YoutubePlayer(view.videoId, view.player) },
-			youtubeaudio : function(view) { return new YoutubePlayer(view.videoId, view.player) },
-			mp3 : function(view) { return new Mp3Player(view.category, view.mp3) },
-			image : function(view) { return new ImageViewer(view.url) },
-			quote : function(view) { return new QuoteText(view.quote) },
-			list : function(view) { return new ListViewer(view.list) }
+			youtube : (view) => new YoutubePlayer(view.videoId, view.player),
+			youtubeaudio : (view) => new YoutubePlayer(view.videoId, view.player),
+			mp3 : (view) => new Mp3Player(view.category, view.mp3),
+			image : (view) => new ImageViewer(view.url),
+			quote : (view) => new QuoteText(view.quote),
+			list : (view) => new ListViewer(view.list)
 		}
 
 		self.player = function(view) {

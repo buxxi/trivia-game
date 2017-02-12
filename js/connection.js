@@ -16,20 +16,20 @@ triviaApp.service('connection', function($rootScope) {
 		}
 
 		self.host = function(joinCallback) {
-			return new Promise(function(resolve, reject) {
-				new Fingerprint2().get(function(id) {
+			return new Promise((resolve, reject) => {
+				new Fingerprint2().get((id) => {
 					mediator = createPeer(id);
 
-					mediator.on('error', function(err) {
+					mediator.on('error', (err) => {
 						reject(err);
 					});
 
-					mediator.on('data', function(data) {
+					mediator.on('data', (data) => {
 						if (data.join) {
 							mediator.close();
 
 							var peer = createPeer(data.join.pairCode);
-							peer.on('connect', function() {
+							peer.on('connect', () => {
 								try {
 									joinCallback(data.join);
 									peers.push(peer);
@@ -45,11 +45,11 @@ triviaApp.service('connection', function($rootScope) {
 								}
 								mediator.connect();
 							});
-							peer.on('data', function(data) {
+							peer.on('data', (data) => {
 								dataEvent(peer.pairCode, data);
 							});
 
-							peer.on('upgrade', function() {
+							peer.on('upgrade', () => {
 								$rootScope.$broadcast('connection-upgraded', peer);
 							});
 
@@ -58,9 +58,9 @@ triviaApp.service('connection', function($rootScope) {
 					});
 
 					sanityCheck = createPeer(id);
-					sanityCheck.on('upgrade', function() {
+					sanityCheck.on('upgrade', () => {
 						fixCloseEvent(sanityCheck);
-						sanityCheck.on('close', function() {
+						sanityCheck.on('close', () => {
 							mediator.connect();
 							resolve();
 						});
@@ -74,20 +74,20 @@ triviaApp.service('connection', function($rootScope) {
 		}
 
 		self.join = function(pairCode, name) {
-			return new Promise(function(resolve, reject) {
-				new Fingerprint2().get(function(id) {
+			return new Promise((resolve, reject) => {
+				new Fingerprint2().get((id) => {
 					mediator = createPeer(pairCode);
 
-					mediator.on('error', function(err) {
+					mediator.on('error', (err) => {
 						reject(err);
 					});
 
-					var timeout = setTimeout(function() {
+					var timeout = setTimeout(() => {
 						mediator.close();
 						reject("No one listening on Pair Code " + pairCode);
 					}, 3000);
 
-					mediator.on('connect', function() {
+					mediator.on('connect', () => {
 						mediator.send({
 							join : { name : name, pairCode : id }
 						});
@@ -95,16 +95,16 @@ triviaApp.service('connection', function($rootScope) {
 						mediator.close();
 
 						var peer = createPeer(id);
-						peer.on('connect', function() {
+						peer.on('connect', () => {
 							clearTimeout(timeout);
 							fixCloseEvent(peer);
 							peers.push(peer);
 
-							peer.on('data', function(data) {
+							peer.on('data', (data) => {
 								dataEvent(peer.pairCode, data);
 							});
 
-							$rootScope.$on('data-join', function(event, id, data) {
+							$rootScope.$on('data-join', (event, id, data) => {
 								if (data === true) {
 									resolve();
 								} else {
@@ -113,7 +113,7 @@ triviaApp.service('connection', function($rootScope) {
 							});
 						});
 
-						peer.on('close', function() {
+						peer.on('close', () => {
 							$rootScope.$broadcast('connection-closed', peer);
 						});
 
@@ -132,7 +132,7 @@ triviaApp.service('connection', function($rootScope) {
 
 		self.send = function(data) {
 			console.log("Sending: " + JSON.stringify(data) + " to " + peers.length + " peers");
-			peers.forEach(function(peer) {
+			peers.forEach((peer) => {
 				peer.send(data);
 			});
 		}
@@ -163,7 +163,7 @@ triviaApp.service('connection', function($rootScope) {
 
 		function fixCloseEvent(peer) { //TODO: make a bug report that this is not triggered, server also modified to actually close the connection
 			var old = peer.socket.onclose;
-			peer.socket.onclose = function() {
+			peer.socket.onclose = () => {
 				peer.emit('close');
 				old();
 			};

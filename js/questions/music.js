@@ -7,7 +7,7 @@ triviaApp.service('music', function($http, apikeys) {
 
 		var types = {
 			title : {
-				title : function(correct) { return "What is the name of this song?" },
+				title : (correct) => "What is the name of this song?",
 				correct : randomTrack,
 				similar : similarTracks,
 				format : trackTitle,
@@ -15,7 +15,7 @@ triviaApp.service('music', function($http, apikeys) {
 				weight : 40
 			},
 			artist : {
-				title : function(correct) { return "Which artist is this?" },
+				title : (correct) => "Which artist is this?",
 				correct : randomTrack,
 				similar : similarTracks,
 				format : artistName,
@@ -23,7 +23,7 @@ triviaApp.service('music', function($http, apikeys) {
 				weight : 30
 			},
 			album : {
-				title : function(correct) { return "From which album is this song?" },
+				title : (correct) => "From which album is this song?",
 				correct : randomTrack,
 				similar : similarTracks,
 				format : albumName,
@@ -31,7 +31,7 @@ triviaApp.service('music', function($http, apikeys) {
 				weight : 10
 			},
 			artistImage : {
-				title : function(correct) { return "Name the artist in the image" },
+				title : (correct) => "Name the artist in the image",
 				correct : randomTrack,
 				similar : similarTracks,
 				format : artistName,
@@ -49,39 +49,37 @@ triviaApp.service('music', function($http, apikeys) {
 		}
 
 		self.preload = function(progress, cache) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				if (tracks.length != 0) {
 					resolve();
 					return;
 				}
-				loadSpotifyAccessToken().then(function(accessToken) {
-					loadSpotifyCategories(accessToken, cache).then(function(categories) {
+				loadSpotifyAccessToken().then((accessToken) => {
+					loadSpotifyCategories(accessToken, cache).then((categories) => {
 						progress(tracks.length, categories.length * TRACKS_BY_CATEGORY);
 
-						var promises = categories.map(function(category) {
-							return loadCategory(accessToken, category, cache);
-						});
+						var promises = categories.map((category) => loadCategory(accessToken, category, cache));
 
 						for (var i = 0; i < (promises.length - 1); i++) {
-							promises[i].then(function(data) {
+							promises[i].then((data) => {
 								tracks = tracks.concat(data);
 								progress(tracks.length, categories.length * TRACKS_BY_CATEGORY);
 								return promises[i + 1];
 							});
 						}
-						promises[promises.length - 1].then(function(data) {
+						promises[promises.length - 1].then((data) => {
 							tracks = tracks.concat(data);
 							resolve();
 						});
 					});
-				}).catch(function(err) {
+				}).catch((err) => {
 					reject();
 				});
 			});
 		}
 
 		self.nextQuestion = function(selector) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				var type = selector.fromWeightedObject(types);
 				var track = type.correct(selector);
 
@@ -106,7 +104,7 @@ triviaApp.service('music', function($http, apikeys) {
 		}
 
 		function loadCategory(accessToken, category, cache) {
-			return cache.get(category, function(resolve, reject) {
+			return cache.get(category, (resolve, reject) => {
 				$http.get('https://api.spotify.com/v1/recommendations', {
 					params : {
 						seed_genres : category,
@@ -116,10 +114,8 @@ triviaApp.service('music', function($http, apikeys) {
 					headers : {
 						Authorization : 'Bearer ' + accessToken
 					}
-				}).then(function(response) {
-					var result = response.data.tracks.filter(function(track) {
-						return !!track.preview_url;
-					}).map(function(track) {
+				}).then((response) => {
+					var result = response.data.tracks.filter((track) => !!track.preview_url).map((track) => {
 						return {
 							title : parseTitle(track.name),
 							artist : {
@@ -133,12 +129,10 @@ triviaApp.service('music', function($http, apikeys) {
 						};
 					});
 					return result;
-				}).then(function(result) {
-					return loadArtistImages(result, accessToken);
-				}).then(resolve).catch(function(err) {
+				}).then((result) => loadArtistImages(result, accessToken)).then(resolve).catch((err) => {
 					if (err.status == 429) {
 						var time = parseInt((err.headers()['retry-after']) + 1) * 1000;
-						setTimeout(function() {
+						setTimeout(() => {
 							loadCategory(accessToken, category).then(resolve).catch(reject);
 						}, time);
 						return;
@@ -149,22 +143,20 @@ triviaApp.service('music', function($http, apikeys) {
 		}
 
 		function loadSpotifyCategories(accessToken, cache) {
-			return cache.get('categories', function(resolve, reject) {
+			return cache.get('categories', (resolve, reject) => {
 				$http.get('https://api.spotify.com/v1/recommendations/available-genre-seeds', {
 					headers : {
 						Authorization : 'Bearer ' + accessToken
 					}
-				}).then(function(response) {
-					var genres = response.data.genres.filter(function(g) {
-						return FILTER_GENRES.indexOf(g) > -1;
-					});
+				}).then((response) => {
+					var genres = response.data.genres.filter((g) => FILTER_GENRES.indexOf(g) > -1);
 					resolve(genres);
 				});
 			});
 		}
 
 		function loadSpotifyAccessToken() {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				var path = window.location.href.substr(0, window.location.href.lastIndexOf('/trivia'));
 				var redirect_uri = path + '/trivia/spotifyauth.html';
 				var url = 'https://accounts.spotify.com/authorize?client_id=' + apikeys.spotify + '&response_type=token&redirect_uri=' + encodeURIComponent(redirect_uri);
@@ -188,10 +180,8 @@ triviaApp.service('music', function($http, apikeys) {
 		}
 
 		function loadArtistImages(result, accessToken) {
-			return new Promise(function(resolve, reject) {
-				var artistIds = result.map(function(track) {
-					return track.artist.id;
-				}).filter(function(item, pos, arr) {
+			return new Promise((resolve, reject) => {
+				var artistIds = result.map((track) => track.artist.id).filter((item, pos, arr) => {
 					return arr.indexOf(item) == pos;
 				});
 
@@ -200,7 +190,7 @@ triviaApp.service('music', function($http, apikeys) {
 				while (artistIds.length > 0) {
 					var chunkedIds = artistIds.splice(0, 50);
 					var i = promises.length;
-					promises.push(new Promise(function(resolveLocal, rejectLocal) {
+					promises.push(new Promise((resolveLocal, rejectLocal) => {
 						$http.get('https://api.spotify.com/v1/artists', {
 							params : {
 								ids : chunkedIds.join(',')
@@ -208,7 +198,7 @@ triviaApp.service('music', function($http, apikeys) {
 							headers : {
 								Authorization : 'Bearer ' + accessToken
 							}
-						}).then(function(response) {
+						}).then((response) => {
 							var artists = response.data.artists;
 							for (var i = 0; i < artists.length; i++) {
 								for (var j = 0; j < result.length; j++) {
@@ -228,12 +218,12 @@ triviaApp.service('music', function($http, apikeys) {
 
 				//TODO: reuse code below
 				for (var i = 0; i < (promises.length - 1); i++) {
-					promises[i].then(function() {
+					promises[i].then(() => {
 						return promises[i + 1];
 					})
 				}
 
-				promises[promises.length - 1].then(function() {
+				promises[promises.length - 1].then(() => {
 					resolve(result);
 				});
 			})

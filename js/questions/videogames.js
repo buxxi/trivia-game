@@ -9,7 +9,7 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 
 		var types = {
 			screenshot : {
-				title : function(correct) { return "What game is this a screenshot of?" },
+				title : (correct) => "What game is this a screenshot of?",
 				correct : randomGame,
 				similar : similarGames,
 				view : screenshot,
@@ -17,7 +17,7 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 				weight : 45
 			},
 			year : {
-				title : function(correct) { return "In which year was '" + correct.name + "' first released?" },
+				title : (correct) => "In which year was '" + correct.name + "' first released?",
 				correct : randomGame,
 				similar : similarGameYears,
 				view : blank,
@@ -25,7 +25,7 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 				weight : 10
 			},
 			platform : {
-				title : function(correct) { return "'" + correct.name + "' was released to one of these platforms, which one?" },
+				title : (correct) => "'" + correct.name + "' was released to one of these platforms, which one?",
 				correct : randomGame,
 				similar : similarPlatforms,
 				view : blank,
@@ -33,7 +33,7 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 				weight : 10
 			},
 			platform_year : {
-				title : function(correct) { return "In which year was the system '" + correct.name + "' released?" },
+				title : (correct) => "In which year was the system '" + correct.name + "' released?",
 				correct : randomPlatform,
 				similar : similarPlatformYears,
 				view : blank,
@@ -41,7 +41,7 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 				weight : 10
 			},
 			song : {
-				title : function(correct) { return "From which games soundtrack is this song?" },
+				title : (correct) => "From which games soundtrack is this song?",
 				correct : randomGameWithSong,
 				similar : similarGames,
 				view : songVideo,
@@ -59,30 +59,28 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 		}
 
 		self.preload = function(progress, cache) {
-			return new Promise(function(resolve, reject) {
-				loadPlatforms(cache).then(function(result) {
+			return new Promise((resolve, reject) => {
+				loadPlatforms(cache).then((result) => {
 					platforms = result;
-					var loadPlatforms = Object.keys(platforms).filter(function(p) { return platforms[p].games >= MINIMUM_PLATFORM_GAMES; });
+					var loadPlatforms = Object.keys(platforms).filter((p) => platforms[p].games >= MINIMUM_PLATFORM_GAMES);
 					var total = loadPlatforms.length * GAMES_PER_PLATFORM;
 
 					progress(games.length, total);
 
-					var promises = loadPlatforms.map(function(platform) {
-						return loadGames(platform, cache);
-					});
+					var promises = loadPlatforms.map((platform) => loadGames(platform, cache));
 
 					for (var i = 0; i < (promises.length - 1); i++) {
-						promises[i].then(function(data) {
+						promises[i].then((data) => {
 							games = games.concat(data);
 							progress(games.length, total);
 							return promises[i + 1];
 						});
 					}
-					promises[promises.length - 1].then(function(data) {
+					promises[promises.length - 1].then((data) => {
 						games = games.concat(data);
-						loadVideos(progress, cache).then(function(videos) {
-							parseTitles(videos).filter(function(t) {
-								games.forEach(function(g) {
+						loadVideos(progress, cache).then((videos) => {
+							parseTitles(videos).filter((t) => {
+								games.forEach((g) => {
 									if (compareAlphaNumeric(g.name, t.title)) {
 										g.songs = g.songs || [];
 										g.songs.push(t.id);
@@ -97,7 +95,7 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 		}
 
 		self.nextQuestion = function(selector) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				var type = selector.fromWeightedObject(types);
 				var correct = type.correct(selector);
 				var similar = type.similar(correct, selector);
@@ -112,13 +110,13 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 		}
 
 		function loadVideos(progress, cache) {
-			return cache.get('songs', function(resolve, reject) {
+			return cache.get('songs', (resolve, reject) => {
 				youtube.loadChannel('UC6iBH7Pmiinoe902-JqQ7aQ', progress).then(resolve).catch(reject);
 			});
 		}
 
 		function loadGames(platform, cache) {
-			return cache.get(platform, function(resolve, reject) {
+			return cache.get(platform, (resolve, reject) => {
 				$http.get('https://igdbcom-internet-game-database-v1.p.mashape.com/games/', {
 					params : {
 						fields : 'name,url,first_release_date,release_dates,screenshots,keywords,themes,genres',
@@ -131,23 +129,21 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 					headers : {
 						'X-Mashape-Key' : apikeys.mashape
 					}
-				}).then(function(response) {
+				}).then((response) => {
 					function tag(prefix, arr) {
 						if (!arr) {
 							return [];
 						}
 
-						return arr.map(function(i) {
-							return prefix + i;
-						});
+						return arr.map((i) => prefix + i);
 					}
 
-					var games = response.data.map(function(game) {
+					var games = response.data.map((game) => {
 						return {
 							name : game.name,
 							release_date : release_date(game.first_release_date),
-							screenshots : game.screenshots.map(function(ss) { return ss.cloudinary_id; }),
-							platforms : game.release_dates.map(function(rd) { return platforms[rd.platform] ? platforms[rd.platform].name : null; }).filter(function(p, i, arr) { return p != null && arr.indexOf(p) == i; }),
+							screenshots : game.screenshots.map((ss) => ss.cloudinary_id),
+							platforms : game.release_dates.map((rd) => platforms[rd.platform] ? platforms[rd.platform].name : null).filter((p, i, arr) => p != null && arr.indexOf(p) == i),
 							tags : [].concat(tag('k', game.keywords)).concat(tag('t', game.themes)).concat(tag('g', game.genres)),
 							attribution : game.url
 						};
@@ -158,7 +154,7 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 		}
 
 		function loadPlatforms(cache) {
-			var loadPage = function(offset) {
+			function loadPage(offset) {
 				return $http.get('https://igdbcom-internet-game-database-v1.p.mashape.com/platforms/', {
 					params : {
 						fields : 'name,generation,games,versions.release_dates.date',
@@ -171,24 +167,20 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 				})
 			};
 
-			return cache.get('platforms', function(resolve, reject) {
+			return cache.get('platforms', (resolve, reject) => {
 				result = [];
-				var callback = function(response) {
+				function callback(response) {
 					result = result.concat(response.data);
 
 					if (response.data.length == 50) {
 						loadPage(result.length).then(callback);
 					} else {
 						var object = {};
-						result.forEach(function(platform) {
+						result.forEach((platform) => {
 							if (!platform.versions) {
 								platform.versions = [];
 							}
-							var release_dates = platform.versions.map(function(v) {
-								return v.release_dates ? v.release_dates.map(function(d) { return d.date; }) : []
-							}).reduce(function(a, b) {
-								return [].concat(a).concat(b);
-							}, []);
+							var release_dates = platform.versions.map((v) => v.release_dates ? v.release_dates.map((d)  => d.date) : []).reduce((a, b) => [].concat(a).concat(b), []);
 
 							object[platform.id] = {
 								name : platform.name,
@@ -206,7 +198,7 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 		}
 
 		function parseTitles(videos) {
-			return videos.map(function(v) {
+			return videos.map((v) => {
 				var match = v.title.match(/Best VGM [0-9]+ - (.*?)( - ).*/);
 				if (!match) {
 					return null;
@@ -216,7 +208,7 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 					id : v.id,
 					title : match[1]
 				};
-			}).filter(function(v) { return v != null; });
+			}).filter((v) => v != null);
 		}
 
 		function compareAlphaNumeric(str1, str2) {
@@ -232,36 +224,32 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 		}
 
 		function randomGameWithSong(selector) {
-			return selector.fromArray(games.filter(function(g) { return g.songs }));
+			return selector.fromArray(games.filter((g) => g.songs));
 		}
 
 		function randomPlatform(selector) {
 			function hasDate(p) {
 				return p.release_date != new Date(0).toISOString();
 			};
-			return selector.fromArray(Object.keys(platforms).map(function(p) {return platforms[p]}).filter(hasDate));
+			return selector.fromArray(Object.keys(platforms).map((p) => platforms[p]).filter(hasDate));
 		}
 
 		function similarGames(game, selector) {
 			var titleWords = selector.wordsFromString(game.name);
-			return games.map(function(g) {
+			return games.map((g) => {
 				return {
 					game : g,
 					score : selector.levenshteinDistance(titleWords, selector.wordsFromString(g.name)) + selector.levenshteinDistance(game.tags, g.tags) + selector.dateDistance(game.release_date, g.release_date)
 				};
-			}).sort(function(a, b) {
-				return a.score - b.score;
-			}).map(function(node) {
-				return node.game;
-			});
+			}).sort((a, b) => a.score - b.score).map((node) => node.game);
 		}
 
 		function similarGameYears(game, selector) {
-			return selector.yearAlternatives(gameYear(game), 3).map(function(year) { return { release_date : year }; });
+			return selector.yearAlternatives(gameYear(game), 3).map((year) => ({ release_date : year }));
 		}
 
 		function similarPlatformYears(platform, selector) {
-			return selector.yearAlternatives(platformYear(platform), 3).map(function(year) { return { release_date : year }; });
+			return selector.yearAlternatives(platformYear(platform), 3).map((year) => { ({ release_date : year })});
 		}
 
 		function similarPlatforms(game, selector) {
@@ -269,7 +257,7 @@ triviaApp.service('videogames', function($http, youtube, apikeys) {
 				return selector.dateDistance(a.release_date, game.release_date) - selector.dateDistance(b.release_date, game.release_date);
 			}
 
-			var unused = Object.keys(platforms).map(function(p) { return platforms[p] }).filter(function(p) { return game.platforms.indexOf(p) == -1}).sort(dateDifference);
+			var unused = Object.keys(platforms).map((p) => platforms[p]).filter((p) => game.platforms.indexOf(p) == -1).sort(dateDifference);
 
 			return [
 				{ platforms : [selector.splice(unused).name] },

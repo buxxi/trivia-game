@@ -1,6 +1,6 @@
 var triviaApp = angular.module('triviaServer', ['ngRoute']);
 
-triviaApp.config(function($routeProvider) {
+triviaApp.config(($routeProvider) => {
 	$routeProvider.when('/', {
 			templateUrl : 'pages/lobby.html',
 			controller  : 'lobbyController'
@@ -32,8 +32,8 @@ triviaApp.constant('avatars', {
 	frog : '\uD83D\uDC38',
 	octopus : '\uD83D\uDC19'
 });
-triviaApp.run(function($rootScope, avatars) {
-	Object.keys(avatars).forEach(function(avatar) {
+triviaApp.run(($rootScope, avatars) => {
+	Object.keys(avatars).forEach((avatar) => {
 		avatars[avatar] = {
 			code : avatars[avatar],
 			url : /src=\"(.*?)\"/.exec(twemoji.parse(avatars[avatar]))[1]
@@ -42,9 +42,9 @@ triviaApp.run(function($rootScope, avatars) {
 	$rootScope.avatars = avatars;
 });
 triviaApp.constant('apikeys', {});
-triviaApp.run(function($http, apikeys) {
-	$http.get('js/api-keys.json').then(function(response) {
-		Object.keys(response.data).forEach(function(key) {
+triviaApp.run(($http, apikeys) => {
+	$http.get('js/api-keys.json').then((response) => {
+		Object.keys(response.data).forEach((key) => {
 			apikeys[key] = response.data[key];
 		});
 	});
@@ -60,8 +60,8 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 	$scope.hasGuessed = {};
 	$scope.avatars = avatars;
 
-	$scope.$on("data-guess", function(event, pairCode, data) {
-		$scope.$apply(function() {
+	$scope.$on("data-guess", (event, pairCode, data) => {
+		$scope.$apply(() => {
 			game.guess(pairCode, data);
 			$scope.hasGuessed[pairCode] = true;
 			sound.beep(Object.keys($scope.hasGuessed).length);
@@ -69,15 +69,15 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 	});
 
 	function showLoadingNextQuestion() {
-		return new Promise(function(resolve, reject) {
+		return new Promise((resolve, reject) => {
 			$scope.state = 'loading';
 			resolve();
 		});
 	}
 
 	function showPreQuestion(question) {
-		return new Promise(function(resolve, reject) {
-			$scope.$apply(function() {
+		return new Promise((resolve, reject) => {
+			$scope.$apply(() => {
 				$scope.state = 'pre-question';
 				$scope.title = question.text;
 			});
@@ -85,13 +85,13 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 			var spoken = false;
 			var timelimit = false;
 
-			sound.speak(question.text, function() {
+			sound.speak(question.text, () => {
 				spoken = true;
 				if (timelimit) {
 					resolve(question);
 				}
 			});
-			$timeout(function() {
+			$timeout(() => {
 				timelimit = true;
 				if (spoken) {
 					resolve(question);
@@ -101,12 +101,12 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 	}
 
 	function showQuestion(question) {
-		return new Promise(function(resolve, reject) {
+		return new Promise((resolve, reject) => {
 			console.log(question);
 
 			var player = playback.player(question.view);
-			player.start().then(function() {
-				$scope.$apply(function() {
+			player.start().then(() => {
+				$scope.$apply(() => {
 					$scope.state = 'question';
 					$scope.category = question.view.category;
 				});
@@ -115,7 +115,7 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 					answers : question.answers
 				});
 
-				game.startTimer().then(function(pointsThisRound) {
+				game.startTimer().then((pointsThisRound) => {
 					player.stop();
 					return resolve(pointsThisRound);
 				});
@@ -127,22 +127,22 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 	}
 
 	function showPostQuestion(pointsThisRound) {
-		return new Promise(function(resolve, reject) {
+		return new Promise((resolve, reject) => {
 			sound.play();
 			var correct = game.correctAnswer();
 			document.getElementById('content').innerHTML = '';
 			connection.send({
 				correct : correct.key
 			});
-			$scope.$apply(function() {
+			$scope.$apply(() => {
 				$scope.title = "The correct answer was";
 				$scope.correct = correct;
 				$scope.state = 'post-question';
 				$scope.pointChanges = pointsThisRound;
 				$scope.hasGuessed = {};
 			});
-			$timeout(function() {
-				$scope.$apply(function() {
+			$timeout(() => {
+				$scope.$apply(() => {
 					$scope.pointChanges = {};
 				})
 				connection.send({
@@ -155,21 +155,21 @@ triviaApp.controller('serverController', function($scope, $location, $timeout, c
 
 	function showError(err) {
 		console.log(err);
-		$scope.$apply(function() {
+		$scope.$apply(() => {
 			$scope.error = err.toString();
 		});
-		$timeout(function() {
+		$timeout(() => {
 			delete $scope.error;
 			gameLoop();
 		}, 3000);
 	}
 
 	function gameLoop() {
-		showLoadingNextQuestion().then(function() {
+		showLoadingNextQuestion().then(() => {
 			if (game.hasMoreQuestions()) {
 				game.nextQuestion().then(showPreQuestion).then(showQuestion).then(showPostQuestion).then(gameLoop).catch(showError);
 			} else {
-				$scope.$apply(function() {
+				$scope.$apply(() => {
 					$location.path('/results');
 				})
 			}

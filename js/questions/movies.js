@@ -5,14 +5,14 @@ triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 
 		var types = {
 			title : {
-				title : function(correct) { return "What is the title of this movie?" },
+				title : (correct) => "What is the title of this movie?",
 				correct : randomMovie,
 				similar : loadSimilarMovies,
 				format : movieTitle,
 				weight : 80
 			},
 			year : {
-				title : function(correct) { return "What year is this movie from?" },
+				title : (correct) => "What year is this movie from?",
 				correct : randomMovie,
 				similar : loadSimilarYears,
 				format : movieYear,
@@ -29,8 +29,8 @@ triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 		}
 
 		self.preload = function(progress, cache) {
-			return new Promise(function(resolve, reject) {
-				loadYoutubeVideos(progress, cache).then(parseTitles).then(function(data) {
+			return new Promise((resolve, reject) => {
+				loadYoutubeVideos(progress, cache).then(parseTitles).then((data) => {
 					movies = data;
 					resolve();
 				});
@@ -38,16 +38,14 @@ triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 		}
 
 		self.nextQuestion = function(selector) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				var type = selector.fromWeightedObject(types);
 
 				var movie = type.correct(selector);
 				var videoId = selector.fromArray(movie.videos);
 				var attribution = ['http://www.youtube.com/watch?v=' + videoId];
 
-				youtube.checkEmbedStatus(videoId).then(function() {
-					return type.similar(movie, attribution, selector);
-				}).then(function(similar) {
+				youtube.checkEmbedStatus(videoId).then(() => type.similar(movie, attribution, selector)).then((similar) => {
 					resolve({
 						text : type.title(movie),
 						answers : selector.alternatives(similar, movie, type.format, selector.first),
@@ -62,7 +60,7 @@ triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 							}
 						}
 					});
-				}).catch(function(err) {
+				}).catch((err) => {
 					if (typeof(err) == 'string') {
 						console.log(movie.title + " got handled error " + err + ", trying another one");
 						return self.nextQuestion(selector).then(resolve, reject);
@@ -107,9 +105,9 @@ triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 		}
 
 		function parseTitles(result) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				var movies = {};
-				result.forEach(function(video) {
+				result.forEach((video) => {
 					var metadata = parseTitle(video.title);
 					if (metadata) {
 						var movie = movies[metadata.title];
@@ -124,7 +122,7 @@ triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 					}
 				});
 
-				movies = Object.keys(movies).map(function(title) {
+				movies = Object.keys(movies).map((title) => {
 					return {
 						title : title,
 						year : movies[title].year,
@@ -137,20 +135,20 @@ triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 		}
 
 		function loadYoutubeVideos(progress, cache) {
-			return cache.get('videos', function(resolve, reject) {
+			return cache.get('videos', (resolve, reject) => {
 				youtube.loadChannel('UC3gNmTGu-TTbFPpfSs5kNkg', progress).then(resolve).catch(reject);
 			});
 		}
 
 		function loadSimilarMovies(movie, attribution, selector) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				$http.get('https://api.themoviedb.org/3/search/movie', {
 					params : {
 						api_key : apikeys.tmdb,
 						query : movie.title,
 						year : movie.year
 					}
-				}).then(function(response) {
+				}).then((response) => {
 					if (response.data.results.length != 1) {
 						return reject("Didn't find an exact match for the movie metadata");
 					}
@@ -160,12 +158,12 @@ triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 						params : {
 							api_key : apikeys.tmdb
 						}
-					}).then(function(response) {
+					}).then((response) => {
 						if (response.data.results.length < 3) {
 							return reject("Got less than 3 similar movies");
 						}
 
-						var similar = response.data.results.map(function(item) {
+						var similar = response.data.results.map((item) => {
 							return {
 								title : item.title,
 								year : new Date(item.release_date).getFullYear()
@@ -180,8 +178,8 @@ triviaApp.service('movies', function($http, $interval, youtube, apikeys) {
 		}
 
 		function loadSimilarYears(movie, attribute, selector) {
-			return new Promise(function(resolve, reject) {
-				resolve(selector.yearAlternatives(movie.year, 3).map(function(year) { return { year : year }; }));
+			return new Promise((resolve, reject) => {
+				resolve(selector.yearAlternatives(movie.year, 3).map((year) => { return { year : year }; }));
 			});
 		}
 

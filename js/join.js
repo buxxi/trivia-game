@@ -12,12 +12,12 @@ triviaApp.controller('joinController', function($scope, $location, $routeParams,
 	}
 
 	$scope.join = function() {
-		connection.join(config.code, config.name).then(function() {
-			$scope.$apply(function() {
+		connection.join(config.code, config.name).then(() => {
+			$scope.$apply(() => {
 				$location.path('/game');
 			});
-		}).catch(function(err) {
-			$scope.$apply(function() {
+		}).catch((err) => {
+			$scope.$apply(() => {
 				$scope.message = "Error when joining: " + err;
 			});
 		});
@@ -28,9 +28,9 @@ triviaApp.controller('joinController', function($scope, $location, $routeParams,
 		var video = document.getElementById('camera');
 		video.style.display = 'inline-block';
 
-		decoder.getVideoSources(function(err, sources) {
+		decoder.getVideoSources((err, sources) => {
 			if (sources) {
-				sources.forEach(function(source) {
+				sources.forEach((source) => {
 					if (source.facing == 'environment') {
 						decoder.setSourceId(source.id);
 					}
@@ -44,9 +44,9 @@ triviaApp.controller('joinController', function($scope, $location, $routeParams,
 
 			video.addEventListener('click', stop);
 
-			decoder.decodeFromCamera(video, function(er,res) {
+			decoder.decodeFromCamera(video, (er,res) => {
 				if (res) {
-					$scope.$apply(function() {
+					$scope.$apply(() => {
 						config.code = /.*\?code=(.*)/.exec(res)[1];
 
 						if (!!config.name) {

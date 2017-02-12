@@ -13,7 +13,7 @@ triviaApp.service('quotes', function($http, apikeys) {
 		}
 
 		self.preload = function(progress, cache) {
-			return cache.get('quotes', function(resolve, reject) {
+			return cache.get('quotes', (resolve, reject) => {
 				progress(0, TOTAL_QUOTES);
 
 				var promises = [];
@@ -22,24 +22,24 @@ triviaApp.service('quotes', function($http, apikeys) {
 					promises.push(loadRandomQuote());
 				}
 				for (var i = 0; i < (promises.length - 1); i++) {
-					promises[i].then(function(response) {
+					promises[i].then((response) => {
 						result.push(response.data);
 						progress(result.length, TOTAL_QUOTES);
 						return promises[i + 1];
 					});
 				}
-				promises[promises.length - 1].then(function(response) {
+				promises[promises.length - 1].then((response) => {
 					result.push(response.data);
 					resolve(result);
 				});
-			}).then(function(data) {
+			}).then((data) => {
 				quotes = data;
 			});
 		}
 
 
 		self.nextQuestion = function(selector) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				var quote = selector.fromArray(quotes);
 
 				function resolveAuthor(q) { return q.author; }

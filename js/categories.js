@@ -3,13 +3,13 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 		var self = this;
 
 		self.get = function(subKey, promiseFunction) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				var key = primaryKey + "-" + subKey;
 				var result = localStorage.getItem(key);
 				if (result) {
 					resolve(JSON.parse(result));
 				} else {
-					promiseFunction(function(result) {
+					promiseFunction((result) => {
 						localStorage.setItem(key, JSON.stringify(result));
 						resolve(result);
 					}, reject);
@@ -31,9 +31,7 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 
 		self.fromWeightedObject = function(obj) {
 			var keys = Object.keys(obj);
-			var total = keys.map(function(k) { return obj[k].weight }).reduce(function(a, b) {
-				return a + b;
-			}, 0);
+			var total = keys.map((k) => obj[k].weight).reduce((a, b) => a + b, 0);
 			var randomWeight = self.random(total);
 
 			var index = 0;
@@ -69,7 +67,7 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 		}
 
 		self.countCommon = function(arr1, arr2) {
-			return arr1.reduce(function(acc, cur) {
+			return arr1.reduce((acc, cur) => {
 				if (arr2.indexOf(cur) > -1) {
 					return acc + 1;
 				} else {
@@ -79,7 +77,7 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 		}
 
 		self.wordsFromString = function(s) {
-			return s.split(/[^a-zA-Z0-9]/).filter(function(s) { return s.length > 0 }).map(function(s) { return s.toLowerCase(); });
+			return s.split(/[^a-zA-Z0-9]/).filter((s) => s.length > 0).map((s) => s.toLowerCase());
 		}
 
 		self.dateDistance = function(a, b) {
@@ -136,9 +134,7 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 		var enabledCategories = [];
 
 		self.available = function() {
-			return categories.map(function(category) {
-				return category.describe();
-			});
+			return categories.map((category) => category.describe());
 		}
 
 		self.preload = function(category, progress) {
@@ -146,9 +142,7 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 		}
 
 		self.configure = function(input) {
-			enabledCategories = Object.keys(input).filter(function(category) {
-				return input[category];
-			}).reduce(function(obj, value) {
+			enabledCategories = Object.keys(input).filter((category) => input[category]).reduce((obj, value) => {
 				var c = categoryByType(value);
 				obj[value] = {
 					weight : 1,
@@ -164,7 +158,7 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 			var selector = new QuestionSelector();
 			var category = selector.fromWeightedObject(enabledCategories);
 
-			Object.keys(enabledCategories).forEach(function(key) {
+			Object.keys(enabledCategories).forEach((key) => {
 				enabledCategories[key].weight++;
 			});
 			category.weight = 1;
@@ -173,9 +167,9 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 		}
 
 		self.load = function(file) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				var reader = new FileReader(file);
-				reader.onload = function(e) {
+				reader.onload = (e) => {
 					var newCategory = genericloader.create(file.name, reader.result);
 					categories.push(newCategory);
 					resolve(newCategory.describe().type);
@@ -195,7 +189,7 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 		}
 
 		function shuffleAnswers(question) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				var selector = new QuestionSelector();
 
 				var answers = {
@@ -212,7 +206,7 @@ triviaApp.service('categories', function(movies, music, geography, quotes, video
 
 		function attachCategory(category) {
 			return function(question) {
-				return new Promise(function(resolve, reject) {
+				return new Promise((resolve, reject) => {
 					if (question.view.category) {
 						question.view.category = category.name + ": " + question.view.category;
 					} else {

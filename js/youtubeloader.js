@@ -4,7 +4,7 @@ triviaApp.service('youtube', function($http, apikeys) {
 		var YOUTUBE_REGION = 'SE';
 
 		self.loadChannel = function(channelId, progress) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				var result = [];
 
 				function loadUploads() {
@@ -14,7 +14,7 @@ triviaApp.service('youtube', function($http, apikeys) {
 							key : apikeys.youtube,
 							part : 'contentDetails'
 						}
-					}).then(function(response) {
+					}).then((response) => {
 						loadPage(response.data.items[0].contentDetails.relatedPlaylists.uploads);
 					});
 				}
@@ -29,13 +29,13 @@ triviaApp.service('youtube', function($http, apikeys) {
 							pageToken : pageToken
 						}
 					}).
-					then(function(response) {
+					then((response) => {
 						var current = result.length;
 						var total = response.data.pageInfo.totalResults;
 						progress(current, total);
 						var nextPage = response.data.nextPageToken;
 
-						result = result.concat(response.data.items.map(function(item) {
+						result = result.concat(response.data.items.map((item) => {
 							return {
 								id : item.contentDetails.videoId,
 								title : item.snippet.title
@@ -54,14 +54,14 @@ triviaApp.service('youtube', function($http, apikeys) {
 		}
 
 		self.checkEmbedStatus = function(videoId) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				$http.get('https://www.googleapis.com/youtube/v3/videos', {
 					params : {
 						key : apikeys.youtube,
 						id : videoId,
 						part : 'status,contentDetails'
 					}
-				}).then(function(response) {
+				}).then((response) => {
 					var item = response.data.items[0];
 					if (!item.status.embeddable) {
 						return reject("Video not embeddable");

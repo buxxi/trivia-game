@@ -8,7 +8,7 @@ triviaApp.service('sound', function() {
 			text2Speech : true
 		}
 
-		var backgroundMusic = new Pizzicato.Sound('sound/background.mp3', function() {
+		var backgroundMusic = new Pizzicato.Sound('sound/background.mp3', () => {
 			backgroundMusic.volume = 0.10;
 			backgroundMusic.loop = true;
 		});
@@ -29,7 +29,7 @@ triviaApp.service('sound', function() {
 
 		self.beep = function(count) {
 			if (enabled.soundEffects) {
-				var beep = new Pizzicato.Sound('sound/beep.mp3', function() {
+				var beep = new Pizzicato.Sound('sound/beep.mp3', () => {
 					beep.play();
 					beep.sourceNode.playbackRate.value = 1.5 + (0.5 * count);
 				});

@@ -7,28 +7,28 @@ triviaApp.controller('answerController', function($scope, $location, connection)
 		$location.path('/');
 	}
 
-	$scope.$on('data-answers', function(event, pairCode, data) {
-		$scope.$apply(function() {
+	$scope.$on('data-answers', (event, pairCode, data) => {
+		$scope.$apply(() => {
 			$scope.answers = data;
 			correct = null;
 			guess = null;
 		});
 	});
 
-	$scope.$on('data-correct', function(event, pairCode, data) {
-		$scope.$apply(function() {
+	$scope.$on('data-correct', (event, pairCode, data) => {
+		$scope.$apply(() => {
 			correct = data;
 		});
 	});
 
-	$scope.$on('data-wait', function(event, pairCode, data) {
-		$scope.$apply(function() {
+	$scope.$on('data-wait', (event, pairCode, data) => {
+		$scope.$apply(() => {
 			$scope.answers = {};
 		});
 	});
 
-	$scope.$on('connection-closed', function() {
-		$scope.$apply(function() {
+	$scope.$on('connection-closed', () => {
+		$scope.$apply(() => {
 			$location.path('/').search({disconnected : true});
 		});
 	});
