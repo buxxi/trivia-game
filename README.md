@@ -16,6 +16,7 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 - randomColor: https://github.com/davidmerfield/randomColor
 - Fingerprint2: https://github.com/Valve/fingerprintjs2
 - Twemoji: https://github.com/twitter/twemoji
+- IDB: https://github.com/jakearchibald/idb
 
 ### API's used:
 - Youtube: https://developers.google.com/youtube/v3

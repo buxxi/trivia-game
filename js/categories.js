@@ -1,19 +1,40 @@
 triviaApp.service('categories', function(movies, music, geography, quotes, videogames, drinks, genericloader) {
+	const dbPromise = idb.open('keyval-store', 1, upgradeDB => {
+		upgradeDB.createObjectStore('keyval');
+	});
+
+	const idbKeyval = {
+		get(key) {
+			return dbPromise.then(db => {
+				return db.transaction('keyval').objectStore('keyval').get(key);
+			});
+		},
+		set(key, val) {
+			return dbPromise.then(db => {
+				const tx = db.transaction('keyval', 'readwrite');
+				tx.objectStore('keyval').put(val, key);
+				return tx.complete;
+			});
+		}
+	}
+
 	function Cache(primaryKey) {
 		var self = this;
 
 		self.get = function(subKey, promiseFunction) {
 			return new Promise((resolve, reject) => {
 				var key = primaryKey + "-" + subKey;
-				var result = localStorage.getItem(key);
-				if (result) {
-					resolve(JSON.parse(result));
-				} else {
-					promiseFunction((result) => {
-						localStorage.setItem(key, JSON.stringify(result));
-						resolve(result);
-					}, reject);
-				}
+
+				idbKeyval.get(key).then((val) => {
+					if (!val) {
+						promiseFunction((result) => {
+							idbKeyval.set(key, result).then(() => resolve(result)).catch(reject);
+						}, reject);
+					} else {
+						alert('using cache');
+						resolve(val);
+					}
+				}).catch(reject);
 			});
 		}
 	}
