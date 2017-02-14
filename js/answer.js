@@ -1,4 +1,4 @@
-triviaApp.controller('answerController', function($scope, $location, connection) {
+function AnswerController($scope, $location, connection) {
 	var correct = null;
 	var guess = null;
 	var answers = {};
@@ -57,4 +57,4 @@ triviaApp.controller('answerController', function($scope, $location, connection)
 	$scope.hasGuessed = function() {
 		return guess != null;
 	}
-});
+}

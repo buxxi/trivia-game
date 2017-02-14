@@ -1,4 +1,4 @@
-triviaApp.controller('joinController', function($scope, $location, $routeParams, connection) {
+function JoinController($scope, $location, $routeParams, connection) {
 	var config = {
 		code : $routeParams.code,
 		name : ""
@@ -59,4 +59,4 @@ triviaApp.controller('joinController', function($scope, $location, $routeParams,
 			}, true);
 		});
 	};
-});
+}

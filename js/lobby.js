@@ -1,4 +1,4 @@
-triviaApp.controller('lobbyController', function($rootScope, $scope, $location, $routeParams, connection, game, categories, sound) {
+function LobbyController($rootScope, $scope, $location, $routeParams, connection, game, categories, sound) {
 	var config = {
 		questions : 10,
 		time : 30,
@@ -145,7 +145,7 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	}
 
 	$scope.addCategories = function(files) {
-		for (var i in files) {
+		for (var i = 0; i < files.length; i++) {
 			categories.load(files[i]).then((type) => {
 				$scope.$apply(() => {
 					$scope.availableCategories = categories.available();
@@ -182,4 +182,4 @@ triviaApp.controller('lobbyController', function($rootScope, $scope, $location, 
 	}
 
 	angular.element(document).ready(moveCarousel);
-});
+}
