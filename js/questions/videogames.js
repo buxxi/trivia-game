@@ -1,7 +1,10 @@
-function VideoGameQuestions($http, youtube, apikeys) {
+function VideoGameQuestions($http, youtube) {
 	var self = this;
 	var platforms = {};
 	var games = [];
+
+	var youtubeApiKey = '';
+	var mashapeApiKey = '';
 
 	var MINIMUM_PLATFORM_GAMES = 50;
 	var GAMES_PER_PLATFORM = 50;
@@ -57,7 +60,10 @@ function VideoGameQuestions($http, youtube, apikeys) {
 		};
 	}
 
-	self.preload = function(progress, cache) {
+	self.preload = function(progress, cache, apikeys) {
+		youtubeApiKey = apikeys.youtube;
+		mashapeApiKey = apikeys.mashape;
+
 		return new Promise((resolve, reject) => {
 			loadPlatforms(cache).then((result) => {
 				platforms = result;
@@ -110,7 +116,7 @@ function VideoGameQuestions($http, youtube, apikeys) {
 
 	function loadVideos(progress, cache) {
 		return cache.get('songs', (resolve, reject) => {
-			youtube.loadChannel('UC6iBH7Pmiinoe902-JqQ7aQ', progress).then(resolve).catch(reject);
+			youtube.loadChannel('UC6iBH7Pmiinoe902-JqQ7aQ', progress, youtubeApiKey).then(resolve).catch(reject);
 		});
 	}
 
@@ -126,7 +132,7 @@ function VideoGameQuestions($http, youtube, apikeys) {
 					'filter[release_dates.platform][eq]' : platform
 				},
 				headers : {
-					'X-Mashape-Key' : apikeys.mashape
+					'X-Mashape-Key' : mashapeApiKey
 				}
 			}).then((response) => {
 				function tag(prefix, arr) {
@@ -161,7 +167,7 @@ function VideoGameQuestions($http, youtube, apikeys) {
 					offset : offset
 				},
 				headers : {
-					'X-Mashape-Key' : apikeys.mashape
+					'X-Mashape-Key' : mashapeApiKey
 				}
 			})
 		};

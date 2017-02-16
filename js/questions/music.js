@@ -1,8 +1,10 @@
-function MusicQuestions($http, apikeys) {
+function MusicQuestions($http) {
 	var self = this;
 	var tracks = [];
 	var TRACKS_BY_CATEGORY = 100;
 	var FILTER_GENRES = ["alternative","alt-rock","bluegrass","blues","classical","country","dance","death-metal","drum-and-bass","dubstep","emo","folk","funk","grunge","hard-rock","hardcore","heavy-metal","hip-hop","house","indie","indie-pop","metal","pop","punk","punk-rock", "r-n-b","reggae","rock","rock-n-roll","rockabilly","ska","soul","techno","trance"];
+
+	var spotifyApiKey = '';
 
 	var types = {
 		title : {
@@ -47,7 +49,9 @@ function MusicQuestions($http, apikeys) {
 		};
 	}
 
-	self.preload = function(progress, cache) {
+	self.preload = function(progress, cache, apikeys) {
+		spotifyApiKey = apikeys.spotify;
+
 		return new Promise((resolve, reject) => {
 			if (tracks.length != 0) {
 				resolve();
@@ -158,7 +162,7 @@ function MusicQuestions($http, apikeys) {
 		return new Promise((resolve, reject) => {
 			var path = window.location.href.substr(0, window.location.href.lastIndexOf('/trivia'));
 			var redirect_uri = path + '/trivia/spotifyauth.html';
-			var url = 'https://accounts.spotify.com/authorize?client_id=' + apikeys.spotify + '&response_type=token&redirect_uri=' + encodeURIComponent(redirect_uri);
+			var url = 'https://accounts.spotify.com/authorize?client_id=' + spotifyApiKey + '&response_type=token&redirect_uri=' + encodeURIComponent(redirect_uri);
 
 			function accessTokenListener(event) {
 				//TODO: verify origin

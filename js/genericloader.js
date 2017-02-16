@@ -4,7 +4,7 @@ function GenericCategoryLoader($interpolate, $parse) {
 	self.create = function(name, input) {
 		var parsed = JSON.parse(input);
 		var description = parsed.description;
-		description.type = name.substr(0, name.lastIndexOf("."));
+		description.type = /.*?([a-zA-Z0-9]+).json/.exec(name)[1];
 		return new GenericCategory($interpolate, $parse, description, parsed.questions, parsed.data);
 	}
 }

@@ -1,4 +1,5 @@
-function ResultsController($scope, $location, game) {
+function ResultsController($scope, $location, game, avatars) {
+	$scope.avatars = avatars;
 	$scope.scores = Object.values(game.players()).sort((a, b) => b.score - a.score);
 
 	$scope.attribution = game.session().history().map((question) => question.view.attribution);

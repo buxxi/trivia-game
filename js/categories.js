@@ -151,13 +151,27 @@ function Categories(movies, music, geography, quotes, videogames, drinks, generi
 	var self = this;
 	var categories = [movies, music, geography, quotes, videogames, drinks];
 	var enabledCategories = [];
+	var apikeys = {};
+
+	self.init = function() {
+		return new Promise((resolve, reject) => {
+			if (Object.keys(apikeys).length != 0) {
+				return resolve();
+			}
+			$http.get('conf/api-keys.json').then((response) => {
+				Object.assign(apikeys, response.data);
+			}).then(() => {
+				return Promise.all(apikeys.other.map((url) => self.loadFromURL(url))).then(resolve).catch(reject);
+			}).catch(reject);
+		});
+	}
 
 	self.available = function() {
 		return categories.map((category) => category.describe());
 	}
 
 	self.preload = function(category, progress) {
-		return categoryByType(category).preload(progress, new Cache(category));
+		return categoryByType(category).preload(progress, new Cache(category), apikeys);
 	}
 
 	self.configure = function(input) {
@@ -185,21 +199,27 @@ function Categories(movies, music, geography, quotes, videogames, drinks, generi
 		return category.nextQuestion(selector).then(shuffleAnswers).then(attachCategory(category));
 	}
 
-	self.load = function(file) {
-		if (typeof(file) == 'string') {
-			alert(file);
-		} else {
-			return new Promise((resolve, reject) => {
-				var reader = new FileReader(file);
-				reader.onload = (e) => {
-					var newCategory = genericloader.create(file.name, reader.result);
-					categories.push(newCategory);
-					resolve(newCategory.describe().type);
-				};
+	self.loadFromURL = function(url) {
+		return new Promise((resolve, reject) => {
+			$http.get(url).then((response) => {
+				var newCategory = genericloader.create(url, JSON.stringify(response.data));
+				categories.push(newCategory);
+				resolve(newCategory.describe().type);
+			}).catch(reject);
+		});
+	}
 
-				reader.readAsText(file, "UTF-8");
-			});
-		}
+	self.loadFromFile = function(file) {
+		return new Promise((resolve, reject) => {
+			var reader = new FileReader(file);
+			reader.onload = (e) => {
+				var newCategory = genericloader.create(file.name, reader.result);
+				categories.push(newCategory);
+				resolve(newCategory.describe().type);
+			};
+
+			reader.readAsText(file, "UTF-8");
+		});
 	}
 
 	function categoryByType(type) {

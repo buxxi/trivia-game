@@ -1,8 +1,8 @@
-function YoutubeLoader($http, apikeys) {
+function YoutubeLoader($http) {
 	var self = this;
 	var YOUTUBE_REGION = 'SE';
 
-	self.loadChannel = function(channelId, progress) {
+	self.loadChannel = function(channelId, progress, apiKey) {
 		return new Promise((resolve, reject) => {
 			var result = [];
 
@@ -10,7 +10,7 @@ function YoutubeLoader($http, apikeys) {
 				$http.get('https://www.googleapis.com/youtube/v3/channels', {
 					params : {
 						id : channelId,
-						key : apikeys.youtube,
+						key : apiKey,
 						part : 'contentDetails'
 					}
 				}).then((response) => {
@@ -21,7 +21,7 @@ function YoutubeLoader($http, apikeys) {
 			function loadPage(playListId, pageToken) {
 				$http.get('https://www.googleapis.com/youtube/v3/playlistItems', {
 					params : {
-						key : apikeys.youtube,
+						key : apiKey,
 						playlistId : playListId,
 						part : 'id,snippet,contentDetails',
 						maxResults : 50,
@@ -52,11 +52,11 @@ function YoutubeLoader($http, apikeys) {
 		});
 	}
 
-	self.checkEmbedStatus = function(videoId) {
+	self.checkEmbedStatus = function(videoId, apiKey) {
 		return new Promise((resolve, reject) => {
 			$http.get('https://www.googleapis.com/youtube/v3/videos', {
 				params : {
-					key : apikeys.youtube,
+					key : apiKey,
 					id : videoId,
 					part : 'status,contentDetails'
 				}

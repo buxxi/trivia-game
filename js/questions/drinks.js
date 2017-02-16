@@ -1,4 +1,4 @@
-function DrinksQuestions($http, apikeys) {
+function DrinksQuestions($http) {
 	var self = this;
 	var drinks = [];
 	var TOTAL_DRINKS = 50;
@@ -11,7 +11,7 @@ function DrinksQuestions($http, apikeys) {
 		};
 	}
 
-	self.preload = function(progress, cache) {
+	self.preload = function(progress, cache, apikeys) {
 		return cache.get('drinks', (resolve, reject) => {
 			var result = [];
 

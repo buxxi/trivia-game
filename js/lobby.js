@@ -1,4 +1,4 @@
-function LobbyController($rootScope, $scope, $location, $routeParams, connection, game, categories, sound) {
+function LobbyController($rootScope, $scope, $location, $routeParams, connection, game, categories, sound, avatars) {
 	var config = {
 		questions : 10,
 		time : 30,
@@ -10,7 +10,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		fullscreen : false
 	};
 
-	$scope.availableCategories = categories.available();
+	$scope.availableCategories = [];
 	$scope.preloading = {};
 	$scope.config = config;
 	$scope.code = connection.code;
@@ -23,6 +23,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		return encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?code=" + $scope.code());
 	}
 
+	$scope.avatars = avatars;
 	$scope.players = game.players;
 	$scope.playerCount = function() {
 		return Object.keys(game.players()).length;
@@ -146,7 +147,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 
 	$scope.addCategories = function(files) {
 		for (var i = 0; i < files.length; i++) {
-			categories.load(files[i]).then((type) => {
+			categories.loadFromFile(files[i]).then((type) => {
 				$scope.$apply(() => {
 					$scope.availableCategories = categories.available();
 					$scope.preload(type);
@@ -181,5 +182,9 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		}
 	}
 
-	angular.element(document).ready(moveCarousel);
+	categories.init().then(() => {
+		$scope.availableCategories = categories.available();
+		$scope.$digest();
+		moveCarousel();
+	});
 }

@@ -1,6 +1,8 @@
-function MovieQuestions($http, $interval, youtube, apikeys) {
+function MovieQuestions($http, $interval, youtube) {
 	var self = this;
 	var movies = [];
+	var youtubeApiKey = '';
+	var tmdbApiKey = '';
 
 	var types = {
 		title : {
@@ -27,7 +29,9 @@ function MovieQuestions($http, $interval, youtube, apikeys) {
 		};
 	}
 
-	self.preload = function(progress, cache) {
+	self.preload = function(progress, cache, apikeys) {
+		youtubeApiKey = apikeys.youtube;
+		tmdbApiKey = apikeys.tmdb;
 		return new Promise((resolve, reject) => {
 			loadYoutubeVideos(progress, cache).then(parseTitles).then((data) => {
 				movies = data;
@@ -44,7 +48,7 @@ function MovieQuestions($http, $interval, youtube, apikeys) {
 			var videoId = selector.fromArray(movie.videos);
 			var attribution = ['http://www.youtube.com/watch?v=' + videoId];
 
-			youtube.checkEmbedStatus(videoId).then(() => type.similar(movie, attribution, selector)).then((similar) => {
+			youtube.checkEmbedStatus(videoId, youtubeApiKey).then(() => type.similar(movie, attribution, selector)).then((similar) => {
 				resolve({
 					text : type.title(movie),
 					answers : selector.alternatives(similar, movie, type.format, selector.first),
@@ -135,7 +139,7 @@ function MovieQuestions($http, $interval, youtube, apikeys) {
 
 	function loadYoutubeVideos(progress, cache) {
 		return cache.get('videos', (resolve, reject) => {
-			youtube.loadChannel('UC3gNmTGu-TTbFPpfSs5kNkg', progress).then(resolve).catch(reject);
+			youtube.loadChannel('UC3gNmTGu-TTbFPpfSs5kNkg', progress, youtubeApiKey).then(resolve).catch(reject);
 		});
 	}
 
@@ -143,7 +147,7 @@ function MovieQuestions($http, $interval, youtube, apikeys) {
 		return new Promise((resolve, reject) => {
 			$http.get('https://api.themoviedb.org/3/search/movie', {
 				params : {
-					api_key : apikeys.tmdb,
+					api_key : tmdbApiKey,
 					query : movie.title,
 					year : movie.year
 				}
@@ -155,7 +159,7 @@ function MovieQuestions($http, $interval, youtube, apikeys) {
 
 				return $http.get('https://api.themoviedb.org/3/movie/' + id + '/similar', {
 					params : {
-						api_key : apikeys.tmdb
+						api_key : tmdbApiKey
 					}
 				}).then((response) => {
 					if (response.data.results.length < 3) {

@@ -41,7 +41,7 @@ function GeographyQuestions($http) {
 		};
 	}
 
-	self.preload = function(progress, cache) {
+	self.preload = function(progress, cache, apikeys) {
 		return cache.get('countries', (resolve, reject) => {
 			$http.get('https://restcountries.eu/rest/v1/all').then((response) => {
 				var result = response.data.map((country) => {
