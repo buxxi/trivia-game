@@ -1,7 +1,9 @@
-function QuotesQuestions($http, apikeys) {
+function QuotesQuestions($http) {
 	var self = this;
 	var quotes = [];
 	var TOTAL_QUOTES = 50;
+
+	var mashapeApiKey = '';
 
 	self.describe = function() {
 		return {
@@ -11,7 +13,9 @@ function QuotesQuestions($http, apikeys) {
 		};
 	}
 
-	self.preload = function(progress, cache) {
+	self.preload = function(progress, cache, apikeys) {
+		mashapeApiKey = apikeys.mashape;
+
 		return cache.get('quotes', (resolve, reject) => {
 			progress(0, TOTAL_QUOTES);
 
@@ -66,7 +70,7 @@ function QuotesQuestions($http, apikeys) {
 				'cat' : 'famous'
 			},
 			headers : {
-				'X-Mashape-Key' : apikeys.mashape
+				'X-Mashape-Key' : mashapeApiKey
 			}
 		});
 	}

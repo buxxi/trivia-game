@@ -10,6 +10,8 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		fullscreen : false
 	};
 
+	var carouselTimeout = 0;
+
 	$scope.availableCategories = [];
 	$scope.preloading = {};
 	$scope.config = config;
@@ -142,6 +144,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		sound.play();
 		game.configure(config);
 		connection.disconnect();
+		clearTimeout(carouselTimeout);
 		$location.path('/game');
 	}
 
@@ -173,7 +176,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		var next = carousel.querySelector(".show + li") || carousel.querySelector("li");
 		carousel.querySelectorAll("li").forEach((li) => li.classList.remove('show'));
 		next.classList.add('show');
-		setTimeout(moveCarousel, 5000);
+		carousel = setTimeout(moveCarousel, 5000);
 	}
 
 	if ($routeParams.fakePlayers) { //For debugging layout

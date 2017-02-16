@@ -9,4 +9,20 @@ function ResultsController($scope, $location, game, avatars) {
 	}
 
 	$scope.duration = ($scope.scores.length + $scope.attribution.length + 1) * 5;
+
+	$scope.ordinal = function(index) {
+		if (((index / 10) % 10) == 1) {
+			return "th";
+		}
+		switch (index % 10) {
+			case 1:
+				return "st";
+			case 2:
+				return "nd";
+			case 3:
+				return "rd";
+			default:
+				return "th";
+		}
+	}
 }
