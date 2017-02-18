@@ -253,6 +253,9 @@ h1 {
 		float : left;
 		text-align: center;
 		width : 40%;
+		.playerlist {
+			min-height: 9em;
+		}
 	}
 	.carousel {
 		li {
@@ -388,11 +391,11 @@ ol {
 }
 
 .playerlist {
-	min-height: 9em;
+	margin-bottom : 0;
 	li {
 		display: inline-block;
 		list-style : none;
-		margin: 1em;
+		margin: 0 1em 1em 0;
 	}
 	.kick {
 		&:hover {
@@ -682,9 +685,6 @@ ol {
 	position : fixed;
 	text-align: center;
 	width : 100%;
-	.avatar {
-		margin: -2.3em 1em 1em 0;
-	}
 }
 
 .results {
@@ -746,11 +746,9 @@ ol {
 		}
 	}
 
-	.fallback &::before {
+	.fallback &:before,.disconnected &:before {
 		background-color : inherit;
 		border-radius: 2em;
-		color: yellow;
-		content: "\f0e7";
 		font-weight: bold;
 		margin-left: -1em;
 		margin-top: -0.8em;
@@ -759,6 +757,16 @@ ol {
 		text-align : center;
 		text-shadow: 0 0 4px black;
 		width: 1.2em;
+	}
+
+	.fallback &:before {
+		color: yellow;
+		content: "\f0e7";
+	}
+
+	.disconnected &:before {
+		color : red !important;
+		content: "\f0e7";
 	}
 }
 

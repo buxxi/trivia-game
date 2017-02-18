@@ -17,7 +17,7 @@ function Connection($rootScope) {
 	self.host = function(joinCallback) {
 		return new Promise((resolve, reject) => {
 			new Fingerprint2().get((id) => {
-				mediator = createPeer(id);
+				mediator = createPeer(id, false);
 
 				mediator.on('error', (err) => {
 					reject(err);
@@ -27,7 +27,7 @@ function Connection($rootScope) {
 					if (data.join) {
 						mediator.close();
 
-						var peer = createPeer(data.join.pairCode);
+						var peer = createPeer(data.join.pairCode, true);
 						peer.on('connect', () => {
 							try {
 								joinCallback(data.join);
@@ -52,18 +52,27 @@ function Connection($rootScope) {
 							$rootScope.$broadcast('connection-upgraded', peer);
 						});
 
+						peer.on('close', () => {
+							$rootScope.$broadcast('connection-closed', peer);
+						});
+
 						peer.connect();
 					}
 				});
 
-				sanityCheck = createPeer(id);
-				sanityCheck.on('upgrade', () => {
-					fixCloseEvent(sanityCheck);
-					sanityCheck.on('close', () => {
-						mediator.connect();
-						resolve();
+				sanityCheck = createPeer(id, false);
+				sanityCheck.on('connect', () => {
+					mediator.on('close', () => {
+						setTimeout(() => {
+							mediator.connect();
+							resolve(id);
+						}, 10);
+
 					});
-					mediator.close();
+					sanityCheck.on('close', () => {
+						mediator.close();
+					});
+
 					sanityCheck.close();
 				});
 				mediator.connect();
@@ -75,7 +84,7 @@ function Connection($rootScope) {
 	self.join = function(pairCode, name) {
 		return new Promise((resolve, reject) => {
 			new Fingerprint2().get((id) => {
-				mediator = createPeer(pairCode);
+				mediator = createPeer(pairCode, false);
 
 				mediator.on('error', (err) => {
 					reject(err);
@@ -93,10 +102,9 @@ function Connection($rootScope) {
 
 					mediator.close();
 
-					var peer = createPeer(id);
+					var peer = createPeer(id, true);
 					peer.on('connect', () => {
 						clearTimeout(timeout);
-						fixCloseEvent(peer);
 						peers.push(peer);
 
 						peer.on('data', (data) => {
@@ -136,8 +144,8 @@ function Connection($rootScope) {
 		});
 	}
 
-	self.code = function() {
-		return mediator.pairCode;
+	self.connected = function() {
+		return !!mediator.pairCode;
 	}
 
 	self.usingFallback = function(pairCode) {
@@ -148,16 +156,29 @@ function Connection($rootScope) {
 		}
 	}
 
-	function createPeer(pairCode) {
-		return new SocketPeer({
+	self.connectionError = function(pairCode) {
+		try {
+			var peer = peerFromPairCode(pairCode);
+			return !peer.rtcConnected && !peer.socketConnected;
+		} catch (e) {
+			return true;
+		}
+	}
+
+	function createPeer(pairCode, reconnect) {
+		var peer = new SocketPeer({
 			pairCode: pairCode.toLowerCase(),
 			socketFallback: true,
 			url: serverUrl + '/socketpeer/',
-			reconnect: false,
+			reconnect: reconnect,
 			autoconnect: false,
 			serveLibrary: false,
 			debug: false
 		});
+		peer.on('connect', () => {
+			fixCloseEvent(peer);
+		});
+		return peer;
 	}
 
 	function fixCloseEvent(peer) { //TODO: make a bug report that this is not triggered, server also modified to actually close the connection
@@ -166,6 +187,7 @@ function Connection($rootScope) {
 			peer.emit('close');
 			old();
 		};
+		return peer;
 	}
 
 	function peerFromPairCode(pairCode) {

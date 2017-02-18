@@ -1,15 +1,15 @@
 <div class="lobby">
 	<div class="connect">
 		<h1>WebRTC Trivia</h1>
-		<div ng-if="code() == null">
+		<div ng-if="code == null">
 			<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
 			<span class="fa-3x">Loading...</span>
 		</div>
-		<div ng-if="code() != null">
+		<div ng-if="code != null">
 			<div class="qr">
 				<img ng-src="https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl={{ url() }}&choe=UTF-8"/>
 			</div>
-			<div class="code">{{ code() }}</div>
+			<div class="code">{{ code }}</div>
 		</div>
 		<div class="instructions" data-url="{{serverUrl()}}">
 			<div>
@@ -23,7 +23,7 @@
 		<h1><i class="fa fa-fw fa-users"></i>Players</h1>
 		<ul class="playerlist">
 			<li ng-if="playerCount() == 0">No players has joined yet, be the first!</li>
-			<li ng-repeat="(peerid,player) in players()" ng-class="{'fallback' : usingFallbackConnection(peerid)}">
+			<li ng-repeat="(peerid,player) in players()" ng-class="{'fallback' : usingFallbackConnection(peerid), 'disconnected' : hasConnectionError(peerid)}">
 				<a href="" ng-click="kickPlayer(peerid)" class="kick" title="Kick player">
 					<div class="avatar" data-score="{{player.name}}" style="background-color : {{player.color}}; border-color : {{player.color}}"><img ng-src="{{ avatars[player.avatar].url }}"/></div>
 				</a>

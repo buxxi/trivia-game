@@ -3,7 +3,7 @@ function AnswerController($scope, $location, connection) {
 	var guess = null;
 	var answers = {};
 
-	if (!connection.code()) {
+	if (!connection.connected()) {
 		$location.path('/');
 	}
 

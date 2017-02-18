@@ -15,14 +15,13 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 	$scope.availableCategories = [];
 	$scope.preloading = {};
 	$scope.config = config;
-	$scope.code = connection.code;
 
 	$scope.serverUrl = function() {
 		return window.location.hostname + "/trivia";
 	}
 
 	$scope.url = function() {
-		return encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?code=" + $scope.code());
+		return encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?code=" + $scope.code);
 	}
 
 	$scope.avatars = avatars;
@@ -50,6 +49,10 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 
 	$scope.usingFallbackConnection = function(pairCode) {
 		return connection.usingFallback(pairCode);
+	}
+
+	$scope.hasConnectionError = function(pairCode) {
+		return connection.connectionError(pairCode);
 	}
 
 	$scope.toggleFullScreen = function() {
@@ -164,8 +167,10 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		game.addPlayer(data.pairCode, data.name);
 
 		$scope.$digest();
-	}).then(() => {
+	}).then((code) => {
+		$scope.code = code;
 		$scope.$on("connection-upgraded", (event, conn) => $scope.$digest());
+		$scope.$on("connection-closed", (event, conn) => $scope.$digest());
 		$scope.$digest();
 	}).catch((err) => {
 		$scope.$apply(() => $scope.message = "Error when creating connection: " + err);

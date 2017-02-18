@@ -22,9 +22,13 @@
 	<div id="content" ng-class="state"></div>
 	<div id="correct" ng-if="state == 'post-question'" ng-class="'btn-' + correct['key']">{{ correct['answer'] }}</div>
 	<div class="bottom">
-		<div class="avatar" data-score="{{ hasGuessed[pairCode] ? player.name : player.score}}" data-multiplier="{{player.multiplier}}" ng-repeat="(pairCode, player) in players" ng-class="{'guessed' : hasGuessed[pairCode]}" style="background-color : {{player.color}}; border-color : {{player.color}}">
-			<img ng-src="{{ avatars[player.avatar].url }}"/>
-			<span ng-class="{'score-change-positive': pointChanges[pairCode] > 0, 'score-change-negative': pointChanges[pairCode] < 0}" ng-if="pointChanges[pairCode]">{{ pointChanges[pairCode] }}</span>
-		</div>
+		<ul class="playerlist">
+			<li ng-repeat="(pairCode, player) in players" ng-class="{'disconnected' : hasConnectionError(pairCode)}">
+				<div class="avatar" data-score="{{ hasGuessed[pairCode] ? player.name : player.score}}" data-multiplier="{{player.multiplier}}" ng-class="{'guessed' : hasGuessed[pairCode]}" style="background-color : {{player.color}}; border-color : {{player.color}}">
+					<img ng-src="{{ avatars[player.avatar].url }}"/>
+					<span ng-class="{'score-change-positive': pointChanges[pairCode] > 0, 'score-change-negative': pointChanges[pairCode] < 0}" ng-if="pointChanges[pairCode]">{{ pointChanges[pairCode] }}</span>
+				</div>
+			</li>
+		</ul>
 	</div>
 </div>

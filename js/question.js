@@ -7,6 +7,7 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 	$scope.state = "loading";
 	$scope.hasGuessed = {};
 	$scope.avatars = avatars;
+	$scope.hasConnectionError = connection.connectionError;
 
 	$scope.$on("data-guess", (event, pairCode, data) => {
 		$scope.$apply(() => {
@@ -14,6 +15,11 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 			$scope.hasGuessed[pairCode] = true;
 			sound.beep(Object.keys($scope.hasGuessed).length);
 		});
+	});
+
+	$scope.$on("connection-closed", (event, conn) => {
+		alert('client disconnected during game');
+		$scope.$digest()
 	});
 
 	function showLoadingNextQuestion() {
