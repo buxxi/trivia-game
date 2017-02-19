@@ -18,7 +18,6 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 	});
 
 	$scope.$on("connection-closed", (event, conn) => {
-		alert('client disconnected during game');
 		$scope.$digest()
 	});
 

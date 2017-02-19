@@ -21,6 +21,7 @@
 
 			<div>
 				<a class="btn" ng-click="join()" ng-disabled="!config.code || !config.name"><i class="fa fa-fw fa-sign-in"></i>Join</a>
+				<a class="btn" ng-click="reconnect()" ng-if="disconnected"><i class="fa fa-fw fa-sign-in"></i> Reconnect</a>
 				<a class="btn" ng-click="qrscan()" ng-if="supportsCamera"><i class="fa fa-qrcode"></i> Scan</a>
 			</div>
 		</form>

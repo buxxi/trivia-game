@@ -30,6 +30,9 @@ function Connection($rootScope) {
 						var peer = createPeer(data.join.pairCode, true);
 						peer.on('connect', () => {
 							try {
+								if (peerReconnected(peer)) {
+									return;
+								}
 								joinCallback(data.join);
 								peers.push(peer);
 								peer.send({
@@ -100,18 +103,9 @@ function Connection($rootScope) {
 						join : { name : name, pairCode : id }
 					});
 
-					mediator.close();
-
-					var peer = createPeer(id, true);
-					peer.on('connect', () => {
-						clearTimeout(timeout);
-						peers.push(peer);
-
-						peer.on('data', (data) => {
-							dataEvent(peer.pairCode, data);
-						});
-
+					connectClient(id).then(() => {
 						$rootScope.$on('data-join', (event, id, data) => {
+							clearTimeout(timeout);
 							if (data === true) {
 								resolve();
 							} else {
@@ -119,15 +113,19 @@ function Connection($rootScope) {
 							}
 						});
 					});
-
-					peer.on('close', () => {
-						$rootScope.$broadcast('connection-closed', peer);
-					});
-
-					peer.connect();
+					mediator.close();
 				});
 
 				mediator.connect();
+			});
+		});
+	}
+
+	self.reconnect = function() {
+		return new Promise((resolve, reject) => {
+			new Fingerprint2().get((id) => {
+				//TODO: timeout handling
+				connectClient(id).then(resolve);
 			});
 		});
 	}
@@ -145,7 +143,7 @@ function Connection($rootScope) {
 	}
 
 	self.connected = function() {
-		return !!mediator.pairCode;
+		return peers.length == 1 && !!peers[0].peer;
 	}
 
 	self.usingFallback = function(pairCode) {
@@ -163,6 +161,36 @@ function Connection($rootScope) {
 		} catch (e) {
 			return true;
 		}
+	}
+
+	function connectClient(id) {
+		return new Promise((resolve, reject) => {
+			var peer = createPeer(id, true);
+			peer.on('connect', () => {
+				peers = [peer];
+
+				peer.on('data', (data) => {
+					dataEvent(peer.pairCode, data);
+				});
+
+				resolve();
+			});
+
+			peer.on('close', () => {
+				$rootScope.$broadcast('connection-closed', peer);
+			});
+
+			peer.connect();
+		});
+	}
+
+	function peerReconnected(peer) {
+		for (var i = 0; i < peers.length; i++) {
+			if (peer.pairCode == peers[i].pairCode) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	function createPeer(pairCode, reconnect) {
@@ -184,6 +212,7 @@ function Connection($rootScope) {
 	function fixCloseEvent(peer) { //TODO: make a bug report that this is not triggered, server also modified to actually close the connection
 		var old = peer.socket.onclose;
 		peer.socket.onclose = () => {
+			peer.socketConnected = false;
 			peer.emit('close');
 			old();
 		};

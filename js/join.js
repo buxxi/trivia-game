@@ -9,6 +9,7 @@ function JoinController($scope, $location, $routeParams, connection) {
 
 	if ($routeParams.disconnected) {
 		$scope.message = "The host closed the connection";
+		$scope.disconnected = true;
 	}
 
 	$scope.join = function() {
@@ -19,6 +20,18 @@ function JoinController($scope, $location, $routeParams, connection) {
 		}).catch((err) => {
 			$scope.$apply(() => {
 				$scope.message = "Error when joining: " + err;
+			});
+		});
+	}
+
+	$scope.reconnect = function() {
+		connection.reconnect().then(() => {
+			$scope.$apply(() => {
+				$location.path('/game');
+			});
+		}).catch((err) => {
+			$scope.$apply(() => {
+				$scope.message = "Error when reconnecting: " + err;
 			});
 		});
 	}
