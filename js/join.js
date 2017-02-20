@@ -7,11 +7,6 @@ function JoinController($scope, $location, $routeParams, connection) {
 	$scope.config = config;
 	$scope.supportsCamera = QCodeDecoder().hasGetUserMedia();
 
-	if ($routeParams.disconnected) {
-		$scope.message = "The host closed the connection";
-		$scope.disconnected = true;
-	}
-
 	$scope.join = function() {
 		connection.join(config.code, config.name).then(() => {
 			$scope.$apply(() => {
@@ -20,18 +15,6 @@ function JoinController($scope, $location, $routeParams, connection) {
 		}).catch((err) => {
 			$scope.$apply(() => {
 				$scope.message = "Error when joining: " + err;
-			});
-		});
-	}
-
-	$scope.reconnect = function() {
-		connection.reconnect().then(() => {
-			$scope.$apply(() => {
-				$location.path('/game');
-			});
-		}).catch((err) => {
-			$scope.$apply(() => {
-				$scope.message = "Error when reconnecting: " + err;
 			});
 		});
 	}

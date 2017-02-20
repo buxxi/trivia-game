@@ -3,9 +3,8 @@ function AnswerController($scope, $location, connection) {
 	var guess = null;
 	var answers = {};
 
-	if (!connection.connected()) {
-		$location.path('/');
-	}
+	$scope.connected = connection.connected();
+	$scope.message = $scope.connected ? 'Waiting for the game to start' : 'Not connected';
 
 	$scope.$on('data-answers', (event, pairCode, data) => {
 		$scope.$apply(() => {
@@ -24,16 +23,32 @@ function AnswerController($scope, $location, connection) {
 	$scope.$on('data-wait', (event, pairCode, data) => {
 		$scope.$apply(() => {
 			$scope.answers = {};
+			$scope.message = 'Waiting for next question';
 		});
 	});
 
 	$scope.$on('connection-closed', () => {
 		$scope.$apply(() => {
-			$location.path('/').search({disconnected : true});
+			$scope.answers = {};
+			$scope.message = 'The host closed the connection';
+			$scope.connected = false;
 		});
 	});
 
 	$scope.answers = {};
+
+	$scope.reconnect = function() {
+		connection.reconnect().then(() => {
+			$scope.$apply(() => {
+				$scope.connected = connection.connected();
+				$scope.message = 'Waiting for next question';
+			});
+		}).catch((err) => {
+			$scope.$apply(() => {
+				$scope.message = "Error when reconnecting: " + err;
+			});
+		});
+	}
 
 	$scope.guess = function(answer) {
 		guess = answer;

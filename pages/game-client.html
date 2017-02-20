@@ -4,7 +4,15 @@
 			<i class="fa fa-television fa-stack-2x"></i>
 			<i class="fa fa-eye fa-stack-1x"></i>
 		</div>
-		<h3>Waiting for next question</h3>
+		<h3>{{ message }}</h3>
+		<ul ng-if="!connected">
+			<li>
+				<a class="btn" ng-click="reconnect()"><i class="fa fa-fw fa-refresh"></i> Reconnect</a>
+			</li>
+			<li>
+				<a class="btn" href="#/"><i class="fa fa-fw fa-sign-out"></i> To lobby</a>
+			</li>
+		</ul>
 	</div>
 	<div ng-if="answers.A && answers.B && answers.C && answers.D">
 		<button type="button" class="btn-A" ng-click="guess('A')" ng-class="buttonClass('A')" ng-disabled="hasGuessed()">{{ answers['A'] }}</button>

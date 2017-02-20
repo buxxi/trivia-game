@@ -5,6 +5,9 @@ function Connection($rootScope) {
 	var peers = [];
 
 	function dataEvent(pairCode, data) {
+		if (pairCode.indexOf("client") == 0) {
+			pairCode = pairCode.substr(6);
+		}
 		var command = Object.keys(data)[0];
 		var params = data[command];
 		$rootScope.$broadcast('data-' + command, pairCode, params);
@@ -17,7 +20,7 @@ function Connection($rootScope) {
 	self.host = function(joinCallback) {
 		return new Promise((resolve, reject) => {
 			new Fingerprint2().get((id) => {
-				mediator = createPeer(id, false);
+				mediator = createPeer('mediator' + id, true);
 
 				mediator.on('error', (err) => {
 					reject(err);
@@ -25,9 +28,7 @@ function Connection($rootScope) {
 
 				mediator.on('data', (data) => {
 					if (data.join) {
-						mediator.close();
-
-						var peer = createPeer(data.join.pairCode, true);
+						var peer = createPeer('client' + data.join.pairCode, true);
 						peer.on('connect', () => {
 							try {
 								if (peerReconnected(peer)) {
@@ -39,13 +40,11 @@ function Connection($rootScope) {
 									join : true
 								});
 							} catch (e) {
-								console.log(e);
 								peer.send({
 									join : e.message
-								})
-								peer.close();
+								});
+								peer.destroy();
 							}
-							mediator.connect();
 						});
 						peer.on('data', (data) => {
 							dataEvent(peer.pairCode, data);
@@ -56,6 +55,7 @@ function Connection($rootScope) {
 						});
 
 						peer.on('close', () => {
+							peer.rtcConnected = false; //This can be delayed, so the gui wont be updated correctly. Lets just set the property here, what could go wrong?
 							$rootScope.$broadcast('connection-closed', peer);
 						});
 
@@ -63,17 +63,10 @@ function Connection($rootScope) {
 					}
 				});
 
-				sanityCheck = createPeer(id, false);
+				sanityCheck = createPeer('mediator' + id, false);
 				sanityCheck.on('connect', () => {
 					mediator.on('close', () => {
-						setTimeout(() => {
-							mediator.connect();
-							resolve(id);
-						}, 10);
-
-					});
-					sanityCheck.on('close', () => {
-						mediator.close();
+						resolve(id);
 					});
 
 					sanityCheck.close();
@@ -87,7 +80,7 @@ function Connection($rootScope) {
 	self.join = function(pairCode, name) {
 		return new Promise((resolve, reject) => {
 			new Fingerprint2().get((id) => {
-				mediator = createPeer(pairCode, false);
+				mediator = createPeer('mediator' + pairCode, false);
 
 				mediator.on('error', (err) => {
 					reject(err);
@@ -103,12 +96,13 @@ function Connection($rootScope) {
 						join : { name : name, pairCode : id }
 					});
 
-					connectClient(id).then(() => {
+					connectClient(id).then((client) => {
 						$rootScope.$on('data-join', (event, id, data) => {
 							clearTimeout(timeout);
 							if (data === true) {
 								resolve();
 							} else {
+								client.destroy();
 								reject(data);
 							}
 						});
@@ -165,7 +159,7 @@ function Connection($rootScope) {
 
 	function connectClient(id) {
 		return new Promise((resolve, reject) => {
-			var peer = createPeer(id, true);
+			var peer = createPeer('client' + id, true);
 			peer.on('connect', () => {
 				peers = [peer];
 
@@ -173,7 +167,7 @@ function Connection($rootScope) {
 					dataEvent(peer.pairCode, data);
 				});
 
-				resolve();
+				resolve(peer);
 			});
 
 			peer.on('close', () => {
@@ -221,7 +215,7 @@ function Connection($rootScope) {
 
 	function peerFromPairCode(pairCode) {
 		for (var i = 0; i < peers.length; i++) {
-			if (peers[i].pairCode == pairCode) {
+			if (peers[i].pairCode == 'client' + pairCode) {
 				return peers[i];
 			}
 		}
