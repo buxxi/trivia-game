@@ -8,8 +8,8 @@ function BlankPlayer() {
 	}
 
 	self.stop = noop;
-
 	self.pauseMusic = false;
+	self.minimizeQuestion = false;
 }
 
 function ImageViewer(url) {
@@ -31,8 +31,8 @@ function ImageViewer(url) {
 
 
 	self.stop = noop;
-
 	self.pauseMusic = false;
+	self.minimizeQuestion = true;
 }
 
 function YoutubePlayer(videoId, playerClass) {
@@ -71,6 +71,7 @@ function YoutubePlayer(videoId, playerClass) {
 	}
 
 	self.pauseMusic = true;
+	self.minimizeQuestion = true;
 }
 
 function Mp3Player(category, mp3) {
@@ -102,6 +103,7 @@ function Mp3Player(category, mp3) {
 	}
 
 	self.pauseMusic = true;
+	self.minimizeQuestion = true;
 }
 
 function QuoteText(quote) {
@@ -117,6 +119,7 @@ function QuoteText(quote) {
 	self.stop = noop;
 
 	self.pauseMusic = false;
+	self.minimizeQuestion = true;
 }
 
 function ListViewer(list) {
@@ -132,6 +135,7 @@ function ListViewer(list) {
 	self.stop = noop;
 
 	self.pauseMusic = false;
+	self.minimizeQuestion = true;
 }
 
 function noop() {}

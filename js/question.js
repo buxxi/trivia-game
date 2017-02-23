@@ -62,6 +62,7 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 				$scope.$apply(() => {
 					$scope.state = 'question';
 					$scope.category = question.view.category;
+					$scope.minimizeQuestion = player.minimizeQuestion;
 				});
 
 				connection.send({

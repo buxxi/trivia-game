@@ -8,7 +8,7 @@
 				<div class="category infobox" ng-if="category">{{ category }}</div>
 			</div>
 			<div class="message" ng-if="error">{{ error }}</div>
-			<div class="title" ng-class="{'full' : state == 'pre-question'}">{{ title }}</div>
+			<div class="title" ng-class="{'full' : state == 'pre-question' || (state == 'question' && !minimizeQuestion)}">{{ title }}</div>
 			<div class="timer" ng-if="timer.running()">
 				<div class="timer-score infobox"><i class="fa fa-fw fa-star"></i>{{ timer.score() }}</div>
 				<div class="timer-counter" data-seconds="{{ timer.timeLeft() }}" data-percentage="{{ timer.percentageLeft() }}">
