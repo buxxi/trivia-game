@@ -32,10 +32,11 @@ function Connection($rootScope) {
 						peer.on('connect', () => {
 							try {
 								if (peerReconnected(peer)) {
-									return;
+									$rootScope.$broadcast('connection-upgraded', peer);
+								} else {
+									joinCallback(data.join);
+									peers.push(peer);
 								}
-								joinCallback(data.join);
-								peers.push(peer);
 								peer.send({
 									join : true
 								});
@@ -87,7 +88,6 @@ function Connection($rootScope) {
 				});
 
 				var timeout = setTimeout(() => {
-					mediator.close();
 					reject("No one listening on Pair Code " + pairCode);
 				}, 3000);
 
@@ -96,16 +96,12 @@ function Connection($rootScope) {
 						join : { name : name, pairCode : id }
 					});
 
-					connectClient(id).then((client) => {
-						$rootScope.$on('data-join', (event, id, data) => {
-							clearTimeout(timeout);
-							if (data === true) {
-								resolve();
-							} else {
-								client.destroy();
-								reject(data);
-							}
-						});
+					connectClient(id).then(expectJoinEvent).then(() => {
+						clearTimeout(timeout);
+						resolve();
+					}).catch((reason) => {
+						mediator.close();
+						reject(reason);
 					});
 					mediator.close();
 				});
@@ -118,15 +114,22 @@ function Connection($rootScope) {
 	self.reconnect = function() {
 		return new Promise((resolve, reject) => {
 			new Fingerprint2().get((id) => {
-				//TODO: timeout handling
-				connectClient(id).then(resolve);
+				var timeout = setTimeout(() => {
+					reject("No one listening on Pair Code " + id);
+				}, 3000);
+
+				connectClient(id).then(expectJoinEvent).then(() => {
+						clearTimeout(timeout);
+						resolve();
+				}).catch(reject);
 			});
 		});
 	}
 
 	self.close = function(pairCode) {
 		var peer = peerFromPairCode(pairCode);
-		peer.close();
+		peer.destroy();
+		peers = peers.filter((p) => p.pairCode != peer.pairCode);
 	}
 
 	self.send = function(data) {
@@ -137,7 +140,9 @@ function Connection($rootScope) {
 	}
 
 	self.connected = function() {
-		return peers.length == 1 && !!peers[0].peer;
+		return peers.reduce((res, val) => {
+			return res || val.socketConnected || val.rtcConnected;
+		}, false);
 	}
 
 	self.usingFallback = function(pairCode) {
@@ -175,6 +180,19 @@ function Connection($rootScope) {
 			});
 
 			peer.connect();
+		});
+	}
+
+	function expectJoinEvent(client) {
+		return new Promise((resolve, reject) => {
+			$rootScope.$on('data-join', (event, id, data) => {
+				if (data === true) {
+					resolve();
+				} else {
+					client.destroy();
+					reject(data);
+				}
+			});
 		});
 	}
 

@@ -2,7 +2,7 @@
 	<div ng-if="!answers.A && !answers.B && !answers.C && !answers.D">
 		<div class="fa-stack fa-lg fa-5x">
 			<i class="fa fa-television fa-stack-2x"></i>
-			<i class="fa fa-eye fa-stack-1x"></i>
+			<i class="fa fa-stack-1x" ng-class="{'fa-eye' : connected, 'fa-bolt' : !connected}"></i>
 		</div>
 		<h3>{{ message }}</h3>
 		<ul ng-if="!connected">
