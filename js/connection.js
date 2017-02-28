@@ -22,51 +22,23 @@ function Connection($rootScope) {
 			new Fingerprint2().get((id) => {
 				mediator = createPeer('mediator' + id, true);
 
-				mediator.on('error', (err) => {
+				mediator.once('error', (err) => {
 					reject(err);
 				});
 
 				mediator.on('data', (data) => {
 					if (data.join) {
-						var peer = createPeer('client' + data.join.pairCode, true);
-						peer.on('connect', () => {
-							try {
-								if (peerReconnected(peer)) {
-									$rootScope.$broadcast('connection-upgraded', peer);
-								} else {
-									joinCallback(data.join);
-									peers.push(peer);
-								}
-								peer.send({
-									join : true
-								});
-							} catch (e) {
-								peer.send({
-									join : e.message
-								});
-								peer.destroy();
-							}
+						serverToClient(data.join).then((d) => {
+							joinCallback(d);
+							mediator.close();
 						});
-						peer.on('data', (data) => {
-							dataEvent(peer.pairCode, data);
-						});
-
-						peer.on('upgrade', () => {
-							$rootScope.$broadcast('connection-upgraded', peer);
-						});
-
-						peer.on('close', () => {
-							peer.rtcConnected = false; //This can be delayed, so the gui wont be updated correctly. Lets just set the property here, what could go wrong?
-							$rootScope.$broadcast('connection-closed', peer);
-						});
-
-						peer.connect();
 					}
 				});
 
 				sanityCheck = createPeer('mediator' + id, false);
 				sanityCheck.on('connect', () => {
-					mediator.on('close', () => {
+					mediator.once('close', () => {
+						mediator.removeAllListeners('error');
 						resolve(id);
 					});
 
@@ -83,27 +55,23 @@ function Connection($rootScope) {
 			new Fingerprint2().get((id) => {
 				mediator = createPeer('mediator' + pairCode, false);
 
-				mediator.on('error', (err) => {
-					reject(err);
-				});
+				timeoutAndErrorHandling(mediator, reject, (timeout, cleanUp) => {
+					mediator.once('connect', () => {
+						mediator.send({
+							join : { name : name, pairCode : id }
+						});
 
-				var timeout = setTimeout(() => {
-					reject("No one listening on Pair Code " + pairCode);
-				}, 3000);
-
-				mediator.on('connect', () => {
-					mediator.send({
-						join : { name : name, pairCode : id }
-					});
-
-					connectClient(id).then(expectJoinEvent).then(() => {
 						clearTimeout(timeout);
-						resolve();
-					}).catch((reason) => {
-						mediator.close();
-						reject(reason);
+
+						clientToServer(id).then((peer) => {
+							cleanUp();
+							peers = [peer];
+							resolve();
+						}).catch((reason) => {
+							cleanUp();
+							reject(reason);
+						});
 					});
-					mediator.close();
 				});
 
 				mediator.connect();
@@ -114,12 +82,8 @@ function Connection($rootScope) {
 	self.reconnect = function() {
 		return new Promise((resolve, reject) => {
 			new Fingerprint2().get((id) => {
-				var timeout = setTimeout(() => {
-					reject("No one listening on Pair Code " + id);
-				}, 3000);
-
-				connectClient(id).then(expectJoinEvent).then(() => {
-						clearTimeout(timeout);
+				clientToServer(id).then((peer) => {
+						peers = [peer];
 						resolve();
 				}).catch(reject);
 			});
@@ -162,37 +126,86 @@ function Connection($rootScope) {
 		}
 	}
 
-	function connectClient(id) {
+	function serverToClient(data) {
 		return new Promise((resolve, reject) => {
-			var peer = createPeer('client' + id, true);
-			peer.on('connect', () => {
-				peers = [peer];
+			var peer = createPeer('client' + data.pairCode, true);
 
-				peer.on('data', (data) => {
-					dataEvent(peer.pairCode, data);
+			timeoutAndErrorHandling(peer, reject, (timeout) => {
+				peer.on('connect', () => {
+					try {
+						clearTimeout(timeout);
+
+						if (peerReconnected(peer)) {
+							$rootScope.$broadcast('connection-upgraded', peer);
+						} else {
+							peers.push(peer);
+						}
+
+						peer.removeAllListeners('error');
+						peer.removeAllListeners('close');
+
+						peer.send({
+							join : true
+						});
+
+						peer.on('data', (data) => {
+							dataEvent(peer.pairCode, data);
+						});
+
+						peer.on('upgrade', () => {
+							$rootScope.$broadcast('connection-upgraded', peer);
+						});
+
+						peer.on('close', () => {
+							peer.rtcConnected = false; //This can be delayed, so the gui wont be updated correctly. Lets just set the property here, what could go wrong?
+							$rootScope.$broadcast('connection-closed', peer);
+						});
+
+						resolve(data);
+					} catch (e) {
+						peer.send({
+							join : e.message
+						});
+						peer.destroy();
+					}
 				});
-
-				resolve(peer);
-			});
-
-			peer.on('close', () => {
-				$rootScope.$broadcast('connection-closed', peer);
 			});
 
 			peer.connect();
 		});
 	}
 
-	function expectJoinEvent(client) {
+	function clientToServer(id) {
 		return new Promise((resolve, reject) => {
-			$rootScope.$on('data-join', (event, id, data) => {
-				if (data === true) {
-					resolve();
-				} else {
-					client.destroy();
-					reject(data);
-				}
+			var peer = createPeer('client' + id, false);
+
+			timeoutAndErrorHandling(peer, reject, (timeout) => {
+				peer.once('connect', () => {
+					peer.once('data', function(data) {
+						clearTimeout(timeout);
+
+						peer.removeAllListeners('close');
+						peer.removeAllListeners('error');
+
+						if (data.join == true) {
+							peer.on('data', (data) => {
+								dataEvent(peer.pairCode, data);
+							});
+
+							peer.on('close', () => {
+								$rootScope.$broadcast('connection-closed', peer);
+							});
+
+							resolve(peer);
+						} else {
+							peer.close();
+							reject(data.join);
+						}
+					});
+				});
 			});
+
+			peer.connect();
 		});
 	}
 
@@ -205,6 +218,33 @@ function Connection($rootScope) {
 		return false;
 	}
 
+	function timeoutAndErrorHandling(peer, reject, callback) {
+		function cleanUp() {
+			peer.removeAllListeners('close');
+			peer.removeAllListeners('connect');
+			peer.removeAllListeners('error');
+			peer.removeAllListeners('data');
+			peer.close();
+		}
+
+		peer.once('close', () => {
+			cleanUp();
+			reject("Connection closed");
+		});
+
+		peer.once('error', (err) => {
+			cleanUp();
+			reject("Connection error: " + err);
+		});
+
+		var timeout = setTimeout(() => {
+			cleanUp();
+			reject('No one listening on Pair Code ' + peer.pairCode);
+		}, 3000);
+
+		callback(timeout, cleanUp);
+	}
+
 	function createPeer(pairCode, reconnect) {
 		var peer = new SocketPeer({
 			pairCode: pairCode.toLowerCase(),
@@ -215,7 +255,8 @@ function Connection($rootScope) {
 			serveLibrary: false,
 			debug: false
 		});
-		peer.on('connect', () => {
+
+		peer.once('connect', () => {
 			fixCloseEvent(peer);
 		});
 		return peer;
