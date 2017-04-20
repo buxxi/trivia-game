@@ -1,10 +1,12 @@
-function AnswerController($scope, $location, connection) {
+function AnswerController($scope, $location, connection, avatars) {
 	var correct = null;
 	var guess = null;
 	var answers = {};
 
 	$scope.connected = connection.connected();
 	$scope.message = $scope.connected ? 'Waiting for the game to start' : 'Not connected';
+	$scope.answers = {};
+	$scope.avatars = avatars;
 
 	$scope.$on('data-answers', (event, pairCode, data) => {
 		$scope.$apply(() => {
@@ -27,6 +29,10 @@ function AnswerController($scope, $location, connection) {
 		});
 	});
 
+	$scope.$on('data-stats', (event, pairCode, data) => {
+			$scope.stats = data;
+	});
+
 	$scope.$on('connection-closed', () => {
 		$scope.$apply(() => {
 			$scope.answers = {};
@@ -34,8 +40,6 @@ function AnswerController($scope, $location, connection) {
 			$scope.connected = false;
 		});
 	});
-
-	$scope.answers = {};
 
 	$scope.reconnect = function() {
 		connection.reconnect().then(() => {

@@ -15,6 +15,11 @@
 		</ul>
 	</div>
 	<div ng-if="answers.A && answers.B && answers.C && answers.D">
+		<div class="stats" style="background-color : {{stats.color}}">
+			<img ng-src="{{ avatars[stats.avatar].url }}"/>
+			<div><i class="fa fa-fw fa-star"></i>{{stats.score}}</div>
+			<div><i class="fa fa-fw fa-times"></i>{{stats.multiplier}}</div>
+		</div>
 		<button type="button" class="btn-A" ng-click="guess('A')" ng-class="buttonClass('A')" ng-disabled="hasGuessed()">{{ answers['A'] }}</button>
 		<button type="button" class="btn-B" ng-click="guess('B')" ng-class="buttonClass('B')" ng-disabled="hasGuessed()">{{ answers['B'] }}</button>
 		<button type="button" class="btn-C" ng-click="guess('C')" ng-class="buttonClass('C')" ng-disabled="hasGuessed()">{{ answers['C'] }}</button>

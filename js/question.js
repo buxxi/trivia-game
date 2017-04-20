@@ -35,6 +35,10 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 				$scope.title = question.text;
 			});
 
+			connection.send((peerid) => {
+				return { stats : game.stats(peerid) };
+			});
+
 			var spoken = false;
 			var timelimit = false;
 

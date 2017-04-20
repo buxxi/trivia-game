@@ -97,10 +97,19 @@ function Connection($rootScope) {
 	}
 
 	self.send = function(data) {
-		console.log("Sending: " + JSON.stringify(data) + " to " + peers.length + " peers");
-		peers.forEach((peer) => {
-			peer.send(data);
-		});
+		if (typeof(data) == 'function') {
+			console.log("Sending client specific data to " + peers.length + " peers");
+			peers.forEach((peer) => {
+				var pairCode = pairCodeFromPeer(peer);
+				var result = data(pairCode);
+				peer.send(result);
+			});
+		} else {
+			console.log("Sending: " + JSON.stringify(data) + " to " + peers.length + " peers");
+			peers.forEach((peer) => {
+				peer.send(data);
+			});
+		}
 	}
 
 	self.connected = function() {
@@ -270,6 +279,10 @@ function Connection($rootScope) {
 			old();
 		};
 		return peer;
+	}
+
+	function pairCodeFromPeer(peer) {
+		return peer.pairCode.substr(6);
 	}
 
 	function peerFromPairCode(pairCode) {

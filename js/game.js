@@ -178,6 +178,16 @@ function Game($rootScope, $interval, avatars, categories) {
 		}
 	}
 
+	self.stats = function(peerid) {
+		var player = players[peerid];
+		return {
+			avatar : player.avatar,
+			color : player.color,
+			score : player.score,
+			multiplier : player.multiplier
+		};
+	}
+
 	self.correctAnswer = function() {
 		var question = session.question();
 		var correct = question.correct;
