@@ -26,6 +26,15 @@ function SoundController() {
 		backgroundMusic.pause();
 	}
 
+	self.click = function() {
+		if (enabled.soundEffects) {
+			var click = new Pizzicato.Sound('sound/click.mp3', () => {
+				click.volume = 0.2;
+				click.play();
+			});
+		}
+	}
+
 	self.beep = function(count) {
 		if (enabled.soundEffects) {
 			var beep = new Pizzicato.Sound('sound/beep.mp3', () => {

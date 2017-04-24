@@ -1,4 +1,111 @@
-function QuestionController($scope, $location, $timeout, connection, game, playback, sound, avatars) {
+function CategorySpinner(categories, flipCallback) {
+	var self = this;
+
+	var jokeChance = 0.5;
+	var maxDuration = 2000;
+
+	var duration = 50;
+	var calcDuration = keepDuration;
+	self.categories = loadCategories(categories);
+
+	self.start = function() {
+		return new Promise((resolve, reject) => {
+			var checkIfDone = () => {
+				var done = self.flip();
+				if (done) {
+					resolve();
+				} else {
+					setTimeout(checkIfDone, duration);
+				}
+			}
+
+			checkIfDone();
+		});
+	}
+
+	self.flip = function() {
+		flipCallback();
+
+		duration = calcDuration(duration);
+		var lis = document.querySelectorAll(".spinner li");
+		for (var i = 0; i < lis.length; i++) {
+			lis[i].style.transitionDuration = duration + "ms";
+		}
+
+		if (duration < maxDuration) {
+			var li = lis[lis.length -1];
+			var parent = li.parentNode;
+			parent.removeChild(li);
+			parent.insertBefore(li, parent.childNodes[0]);
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	self.stop = function(callback) {
+		var stepsBeforeSlowingDown = calculateStepsBeforeSlowingDown();
+		calcDuration = stepsDuration(stepsBeforeSlowingDown, logDuration);
+	}
+
+	function loadCategories(categories) {
+		var result = categories.enabled();
+		var insertJoke = Math.random() >= jokeChance;
+		while (result.length < 6 || insertJoke) {
+			var tmp = [].concat(result);
+			if (insertJoke) {
+				tmp.push(categories.joke());
+			}
+			result = tmp.concat(result);
+			insertJoke = Math.random() >= jokeChance;
+		}
+		return result;
+	}
+
+	function calculateStepsBeforeSlowingDown() {
+		var steps = 0;
+		var sum = duration;
+		while (sum < maxDuration) {
+			steps++;
+			sum = logDuration(sum);
+		}
+
+		var indexOfChosen = -1;
+		var lis = document.querySelectorAll(".spinner li");
+		for (var i = 0; i < lis.length; i++) {
+			if (lis[i].dataset.spinnerStop) {
+				indexOfChosen = i;
+			}
+		}
+
+		var mod = (n, m) => {
+			return ((n % m) + m) % m;
+		}
+
+		var steps = (3 - steps) - indexOfChosen;
+		return mod(steps, lis.length);
+	}
+
+	function logDuration(duration) {
+		return Math.max(Math.log10(duration * 0.1),1.1) * duration
+	}
+
+	function keepDuration(duration) {
+		return duration;
+	}
+
+	function stepsDuration(steps, nextDuration) {
+		return (duration) => {
+			if (steps == 0) {
+				calcDuration = nextDuration;
+			}
+			steps--;
+			return duration;
+		}
+	};
+}
+
+function QuestionController($scope, $location, $timeout, connection, game, playback, sound, avatars, categories) {
 	$scope.timer = game.timer();
 	$scope.players = game.players();
 	$scope.session = game.session();
@@ -18,13 +125,24 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 	});
 
 	$scope.$on("connection-closed", (event, conn) => {
-		$scope.$digest()
+		$scope.$digest();
 	});
 
 	function showLoadingNextQuestion() {
 		return new Promise((resolve, reject) => {
+			var spinner = new CategorySpinner(categories, sound.click);
+
 			$scope.state = 'loading';
-			resolve();
+			$scope.title = 'Selecting next question';
+			$scope.categories = spinner.categories;
+
+			game.nextQuestion().then((question) => {
+				$scope.$digest();
+				spinner.start().then(() => {
+					sound.speak(game.session().question().view.category, () => resolve(question));
+				});
+				setTimeout(spinner.stop, 2000);
+			}).catch(reject);
 		});
 	}
 
@@ -123,15 +241,13 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 	}
 
 	function gameLoop() {
-		showLoadingNextQuestion().then(() => {
-			if (game.hasMoreQuestions()) {
-				game.nextQuestion().then(showPreQuestion).then(showQuestion).then(showPostQuestion).then(gameLoop).catch(showError);
-			} else {
-				$scope.$apply(() => {
-					$location.path('/results');
-				})
-			}
-		});
+		if (game.hasMoreQuestions()) {
+			showLoadingNextQuestion().then(showPreQuestion).then(showQuestion).then(showPostQuestion).then(gameLoop).catch(showError);
+		} else {
+			$scope.$apply(() => {
+				$location.path('/results');
+			})
+		}
 	}
 
 	gameLoop();

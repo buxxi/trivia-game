@@ -10,8 +10,10 @@
 @background : #000000;
 
 html {
-	background : @background url('../img/simple_dashed.png');
-	background-size: 2em;
+   background: linear-gradient(290deg, fade(@primary, 40%), fade(@primary_border, 30%)), url('https://buxxi.se/trivia/img/simple_dashed.png');
+   background-size: cover, 2em;
+   background-blend-mode: screen;
+   height : 100%;
 }
 
 body {
@@ -312,6 +314,75 @@ h1 {
 		padding : 5px;
 		line-height: 1.2em;
 		font-size: 1.7em;
+	}
+}
+
+.spinner {
+	position : relative;
+	height : 10em;
+	padding: 0;
+	display: block;
+	text-align: center;
+	margin: 2em 4em;
+	font-size: 3em;
+
+	&:before {
+		content : "\f0da";
+		font-family : FontAwesome;
+		font-size : 4em;
+		display : block;
+		position : absolute;
+		top : 50%;
+		margin-top : -0.3em;
+		margin-left : -0.15em;
+		z-index : 2;
+	}
+
+	li {
+		list-style : none;
+		height : 3em;
+		position : absolute;
+		line-height : 3em;
+		transition-duration: 0.5s;
+		transition-timing-function: linear;
+		transition-property: background, transform, top;
+		width : 100%;
+	}
+	li:nth-child(1) {
+		transform : rotateX(-90deg);
+		background : @primary_border;
+		top : 0;
+	}
+
+	li:nth-child(2) {
+		transform : rotateX(-70deg);
+		background : mix(@primary, @primary_border, 25%);
+		top : 0.5em;
+	}
+	li:nth-child(3) {
+		transform : rotateX(-40deg);
+		background : mix(@primary, @primary_border, 50%);
+		top : 2.1em;
+	}
+	li:nth-child(4) {
+		background-color : @primary;
+		transform : rotateX(0deg);
+		top : 4.7em;
+	}
+	li:nth-child(5) {
+		transform : rotateX(40deg);
+		background : mix(@primary, @primary_border, 50%);
+		top : 7.3em;
+	}
+	li:nth-child(6) {
+		transform : rotateX(70deg);
+		background : mix(@primary, @primary_border, 25%);
+		top : 8.9em;
+	}
+	li:nth-child(n+7) {
+		transform : rotateX(90deg);
+		background : @primary_border;
+		top : 9.4em;
 	}
 }
 
