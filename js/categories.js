@@ -152,6 +152,7 @@ function Categories(movies, music, geography, quotes, videogames, drinks, generi
 	var categories = [movies, music, geography, quotes, videogames, drinks];
 	var enabledCategories = [];
 	var apikeys = {};
+	var jokes = [];
 
 	self.init = function() {
 		return new Promise((resolve, reject) => {
@@ -163,11 +164,23 @@ function Categories(movies, music, geography, quotes, videogames, drinks, generi
 			}).then(() => {
 				return Promise.all(apikeys.other.map((url) => self.loadFromURL(url))).then(resolve).catch(reject);
 			}).catch(reject);
+			$http.get('conf/jokes.json').then((response) => {
+				jokes = response.data;
+			});
 		});
 	}
 
 	self.available = function() {
 		return categories.map((category) => category.describe());
+	}
+
+	self.enabled = function() {
+		return self.available().filter((category) => !!enabledCategories[category.type]);
+	}
+
+	self.joke = function() {
+		var selector = new QuestionSelector();
+		return selector.fromArray(jokes);
 	}
 
 	self.preload = function(category, progress) {
