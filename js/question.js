@@ -52,11 +52,10 @@ function CategorySpinner(categories, flipCallback) {
 		var result = categories.enabled();
 		var insertJoke = Math.random() >= jokeChance;
 		while (result.length < 6 || insertJoke) {
-			var tmp = [].concat(result);
 			if (insertJoke) {
-				tmp.push(categories.joke());
+				result.push(categories.joke());
 			}
-			result = tmp.concat(result);
+			result = result.concat(categories.enabled()); //TODO: shuffle this array?
 			insertJoke = Math.random() >= jokeChance;
 		}
 		return result;
@@ -139,7 +138,7 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 			game.nextQuestion().then((question) => {
 				$scope.$digest();
 				spinner.start().then(() => {
-					sound.speak(game.session().question().view.category, () => resolve(question));
+					sound.speak(game.session().question().view.category.join(": "), () => resolve(question));
 				});
 				setTimeout(spinner.stop, 2000);
 			}).catch(reject);
@@ -183,7 +182,7 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 			player.start().then(() => {
 				$scope.$apply(() => {
 					$scope.state = 'question';
-					$scope.category = question.view.category;
+					$scope.category = question.view.category.join(": ");
 					$scope.minimizeQuestion = player.minimizeQuestion;
 				});
 

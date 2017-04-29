@@ -61,6 +61,9 @@ function YoutubeLoader($http) {
 					part : 'status,contentDetails'
 				}
 			}).then((response) => {
+				if (response.data.items.length == 0) {
+					return reject("Video not found");
+				}
 				var item = response.data.items[0];
 				if (!item.status.embeddable) {
 					return reject("Video not embeddable");

@@ -7,7 +7,8 @@ function DrinksQuestions($http) {
 		return {
 			type : 'drinks',
 			name : 'Drinks',
-			icon : 'fa-glass'
+			icon : 'fa-glass',
+			count : drinks.length
 		};
 	}
 

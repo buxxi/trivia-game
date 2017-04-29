@@ -200,6 +200,10 @@ function Categories(movies, music, geography, quotes, videogames, drinks, generi
 		}, {});
 	}
 
+	self.countQuestions = function(input) {
+		return Object.keys(input).filter((category) => input[category]).map((c) => categoryByType(c).describe().count).reduce((a, b) => a + b, 0);
+	}
+
 	self.nextQuestion = function() {
 		var selector = new QuestionSelector();
 		var category = selector.fromWeightedObject(enabledCategories);
@@ -264,9 +268,9 @@ function Categories(movies, music, geography, quotes, videogames, drinks, generi
 		return function(question) {
 			return new Promise((resolve, reject) => {
 				if (question.view.category) {
-					question.view.category = category.name + ": " + question.view.category;
+					question.view.category = [category.name, question.view.category];
 				} else {
-					question.view.category = category.name;
+					question.view.category = [category.name];
 				}
 				resolve(question);
 			});

@@ -5,6 +5,7 @@ function GenericCategoryLoader($interpolate, $parse) {
 		var parsed = JSON.parse(input);
 		var description = parsed.description;
 		description.type = /.*?([a-zA-Z0-9]+).json/.exec(name)[1];
+		description.count = parsed.questions.length * parsed.data.length;
 		return new GenericCategory($interpolate, $parse, description, parsed.questions, parsed.data);
 	}
 }
@@ -23,7 +24,7 @@ function GenericCategory($interpolate, $parse, description, questions, data) {
 	}
 
 	self.nextQuestion = function(selector) {
-		var q = new GenericQuestion($interpolate, $parse, selector.fromArray(questions));
+		var q = new GenericQuestion($interpolate, $parse, questions, selector.fromArray(questions));
 		var d = selector.fromArray(data);
 
 		return new Promise((resolve, reject) => {
@@ -37,51 +38,57 @@ function GenericCategory($interpolate, $parse, description, questions, data) {
 	}
 }
 
-function GenericQuestion($interpolate, $parse, model) {
+function GenericQuestion($interpolate, $parse, questions, model) {
 	var self = this;
 
 	self.title = function(correct) {
-		return $interpolate(model.question.format)(correct);
+		return $interpolate(model.question.format)({
+			'question' : correct
+		});
 	}
 
 	self.correct = function(obj) {
-		var s = model.answers.selector;
-		if (s.type == "self") {
-			var path = /{{(.*)}}/.exec(s.correct);
-			if (!path) {
-				throw new Error("model.answers.selector.correct is in incorrect format");
-			}
-			return $parse(path[1].trim())(obj);
-		} else {
-			return obj;
+		var pattern = model.answers.selector.correct;
+		var path = /{{(.*)}}/.exec(pattern);
+		if (!path) {
+			throw new Error("model.answers.selector.correct is in incorrect format");
 		}
+
+		return $parse(path[1].trim())({
+			'question' : obj,
+			'all' : questions
+		});
 	}
 
 	self.similar = function(obj, questions, selector) {
-		var s = model.answers.selector;
-		if (s.type == "self") {
-			var path = /{{(.*)}}/.exec(s.alternatives);
-			if (!path) {
-				throw new Error("model.answers.selector.alternatives is in incorrect format");
-			}
-			var answers = $parse(path[1].trim())(obj);
-			if (answers.length != 4) {
-				throw new Error("Expected answers to be an array of size 4");
-			}
-
-			return selector.alternatives(answers, self.correct(obj), self.format, selector.first);
-		} else if (s.type == "random") {
-			return selector.alternatives(questions, self.correct(obj), self.format, selector.splice);
-		} else {
-			throw new Error("Not implemented yet");
+		var pattern = model.answers.selector.alternatives;
+		var path = /{{(.*)}}/.exec(pattern);
+		if (!path) {
+			throw new Error("model.answers.selector.alternatives is in incorrect format");
 		}
+
+		var answers = $parse(path[1].trim())({
+			'question' : obj,
+			'all' : questions,
+			'$allOf' : (list) => list,
+			'$randomOf' : (list) => selector.fromArray(list),
+			'$randomOfExclude' : function(list, exclude) {
+				console.log("list:" + list);
+				console.log("exclude:" + exclude);
+			}
+		});
+		/*if (answers.length < 4) {
+			throw new Error("Expected answers to be an array of size 4 or larger");
+		}*/
+
+		return answers;
+		//return selector.alternatives(answers, self.correct(obj), self.format, selector.first);
 	}
 
 	self.format = function(answer) {
-		if (typeof answer == 'string') {
-			answer = { self : answer };
-		}
-		return $interpolate(model.answers.format)(answer);
+		return $interpolate(model.answers.format)({
+			'answer' : answer
+		});
 	}
 
 	self.attribution = function(obj) {

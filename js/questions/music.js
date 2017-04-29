@@ -45,7 +45,8 @@ function MusicQuestions($http) {
 		return {
 			type : 'music',
 			name : 'Music',
-			icon : 'fa-music'
+			icon : 'fa-music',
+			count : tracks.length * Object.keys(types).length
 		};
 	}
 

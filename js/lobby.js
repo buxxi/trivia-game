@@ -42,6 +42,10 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		{ url: 'https://www.thecocktaildb.com', name: 'TheCocktailDB' }
 	]
 
+	$scope.countQuestions = function() {
+		return categories.countQuestions(config.categories);
+	}
+
 	$scope.kickPlayer = function(pairCode) {
 		game.removePlayer(pairCode);
 		connection.close(pairCode);

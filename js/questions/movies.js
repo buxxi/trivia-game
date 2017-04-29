@@ -25,7 +25,8 @@ function MovieQuestions($http, $interval, youtube) {
 		return {
 			type : 'movies',
 			name : 'Movies',
-			icon : 'fa-film'
+			icon : 'fa-film',
+			count : movies.map((m) => m.videos.length).reduce((a, b) => a + b, 0) * Object.keys(types).length
 		};
 	}
 

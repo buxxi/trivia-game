@@ -9,7 +9,8 @@ function QuotesQuestions($http) {
 		return {
 			type : 'quotes',
 			name : 'Famous Quotes',
-			icon : 'fa-quote-right'
+			icon : 'fa-quote-right',
+			count : quotes.length
 		};
 	}
 

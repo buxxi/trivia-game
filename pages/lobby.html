@@ -82,6 +82,7 @@
 								<label title="Add category from JSON file"><i class="fa fa-plus"></i><input type="file" id="jsonfile" onchange="angular.element(this).scope().addCategories(this.files)" accept="application/json" multiple/></label>
 							</li>
 						</ul>
+
 					</div>
 				</form>
 			</div>
@@ -99,6 +100,7 @@
 			<li ng-if="config.allowMultiplier">An invalid answer will reset the point-multiplier to 1x</li>
 			<li ng-if="config.allowMultiplier">Not answering will reset the point-multiplier to 1x</li>
 			<li>You have {{config.time}} seconds to answer each question</li>
+			<li>There is {{countQuestions()}} possible questions in the selected categories</li>
 		</ol>
 
 		<h1><i class="fa fa-fw fa-heart" style="color : #aa0000"></i>Powered by</h1>

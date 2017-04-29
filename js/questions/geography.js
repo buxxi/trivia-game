@@ -37,7 +37,8 @@ function GeographyQuestions($http) {
 		return {
 			type : 'geography',
 			name : 'Geography',
-			icon : 'fa-globe'
+			icon : 'fa-globe',
+			count : countries.length * Object.keys(types).length
 		};
 	}
 

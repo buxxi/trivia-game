@@ -53,10 +53,14 @@ function VideoGameQuestions($http, youtube) {
 	}
 
 	self.describe = function() {
+		var countSelector = {
+			fromArray : (arr) => { return arr.length; }
+		};
 		return {
 			type : 'videogames',
 			name : 'Video Games',
-			icon : 'fa-gamepad'
+			icon : 'fa-gamepad',
+			count : Object.keys(types).map((t) => types[t].correct(countSelector)).reduce((a, b) => { return a + b; }, 0)
 		};
 	}
 
