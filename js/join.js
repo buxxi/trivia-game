@@ -24,23 +24,21 @@ function JoinController($scope, $location, $routeParams, connection) {
 		var video = document.getElementById('camera');
 		video.style.display = 'inline-block';
 
-		decoder.getVideoSources((err, sources) => {
-			if (sources) {
-				sources.forEach((source) => {
-					if (source.facing == 'environment') {
-						decoder.setSourceId(source.id);
-					}
-				});
+		resolveBackCamera().then((stream) => {
+			if ("srcObject" in video) {
+				video.srcObject = stream;
+			} else {
+				video.src = window.URL.createObjectURL(stream);
 			}
 
 			function stop() {
 				video.style.display = 'none';
-				decoder.stream.getTracks()[0].stop();
+				stream.getTracks()[0].stop();
 			}
 
 			video.addEventListener('click', stop);
 
-			decoder.decodeFromCamera(video, (er,res) => {
+			decoder.decodeFromVideo(video, (err, res) => {
 				if (res) {
 					$scope.$apply(() => {
 						config.code = /.*\?code=(.*)/.exec(res)[1];
@@ -55,4 +53,19 @@ function JoinController($scope, $location, $routeParams, connection) {
 			}, true);
 		});
 	};
+
+	function resolveBackCamera() {
+		return new Promise((resolve, reject) => {
+			navigator.mediaDevices.enumerateDevices().then((sources) => {
+				var backCamera = sources.find((source) => {
+					return source.kind == "videoinput" && source.label.toLowerCase().indexOf('back') != -1;
+				});
+				if (backCamera) {
+    				resolve(navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: backCamera.deviceId } } }));
+				} else {
+					resolve(navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } } }));
+				}
+			});
+		});
+	}
 }

@@ -35,7 +35,12 @@ triviaApp.constant('avatars', function(avatars) {
 	bear : { code :'\uD83D\uDC3B' },
 	panda : { code :'\uD83D\uDC3C' },
 	frog : { code :'\uD83D\uDC38' },
-	octopus : { code :'\uD83D\uDC19' }
+	octopus : { code :'\uD83D\uDC19' },
+	turtle : { code :'\uD83D\uDC22' },
+	bee : { code :'\uD83D\uDC1D' },
+	snail : { code :'\uD83D\uDC0C' },
+	penguin : { code :'\uD83D\uDC27' },
+	dromedary : { code :'\uD83D\uDC2A' }
 }));
 
 triviaApp.service('sound', SoundController);

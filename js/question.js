@@ -6,16 +6,21 @@ function CategorySpinner(categories, flipCallback) {
 
 	var duration = 50;
 	var calcDuration = keepDuration;
+
 	self.categories = loadCategories(categories);
 
 	self.start = function() {
 		return new Promise((resolve, reject) => {
 			var checkIfDone = () => {
-				var done = self.flip();
-				if (done) {
-					resolve();
-				} else {
-					setTimeout(checkIfDone, duration);
+				try {
+					var done = self.flip();
+					if (done) {
+						resolve();
+					} else {
+						setTimeout(checkIfDone, duration);
+					}
+				} catch (e) {
+					reject(e);
 				}
 			}
 
@@ -43,9 +48,12 @@ function CategorySpinner(categories, flipCallback) {
 		}
 	}
 
-	self.stop = function(callback) {
-		var stepsBeforeSlowingDown = calculateStepsBeforeSlowingDown();
-		calcDuration = stepsDuration(stepsBeforeSlowingDown, logDuration);
+	self.stop = function() {
+		return new Promise((resolve, reject) => {
+			var stepsBeforeSlowingDown = calculateStepsBeforeSlowingDown();
+			calcDuration = stepsDuration(stepsBeforeSlowingDown, logDuration);
+			resolve();
+		});
 	}
 
 	function loadCategories(categories) {
@@ -139,8 +147,8 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 				$scope.$digest();
 				spinner.start().then(() => {
 					sound.speak(game.session().question().view.category.join(": "), () => resolve(question));
-				});
-				setTimeout(spinner.stop, 2000);
+				}).catch(reject);
+				setTimeout(() => spinner.stop().catch(reject), 2000);
 			}).catch(reject);
 		});
 	}
