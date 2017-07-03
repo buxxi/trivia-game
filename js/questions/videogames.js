@@ -258,7 +258,7 @@ function VideoGameQuestions($http, youtube) {
 	}
 
 	function similarPlatformYears(platform, selector) {
-		return selector.yearAlternatives(platformYear(platform), 3).map((year) => { ({ release_date : year })});
+		return selector.yearAlternatives(platformYear(platform), 3).map((year) => ({ release_date : year }));
 	}
 
 	function similarPlatforms(game, selector) {
