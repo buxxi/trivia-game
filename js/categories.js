@@ -191,7 +191,7 @@ function Categories(movies, music, geography, quotes, videogames, drinks, generi
 		enabledCategories = Object.keys(input).filter((category) => input[category]).reduce((obj, value) => {
 			var c = categoryByType(value);
 			obj[value] = {
-				weight : 1,
+				weight : 2,
 				nextQuestion : c.nextQuestion,
 				name : c.describe().name
 			};
@@ -209,9 +209,9 @@ function Categories(movies, music, geography, quotes, videogames, drinks, generi
 		var category = selector.fromWeightedObject(enabledCategories);
 
 		Object.keys(enabledCategories).forEach((key) => {
-			enabledCategories[key].weight++;
+			enabledCategories[key].weight = enabledCategories[key].weight * 2;
 		});
-		category.weight = 1;
+		category.weight = 2;
 
 		return category.nextQuestion(selector).then(shuffleAnswers).then(attachCategory(category));
 	}
