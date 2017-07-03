@@ -42,6 +42,7 @@ triviaApp.constant('avatars', function(avatars) {
 	penguin : { code :'\uD83D\uDC27' },
 	dromedary : { code :'\uD83D\uDC2A' }
 }));
+triviaApp.constant('fingerprint', new Fingerprint2());
 
 triviaApp.service('sound', SoundController);
 triviaApp.service('connection', Connection);

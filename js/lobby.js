@@ -1,4 +1,4 @@
-function LobbyController($rootScope, $scope, $location, $routeParams, connection, game, categories, sound, avatars) {
+function LobbyController($rootScope, $scope, $location, $routeParams, connection, game, categories, sound, avatars, fingerprint) {
 	var config = {
 		questions : 10,
 		time : 30,
@@ -164,6 +164,12 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 					config.categories[type] = true;
 				});
 			});
+		}
+	}
+
+	if ($routeParams.forcePairCode) { //For debugging easier and making it easier for people without QR reader
+		fingerprint.get = function(callback) {
+			callback($routeParams.forcePairCode);
 		}
 	}
 

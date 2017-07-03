@@ -1,4 +1,4 @@
-function Connection($rootScope) {
+function Connection($rootScope, fingerprint) {
 	var self = this;
 	var mediator = { pairCode : null };
 	var serverUrl = window.location.href.toString().substr(0, window.location.href.toString().indexOf(window.location.pathname));
@@ -19,7 +19,7 @@ function Connection($rootScope) {
 
 	self.host = function(joinCallback) {
 		return new Promise((resolve, reject) => {
-			new Fingerprint2().get((id) => {
+			fingerprint.get((id) => {
 				mediator = createPeer('mediator' + id, true);
 
 				mediator.once('error', (err) => {
@@ -52,7 +52,7 @@ function Connection($rootScope) {
 
 	self.join = function(pairCode, name) {
 		return new Promise((resolve, reject) => {
-			new Fingerprint2().get((id) => {
+			fingerprint.get((id) => {
 				mediator = createPeer('mediator' + pairCode, false);
 
 				timeoutAndErrorHandling(mediator, reject, (timeout, cleanUp) => {
@@ -81,7 +81,7 @@ function Connection($rootScope) {
 
 	self.reconnect = function() {
 		return new Promise((resolve, reject) => {
-			new Fingerprint2().get((id) => {
+			fingerprint.get((id) => {
 				clientToServer(id).then((peer) => {
 						peers = [peer];
 						resolve();

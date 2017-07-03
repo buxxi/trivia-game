@@ -39,6 +39,7 @@ triviaClient.constant('avatars', function(avatars) {
 	penguin : { code :'\uD83D\uDC27' },
 	dromedary : { code :'\uD83D\uDC2A' }
 }));
+triviaClient.constant('fingerprint', new Fingerprint2());
 
 triviaClient.service('connection', Connection);
 triviaClient.controller('answerController', AnswerController);
