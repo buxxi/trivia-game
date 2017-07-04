@@ -4,18 +4,18 @@ function GeographyQuestions($http) {
 
 	var types = {
 		flags : {
-			title : (correct) => "What country does this flag belong to?",
+			title : (correct) => "Which country does this flag belong to?",
 			correct : randomCountry,
 			similar : similarCountries,
 			load : (correct) => loadImage('https://flagpedia.net/data/flags/normal/' + correct.code.toLowerCase() + '.png'),
-			weight : 40
+			weight : 30
 		},
 		shape : {
-			title : (correct) => "What country has this shape?",
+			title : (correct) => "Which country has this shape?",
 			correct : randomCountry,
 			similar : similarCountries,
 			load : (correct) => loadImage('https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + correct.code + '&chco=000000|307bbb&chf=bg,s,000000&cht=map:auto=50,50,50,50'),
-			weight : 30
+			weight : 20
 		},
 		highpopulation : {
 			title : (correct) => "Which country has the largest population?",
@@ -25,11 +25,25 @@ function GeographyQuestions($http) {
 			weight : 10
 		},
 		capital : {
-			title : (correct) => "In what country is " + correct.capital + " the capital?",
+			title : (correct) => "In which country is " + correct.capital + " the capital?",
 			correct : randomCountry,
 			similar : similarCountries,
 			load : (correct) => loadBlank(),
 			weight : 20
+		},
+		borders : {
+			title : (correct) => "Which country has borders to all these countries: " + correct.neighbours + "?",
+			correct : randomCountryWith2Neighbours,
+			similar : similarNeighbouringCountries,
+			load : (correct) => loadBlank(),
+			weight : 10
+		},
+		area : {
+			title : (correct) => "Which country has the largest land area?",
+			correct : randomCountry,
+			similar : similarAreaCountries,
+			load : (correct) => loadBlank(),
+			weight : 10
 		}
 	}
 
@@ -51,7 +65,9 @@ function GeographyQuestions($http) {
 						region : country.subregion,
 						name : country.name,
 						population : country.population,
-						capital : country.capital
+						capital : country.capital,
+						area : country.area,
+						neighbours : country.borders.map((code) => response.data.find((c) => code == c.alpha3Code).name)
 					}
 				});
 				resolve(result);
@@ -94,10 +110,26 @@ function GeographyQuestions($http) {
 		return selector.fromArray(countries);
 	}
 
+	function randomCountryWith2Neighbours(selector) {
+		return selector.fromArray(countries.filter((c) => c.neighbours.length >= 2));
+	}
+
+	function similarNeighbouringCountries(country) {
+		return similarCountries(country).filter(c => !country.neighbours.every((o) => c.neighbours.includes(o)));
+	}
+
 	function similarCountries(country) {
 		return countries.filter(function(c) {
 			return country.region == c.region;
 		});
+	}
+
+	function similarAreaCountries(country) {
+		function areaSort(c) {
+			return Math.floor(Math.log(c.area));
+		}
+
+		return countries.filter((c) => c.area < country.area).sort((a, b) => areaSort(b) - areaSort(a));
 	}
 
 	function similarPopulationCountries(country) {
