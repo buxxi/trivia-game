@@ -12,6 +12,10 @@ function SoundController() {
 		backgroundMusic.loop = true;
 	});
 
+	var click = new Pizzicato.Sound('sound/click.mp3', () => {
+		click.volume = 0.2;
+	});
+
 	self.play = function() {
 		if (!enabled.backgroundMusic) {
 			return;
@@ -28,10 +32,7 @@ function SoundController() {
 
 	self.click = function() {
 		if (enabled.soundEffects) {
-			var click = new Pizzicato.Sound('sound/click.mp3', () => {
-				click.volume = 0.2;
-				click.play();
-			});
+			click.clone().play();
 		}
 	}
 
