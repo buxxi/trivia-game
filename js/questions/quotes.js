@@ -5,6 +5,25 @@ function QuotesQuestions($http) {
 
 	var mashapeApiKey = '';
 
+	var types = {
+		/*author : {
+			title : (correct) => "Who said this famous quote?",
+			correct : randomQuote,
+			similar : similarAuthors,
+			load : loadQuote,
+			format : resolveAuthor,
+			weight : 50
+		},*/
+		word : {
+			title : (correct) => "Which word is missing from this quote?",
+			correct : randomBlankQuote,
+			similar : similarWords,
+			load : loadQuote,
+			format : resolveWord,
+			weight : 50
+		}
+	}
+
 	self.describe = function() {
 		return {
 			type : 'quotes',
@@ -44,25 +63,83 @@ function QuotesQuestions($http) {
 
 	self.nextQuestion = function(selector) {
 		return new Promise((resolve, reject) => {
-			var quote = selector.fromArray(quotes);
-
-			function resolveAuthor(q) { return q.author; }
+			var type = selector.fromWeightedObject(types);
+			var quote = type.correct(selector);
 
 			resolve({
-				text : "Who said this famous quote?",
-				answers : selector.alternatives(quotes, quote, resolveAuthor, selector.splice),
-				correct : resolveAuthor(quote),
-				view : {
-					player : 'quote',
-					quote : quote.quote,
-					attribution : {
-						title : "Quoted",
-						name : quote.author,
-						links : []
-					}
-				}
+				text : type.title(quote),
+				answers : selector.alternatives(type.similar(quote, selector), quote, type.format, selector.splice),
+				correct : type.format(quote),
+				view : type.load(quote)
 			});
 		});
+	}
+
+	function randomQuote(selector) {
+		return selector.fromArray(quotes);
+	}
+
+	function randomBlankQuote(selector) {
+		var quote = selector.fromArray(quotes);
+		var nlps = [(nlp) => nlp.adjectives(), (nlp) => nlp.verbs(), (nlp) => nlp.nouns()];
+		var word;
+
+		do {
+			word = nlps.shift()(nlp(quote.quote)).random(1).trim().out('text');
+		}
+		while (!word);
+
+		return {
+			quote : quote.quote.replace(word, "_____"),
+			author : quote.author,
+			word : word
+		}
+	}
+
+	function similarAuthors(quote, selector) {
+		return quotes;
+	}
+
+	function similarWords(quote, selector) {
+		function sameTags(a, b) {
+			a = nlp(a).list[0].terms[0].tags;
+			b = nlp(b).list[0].terms[0].tags;
+
+			var aKeys = Object.keys(a);
+			var bKeys = Object.keys(b);
+			if (aKeys.length != bKeys.length) {
+				return false;
+			}
+
+			return aKeys.every((i) => a[i] == b[i]);
+		}
+
+		var charArray = quote.word.split("");
+		var words = quotes.map((q) => nlp(q.quote).terms().trim().out('array')); //Extract words
+		words = [].concat.apply([], words); //Flatten array of arrays
+		words = words.filter((word, index) => word != '' && words.indexOf(word) == index); //Remove duplicates
+		words = words.filter((word) => sameTags(word, quote.word)); //Find the same type of word
+		return words.map((w) => ({ word : w}));
+	}
+
+	function resolveWord(q) {
+		return q.word;
+	}
+
+	function resolveAuthor(q) {
+		return q.author;
+	}
+
+	function loadQuote(quote) {
+		return {
+			player : 'quote',
+			quote : quote.quote,
+			attribution : {
+				title : "Quoted",
+				name : quote.author,
+				links : []
+			}
+		};
 	}
 
 	function loadRandomQuote() {

@@ -17,6 +17,7 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 - Fingerprint2: https://github.com/Valve/fingerprintjs2
 - Twemoji: https://github.com/twitter/twemoji
 - IDB: https://github.com/jakearchibald/idb
+- Compromise: https://github.com/nlp-compromise/compromise
 
 ### API's used:
 - Youtube: https://developers.google.com/youtube/v3
@@ -28,7 +29,7 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 - Reponsive Voice: http://responsivevoice.org/api/
 - The Cocktail DB: http://www.thecocktaildb.com/api/json/v1/1/random.php
 
-### Clips from: 
+### Clips from:
 - https://www.youtube.com/user/movieclips/videos
 - https://www.youtube.com/user/SupraDarky/videos
 
