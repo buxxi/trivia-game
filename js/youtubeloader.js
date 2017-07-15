@@ -45,6 +45,9 @@ function YoutubeLoader($http) {
 					} else {
 						resolve(result);
 					}
+				}).catch((err) => {
+					console.log(err);
+					loadPage(playListId, pageToken);
 				});
 			}
 

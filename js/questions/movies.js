@@ -1,23 +1,35 @@
 function MovieQuestions($http, $interval, youtube) {
 	var self = this;
 	var movies = [];
+	var actors = [];
+	var ACTOR_COUNT = 500;
 	var youtubeApiKey = '';
 	var tmdbApiKey = '';
 
 	var types = {
 		title : {
 			title : (correct) => "What is the title of this movie?",
-			correct : randomMovie,
+			correct : randomMovieClip,
 			similar : loadSimilarMovies,
 			format : movieTitle,
-			weight : 80
+			view : viewMovieClip,
+			weight : 60
 		},
 		year : {
 			title : (correct) => "What year is this movie from?",
-			correct : randomMovie,
+			correct : randomMovieClip,
 			similar : loadSimilarYears,
 			format : movieYear,
-			weight : 20
+			view : viewMovieClip,
+			weight : 10
+		},
+		actor_name : {
+			title : (correct) => "Who is this " + (correct.male ? "actor" : "actress") + "?",
+			correct : randomActor,
+			similar : loadSimilarActors,
+			format : actorName,
+			view : viewActorImage,
+			weight : 30
 		}
 	};
 
@@ -36,7 +48,10 @@ function MovieQuestions($http, $interval, youtube) {
 		return new Promise((resolve, reject) => {
 			loadYoutubeVideos(progress, cache).then(parseTitles).then((data) => {
 				movies = data;
-				resolve();
+				loadActors(progress, cache).then((data) => {
+					actors = data;
+					resolve();
+				});
 			});
 		});
 	}
@@ -44,29 +59,19 @@ function MovieQuestions($http, $interval, youtube) {
 	self.nextQuestion = function(selector) {
 		return new Promise((resolve, reject) => {
 			var type = selector.fromWeightedObject(types);
+			var attribution = [];
 
-			var movie = type.correct(selector);
-			var videoId = selector.fromArray(movie.videos);
-			var attribution = ['http://www.youtube.com/watch?v=' + videoId];
-
-			youtube.checkEmbedStatus(videoId, youtubeApiKey).then(() => type.similar(movie, attribution, selector)).then((similar) => {
-				resolve({
-					text : type.title(movie),
-					answers : selector.alternatives(similar, movie, type.format, selector.first),
-					correct : type.format(movie),
-					view : {
-						player : 'youtube',
-						videoId : videoId,
-						attribution : {
-							title : "Clip from",
-							name : movie.title + " (" + movie.year + ")",
-							links : attribution
-						}
-					}
-				});
+			type.correct(selector, attribution).then((correct) => {
+				type.similar(correct, attribution, selector).then((similar) => {
+					resolve({
+						text : type.title(correct),
+						answers : selector.alternatives(similar, correct, type.format, selector.first),
+						correct : type.format(correct),
+						view : type.view(correct, attribution)
+					});
+				}).catch(reject);
 			}).catch((err) => {
 				if (typeof(err) == 'string') {
-					console.log(movie.title + " got handled error " + err + ", trying another one");
 					return self.nextQuestion(selector).then(resolve, reject);
 				} else {
 					reject(err);
@@ -144,6 +149,64 @@ function MovieQuestions($http, $interval, youtube) {
 		});
 	}
 
+	function loadActors(progress, cache) {
+		return cache.get('actors', (resolve, reject) => {
+			var result = [];
+
+			function loadActorDetails(index) {
+				return new Promise((detailResolve, detailReject) => {
+					var actor = result[index];
+					$http.get('https://api.themoviedb.org/3/person/' + actor.id, {
+						params : {
+							api_key : tmdbApiKey
+						}
+					}).then((response) => {
+						progress(index, ACTOR_COUNT);
+
+						var obj = response.data;
+						Object.assign(actor, {
+							name : obj.name,
+							photo : obj.profile_path,
+							birthday : new Date(Date.parse(obj.birthday)),
+							male : obj.gender == 2
+						});
+
+						index++;
+						if (index == result.length) {
+							detailResolve();
+						} else {
+							loadActorDetails(index).then(detailResolve);
+						}
+					}).catch(detailReject);
+				});
+			};
+
+			function loadPage(page) {
+				return new Promise((pageResolve, pageReject) => {
+					$http.get('https://api.themoviedb.org/3/person/popular', {
+						params : {
+							api_key : tmdbApiKey,
+							page : page
+						}
+					}).then((response) => {
+						result = result.concat(response.data.results.filter((actor) => !actor.adult).map((actor) => {
+							return {
+								id : actor.id
+							};
+						}));
+						if (result.length < ACTOR_COUNT) {
+							loadPage(page++).then(pageResolve);
+						} else {
+							pageResolve();
+						}
+					}).catch(pageReject);
+				});
+			}
+
+			loadPage(1).then(() => loadActorDetails(0)).then(() => { resolve(result) }).catch(reject);
+		});
+	}
+
 	function loadSimilarMovies(movie, attribution, selector) {
 		return new Promise((resolve, reject) => {
 			$http.get('https://api.themoviedb.org/3/search/movie', {
@@ -183,12 +246,52 @@ function MovieQuestions($http, $interval, youtube) {
 
 	function loadSimilarYears(movie, attribute, selector) {
 		return new Promise((resolve, reject) => {
-			resolve(selector.yearAlternatives(movie.year, 3).map((year) => { return { year : year }; }));
+			resolve(selector.yearAlternatives(movie.year, 5).map((year) => { return { year : year }; }));
 		});
 	}
 
-	function randomMovie(selector) {
-		return selector.fromArray(movies);
+	function loadSimilarActors(actor, attribution, selector) {
+		return new Promise((resolve, reject) => {
+			function sameGender(a, b) {
+				return a.male == b.male;
+			}
+			function aboutSameAge(a, b) {
+				if (!a.birthday || !b.birthday) {
+					return true;
+				}
+				return Math.abs(a.birthday.getFullYear() - b.birthday.getFullYear()) <= 5;
+			}
+
+			resolve(actors.filter((a) => sameGender(a, actor) && aboutSameAge(a - actor)));
+		});
+	}
+
+	function randomActor(selector, attribution) {
+		return new Promise((resolve, reject) => {
+			var actor = selector.fromArray(actors);
+			attribution.push("http://www.themoviedb.org/person/" + actor.id);
+			resolve(actor);
+		});
+	}
+
+	function randomMovieClip(selector, attribution) {
+		return new Promise((resolve, reject) => {
+			var movie = selector.fromArray(movies);
+			var videoId = selector.fromArray(movie.videos);
+			youtube.checkEmbedStatus(videoId, youtubeApiKey).then(() => {
+				attribution.push('http://www.youtube.com/watch?v=' + videoId);
+				var copy = Object.assign({}, movie); //Copy the movie object so we don't modify the original and replace the array of videos with a single video
+				copy.videos = [videoId];
+				resolve(copy);
+			}).catch((err) => {
+				console.log(movie.title + " can't be embedded " + err + ", trying another one");
+				reject(err);
+			});
+		});
+	}
+
+	function actorName(actor) {
+		return actor.name;
 	}
 
 	function movieTitle(movie) {
@@ -197,5 +300,29 @@ function MovieQuestions($http, $interval, youtube) {
 
 	function movieYear(movie) {
 		return movie.year;
+	}
+
+	function viewMovieClip(correct, attribution) {
+		return {
+			player : 'youtube',
+			videoId : correct.videos[0],
+			attribution : {
+				title : "Clip from",
+				name : correct.title + " (" + correct.year + ")",
+				links : attribution
+			}
+		};
+	}
+
+	function viewActorImage(correct, attribution) {
+		return {
+			player : 'image',
+			url : "https://image.tmdb.org/t/p/h632" + correct.photo,
+			attribution : {
+				title : "Image of",
+				name : correct.name,
+				links : attribution
+			}
+		};
 	}
 }
