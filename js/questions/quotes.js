@@ -6,14 +6,14 @@ function QuotesQuestions($http) {
 	var mashapeApiKey = '';
 
 	var types = {
-		/*author : {
+		author : {
 			title : (correct) => "Who said this famous quote?",
 			correct : randomQuote,
 			similar : similarAuthors,
 			load : loadQuote,
 			format : resolveAuthor,
 			weight : 50
-		},*/
+		},
 		word : {
 			title : (correct) => "Which word is missing from this quote?",
 			correct : randomBlankQuote,
