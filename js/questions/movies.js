@@ -13,6 +13,7 @@ function MovieQuestions($http, $interval, youtube) {
 			similar : loadSimilarMovies,
 			format : movieTitle,
 			view : viewMovieClip,
+			count : countUniqueClips,
 			weight : 60
 		},
 		year : {
@@ -21,6 +22,7 @@ function MovieQuestions($http, $interval, youtube) {
 			similar : loadSimilarYears,
 			format : movieYear,
 			view : viewMovieClip,
+			count : countUniqueClips,
 			weight : 10
 		},
 		actor_name : {
@@ -29,6 +31,7 @@ function MovieQuestions($http, $interval, youtube) {
 			similar : loadSimilarActors,
 			format : actorName,
 			view : viewActorImage,
+			count : countActors,
 			weight : 30
 		}
 	};
@@ -38,7 +41,7 @@ function MovieQuestions($http, $interval, youtube) {
 			type : 'movies',
 			name : 'Movies',
 			icon : 'fa-film',
-			count : movies.map((m) => m.videos.length).reduce((a, b) => a + b, 0) * Object.keys(types).length
+			count : Object.keys(types).map((t) => types[t].count()).reduce((a, b) => a + b, 0)
 		};
 	}
 
@@ -324,5 +327,13 @@ function MovieQuestions($http, $interval, youtube) {
 				links : attribution
 			}
 		};
+	}
+
+	function countUniqueClips() {
+		return movies.map((m) => m.videos.length).reduce((a, b) => a + b, 0);
+	}
+
+	function countActors() {
+		return actors.length;
 	}
 }
