@@ -191,7 +191,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		var next = carousel.querySelector(".show + li") || carousel.querySelector("li");
 		carousel.querySelectorAll("li").forEach((li) => li.classList.remove('show'));
 		next.classList.add('show');
-		carousel = setTimeout(moveCarousel, 5000);
+		carouselTimeout = setTimeout(moveCarousel, 5000);
 	}
 
 	if ($routeParams.fakePlayers) { //For debugging layout
