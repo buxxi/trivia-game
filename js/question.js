@@ -113,6 +113,10 @@ function CategorySpinner(categories, flipCallback) {
 }
 
 function QuestionController($scope, $location, $timeout, connection, game, playback, sound, avatars, categories) {
+	if (typeof(game.session().finished) != 'function') { //TODO: make a better check
+		$location.path("/");
+	}
+
 	$scope.timer = game.timer();
 	$scope.players = game.players();
 	$scope.session = game.session();
