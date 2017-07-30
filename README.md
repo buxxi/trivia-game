@@ -37,9 +37,6 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 - http://soundbible.com/tags-beep.html
 - http://www.purple-planet.com/
 
-### Flags from:
-- http://flagpedia.net/
-
 ### Background pattern from:
 - http://subtlepatterns.com/
 

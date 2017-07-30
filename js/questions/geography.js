@@ -7,7 +7,7 @@ function GeographyQuestions($http) {
 			title : (correct) => "Which country does this flag belong to?",
 			correct : randomCountry,
 			similar : similarCountries,
-			load : (correct) => loadImage('https://flagpedia.net/data/flags/normal/' + correct.code.toLowerCase() + '.png'),
+			load : (correct) => loadImage(correct.flag),
 			weight : 30
 		},
 		shape : {
@@ -58,7 +58,7 @@ function GeographyQuestions($http) {
 
 	self.preload = function(progress, cache, apikeys) {
 		return cache.get('countries', (resolve, reject) => {
-			$http.get('https://restcountries.eu/rest/v1/all').then((response) => {
+			$http.get('https://restcountries.eu/rest/v2/all').then((response) => {
 				var result = response.data.map((country) => {
 					return {
 						code : country.alpha2Code,
@@ -67,7 +67,8 @@ function GeographyQuestions($http) {
 						population : country.population,
 						capital : country.capital,
 						area : country.area,
-						neighbours : country.borders.map((code) => response.data.find((c) => code == c.alpha3Code).name)
+						neighbours : country.borders.map((code) => response.data.find((c) => code == c.alpha3Code).name),
+						flag : country.flag
 					}
 				});
 				resolve(result);

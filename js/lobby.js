@@ -35,7 +35,6 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		{ url: 'https://youtube.com', name: 'YouTube' },
 		{ url: 'https://www.themoviedb.org', name: 'TheMovieDB' },
 		{ url: 'https://restcountries.eu', name: 'REST Countries' },
-		{ url: 'https://flagpedia.net', name: 'Flagpedia' },
 		{ url: 'https://developers.google.com/chart', name: 'Google Charts' },
 		{ url: 'https://market.mashape.com/andruxnet/random-famous-quotes', name: 'Mashape - Famous Random Quotes' },
 		{ url: 'https://www.igdb.com', name: 'IGDB' },
