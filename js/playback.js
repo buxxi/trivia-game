@@ -93,6 +93,8 @@ function Mp3Player(category, mp3) {
 				resolve();
 			});
 
+			player.on('error', reject);
+
 			player.load(mp3);
 		});
 	}
