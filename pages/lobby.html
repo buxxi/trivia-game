@@ -74,7 +74,7 @@
 					<div id="categories">
 						<h1><i class="fa fa-fw fa-list-ul"></i>Categories</h1>
 						<ul class="circle-checkboxes">
-							<li ng-class="{'selected' : config.categories[category.type] && preloading[category.type].done, 'loaded' : !config.categories[category.type] && preloading[category.type].done, 'failed' : preloading[category.type].failed}" ng-repeat="category in availableCategories">
+							<li ng-class="{'selected' : config.categories[category.type] && preloading[category.type].done, 'loaded' : !config.categories[category.type] && preloading[category.type].done, 'failed' : preloading[category.type].failed, 'static' : category.static}" ng-repeat="category in availableCategories">
 								<label title="{{ category.name }}"><input type="checkbox" id="{{ category.type }}" ng-model="config.categories[category.type]" ng-change="preload(category.type)"><i class="fa {{ category.icon }}"></i></label>
 								<div class="progress" ng-if="config.categories[category.type] && !preloading[category.type].done && !preloading[category.type].failed">{{ preloading[category.type].percentage() }}%</div>
 							</li>

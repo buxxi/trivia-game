@@ -906,10 +906,17 @@ ol {
 .circle-checkboxes {
 	padding : 0;
 	li {
-		display : inline-block;
+		display : inline;
 		font-size: 2em;
 		list-style : none;
 		vertical-align : top;
+	}
+	:not(.static) + .static:before {
+		display : block;
+		content : "\A";
+	}
+	.static:not(.selected) label {
+		border-style : dotted;
 	}
 	.selected {
 		label {
@@ -939,7 +946,7 @@ ol {
 		display : inline-block;
 		height : 1em;
 		line-height: 1em;
-		margin : 0.25em;
+		margin : 0.25em 0.10em;
 		padding : 0.35em;
 		width : 1em;
 	}

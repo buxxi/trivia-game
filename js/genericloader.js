@@ -6,6 +6,7 @@ function GenericCategoryLoader($interpolate, $parse) {
 		var description = parsed.description;
 		description.type = /.*?([a-zA-Z0-9]+).json/.exec(name)[1];
 		description.count = parsed.questions.length * parsed.data.length;
+		description.static = true;
 		return new GenericCategory($interpolate, $parse, description, parsed.questions, parsed.data);
 	}
 }
@@ -24,15 +25,15 @@ function GenericCategory($interpolate, $parse, description, questions, data) {
 	}
 
 	self.nextQuestion = function(selector) {
-		var q = new GenericQuestion($interpolate, $parse, questions, selector.fromArray(questions));
-		var d = selector.fromArray(data);
+		var question = new GenericQuestion($interpolate, $parse, questions, selector.fromArray(questions));
+		var correct = question.correct(data, selector);
 
 		return new Promise((resolve, reject) => {
 			resolve({
-				text : q.title(d),
-				answers : q.similar(d, data, selector),
-				correct : q.format(q.correct(d)),
-				view : q.attribution(d)
+				text : question.title(correct),
+				answers : question.similar(correct, data, selector),
+				correct : question.format(correct),
+				view : question.attribution(correct)
 			});
 		});
 	}
@@ -43,46 +44,23 @@ function GenericQuestion($interpolate, $parse, questions, model) {
 
 	self.title = function(correct) {
 		return $interpolate(model.question.format)({
-			'question' : correct
+			'correct' : correct
 		});
 	}
 
-	self.correct = function(obj) {
+	self.correct = function(data, selector) {
 		var pattern = model.answers.selector.correct;
-		var path = /{{(.*)}}/.exec(pattern);
-		if (!path) {
-			throw new Error("model.answers.selector.correct is in incorrect format");
-		}
+		var fn = new Function("all", "selector", "return " + pattern);
 
-		return $parse(path[1].trim())({
-			'question' : obj,
-			'all' : questions
-		});
+		return fn(data, selector, pattern);
 	}
 
-	self.similar = function(obj, questions, selector) {
+	self.similar = function(correct, data, selector) {
 		var pattern = model.answers.selector.alternatives;
-		var path = /{{(.*)}}/.exec(pattern);
-		if (!path) {
-			throw new Error("model.answers.selector.alternatives is in incorrect format");
-		}
+		var sorted = model.answers.selector.sorted;
+		var fn = new Function("all", "correct", "selector", "return " + pattern);
 
-		var answers = $parse(path[1].trim())({
-			'question' : obj,
-			'all' : questions,
-			'$allOf' : (list) => list,
-			'$randomOf' : (list) => selector.fromArray(list),
-			'$randomOfExclude' : function(list, exclude) {
-				console.log("list:" + list);
-				console.log("exclude:" + exclude);
-			}
-		});
-		/*if (answers.length < 4) {
-			throw new Error("Expected answers to be an array of size 4 or larger");
-		}*/
-
-		return answers;
-		//return selector.alternatives(answers, self.correct(obj), self.format, selector.first);
+		return selector.alternatives(fn(data, correct, selector), correct, self.format, sorted ? selector.first : selector.splice);
 	}
 
 	self.format = function(answer) {
