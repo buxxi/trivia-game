@@ -7,7 +7,8 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		allowMultiplier : true,
 		sound : sound.enabled(),
 		categories : {},
-		fullscreen : false
+		fullscreen : false,
+		categorySpinner : true
 	};
 
 	var carouselTimeout = 0;

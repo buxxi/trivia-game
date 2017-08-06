@@ -22,7 +22,7 @@
 	<div id="content" ng-class="state"></div>
 	<div id="correct" ng-if="state == 'post-question'" ng-class="'btn-' + correct['key']">{{ correct['answer'] }}</div>
 	<div id="category-spinner" ng-if="state == 'loading'">
-		<ul class="spinner">
+		<ul class="spinner" ng-if="categories.length != 0">
 			<li ng-repeat="category in categories track by $index" ng-attr-data-spinner-stop="{{category.name == session.question().view.category[0] ? 'true' : undefined}}"><i class="fa fa-fw {{category.icon}}"></i>{{category.name}}</li>
 		</ul>
 	</div>

@@ -1,4 +1,4 @@
-function CategorySpinner(categories, flipCallback) {
+function CategorySpinner(categories, flipCallback, show) {
 	var self = this;
 
 	var jokeChance = 0.5;
@@ -11,6 +11,11 @@ function CategorySpinner(categories, flipCallback) {
 
 	self.start = function() {
 		return new Promise((resolve, reject) => {
+			if (!show) {
+				resolve();
+				return;
+			}
+
 			var checkIfDone = () => {
 				try {
 					var done = self.flip();
@@ -57,6 +62,9 @@ function CategorySpinner(categories, flipCallback) {
 	}
 
 	function loadCategories(categories) {
+		if (!show) {
+			return [];
+		}
 		var result = categories.enabled();
 		var insertJoke = Math.random() >= jokeChance;
 		while (result.length < 6 || insertJoke) {
@@ -142,7 +150,7 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 
 	function showLoadingNextQuestion() {
 		return new Promise((resolve, reject) => {
-			var spinner = new CategorySpinner(categories, sound.click);
+			var spinner = new CategorySpinner(categories, sound.click, game.showCategorySpinner());
 
 			$scope.state = 'loading';
 			$scope.title = 'Selecting next question';

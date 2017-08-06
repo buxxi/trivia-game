@@ -221,6 +221,10 @@ function Game($rootScope, $interval, avatars, categories) {
 		return session.finished()
 	}
 
+	self.showCategorySpinner = function() {
+		return config.categorySpinner;
+	}
+
 	self.nextQuestion = function() {
 		return new Promise((resolve, reject) => {
 			categories.nextQuestion().then((question) => {

@@ -65,6 +65,9 @@
 							<li ng-class="{'selected' : config.sound.soundEffects}">
 								<label for="soundEffects" title="Sound effects"><input type="checkbox" id="soundEffects" ng-model="config.sound.soundEffects"><i class="fa fa-exclamation"></i></label>
 							</li>
+							<li ng-class="{'selected' : config.categorySpinner}">
+								<label for="spinner" title="Category spinner"><input type="checkbox" id="spinner" ng-model="config.categorySpinner"><i class="fa fa-spinner"></i></label>
+							</li>
 							<li  ng-class="{'selected' : config.fullscreen}">
 								<label for="fullscreen" title="Toggle fullscreen"><input type="checkbox" id="fullscreen" ng-model="config.fullscreen" ng-change="toggleFullScreen()"><i class="fa fa-window-maximize"></i></label>
 							</li>
