@@ -884,15 +884,24 @@ ol {
 	z-index: 2;
 }
 
-.score-change-positive {
-	.score-change(@correct, @correct_border);
-	&:before {
-		content : "+";
+.score-change-positive .avatar {
+	animation : glow-positive 1s linear normal;
+	box-shadow : 0 0 50px @correct, 0 0 25px @correct;
+
+	span {
+		.score-change(@correct, @correct_border);
+		&:before {
+			content : "+";
+		}
 	}
 }
 
-.score-change-negative {
-	.score-change(@incorrect, @incorrect_border);
+.score-change-negative .avatar {
+	animation : glow-negative 1s linear normal;
+	box-shadow : 0 0 50px @incorrect, 0 0 25px @incorrect;
+	span {
+		.score-change(@incorrect, @incorrect_border);
+	}
 }
 
 .score-change-negative~.score {
@@ -1001,4 +1010,16 @@ ol {
 @keyframes scroll {
 	0% { top : 100vh; transform : translateY(0) }
 	100% { top : 0; transform : translateY(-100%) }
+}
+
+@keyframes glow-negative {
+	0% { box-shadow : 0 0 0px @incorrect, 0 0 0px @incorrect }
+	50% { box-shadow : 0 0 100px @incorrect, 0 0 50px @incorrect }
+	100% { box-shadow : 0 0 50px @incorrect, 0 0 25px @incorrect }
+}
+
+@keyframes glow-positive {
+	0% { box-shadow : 0 0 0px @correct, 0 0 0px @correct }
+	50% { box-shadow : 0 0 100px @correct, 0 0 50px @correct }
+	100% { box-shadow : 0 0 50px @correct, 0 0 25px @correct }
 }

@@ -126,6 +126,7 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 	$scope.hasGuessed = {};
 	$scope.avatars = avatars;
 	$scope.hasConnectionError = connection.connectionError;
+	$scope.showPlayerName = (player) => game.timer().timeLeft() % 10 >= 5;
 
 	$scope.$on("data-guess", (event, pairCode, data) => {
 		$scope.$apply(() => {
