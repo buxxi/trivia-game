@@ -209,7 +209,7 @@ h1 {
 	position : static;
 	transform : none;
 	height : 100%;
-	
+
 	img {
 		max-height: 100%;
 		min-height: 500px;
@@ -352,6 +352,13 @@ h1 {
 		transition-timing-function: linear;
 		transition-property: background, transform, top;
 		width : 100%;
+
+		img {
+			height: 1em;
+			width : 1em;
+			filter: grayscale(100%) contrast(1000%) invert(100%);
+			mix-blend-mode: screen;
+		}
 	}
 	li:nth-child(1) {
 		transform : rotateX(-90deg);
@@ -949,8 +956,12 @@ ol {
 		}
 	}
 	.progress {
-		font-size: 0.8em;
+		font-size: 0.6em;
 		text-align: center;
+		display: inline;
+		position: absolute;
+		margin-top: -0.6em;
+		margin-left: -3em;
 	}
 	label {
 		border : 3px solid @primary;
@@ -963,6 +974,14 @@ ol {
 		padding : 0.35em;
 		width : 1em;
 	}
+
+	img {
+		height: 100%;
+		width: 100%;
+		filter: grayscale(100%) contrast(1000%) invert(100%);
+		mix-blend-mode: screen;
+	}
+
 	input[type='checkbox'] {
 		height : 0;
 		position : absolute;
