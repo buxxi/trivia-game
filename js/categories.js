@@ -66,10 +66,16 @@ function QuestionSelector() {
 	}
 
 	self.splice = function(arr) {
+		if (arr.length == 0) {
+			throw new Error("Trying to splice empty array");
+		}
 		return arr.splice(self.random(arr.length), 1)[0];
 	};
 
 	self.first = function(arr) {
+		if (arr.length == 0) {
+			throw new Error("Trying to get first element of empty array");
+		}
 		return arr.shift();
 	}
 
@@ -86,6 +92,10 @@ function QuestionSelector() {
 	}
 
 	self.countCommon = function(arr1, arr2) {
+		if (!arr1 || !arr2) {
+			return 0;
+		}
+
 		return arr1.reduce((acc, cur) => {
 			if (arr2.indexOf(cur) > -1) {
 				return acc + 1;

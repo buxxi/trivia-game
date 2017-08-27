@@ -52,12 +52,19 @@ function GenericQuestion($interpolate, $parse, questions, model) {
 		var pattern = model.answers.selector.correct;
 		var fn = new Function("all", "selector", "return " + pattern);
 
-		return fn(data, selector, pattern);
+		var correct = fn(data, selector, pattern);
+
+		if (!correct) {
+			throw new Error("No correct answer found");
+		}
+
+		return correct;
 	}
 
 	self.similar = function(correct, data, selector) {
 		var pattern = model.answers.selector.alternatives;
 		var sorted = model.answers.selector.sorted;
+
 		var fn = new Function("all", "correct", "selector", "return " + pattern);
 
 		return selector.alternatives(fn(data, correct, selector), correct, self.format, sorted ? selector.first : selector.splice);
