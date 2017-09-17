@@ -7,7 +7,14 @@ function GenericCategoryLoader($interpolate, $parse) {
 		description.type = /.*?([a-zA-Z0-9]+).json/.exec(name)[1];
 		description.count = parsed.questions.length * parsed.data.length;
 		description.static = true;
-		return new GenericCategory($interpolate, $parse, description, parsed.questions, parsed.data);
+		var questions = parsed.questions.reduce((map, obj) => { //Convert to a object so we can reuse the same selection mechanism by weight as regular categories
+			map[Object.keys(map).length] = obj;
+			if (!obj.weight) {
+				obj.weight = 1;
+			}
+			return map;
+		}, {});
+		return new GenericCategory($interpolate, $parse, description, questions, parsed.data);
 	}
 }
 
@@ -25,7 +32,7 @@ function GenericCategory($interpolate, $parse, description, questions, data) {
 	}
 
 	self.nextQuestion = function(selector) {
-		var question = new GenericQuestion($interpolate, $parse, questions, selector.fromArray(questions));
+		var question = new GenericQuestion($interpolate, $parse, questions, selector.fromWeightedObject(questions));
 		var correct = question.correct(data, selector);
 
 		return new Promise((resolve, reject) => {
