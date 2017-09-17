@@ -135,7 +135,7 @@ function MusicQuestions($http) {
 				return result;
 			}).then((result) => loadArtistImages(result, accessToken)).then(resolve).catch((err) => {
 				if (err.status == 429) {
-					var time = parseInt((err.headers()['retry-after']) + 1) * 1000;
+					var time = (parseInt(err.headers()['retry-after']) + 1) * 1000;
 					setTimeout(() => {
 						loadCategory(accessToken, category).then(resolve).catch(reject);
 					}, time);

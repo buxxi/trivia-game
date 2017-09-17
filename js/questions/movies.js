@@ -54,8 +54,8 @@ function MovieQuestions($http, $interval, youtube) {
 				loadActors(progress, cache).then((data) => {
 					actors = data;
 					resolve();
-				});
-			});
+				}).catch(reject);
+			}).catch(reject);
 		});
 	}
 
@@ -157,6 +157,10 @@ function MovieQuestions($http, $interval, youtube) {
 			var result = [];
 
 			function loadActorDetails(index) {
+				if (!index) {
+					index = 0;
+				}
+
 				return new Promise((detailResolve, detailReject) => {
 					var actor = result[index];
 					$http.get('https://api.themoviedb.org/3/person/' + actor.id, {
@@ -178,9 +182,18 @@ function MovieQuestions($http, $interval, youtube) {
 						if (index == result.length) {
 							detailResolve();
 						} else {
-							loadActorDetails(index).then(detailResolve);
+							loadActorDetails(index).then(detailResolve).catch(detailReject);
 						}
-					}).catch(detailReject);
+					}).catch((err) => {
+						if (err.status == 429) {
+							var time = (parseInt(err.headers()['retry-after']) + 1) * 1000;
+							setTimeout(() => {
+								loadActorDetails(index).then(detailResolve).catch(detailReject);
+							}, time);
+							return;
+						}
+						detailReject(err);
+					});
 				});
 			};
 
@@ -198,7 +211,7 @@ function MovieQuestions($http, $interval, youtube) {
 							};
 						}));
 						if (result.length < ACTOR_COUNT) {
-							loadPage(page++).then(pageResolve);
+							loadPage(page++).then(pageResolve).catch(pageReject);
 						} else {
 							pageResolve();
 						}
@@ -206,7 +219,7 @@ function MovieQuestions($http, $interval, youtube) {
 				});
 			}
 
-			loadPage(1).then(() => loadActorDetails(0)).then(() => { resolve(result) }).catch(reject);
+			loadPage(1).then(loadActorDetails).then(() => { resolve(result) }).catch(reject);
 		});
 	}
 
