@@ -84,6 +84,10 @@ function QuestionSelector() {
 		var result = [toString(correct)];
 		while (result.length < 4) {
 			var e = toString(picker(list));
+			if (e == "") {
+				throw new Error("Empty alternative returned");
+			}
+
 			if (result.indexOf(e) == -1) {
 				result.push(e);
 			}

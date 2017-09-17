@@ -4,6 +4,7 @@ function AnswerController($scope, $location, connection, avatars) {
 	var answers = {};
 
 	$scope.connected = connection.connected();
+	$scope.waiting = true;
 	$scope.message = $scope.connected ? 'Waiting for the game to start' : 'Not connected';
 	$scope.answers = {};
 	$scope.avatars = avatars;
@@ -11,6 +12,7 @@ function AnswerController($scope, $location, connection, avatars) {
 	$scope.$on('data-answers', (event, pairCode, data) => {
 		$scope.$apply(() => {
 			$scope.answers = data;
+			$scope.waiting = false;
 			correct = null;
 			guess = null;
 		});
@@ -25,6 +27,7 @@ function AnswerController($scope, $location, connection, avatars) {
 	$scope.$on('data-wait', (event, pairCode, data) => {
 		$scope.$apply(() => {
 			$scope.answers = {};
+			$scope.waiting = true;
 			$scope.message = 'Waiting for next question';
 		});
 	});
@@ -36,6 +39,7 @@ function AnswerController($scope, $location, connection, avatars) {
 	$scope.$on('connection-closed', () => {
 		$scope.$apply(() => {
 			$scope.answers = {};
+			$scope.waiting = true;
 			$scope.message = 'The host closed the connection';
 			$scope.connected = false;
 		});
