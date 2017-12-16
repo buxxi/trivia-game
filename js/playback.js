@@ -93,10 +93,25 @@ function Mp3Player(category, mp3) {
 				resolve();
 			});
 
-			player.on('error', reject);
+			player.on('error', (err) => {
+				if (err.trim() == "XHR error:") {
+					self.loadFallback(resolve, reject);
+				} else {
+					reject(err);
+				}
+			});
 
 			player.load(mp3);
 		});
+	}
+
+	self.loadFallback = function(resolve, reject) {
+		document.getElementById('content').innerHTML = '<div id="player"></div>';
+		player = new Audio();
+		player.onerror = reject;
+		player.onload = resolve;
+		player.src = mp3;
+		player.play();
 	}
 
 	self.stop = function() {

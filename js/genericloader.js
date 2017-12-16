@@ -27,7 +27,13 @@ function GenericCategory($interpolate, $parse, description, questions, data) {
 
 	self.preload = function(progress) {
 		return new Promise((resolve, reject) => {
-			resolve(); //TODO: verify structure maybe?
+			var selector = new QuestionSelector();
+			var sanityCheck = [];
+			for (var i = 0; i < 100; i++) {
+				sanityCheck.push(self.nextQuestion(selector));
+			}
+
+			Promise.all(sanityCheck).then(resolve).catch(reject);
 		});
 	}
 
@@ -36,12 +42,16 @@ function GenericCategory($interpolate, $parse, description, questions, data) {
 		var correct = question.correct(data, selector);
 
 		return new Promise((resolve, reject) => {
-			resolve({
-				text : question.title(correct),
-				answers : question.similar(correct, data, selector),
-				correct : question.format(correct),
-				view : question.attribution(correct)
-			});
+			try {
+				resolve({
+					text : question.title(correct),
+					answers : question.similar(correct, data, selector),
+					correct : question.format(correct),
+					view : question.attribution(correct)
+				});
+			} catch (e) {
+				reject("Failed loading question of type: '" + question.title({}) + "', reason: " + e);
+			}
 		});
 	}
 }

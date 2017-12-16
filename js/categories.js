@@ -44,7 +44,10 @@ function QuestionSelector() {
 		return max * Math.random() << 0;
 	}
 
-	self.fromArray = function(arr) {
+	self.fromArray = function(arr, filter) {
+		if (filter != undefined) {
+			arr = arr.filter(filter);
+		}
 		return arr[self.random(arr.length)];
 	};
 
@@ -93,6 +96,32 @@ function QuestionSelector() {
 			}
 		}
 		return result;
+	}
+
+	self.prioritizeAlternatives = function() {
+		for (var i = 0; i < arguments.length; i++) {
+			if (arguments[i].length >= 3) {
+				return arguments[i];
+			}
+		}
+		throw new Error("None of the lists provided has enough alternatives");
+	}
+
+	self.sortCompareCorrect = function(arr, compare, correct, mapping) {
+		if (mapping == undefined) {
+			mapping = (i) => i;
+		}
+		return arr.sort((a, b) => {
+			return compare(mapping(b), mapping(correct)) - compare(mapping(a), mapping(correct));
+		});
+	}
+
+	self.hasAllCommon = function(arr1, arr2) {
+		return self.countCommon(arr1, arr2) == arr2.length;
+	}
+
+	self.hasNoneCommon = function(arr1, arr2) {
+		return self.countCommon(arr1, arr2) == 0;
 	}
 
 	self.countCommon = function(arr1, arr2) {
