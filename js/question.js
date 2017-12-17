@@ -133,8 +133,13 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 	$scope.state = "loading";
 	$scope.hasGuessed = {};
 	$scope.avatars = avatars;
+	$scope.crownUrl = /src=\"(.*?)\"/.exec(twemoji.parse("\uD83D\uDC51"))[1];
 	$scope.hasConnectionError = connection.connectionError;
 	$scope.showPlayerName = (player) => game.timer().timeLeft() % 10 >= 5;
+	$scope.isLeadingPlayer = (player) => {
+		var playerScoreCount = Object.values($scope.players).filter((p) => p.score >= player.score).length;
+		return playerScoreCount == 1;
+	}
 
 	$scope.$on("data-guess", (event, pairCode, data) => {
 		$scope.$apply(() => {
