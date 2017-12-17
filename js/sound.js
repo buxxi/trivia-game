@@ -16,6 +16,10 @@ function SoundController() {
 		click.volume = 0.2;
 	});
 
+	var trombone = new Pizzicato.Sound('sound/sad.mp3', () => {
+		trombone.volume = 0.5;
+	});
+
 	self.play = function() {
 		if (!enabled.backgroundMusic) {
 			return;
@@ -42,6 +46,12 @@ function SoundController() {
 				beep.play();
 				beep.sourceNode.playbackRate.value = 1.5 + (0.5 * count);
 			});
+		}
+	}
+
+	self.trombone = function() {
+		if (enabled.soundEffects) {
+			trombone.clone().play();
 		}
 	}
 

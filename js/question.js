@@ -230,6 +230,10 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 	function showPostQuestion(pointsThisRound) {
 		return new Promise((resolve, reject) => {
 			sound.play();
+			if (Object.values(pointsThisRound).some(p => p.multiplier <= -4)) {
+				sound.trombone();
+			}
+
 			var correct = game.correctAnswer();
 			document.getElementById('content').innerHTML = '';
 			connection.send({

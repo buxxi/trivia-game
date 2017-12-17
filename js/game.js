@@ -99,7 +99,7 @@ function Game($rootScope, $interval, avatars, categories) {
 		Object.keys(players).forEach((peerid) => {
 			if (self.hasGuessed(peerid) && guesses[peerid].answer == self.correctAnswer()['key']) {
 				var pointsThisRound = timer.score(guesses[peerid].time) * players[peerid].multiplier;
-				result[peerid] = pointsThisRound;
+				result[peerid] = { points : pointsThisRound, multiplier : 1 };
 				players[peerid].score += pointsThisRound;
 				players[peerid].correct++;
 				if (config.allowMultiplier) {
@@ -107,7 +107,7 @@ function Game($rootScope, $interval, avatars, categories) {
 				}
 			} else if (self.hasGuessed(peerid)) {
 				var pointsThisRound = timer.score(guesses[peerid].time);
-				result[peerid] = -pointsThisRound;
+				result[peerid] = { points : -pointsThisRound, multiplier : -players[peerid].multiplier + 1 };
 				players[peerid].score -= pointsThisRound;
 				players[peerid].wrong++;
 				players[peerid].multiplier = 1;
@@ -115,6 +115,7 @@ function Game($rootScope, $interval, avatars, categories) {
 					players[peerid].score = 0;
 				}
 			} else {
+				result[peerid] = { points : 0, multiplier : -players[peerid].multiplier + 1 };
 				players[peerid].multiplier = 1;
 			}
 		});
