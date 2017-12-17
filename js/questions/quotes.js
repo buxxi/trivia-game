@@ -19,7 +19,7 @@ function QuotesQuestions($http) {
 			correct : randomBlankQuote,
 			similar : similarWords,
 			load : loadQuote,
-			format : resolveWord,
+			format : formatWord,
 			weight : 50
 		}
 	}
@@ -90,7 +90,7 @@ function QuotesQuestions($http) {
 		while (!word);
 
 		return {
-			quote : quote.quote.replace(word, "_____"),
+			quote : quote.quote.replace(formatWord({ word : word }), "_____"),
 			author : quote.author,
 			word : word
 		}
@@ -122,8 +122,11 @@ function QuotesQuestions($http) {
 		return words.map((w) => ({ word : w}));
 	}
 
-	function resolveWord(q) {
-		return q.word;
+	function formatWord(q) {
+		var word = q.word;
+		var result = /^.*?([^ .]+)[.]?$/.exec(word); //Use the last word if contains space and remove punctuations
+
+		return result[1].toLowerCase();
 	}
 
 	function resolveAuthor(q) {
