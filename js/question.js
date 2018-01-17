@@ -204,7 +204,7 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 		return new Promise((resolve, reject) => {
 			console.log(question);
 
-			var player = playback.player(question.view);
+			var player = playback.player(question.view, question.answers);
 			player.start().then(() => {
 				$scope.$apply(() => {
 					$scope.state = 'question';

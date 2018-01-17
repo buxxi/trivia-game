@@ -155,24 +155,47 @@ function ListViewer(list) {
 	self.minimizeQuestion = true;
 }
 
+function AnswersViewer(answers) {
+	var self = this;
+
+	self.start = function() {
+		return new Promise((resolve, reject) => {
+			console.log(answers);
+			document.getElementById('content').innerHTML = '<div class="list-answers" id="player"><ol>' + 
+				'<li class="btn-A">' + answers.A + '</li>' +
+				'<li class="btn-B">' + answers.B + '</li>' +
+				'<li class="btn-C">' + answers.C + '</li>' +
+				'<li class="btn-D">' + answers.D + '</li>' +
+				'</ol></i></div>';
+			resolve();
+		});
+	}
+
+	self.stop = noop;
+
+	self.pauseMusic = false;
+	self.minimizeQuestion = true;
+}
+
 function noop() {}
 
 function Playback() {
 	var self = this;
 
 	var players = {
-		youtube : (view) => new YoutubePlayer(view.videoId, view.player),
-		youtubeaudio : (view) => new YoutubePlayer(view.videoId, view.player),
-		mp3 : (view) => new Mp3Player(view.category, view.mp3),
-		image : (view) => new ImageViewer(view.url),
-		quote : (view) => new QuoteText(view.quote),
-		list : (view) => new ListViewer(view.list)
+		youtube : (view, answers) => new YoutubePlayer(view.videoId, view.player),
+		youtubeaudio : (view, answers) => new YoutubePlayer(view.videoId, view.player),
+		mp3 : (view, answers) => new Mp3Player(view.category, view.mp3),
+		image : (view, answers) => new ImageViewer(view.url),
+		quote : (view, answers) => new QuoteText(view.quote),
+		list : (view, answers) => new ListViewer(view.list),
+		answers : (view, answers) => new AnswersViewer(answers)
 	}
 
-	self.player = function(view) {
+	self.player = function(view, answers) {
 		if (!view.player) {
 			return new BlankPlayer();
 		}
-		return players[view.player](view);
+		return players[view.player](view, answers);
 	}
 }
