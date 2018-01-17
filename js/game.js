@@ -15,7 +15,7 @@ function Session(totalQuestions) {
 
 	self.newQuestion = function(question) {
 		previousQuestions.forEach((q) => {
-			if (q.title == question.title && q.correct == question.correct) {
+			if (q.text == question.text && q.correct == question.correct) {
 				throw new Error("Duplicate question");
 			}
 		});

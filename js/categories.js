@@ -181,7 +181,7 @@ function QuestionSelector() {
 		var result = [];
 		while (result.length < 3) {
 			var diff = Math.floor(Math.random() * ((maxJump * 2) + 1)) - maxJump;
-			if (diff < 0) {
+			if (diff < 0 && (min + diff) > 0) {
 				min = min + diff;
 				result.unshift(min);
 			} else if (diff > 0 && max < new Date().getFullYear()) {
