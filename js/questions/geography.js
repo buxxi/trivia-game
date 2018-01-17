@@ -18,7 +18,7 @@ function GeographyQuestions($http) {
 			weight : 20
 		},
 		highpopulation : {
-			title : (correct) => "Which country has the largest population?",
+			title : (correct) => "Which of these countries has the largest population?",
 			correct : randomCountry,
 			similar : similarPopulationCountries,
 			load : (correct) => loadBlank(),
@@ -39,7 +39,7 @@ function GeographyQuestions($http) {
 			weight : 10
 		},
 		area : {
-			title : (correct) => "Which country has the largest land area?",
+			title : (correct) => "Which of these countries has the largest land area?",
 			correct : randomCountry,
 			similar : similarAreaCountries,
 			load : (correct) => loadBlank(),
@@ -116,7 +116,7 @@ function GeographyQuestions($http) {
 	}
 
 	function similarNeighbouringCountries(country) {
-		return similarCountries(country).filter(c => !country.neighbours.every((o) => c.neighbours.includes(o)));
+		return similarCountries(country).filter(c => !country.neighbours.includes(c)).filter(c => !country.neighbours.every((o) => c.neighbours.includes(o)));
 	}
 
 	function similarCountries(country) {
