@@ -7,8 +7,9 @@
 		</div>
 		<div class="summary">
 			<h2>{{ score.name }}</h2>
-			<span class="correct"><i class="fa fa-fw fa-thumbs-up"></i>{{ score.correct }}</span>
-			<span class="failed"><i class="fa fa-fw fa-thumbs-down"></i>{{ score.wrong }}</span>
+			<span class="correct"><i class="fa fa-fw fa-thumbs-up"></i>{{ score.stats.correct }}</span>
+			<span class="failed"><i class="fa fa-fw fa-thumbs-down"></i>{{ score.stats.wrong }}</span>
+			<span class="fastest" ng-if="score.stats.fastest > -1"><i class="fa fa-fw fa-clock-o"></i>{{ score.stats.fastest }}s</span>
 		</div>
 	</div>
 

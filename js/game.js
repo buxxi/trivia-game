@@ -45,8 +45,11 @@ function Timer($interval, timePerQuestion, pointsPerRound) {
 	var end = 0;
 	var running = false;
 
-	self.timeLeft = function() {
-		return Math.ceil((end - new Date().getTime()) / 1000);
+	self.timeLeft = function(time) {
+		if (time == undefined) {
+			time = new Date().getTime();
+		}
+		return Math.ceil((end - time) / 1000);
 	}
 
 	self.percentageLeft = function() {
@@ -101,25 +104,40 @@ function Game($rootScope, $interval, avatars, categories) {
 				var pointsThisRound = timer.score(guesses[peerid].time) * players[peerid].multiplier;
 				result[peerid] = { points : pointsThisRound, multiplier : 1 };
 				players[peerid].score += pointsThisRound;
-				players[peerid].correct++;
+
 				if (config.allowMultiplier) {
 					players[peerid].multiplier++;
 				}
+
+				updatePlayerStats(players[peerid], true, pointsThisRound, timer.timeLeft(guesses[peerid].time));
 			} else if (self.hasGuessed(peerid)) {
 				var pointsThisRound = timer.score(guesses[peerid].time);
 				result[peerid] = { points : -pointsThisRound, multiplier : -players[peerid].multiplier + 1 };
 				players[peerid].score -= pointsThisRound;
-				players[peerid].wrong++;
 				players[peerid].multiplier = 1;
 				if (players[peerid].score < 0) {
 					players[peerid].score = 0;
 				}
+
+				updatePlayerStats(players[peerid], false, pointsThisRound, timer.timeLeft(guesses[peerid].time));
 			} else {
 				result[peerid] = { points : 0, multiplier : -players[peerid].multiplier + 1 };
 				players[peerid].multiplier = 1;
 			}
 		});
 		return result;
+	}
+
+	function updatePlayerStats(player, correct, points, time) {
+		if (correct) {
+			player.stats.correct++;
+			player.stats.fastest = Math.max(time, player.stats.fastest);
+			player.stats.slowest = Math.min(time, player.stats.slowest);
+			player.stats.mostWon = Math.max(points, player.stats.mostWon);
+		} else {
+			player.stats.wrong++;
+			player.stats.mostLost = Math.max(points, player.stats.mostLost);
+		}
 	}
 
 	function randomAvatar() {
@@ -158,8 +176,14 @@ function Game($rootScope, $interval, avatars, categories) {
 		Object.keys(players).forEach((peerid) => {
 			players[peerid].score = 0;
 			players[peerid].multiplier = 1;
-			players[peerid].correct = 0;
-			players[peerid].wrong = 0;
+			players[peerid].stats = {
+				correct : 0,
+				wrong : 0,
+				fastest : -Infinity,
+				slowest : Infinity,
+				mostWon : 0,
+				mostLost : 0
+			}
 		});
 		session = new Session(config.questions);
 		timer = new Timer($interval, config.time, config.pointsPerRound);

@@ -54,6 +54,7 @@ triviaApp.service('movies', MovieQuestions);
 triviaApp.service('music', MusicQuestions);
 triviaApp.service('quotes', QuotesQuestions);
 triviaApp.service('videogames', VideoGameQuestions);
+triviaApp.service('meta', CurrentGameQuestions);
 triviaApp.service('categories', Categories);
 triviaApp.service('playback', Playback);
 triviaApp.service('game', Game);
