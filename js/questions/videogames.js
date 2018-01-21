@@ -4,7 +4,7 @@ function VideoGameQuestions($http, youtube) {
 	var games = [];
 
 	var youtubeApiKey = '';
-	var mashapeApiKey = '';
+	var igdbApiKey = '';
 
 	var MINIMUM_PLATFORM_GAMES = 50;
 	var GAMES_PER_PLATFORM = 50;
@@ -66,7 +66,7 @@ function VideoGameQuestions($http, youtube) {
 
 	self.preload = function(progress, cache, apikeys) {
 		youtubeApiKey = apikeys.youtube;
-		mashapeApiKey = apikeys.mashape;
+		igdbApiKey = apikeys.igdb;
 
 		return new Promise((resolve, reject) => {
 			loadPlatforms(cache).then((result) => {
@@ -126,7 +126,7 @@ function VideoGameQuestions($http, youtube) {
 
 	function loadGames(platform, cache) {
 		return cache.get(platform, (resolve, reject) => {
-			$http.get('https://igdbcom-internet-game-database-v1.p.mashape.com/games/', {
+			$http.get('/trivia/igdb-api.py/games/', {
 				params : {
 					fields : 'name,url,first_release_date,release_dates,screenshots,keywords,themes,genres',
 					limit : GAMES_PER_PLATFORM,
@@ -136,7 +136,7 @@ function VideoGameQuestions($http, youtube) {
 					'filter[release_dates.platform][eq]' : platform
 				},
 				headers : {
-					'X-Mashape-Key' : mashapeApiKey
+					'user-key' : igdbApiKey
 				}
 			}).then((response) => {
 				function tag(prefix, arr) {
@@ -164,14 +164,14 @@ function VideoGameQuestions($http, youtube) {
 
 	function loadPlatforms(cache) {
 		function loadPage(offset) {
-			return $http.get('https://igdbcom-internet-game-database-v1.p.mashape.com/platforms/', {
+			return $http.get('/trivia/igdb-api.py/platforms/', {
 				params : {
 					fields : 'name,generation,games,versions.release_dates.date',
 					limit : 50,
 					offset : offset
 				},
 				headers : {
-					'X-Mashape-Key' : mashapeApiKey
+					'user-key' : igdbApiKey
 				}
 			})
 		};
