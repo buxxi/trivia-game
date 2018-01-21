@@ -90,46 +90,46 @@ function CurrentGameQuestions($injector, avatars) {
 	}
 
 	function randomPlayer(selector) {
-		return selector.fromArray(Object.values(self.current_game.players()));
+		return selector.fromArray(players());
 	}
 
 	function playerWithMost(func) {
 		return (selector) => {
-			return Object.values(self.current_game.players()).reduce((a, b) => func(a) > func(b) ? a : b);
+			return selector.max(players(), func);
 		};
 	}
 
 	function playersWithLower(func) {
 		return (player, selector) => {
-			return Object.values(self.current_game.players()).filter((p) => func(p) < func(player));
+			return players().filter((p) => func(p) < func(player));
 		};
 	}
 
 	function playerWithLeast(func) {
 		return (selector) => {
-			return Object.values(self.current_game.players()).reduce((a, b) => func(a) < func(b) ? a : b);
+			return selector.min(players(), func);
 		};
 	}
 
 	function playersWithHigher(func) {
 		return (player, selector) => {
-			return Object.values(self.current_game.players()).filter((p) => func(p) > func(player));
+			return players().filter((p) => func(p) > func(player));
 		};
 	}
 
 	function countTotal(func) {
 		return (selector) => {
-			return Object.values(self.current_game.players()).map((p) => func(p)).reduce((a, b) => a + b, 0);
+			return selector.sum(playesr(), func);
 		};
 	}
 
 	function numericAlternatives(number, selector) {
 		var index = self.current_game.session().index();
-		return selector.yearAlternatives(number, index);
+		return selector.numericAlternatives(number, index);
 	}
 
 	function similarPlayers(player, selector) {
-		return Object.values(self.current_game.players());
+		return players();
 	}
 
 	function otherAvatars(player, selector) {
@@ -146,5 +146,9 @@ function CurrentGameQuestions($injector, avatars) {
 
 	function formatValue(value) {
 		return value;
+	}
+
+	function players() {
+		return Object.values(self.current_game.players());
 	}
 }

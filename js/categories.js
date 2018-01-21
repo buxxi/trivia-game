@@ -53,7 +53,7 @@ function QuestionSelector() {
 
 	self.fromWeightedObject = function(obj) {
 		var keys = Object.keys(obj);
-		var total = keys.map((k) => obj[k].weight|1).reduce((a, b) => a + b, 0);
+		var total = self.sum(keys.map((k) => obj[k].weight||1));
 		var randomWeight = self.random(total);
 
 		var index = 0;
@@ -175,7 +175,27 @@ function QuestionSelector() {
 		return m[b.length][a.length];
 	}
 
-	self.yearAlternatives = function(year, maxJump) {
+	self.sum = function(arr, func) {
+		func = func || ((obj) => obj);
+		return result = arr.map(func).reduce((a, b) => a + b, 0);
+	}
+
+	self.max = function(arr, func) {
+		func = func || ((obj) => obj);
+		return arr.reduce((a, b) => func(a) > func(b) ? a : b);
+	}
+
+	self.min = function(arr, func) {
+		func = func || ((obj) => obj);
+		return arr.reduce((a, b) => func(a) < func(b) ? a : b);
+	}
+
+	self.yearAlternatives = function(correct, maxJump) {
+		return self.numericAlternatives(correct, maxJump, new Date().getFullYear());
+	}
+
+	self.numericAlternatives = function(year, maxJump, maxAllowedValue) {
+		maxAllowedValue = maxAllowedValue||Infinity;
 		var min = year;
 		var max = min;
 		var result = [];
@@ -184,7 +204,7 @@ function QuestionSelector() {
 			if (diff < 0 && (min + diff) > 0) {
 				min = min + diff;
 				result.unshift(min);
-			} else if (diff > 0 && max < new Date().getFullYear()) {
+			} else if (diff > 0 && max < maxAllowedValue) {
 				max = max + diff;
 				result.push(max);
 			}
