@@ -53,7 +53,7 @@ function QuestionSelector() {
 
 	self.fromWeightedObject = function(obj) {
 		var keys = Object.keys(obj);
-		var total = keys.map((k) => obj[k].weight).reduce((a, b) => a + b, 0);
+		var total = keys.map((k) => obj[k].weight|1).reduce((a, b) => a + b, 0);
 		var randomWeight = self.random(total);
 
 		var index = 0;

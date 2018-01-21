@@ -74,44 +74,53 @@ function YoutubePlayer(videoId, playerClass) {
 	self.minimizeQuestion = true;
 }
 
-function Mp3Player(category, mp3) {
+function Mp3Player(category, mp3, nowave) {
 	var self = this;
 	var player = {};
+	var useFallback = !!nowave;
 
 	self.start = function() {
 		return new Promise((resolve, reject) => {
-			document.getElementById('content').innerHTML = '<div class="wavesurfer" id="player"></div>';
-			player = WaveSurfer.create({
-				container: '#player',
-				waveColor: 'white',
-				progressColor: '#337ab7'
-			});
+			if (nowave) {
+				self.loadFallback(resolve, reject);
+			} else {
+				document.getElementById('content').innerHTML = '<div class="wavesurfer" id="player"></div>';
+				player = WaveSurfer.create({
+					container: '#player',
+					waveColor: 'white',
+					progressColor: '#337ab7'
+				});
 
-			player.on('ready', () => {
-				player.setVolume(0.3);
-				player.play();
-				resolve();
-			});
+				player.on('ready', () => {
+					player.setVolume(0.3);
+					player.play();
+					resolve();
+				});
 
-			player.on('error', (err) => {
-				if (err.trim() == "XHR error:") {
-					self.loadFallback(resolve, reject);
-				} else {
-					reject(err);
-				}
-			});
+				player.on('error', (err) => {
+					if (err.trim() == "XHR error:") {
+						self.loadFallback(resolve, reject);
+					} else {
+						reject(err);
+					}
+				});
 
-			player.load(mp3);
+				player.load(mp3);
+		}
 		});
 	}
 
 	self.loadFallback = function(resolve, reject) {
 		document.getElementById('content').innerHTML = '<div id="player"></div>';
 		player = new Audio();
-		player.onerror = reject;
-		player.onload = resolve;
+		player.addEventListener('canplaythrough', () => {
+			player.play();
+			resolve();
+		});
+		player.addEventListener('error', (err) => {
+			reject(err);
+		});
 		player.src = mp3;
-		player.play();
 	}
 
 	self.stop = function() {
@@ -160,8 +169,7 @@ function AnswersViewer(answers) {
 
 	self.start = function() {
 		return new Promise((resolve, reject) => {
-			console.log(answers);
-			document.getElementById('content').innerHTML = '<div class="list-answers" id="player"><ol>' + 
+			document.getElementById('content').innerHTML = '<div class="list-answers" id="player"><ol>' +
 				'<li class="btn-A">' + answers.A + '</li>' +
 				'<li class="btn-B">' + answers.B + '</li>' +
 				'<li class="btn-C">' + answers.C + '</li>' +
@@ -185,7 +193,7 @@ function Playback() {
 	var players = {
 		youtube : (view, answers) => new YoutubePlayer(view.videoId, view.player),
 		youtubeaudio : (view, answers) => new YoutubePlayer(view.videoId, view.player),
-		mp3 : (view, answers) => new Mp3Player(view.category, view.mp3),
+		mp3 : (view, answers) => new Mp3Player(view.category, view.mp3, view.nowave),
 		image : (view, answers) => new ImageViewer(view.url),
 		quote : (view, answers) => new QuoteText(view.quote),
 		list : (view, answers) => new ListViewer(view.list),
