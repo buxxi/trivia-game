@@ -14,7 +14,7 @@ function GeographyQuestions($http) {
 			title : (correct) => "Which country has this shape?",
 			correct : randomCountry,
 			similar : similarCountries,
-			load : (correct) => loadImage('https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + correct.code + '&chco=000000|307bbb&chf=bg,s,000000&cht=map:auto=50,50,50,50'),
+			load : (correct) => loadImage('https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + correct.code + '&chco=00000000|307bbb&chf=bg,s,00000000&cht=map:auto=50,50,50,50'),
 			weight : 20
 		},
 		highpopulation : {
