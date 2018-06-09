@@ -74,53 +74,60 @@ function YoutubePlayer(videoId, playerClass) {
 	self.minimizeQuestion = true;
 }
 
-function Mp3Player(category, mp3, nowave) {
+function Mp3Player(mp3) {
 	var self = this;
-	var player = {};
-	var useFallback = !!nowave;
+	var player =  {};
 
 	self.start = function() {
 		return new Promise((resolve, reject) => {
-			if (nowave) {
-				self.loadFallback(resolve, reject);
-			} else {
-				document.getElementById('content').innerHTML = '<div class="wavesurfer" id="player"></div>';
-				player = WaveSurfer.create({
-					container: '#player',
-					waveColor: 'white',
-					progressColor: '#337ab7'
-				});
-
-				player.on('ready', () => {
-					player.setVolume(0.3);
-					player.play();
-					resolve();
-				});
-
-				player.on('error', (err) => {
-					if (err.trim() == "XHR error:") {
-						self.loadFallback(resolve, reject);
-					} else {
-						reject(err);
-					}
-				});
-
-				player.load(mp3);
-		}
+			document.getElementById('content').innerHTML = '<div id="player"></div>';
+			player = new Audio();
+			player.addEventListener('canplaythrough', () => {
+				player.play();
+				resolve();
+			});
+			player.addEventListener('error', (err) => {
+				reject(err);
+			});
+			player.src = mp3;
 		});
 	}
 
-	self.loadFallback = function(resolve, reject) {
-		document.getElementById('content').innerHTML = '<div id="player"></div>';
-		player = new Audio();
-		player.addEventListener('canplaythrough', () => {
-			player.play();
-			resolve();
+	self.stop = function() {
+		player.pause();
+		player = null;
+	}
+}
+
+function Mp3WavePlayer(mp3) {
+	var self = this;
+	var player = {};
+
+	self.start = function() {
+		return new Promise((resolve, reject) => {
+			document.getElementById('content').innerHTML = '<div class="wavesurfer" id="player"></div>';
+			player = WaveSurfer.create({
+				container: '#player',
+				waveColor: 'white',
+				progressColor: '#337ab7'
+			});
+
+			player.on('ready', () => {
+				player.setVolume(0.3);
+				player.play();
+				resolve();
+			});
+
+			player.on('error', (err) => {
+				if (err.trim() == "XHR error:") {
+					self.loadFallback(resolve, reject);
+				} else {
+					reject(err);
+				}
+			});
+
+			player.load(mp3);
 		});
-		player.addEventListener('error', (err) => {
-			reject(err);
-		});
-		player.src = mp3;
 	}
 
 	self.stop = function() {
@@ -193,7 +200,7 @@ function Playback() {
 	var players = {
 		youtube : (view, answers) => new YoutubePlayer(view.videoId, view.player),
 		youtubeaudio : (view, answers) => new YoutubePlayer(view.videoId, view.player),
-		mp3 : (view, answers) => new Mp3Player(view.category, view.mp3, view.nowave),
+		mp3 : (view, answers) => view.nowave ? new Mp3Player(view.mp3) : new Mp3WavePlayer(view.mp3),
 		image : (view, answers) => new ImageViewer(view.url),
 		quote : (view, answers) => new QuoteText(view.quote),
 		list : (view, answers) => new ListViewer(view.list),
