@@ -5,6 +5,7 @@ function GeographyQuestions($http) {
 	var types = {
 		flags : {
 			title : (correct) => "Which country does this flag belong to?",
+			format : formatName,
 			correct : randomCountry,
 			similar : similarCountries,
 			load : (correct) => loadImage(correct.flag),
@@ -12,13 +13,15 @@ function GeographyQuestions($http) {
 		},
 		shape : {
 			title : (correct) => "Which country has this shape?",
+			format : formatName,
 			correct : randomCountry,
 			similar : similarCountries,
 			load : (correct) => loadImage('https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + correct.code + '&chco=00000000|307bbb&chf=bg,s,00000000&cht=map:auto=50,50,50,50'),
-			weight : 20
+			weight : 15
 		},
 		highpopulation : {
 			title : (correct) => "Which of these countries has the largest population?",
+			format : formatName,
 			correct : randomCountry,
 			similar : similarPopulationCountries,
 			load : (correct) => loadBlank(),
@@ -26,20 +29,31 @@ function GeographyQuestions($http) {
 		},
 		capital : {
 			title : (correct) => "In which country is " + correct.capital + " the capital?",
+			format : formatName,
 			correct : randomCountry,
 			similar : similarCountries,
 			load : (correct) => loadBlank(),
-			weight : 20
+			weight : 15
 		},
 		borders : {
 			title : (correct) => "Which country has borders to all these countries: " + correct.neighbours + "?",
+			format : formatName,
 			correct : randomCountryWith2Neighbours,
 			similar : similarNeighbouringCountries,
 			load : (correct) => loadBlank(),
 			weight : 10
 		},
+		region : {
+			title : (correct) => "Where is " + correct.name + " located?",
+			format : formatRegion,
+			correct : randomCountry,
+			similar : allCountries,
+			load : (correct) => loadBlank(),
+			weight : 10
+		},
 		area : {
 			title : (correct) => "Which of these countries has the largest land area?",
+			format : formatName,
 			correct : randomCountry,
 			similar : similarAreaCountries,
 			load : (correct) => loadBlank(),
@@ -86,10 +100,6 @@ function GeographyQuestions($http) {
 			var similar = type.similar(correct);
 			var title = type.title(correct);
 
-			function resolveName(c) {
-				return c.name;
-			}
-
 			type.load(correct).then((view) => {
 				view.attribution = {
 					title : "Featured country",
@@ -99,8 +109,8 @@ function GeographyQuestions($http) {
 
 				resolve({
 					text : title,
-					answers : selector.alternatives(similar, correct, resolveName, selector.first),
-					correct : resolveName(correct),
+					answers : selector.alternatives(similar, correct, type.format, types['region'] == type ? selector.splice : selector.first),
+					correct : type.format(correct),
 					view : view
 				});
 			}).catch(reject);
@@ -113,6 +123,10 @@ function GeographyQuestions($http) {
 
 	function randomCountryWith2Neighbours(selector) {
 		return selector.fromArray(countries.filter((c) => c.neighbours.length >= 2));
+	}
+
+	function allCountries() {
+		return countries;
 	}
 
 	function similarNeighbouringCountries(country) {
@@ -139,6 +153,14 @@ function GeographyQuestions($http) {
 		}
 
 		return countries.filter((c) => c.population < country.population).sort((a, b) => populationSort(b) - populationSort(a));
+	}
+
+	function formatName(country) {
+		return country.name;
+	}
+
+	function formatRegion(country) {
+		return country.region;
 	}
 
 	function loadImage(url) {
