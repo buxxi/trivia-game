@@ -97,8 +97,6 @@ function MusicQuestions($http) {
 	}
 
 	function parseTitle(title) {
-		var original = title;
-
 		var junked = /(.*?) (\(|-|\[)[^\(\-\[]*(Remaster|Studio|Best of|acoustic|Re-recorded|feat.|Radio Edit|Radio Mix|Club Mix|Original Mix|Original Version).*/i.exec(title);
 		if (junked) {
 			title = junked[1];
@@ -109,10 +107,29 @@ function MusicQuestions($http) {
 
 	function loadCategory(accessToken, category, cache) {
 		return cache.get(category, (resolve, reject) => {
+			var result = [];
+			var popularity = 0;
+
+			var callback = (chunkResult) => {
+				result = result.concat(chunkResult);
+				popularity += 10;
+				if (popularity < 100) {
+					loadCategoryChunk(accessToken, category, popularity).then(callback).catch(reject);	
+				} else {
+					loadArtistImages(result, accessToken).then(resolve).catch(reject);
+				}
+			}
+			loadCategoryChunk(accessToken, category, popularity).then(callback).catch(reject);	
+		});
+	}
+
+	function loadCategoryChunk(accessToken, category, popularity) {
+		return new Promise((resolve, reject) => {
 			$http.get('https://api.spotify.com/v1/recommendations', {
 				params : {
 					seed_genres : category,
-					max_popularity : 75,
+					min_popularity : popularity,
+					max_popularity : popularity + 9,
 					limit : TRACKS_BY_CATEGORY
 				},
 				headers : {
@@ -129,20 +146,12 @@ function MusicQuestions($http) {
 						album : track.album.name,
 						attribution : track.external_urls.spotify,
 						audio : track.preview_url,
+						popularity : (popularity / 10) + 1,
 						category : category
 					};
 				});
-				return result;
-			}).then((result) => loadArtistImages(result, accessToken)).then(resolve).catch((err) => {
-				if (err.status == 429) {
-					var time = (parseInt(err.headers()['retry-after']) + 1) * 1000;
-					setTimeout(() => {
-						loadCategory(accessToken, category).then(resolve).catch(reject);
-					}, time);
-					return;
-				}
-				reject();
-			});
+				resolve(result);
+			}).catch(retryAfterHandler(() => loadCategoryChunk(accessToken, category, popularity), resolve, reject));	
 		});
 	}
 
@@ -155,7 +164,7 @@ function MusicQuestions($http) {
 			}).then((response) => {
 				var genres = response.data.genres.filter((g) => FILTER_GENRES.indexOf(g) > -1);
 				resolve(genres);
-			});
+			}).catch(retryAfterHandler(() => loadSpotifyCategories(accessToken, cache), resolve, reject));
 		});
 	}
 
@@ -189,52 +198,75 @@ function MusicQuestions($http) {
 				return arr.indexOf(item) == pos;
 			});
 
-			var done = resolve;
 			var promises = [];
 			while (artistIds.length > 0) {
 				var chunkedIds = artistIds.splice(0, 50);
-				var i = promises.length;
 				promises.push(new Promise((resolveLocal, rejectLocal) => {
-					$http.get('https://api.spotify.com/v1/artists', {
-						params : {
-							ids : chunkedIds.join(',')
-						},
-						headers : {
-							Authorization : 'Bearer ' + accessToken
-						}
-					}).then((response) => {
-						var artists = response.data.artists;
-						for (var i = 0; i < artists.length; i++) {
-							for (var j = 0; j < result.length; j++) {
-								if (artists[i].id == result[j].artist.id) {
-									delete result[j].artist.id;
-									var images = artists[i].images;
-									if (images.length > 0) {
-										result[j].artist.image = images[0].url;
-									}
-								}
-							}
-						}
-						resolveLocal();
-					});
+					loadArtistImagesChunk(result, accessToken, chunkedIds).then(resolveLocal).catch(
+						retryAfterHandler(() => loadArtistImagesChunk(result, accessToken, chunkedIds), resolveLocal, rejectLocal)
+					);
 				}));
 			}
 
 			//TODO: reuse code below
 			for (var i = 0; i < (promises.length - 1); i++) {
-				promises[i].then(() => {
-					return promises[i + 1];
-				})
+				promises[i].then(() => promises[i + 1]).catch(reject);
 			}
 
-			promises[promises.length - 1].then(() => {
-				resolve(result);
-			});
+			promises[promises.length - 1].then(() => resolve(result)).catch(reject);
 		})
 	}
 
+	function loadArtistImagesChunk(result, accessToken, chunkedIds) {
+		return $http.get('https://api.spotify.com/v1/artists', {
+			params : {
+				ids : chunkedIds.join(',')
+			},
+			headers : {
+				Authorization : 'Bearer ' + accessToken
+			}
+		}).then((response) => {
+			var artists = response.data.artists;
+			for (var i = 0; i < artists.length; i++) {
+				for (var j = 0; j < result.length; j++) {
+					if (artists[i].id == result[j].artist.id) {
+						delete result[j].artist.id;
+						var images = artists[i].images;
+						if (images.length > 0) {
+							result[j].artist.image = images[0].url;
+						}
+					}
+				}
+			}
+		});
+	}
+
+	function retryAfterHandler(promise, resolve, reject) {
+		return (err) => {
+			if (err.status == 429) {
+				var time = (parseInt(err.headers()['retry-after']) + 1) * 1000;
+				setTimeout(() => {
+					promise().then(resolve).catch(reject);
+				}, time);
+				return;
+			}
+			reject();
+		};
+	}
+
 	function randomTrack(selector) {
-		return selector.fromArray(tracks);
+		var categoryWeight = {};
+		tracks.forEach((track) => {
+			if (!categoryWeight[track.category]) {
+				categoryWeight[track.category] = { name : track.category, weight : track.popularity };
+			} else {
+				categoryWeight[track.category].weight += track.popularity;
+			}
+		});
+
+		var category = selector.fromWeightedObject(categoryWeight).name;
+
+		return selector.fromArray(tracks, (track) => track.category == category);
 	}
 
 	function similarTracks(track, selector) {
