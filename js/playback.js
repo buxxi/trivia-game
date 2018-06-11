@@ -109,7 +109,10 @@ function Mp3WavePlayer(mp3) {
 			player = WaveSurfer.create({
 				container: '#player',
 				waveColor: 'white',
-				progressColor: '#337ab7'
+				progressColor: '#337ab7',
+				cursorColor : '#133451',
+				cursorWidth : 3,
+				barWidth : 3
 			});
 
 			player.on('ready', () => {
