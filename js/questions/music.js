@@ -61,25 +61,24 @@ function MusicQuestions($http) {
 			}
 			loadSpotifyAccessToken().then((accessToken) => {
 				loadSpotifyCategories(accessToken, cache).then((categories) => {
-					progress(tracks.length, categories.length * TRACKS_BY_CATEGORY);
+					progress(0, categories.length);
 
-					var promises = categories.map((category) => loadCategory(accessToken, category, cache));
-
-					for (var i = 0; i < (promises.length - 1); i++) {
-						promises[i].then((data) => {
-							tracks = tracks.concat(data);
-							progress(tracks.length, categories.length * TRACKS_BY_CATEGORY);
-							return promises[i + 1];
-						});
-					}
-					promises[promises.length - 1].then((data) => {
+					var loaded = 0;
+					var callback = (data) => {
+						loaded++;
 						tracks = tracks.concat(data);
-						resolve();
-					});
-				});
-			}).catch((err) => {
-				reject();
-			});
+						progress(loaded, categories.length);
+						if (loaded == categories.length) {
+							resolve();
+						} else {
+							loadCategory(accessToken, categories[loaded], cache).then(callback).catch(reject);
+						}
+					};
+
+					loadCategory(accessToken, categories[0], cache).then(callback).catch(reject);
+
+				}).catch(reject);
+			}).catch(reject);
 		});
 	}
 
@@ -166,6 +165,8 @@ function MusicQuestions($http) {
 				var genres = response.data.genres;
 				if (spotifyWhiteListGenres) {
 					genres = genres.filter((g) => spotifyWhiteListGenres.indexOf(g) > -1);
+				} else {
+					spotifyWhiteListGenres = genres;
 				}
 				resolve(genres);
 			}).catch(retryAfterHandler(() => loadSpotifyCategories(accessToken, cache), resolve, reject));
@@ -275,14 +276,11 @@ function MusicQuestions($http) {
 
 	function similarTracks(track, selector) {
 		var allowedCategories = [track.category];
-		while (true) {
-			var category = selector.fromArray(tracks).category;
-			if (allowedCategories.indexOf(category) == -1) {
-				allowedCategories.push(category);
-				break;
-			}
+		var differentGenreCount = Math.floor((10 - track.popularity) / 2);
+		for (var i = 0; i < differentGenreCount; i++) {
+			allowedCategories.push(selector.fromArray(spotifyWhiteListGenres)); //This could possibly add the same category many times
 		}
-
+		
 		return tracks.filter(function(s) {
 			return allowedCategories.indexOf(s.category) != -1;
 		});
