@@ -20,6 +20,7 @@ function CategorySpinner(categories, flipCallback, show) {
 				try {
 					var done = self.flip();
 					if (done) {
+						document.querySelector(".spinner").classList.add('highlight');
 						resolve();
 					} else {
 						setTimeout(checkIfDone, duration);
