@@ -20,6 +20,10 @@ function Connection($rootScope, fingerprint) {
 	self.host = function(joinCallback) {
 		return new Promise((resolve, reject) => {
 			fingerprint.get((id) => {
+				if (mediator.pairCode != null) {
+					return resolve(id);
+				}
+
 				mediator = createPeer('mediator' + id, true);
 
 				mediator.once('error', (err) => {

@@ -1,4 +1,4 @@
-function ResultsController($scope, $location, game, avatars) {
+function ResultsController($scope, $location, game, sound, avatars) {
 	$scope.avatars = avatars;
 	$scope.scores = Object.values(game.players()).sort((a, b) => b.score - a.score);
 
@@ -24,5 +24,10 @@ function ResultsController($scope, $location, game, avatars) {
 			default:
 				return "th";
 		}
+	}
+
+	$scope.restart = function() {
+		sound.pause();
+		$location.path("/");	
 	}
 }
