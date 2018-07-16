@@ -213,9 +213,9 @@ function QuestionSelector() {
 	}
 }
 
-function Categories(movies, music, geography, quotes, videogames, drinks, meta, genericloader, $http) {
+function Categories(movies, music, geography, quotes, videogames, drinks, actors, meta, genericloader, $http) {
 	var self = this;
-	var categories = [movies, music, geography, quotes, videogames, drinks, meta];
+	var categories = [movies, music, geography, quotes, videogames, drinks, actors, meta];
 	var enabledCategories = [];
 	var apikeys = {};
 	var jokes = [];
