@@ -43,6 +43,11 @@ function YoutubePlayer(videoId, playerClass) {
 		return new Promise((resolve, reject) => {
 			document.getElementById('content').innerHTML = '<div class="' + playerClass + '" id="player"></div>';
 
+			var startTimeout = setTimeout(() => {
+				self.stop();
+				reject("Didn't start playback before timeout");
+			}, 5000);
+
 			player = new YT.Player('player', {
 				height: '100%',
 				width: '100%',
@@ -56,9 +61,8 @@ function YoutubePlayer(videoId, playerClass) {
 				events: {
 					onStateChange: (state) => {
 						if (state.data == 1) {
+							clearTimeout(startTimeout);
 							resolve();
-						} else {
-							reject('got youtube state: ' + state.data);
 						}
 					}
 				}
@@ -68,6 +72,7 @@ function YoutubePlayer(videoId, playerClass) {
 
 	self.stop = function() {
 		player.stopVideo();
+		document.getElementById('content').innerHTML = '<div id="player"></div>';
 	}
 
 	self.pauseMusic = true;
