@@ -107,16 +107,19 @@ function MusicQuestions($http) {
 
 	function loadCategory(accessToken, category, cache) {
 		return cache.get(category, (resolve, reject) => {
-			var result = [];
+			var tracks = [];
 			var popularity = 0;
 
 			var callback = (chunkResult) => {
-				result = result.concat(chunkResult);
+				tracks = tracks.concat(chunkResult);
 				popularity += 10;
 				if (popularity < 100) {
 					loadCategoryChunk(accessToken, category, popularity).then(callback).catch(reject);	
 				} else {
-					loadArtistImages(result, accessToken).then(resolve).catch(reject);
+					loadArtists(uniqueArtistIds(tracks), category, accessToken).then((artists) => {
+						tracks = mergeTracksAndArtists(tracks, artists);
+						resolve(tracks);
+					}).catch(reject);
 				}
 			}
 			loadCategoryChunk(accessToken, category, popularity).then(callback).catch(reject);	
@@ -197,52 +200,42 @@ function MusicQuestions($http) {
 		});
 	}
 
-	function loadArtistImages(result, accessToken) {
+	function loadArtists(artistIds, category, accessToken) {
 		return new Promise((resolve, reject) => {
-			var artistIds = result.map((track) => track.artist.id).filter((item, pos, arr) => {
-				return arr.indexOf(item) == pos;
-			});
+			var artists = [];
 
-			var promises = [];
-			while (artistIds.length > 0) {
-				var chunkedIds = artistIds.splice(0, 50);
-				promises.push(new Promise((resolveLocal, rejectLocal) => {
-					loadArtistImagesChunk(result, accessToken, chunkedIds).then(resolveLocal).catch(
-						retryAfterHandler(() => loadArtistImagesChunk(result, accessToken, chunkedIds), resolveLocal, rejectLocal)
-					);
-				}));
+			var callback = (chunkResult) => {
+				artists = artists.concat(chunkResult);
+				if (artistIds.length > 0) {
+					loadArtistsChunk(accessToken, category, artistIds.splice(0, 50)).then(callback).catch(reject);	
+				} else {
+					resolve(artists.reduce((map, obj) => {
+						map[obj.id] = obj;
+						return map;
+					}, {}));
+				}
 			}
-
-			//TODO: reuse code below
-			for (var i = 0; i < (promises.length - 1); i++) {
-				promises[i].then(() => promises[i + 1]).catch(reject);
-			}
-
-			promises[promises.length - 1].then(() => resolve(result)).catch(reject);
+			loadArtistsChunk(accessToken, category, artistIds.splice(0, 50)).then(callback).catch(reject);	
 		})
 	}
 
-	function loadArtistImagesChunk(result, accessToken, chunkedIds) {
-		return $http.get('https://api.spotify.com/v1/artists', {
-			params : {
-				ids : chunkedIds.join(',')
-			},
-			headers : {
-				Authorization : 'Bearer ' + accessToken
-			}
-		}).then((response) => {
-			var artists = response.data.artists;
-			for (var i = 0; i < artists.length; i++) {
-				for (var j = 0; j < result.length; j++) {
-					if (artists[i].id == result[j].artist.id) {
-						delete result[j].artist.id;
-						var images = artists[i].images;
-						if (images.length > 0) {
-							result[j].artist.image = images[0].url;
-						}
-					}
+	function loadArtistsChunk(accessToken, category, chunkedIds) {
+		return new Promise((resolve, reject) => {
+			$http.get('https://api.spotify.com/v1/artists', {
+				params : {
+					ids : chunkedIds.join(',')
+				},
+				headers : {
+					Authorization : 'Bearer ' + accessToken
 				}
-			}
+			}).then((response) => {
+				var artists = response.data.artists.filter(artist => {
+					var genres = artist.genres.map(genre => genre.toLowerCase().replace(' ', '-'));
+					console.log(genres);
+					return genres.indexOf(category) > -1;
+				});
+				resolve(artists);
+			}).catch(retryAfterHandler(() => loadArtistsChunk(accessToken, category, chunkedIds), resolve, reject));
 		});
 	}
 
@@ -257,6 +250,23 @@ function MusicQuestions($http) {
 			}
 			reject();
 		};
+	}
+
+	function mergeTracksAndArtists(tracks, artists) {
+		return tracks.filter(track => !!artists[track.artist.id]).map(track => {
+			var images = artists[track.artist.id].images;
+			if (images.length > 0) {
+				track.artist.image = images[0].url;
+			}
+			return track;
+		});
+	}
+
+	function uniqueArtistIds(tracks) {
+		var artistIds = tracks.map((track) => track.artist.id).filter((item, pos, arr) => {
+			return arr.indexOf(item) == pos;
+		});
+		return artistIds;
 	}
 
 	function randomTrack(selector) {
