@@ -17,7 +17,7 @@ function VideoGameQuestions($http, youtube) {
 			view : screenshot,
 			format : gameTitle,
 			weight : 45
-		},
+		}/*,
 		year : {
 			title : (correct) => "In which year was '" + correct.name + "' first released?",
 			correct : randomGame,
@@ -49,7 +49,7 @@ function VideoGameQuestions($http, youtube) {
 			view : songVideo,
 			format : gameTitle,
 			weight : 25
-		}
+		}*/
 	}
 
 	self.describe = function() {
@@ -278,7 +278,7 @@ function VideoGameQuestions($http, youtube) {
 	function screenshot(game, selector) {
 		return {
 			player : 'image',
-			url : 'https://res.cloudinary.com/igdb/image/upload/t_screenshot_huge/' + selector.fromArray(game.screenshots) + '.jpg',
+			url : 'https://images.igdb.com/igdb/image/upload/t_screenshot_huge/' + selector.fromArray(game.screenshots) + '.jpg',
 			attribution : {
 				title : "Screenshot of",
 				name : gameTitle(game) + " (" + gameYear(game) + ")",
