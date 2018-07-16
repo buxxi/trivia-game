@@ -1,11 +1,5 @@
-function SoundController() {
+function SoundController(config) {
 	var self = this;
-
-	var enabled = {
-		backgroundMusic : true,
-		soundEffects : true,
-		text2Speech : true
-	}
 
 	var backgroundMusic = new Pizzicato.Sound('sound/background.mp3', () => {
 		backgroundMusic.volume = 0.10;
@@ -21,27 +15,27 @@ function SoundController() {
 	});
 
 	self.play = function() {
-		if (!enabled.backgroundMusic) {
+		if (!config.sound.backgroundMusic) {
 			return;
 		}
 		backgroundMusic.play();
 	}
 
 	self.pause = function() {
-		if (!enabled.backgroundMusic) {
+		if (!config.sound.backgroundMusic) {
 			return;
 		}
 		backgroundMusic.pause();
 	}
 
 	self.click = function() {
-		if (enabled.soundEffects) {
+		if (config.sound.soundEffects) {
 			click.clone().play();
 		}
 	}
 
 	self.beep = function(count) {
-		if (enabled.soundEffects) {
+		if (config.sound.soundEffects) {
 			var beep = new Pizzicato.Sound('sound/beep.mp3', () => {
 				beep.play();
 				beep.sourceNode.playbackRate.value = 1.5 + (0.5 * count);
@@ -50,20 +44,16 @@ function SoundController() {
 	}
 
 	self.trombone = function() {
-		if (enabled.soundEffects) {
+		if (config.sound.soundEffects) {
 			trombone.clone().play();
 		}
 	}
 
 	self.speak = function(text, callback) {
-		if (enabled.text2Speech) {
+		if (config.sound.text2Speech) {
 			responsiveVoice.speak(text, "US English Male", {rate : 1.1, pitch : 0.9, onend : callback});
 		} else {
 			callback();
 		}
-	}
-
-	self.enabled = function() {
-		return enabled;
 	}
 }

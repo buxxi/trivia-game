@@ -89,11 +89,10 @@ function Timer($interval, timePerQuestion, pointsPerRound) {
 	}
 }
 
-function Game($rootScope, $interval, avatars, categories) {
+function Game($rootScope, $interval, avatars, categories, config) {
 	var self = this;
 	var players = {};
 	var guesses = {};
-	var config = {};
 	var session = {};
 	var timer = {};
 
@@ -170,9 +169,8 @@ function Game($rootScope, $interval, avatars, categories) {
 		delete players[peerid];
 	}
 
-	self.configure = function(cfg) {
-		config = cfg;
-		categories.configure(cfg.categories);
+	self.configure = function() {
+		categories.configure(config.categories);
 		Object.keys(players).forEach((peerid) => {
 			players[peerid].score = 0;
 			players[peerid].multiplier = 1;

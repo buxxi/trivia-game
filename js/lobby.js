@@ -1,20 +1,11 @@
-function LobbyController($rootScope, $scope, $location, $routeParams, connection, game, categories, sound, avatars, fingerprint) {
-	var config = {
-		questions : 10,
-		time : 30,
-		pointsPerRound : 1000,
-		stopOnAnswers : true,
-		allowMultiplier : true,
-		sound : sound.enabled(),
-		categories : {},
-		fullscreen : false,
-		categorySpinner : true
-	};
-
+function LobbyController($rootScope, $scope, $location, $routeParams, connection, game, categories, sound, avatars, fingerprint, config) {
 	var carouselTimeout = 0;
 
 	$scope.availableCategories = [];
-	$scope.preloading = {};
+	//TODO: maybe move the preloading status into the categories-service instead? It's now in rootScope to avoid problems when playing second game
+	if (!$rootScope.preloading) {
+		$rootScope.preloading = {};
+	}
 	$scope.config = config;
 
 	$scope.serverUrl = function() {
@@ -91,7 +82,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 	}
 
 	$scope.preload = function(type) {
-		if ($scope.preloading[type]) {
+		if ($rootScope.preloading[type]) {
 			return;
 		}
 
@@ -112,7 +103,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 			}
 		};
 
-		$scope.preloading[type] = preload;
+		$rootScope.preloading[type] = preload;
 
 		categories.preload(type, preload.progress).then(() => {
 			$scope.$apply(() => preload.done = true);
@@ -136,7 +127,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 			return false;
 		}
 
-		var allPreloaded = categories.map((cat) => $scope.preloading[cat].done).reduce((pre, cur) => pre && cur, true);
+		var allPreloaded = categories.map((cat) => $rootScope.preloading[cat].done).reduce((pre, cur) => pre && cur, true);
 
 		if (!allPreloaded) {
 			$scope.startTitle = "Not all selected categories has preloaded";
@@ -149,7 +140,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 
 	$scope.start = function() {
 		sound.play();
-		game.configure(config);
+		game.configure();
 		connection.disconnect();
 		clearTimeout(carouselTimeout);
 		$location.path('/game');

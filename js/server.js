@@ -13,6 +13,22 @@ triviaApp.config(($routeProvider) => {
 		});
 });
 
+triviaApp.constant('config', {
+	questions : 10,
+	time : 30,
+	pointsPerRound : 1000,
+	stopOnAnswers : true,
+	allowMultiplier : true,
+	sound : {
+		backgroundMusic : true,
+		soundEffects : true,
+		text2Speech : true
+	},
+	categories : {},
+	fullscreen : false,
+	categorySpinner : true
+});
+
 triviaApp.constant('avatars', function(avatars) {
 		Object.values(avatars).forEach((avatar) => {
 			avatar.url = /src=\"(.*?)\"/.exec(twemoji.parse(avatar.code))[1];
