@@ -17,7 +17,7 @@ function VideoGameQuestions($http, youtube) {
 			view : screenshot,
 			format : gameTitle,
 			weight : 45
-		}/*,
+		},
 		year : {
 			title : (correct) => "In which year was '" + correct.name + "' first released?",
 			correct : randomGame,
@@ -49,7 +49,7 @@ function VideoGameQuestions($http, youtube) {
 			view : songVideo,
 			format : gameTitle,
 			weight : 25
-		}*/
+		}
 	}
 
 	self.describe = function() {
