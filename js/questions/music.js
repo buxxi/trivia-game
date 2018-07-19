@@ -54,31 +54,30 @@ function MusicQuestions($http) {
 		spotifyApiKey = apikeys.spotify;
 		spotifyWhiteListGenres = apikeys.spotifyWhiteList;
 
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			if (tracks.length != 0) {
 				resolve();
 				return;
 			}
-			loadSpotifyAccessToken().then((accessToken) => {
-				loadSpotifyCategories(accessToken, cache).then((categories) => {
-					progress(0, categories.length);
+			
+			try {
+				var accessToken = await loadSpotifyAccessToken();
+				var categories = await loadSpotifyCategories(accessToken, cache);
+				
+				progress(0, categories.length);
+				var loaded = 0;
 
-					var loaded = 0;
-					var callback = (data) => {
-						loaded++;
-						tracks = tracks.concat(data);
-						progress(loaded, categories.length);
-						if (loaded == categories.length) {
-							resolve();
-						} else {
-							loadCategory(accessToken, categories[loaded], cache).then(callback).catch(reject);
-						}
-					};
+				for (var category of categories) {
+					var categoryData = await loadCategory(accessToken, category, cache);
+					loaded++;
+					tracks = tracks.concat(categoryData);
+					progress(loaded, categories.length);
+				}
 
-					loadCategory(accessToken, categories[0], cache).then(callback).catch(reject);
-
-				}).catch(reject);
-			}).catch(reject);
+				resolve();
+			} catch (e) {
+				reject(e);
+			}
 		});
 	}
 
@@ -106,23 +105,22 @@ function MusicQuestions($http) {
 	}
 
 	function loadCategory(accessToken, category, cache) {
-		return cache.get(category, (resolve, reject) => {
+		return cache.get(category, async (resolve, reject) => {
 			var tracks = [];
 			var popularity = 0;
 
-			var callback = (chunkResult) => {
-				tracks = tracks.concat(chunkResult);
-				popularity += 10;
-				if (popularity < 100) {
-					loadCategoryChunk(accessToken, category, popularity).then(callback).catch(reject);	
-				} else {
-					loadArtists(uniqueArtistIds(tracks), category, accessToken).then((artists) => {
-						tracks = mergeTracksAndArtists(tracks, artists);
-						resolve(tracks);
-					}).catch(reject);
+			try {
+				for (var popularity = 0; popularity < 100; popularity += 10) {
+					var chunkResult = await loadCategoryChunk(accessToken, category, popularity);
+					tracks = tracks.concat(chunkResult);
 				}
+
+				var artists = await loadArtists(uniqueArtistIds(tracks), category, accessToken);
+				tracks = mergeTracksAndArtists(tracks, artists);
+				resolve(tracks);
+			} catch (e) {
+				reject(e);
 			}
-			loadCategoryChunk(accessToken, category, popularity).then(callback).catch(reject);	
 		});
 	}
 
@@ -201,21 +199,22 @@ function MusicQuestions($http) {
 	}
 
 	function loadArtists(artistIds, category, accessToken) {
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			var artists = [];
 
-			var callback = (chunkResult) => {
-				artists = artists.concat(chunkResult);
-				if (artistIds.length > 0) {
-					loadArtistsChunk(accessToken, category, artistIds.splice(0, 50)).then(callback).catch(reject);	
-				} else {
-					resolve(artists.reduce((map, obj) => {
-						map[obj.id] = obj;
-						return map;
-					}, {}));
+			try {
+				while (artistIds.length > 0) {
+					var chunkResult = await loadArtistsChunk(accessToken, category, artistIds.splice(0, 50));
+					artists = artists.concat(chunkResult);
 				}
+			} catch (e) {
+				reject(e);
 			}
-			loadArtistsChunk(accessToken, category, artistIds.splice(0, 50)).then(callback).catch(reject);	
+
+			resolve(artists.reduce((map, obj) => {
+				map[obj.id] = obj;
+				return map;
+			}, {}));
 		})
 	}
 
@@ -231,7 +230,6 @@ function MusicQuestions($http) {
 			}).then((response) => {
 				var artists = response.data.artists.filter(artist => {
 					var genres = artist.genres.map(genre => genre.toLowerCase().replace(' ', '-'));
-					console.log(genres);
 					return genres.indexOf(category) > -1;
 				});
 				resolve(artists);
