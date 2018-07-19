@@ -37,35 +37,40 @@ function MovieQuestions($http, youtube) {
 	self.preload = function(progress, cache, apikeys) {
 		youtubeApiKey = apikeys.youtube;
 		tmdbApiKey = apikeys.tmdb;
-		return new Promise((resolve, reject) => {
-			loadYoutubeVideos(progress, cache).then(parseTitles).then((data) => {
-				movies = data;
+
+		return new Promise(async (resolve, reject) => {
+			try {
+				var videos = await loadYoutubeVideos(progress, cache);
+				movies = parseTitles(videos);
 				resolve();
-			}).catch(reject);
+			} catch (e) {
+				reject(e);
+			}
 		});
 	}
 
 	self.nextQuestion = function(selector) {
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			var type = selector.fromWeightedObject(types);
 			var attribution = [];
 
-			type.correct(selector, attribution).then((correct) => {
-				type.similar(correct, attribution, selector).then((similar) => {
-					resolve({
-						text : type.title(correct),
-						answers : selector.alternatives(similar, correct, type.format, selector.first),
-						correct : type.format(correct),
-						view : type.view(correct, attribution)
-					});
-				}).catch(reject);
-			}).catch((err) => {
+			try {
+				var correct = await type.correct(selector, attribution);
+				var similar = await type.similar(correct, attribution, selector);
+				
+				resolve({
+					text : type.title(correct),
+					answers : selector.alternatives(similar, correct, type.format, selector.first),
+					correct : type.format(correct),
+					view : type.view(correct, attribution)
+				});
+			} catch(err) {
 				if (typeof(err) == 'string') {
-					return self.nextQuestion(selector).then(resolve, reject);
+					return self.nextQuestion(selector).then(resolve).catch(reject);
 				} else {
 					reject(err);
 				}
-			});
+			};
 		});
 	}
 
@@ -103,33 +108,31 @@ function MovieQuestions($http, youtube) {
 	}
 
 	function parseTitles(result) {
-		return new Promise((resolve, reject) => {
-			var movies = {};
-			result.forEach((video) => {
-				var metadata = parseTitle(video.title);
-				if (metadata) {
-					var movie = movies[metadata.title];
-					if (!movie) {
-						movies[metadata.title] = {
-							year : parseInt(metadata.year),
-							videos : []
-						}
-						movie = movies[metadata.title];
+		var movies = {};
+		result.forEach((video) => {
+			var metadata = parseTitle(video.title);
+			if (metadata) {
+				var movie = movies[metadata.title];
+				if (!movie) {
+					movies[metadata.title] = {
+						year : parseInt(metadata.year),
+						videos : []
 					}
-					movie.videos.push(video.id);
+					movie = movies[metadata.title];
 				}
-			});
-
-			movies = Object.keys(movies).map((title) => {
-				return {
-					title : title,
-					year : movies[title].year,
-					videos : movies[title].videos
-				}
-			});
-
-			resolve(movies);
+				movie.videos.push(video.id);
+			}
 		});
+
+		movies = Object.keys(movies).map((title) => {
+			return {
+				title : title,
+				year : movies[title].year,
+				videos : movies[title].videos
+			}
+		});
+
+		return movies;
 	}
 
 	function loadYoutubeVideos(progress, cache) {
