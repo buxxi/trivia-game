@@ -71,6 +71,46 @@ function GeographyQuestions($http) {
 	}
 
 	self.preload = function(progress, cache, apikeys) {
+		return new Promise(async (resolve, reject) => {
+			try {
+				progress(0, 1);
+				countries = await loadCountries(cache);
+				progress(1, 1);
+				resolve();
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+
+	self.nextQuestion = function(selector) {
+		return new Promise(async (resolve, reject) => {
+			try {
+				var type = selector.fromWeightedObject(types);
+
+				var correct = type.correct(selector);
+				var similar = type.similar(correct);
+				var title = type.title(correct);
+				var view = await type.load(correct);
+				view.attribution = {
+					title : "Featured country",
+					name : correct.name,
+					links : ['https://restcountries.eu', 'https://flagpedia.net?q=' + correct.code]
+				}
+
+				resolve({
+					text : title,
+					answers : selector.alternatives(similar, correct, type.format, types['region'] == type ? selector.splice : selector.first),
+					correct : type.format(correct),
+					view : view
+				});
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+
+	function loadCountries(cache) {
 		return cache.get('countries', (resolve, reject) => {
 			$http.get('https://restcountries.eu/rest/v2/all').then((response) => {
 				var result = response.data.map((country) => {
@@ -86,33 +126,6 @@ function GeographyQuestions($http) {
 					}
 				});
 				resolve(result);
-			});
-		}).then(function(data) {
-			countries = data;
-		});
-	}
-
-	self.nextQuestion = function(selector) {
-		return new Promise((resolve, reject) => {
-			var type = selector.fromWeightedObject(types);
-
-			var correct = type.correct(selector);
-			var similar = type.similar(correct);
-			var title = type.title(correct);
-
-			type.load(correct).then((view) => {
-				view.attribution = {
-					title : "Featured country",
-					name : correct.name,
-					links : ['https://restcountries.eu', 'https://flagpedia.net?q=' + correct.code]
-				}
-
-				resolve({
-					text : title,
-					answers : selector.alternatives(similar, correct, type.format, types['region'] == type ? selector.splice : selector.first),
-					correct : type.format(correct),
-					view : view
-				});
 			}).catch(reject);
 		});
 	}
