@@ -42,49 +42,30 @@ function DrinksQuestions($http) {
 	}
 
 	self.preload = function(progress, cache, apikeys) {
-		return cache.get('drinks', (resolve, reject) => {
-			var result = [];
-
-			function loadRandomDrink() {
-				return $http.get('https://www.thecocktaildb.com/api/json/v1/1/random.php');
-			}
-
-			function parseDrink(response) {
-				var data = response.data.drinks[0];
-				var drink = {
-					name : data['strDrink'],
-					ingredients : Object.keys(data).filter((k) => k.indexOf("strIngredient") > -1).map((k) => data[k]).filter((v) => !!v),
-					glass : data['strGlass'],
-					url : 'https://www.thecocktaildb.com/drink.php?c=' + data['idDrink']
-				}
-				result.push(drink);
-			}
-
+		return cache.get('drinks', async (resolve, reject) => {
 			progress(0, TOTAL_DRINKS);
 
-			var promises = [];
-			for (var i = 0; i < TOTAL_DRINKS; i++) {
-				promises.push(loadRandomDrink());
+			try {
+				for (let i = 0; i < TOTAL_DRINKS; i++) {
+					let drink = await loadRandomDrink();
+					if (!drinks.some(d => d.name == drink.name)) {
+						drinks.push(drink);
+					}
+					progress(drinks.length, TOTAL_DRINKS);
+				}
+			} catch (e) {
+				reject(e);
 			}
-			for (var i = 0; i < (promises.length - 1); i++) {
-				promises[i].then((response) => {
-					parseDrink(response);
-					progress(result.length, TOTAL_DRINKS);
-					return promises[i + 1];
-				});
-			}
-			promises[promises.length - 1].then((response) => {
-				parseDrink(response);
-				resolve(result);
-			});
-		}).then((data) => { drinks = data; });
+			
+			resolve();
+		});
 	}
 
 
 	self.nextQuestion = function(selector) {
 		return new Promise((resolve, reject) => {
-			var type = selector.fromWeightedObject(types);
-			var correct = type.correct(selector);
+			let type = selector.fromWeightedObject(types);
+			let correct = type.correct(selector);
 
 			resolve({
 				text : type.title(correct),
@@ -95,9 +76,24 @@ function DrinksQuestions($http) {
 		});
 	}
 
+	function loadRandomDrink() {
+		return new Promise((resolve, reject) => {
+			$http.get('https://www.thecocktaildb.com/api/json/v1/1/random.php').then((response) => {
+				let data = response.data.drinks[0];
+				let drink = {
+					name : data['strDrink'],
+					ingredients : Object.keys(data).filter((k) => k.indexOf("strIngredient") > -1).map((k) => data[k]).filter((v) => !!v),
+					glass : data['strGlass'],
+					url : 'https://www.thecocktaildb.com/drink.php?c=' + data['idDrink']
+				}
+				resolve(drink);
+			}).catch(reject);
+		});
+	}
+
 	function randomIngredient(selector) {
-		var drink = selector.fromArray(drinks);
-		var ingredient = selector.fromArray(drink.ingredients);
+		let drink = selector.fromArray(drinks);
+		let ingredient = selector.fromArray(drink.ingredients);
 		return {
 			name : ingredient,
 			drink : drink
