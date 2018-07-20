@@ -53,7 +53,7 @@ function VideoGameQuestions($http, youtube) {
 	}
 
 	self.describe = function() {
-		var countSelector = {
+		let countSelector = {
 			fromArray : (arr) => { return arr.length; }
 		};
 		return {
@@ -68,46 +68,35 @@ function VideoGameQuestions($http, youtube) {
 		youtubeApiKey = apikeys.youtube;
 		igdbApiKey = apikeys.igdb;
 
-		return new Promise((resolve, reject) => {
-			loadPlatforms(cache).then((result) => {
-				platforms = result;
-				var loadPlatforms = Object.keys(platforms).filter((p) => platforms[p].games >= MINIMUM_PLATFORM_GAMES);
-				var total = loadPlatforms.length * GAMES_PER_PLATFORM;
+		return new Promise(async (resolve, reject) => {
+			try {
+				platforms = await loadPlatforms(cache);
+				let toLoadPlatforms = Object.keys(platforms).filter((p) => platforms[p].games >= MINIMUM_PLATFORM_GAMES);
+				let total = toLoadPlatforms.length * GAMES_PER_PLATFORM;
 
 				progress(games.length, total);
 
-				var promises = loadPlatforms.map((platform) => loadGames(platform, cache));
-
-				for (var i = 0; i < (promises.length - 1); i++) {
-					promises[i].then((data) => {
-						games = games.concat(data);
-						progress(games.length, total);
-						return promises[i + 1];
-					});
+				for (let platform of toLoadPlatforms) {
+					let gamesChunk = await loadGames(platform, cache);
+					games = games.concat(gamesChunk);
+					progress(games.length, total);
 				}
-				promises[promises.length - 1].then((data) => {
-					games = games.concat(data);
-					loadVideos(progress, cache).then((videos) => {
-						parseTitles(videos).filter((t) => {
-							games.forEach((g) => {
-								if (compareAlphaNumeric(g.name, t.title)) {
-									g.songs = g.songs || [];
-									g.songs.push(t.id);
-								}
-							});
-						})
-						resolve();
-					}).catch(reject);
-				});
-			});
+
+				let videos = await loadVideos(progress, cache);
+				matchVideosToGames(videos, games);
+
+				resolve();
+			} catch (e) {
+				reject(e);
+			}
 		});
 	}
 
 	self.nextQuestion = function(selector) {
 		return new Promise((resolve, reject) => {
-			var type = selector.fromWeightedObject(types);
-			var correct = type.correct(selector);
-			var similar = type.similar(correct, selector);
+			let type = selector.fromWeightedObject(types);
+			let correct = type.correct(selector);
+			let similar = type.similar(correct, selector);
 
 			resolve({
 				text : type.title(correct),
@@ -147,7 +136,7 @@ function VideoGameQuestions($http, youtube) {
 					return arr.map((i) => prefix + i);
 				}
 
-				var games = response.data.map((game) => {
+				let games = response.data.map((game) => {
 					return {
 						name : game.name,
 						release_date : release_date(game.first_release_date),
@@ -158,13 +147,29 @@ function VideoGameQuestions($http, youtube) {
 					};
 				});
 				resolve(games);
-			});
+			}).catch(reject);
 		});
 	}
 
 	function loadPlatforms(cache) {
-		function loadPage(offset) {
-			return $http.get('/trivia/igdb-api.py/platforms/', {
+		return cache.get('platforms', async (resolve, reject) => {
+			try {
+				let result = {};
+				let chunkResult;
+				do {
+					chunkResult = await loadPlatformChunk(Object.keys(result).length);
+					result = Object.assign(result, chunkResult);
+				} while (Object.keys(chunkResult).length == 50);
+				resolve(result);
+			} catch(e) {
+				reject(e);
+			}
+		});
+	}
+
+	function loadPlatformChunk(offset) {
+		return new Promise((resolve, reject) => {
+			$http.get('/trivia/igdb-api.py/platforms/', {
 				params : {
 					fields : 'name,generation,games,versions.release_dates.date',
 					limit : 50,
@@ -173,59 +178,57 @@ function VideoGameQuestions($http, youtube) {
 				headers : {
 					'user-key' : igdbApiKey
 				}
-			})
-		};
+			}).then((response) => {
+				let result = {};
+				response.data.forEach((platform) => {
+					if (!platform.versions) {
+						platform.versions = [];
+					}
+					let release_dates = platform.versions.map((v) => v.release_dates ? v.release_dates.map((d)  => d.date) : []).reduce((a, b) => [].concat(a).concat(b), []);
 
-		return cache.get('platforms', (resolve, reject) => {
-			result = [];
-			function callback(response) {
-				result = result.concat(response.data);
+					result[platform.id] = {
+						name : platform.name,
+						generation : platform.generation,
+						games : platform.games ? platform.games.length : 0,
+						release_date : release_date(release_dates.length > 0 ? release_dates.reduce(function(a, b) { return a < b ? a : b }) : 0)
+					}
+				});
+				resolve(result);
+			}).catch(reject);
+		});
+	};
 
-				if (response.data.length == 50) {
-					loadPage(result.length).then(callback);
-				} else {
-					var object = {};
-					result.forEach((platform) => {
-						if (!platform.versions) {
-							platform.versions = [];
-						}
-						var release_dates = platform.versions.map((v) => v.release_dates ? v.release_dates.map((d)  => d.date) : []).reduce((a, b) => [].concat(a).concat(b), []);
-
-						object[platform.id] = {
-							name : platform.name,
-							generation : platform.generation,
-							games : platform.games ? platform.games.length : 0,
-							release_date : release_date(release_dates.length > 0 ? release_dates.reduce(function(a, b) { return a < b ? a : b }) : 0)
-						}
-					});
-					resolve(object);
-				}
-			};
-
-			loadPage(0).then(callback);
+	function matchVideosToGames(videos, games) {
+		let gamesByName = {};
+		for (game of games) {
+			gamesByName[toAlphaNumeric(game.name)] = game;
+		}
+		parseTitles(videos).forEach((t) => {
+			let game = gamesByName[t.title];
+			if (game) {
+				game.songs = game.songs || [];
+				game.songs.push(t.id);
+			}
 		});
 	}
 
 	function parseTitles(videos) {
 		return videos.map((v) => {
-			var match = v.title.match(/Best VGM [0-9]+ - (.*?)( - ).*/);
+			let match = v.title.match(/Best VGM [0-9]+ - (.*?)( - ).*/);
 			if (!match) {
 				return null;
 			}
 
 			return {
 				id : v.id,
-				title : match[1]
+				title : toAlphaNumeric(match[1])
 			};
 		}).filter((v) => v != null);
 	}
 
-	function compareAlphaNumeric(str1, str2) {
-		var x = /[^a-z0-9]/g;
-		var a = str1.toLowerCase().replace(x, '')
-		var b = str2.toLowerCase().replace(x, '');
-
-		return a == b;
+	function toAlphaNumeric(str) {
+		let x = /[^a-z0-9]/g;
+		return str.toLowerCase().replace(x, '');
 	}
 
 	function randomGame(selector) {
@@ -288,7 +291,7 @@ function VideoGameQuestions($http, youtube) {
 	}
 
 	function songVideo(game, selector) {
-		var videoId = selector.fromArray(game.songs);
+		let videoId = selector.fromArray(game.songs);
 
 		return {
 			player : 'youtubeaudio',
