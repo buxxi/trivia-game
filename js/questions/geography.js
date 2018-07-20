@@ -66,6 +66,10 @@ function GeographyQuestions($http) {
 			type : 'geography',
 			name : 'Geography',
 			icon : 'fa-globe',
+			attribution : [
+				{ url: 'https://restcountries.eu', name: 'REST Countries' },
+				{ url: 'https://developers.google.com/chart', name: 'Google Charts' }
+			],
 			count : countries.length * Object.keys(types).length
 		};
 	}

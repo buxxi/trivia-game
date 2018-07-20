@@ -29,6 +29,9 @@ function QuotesQuestions($http) {
 			type : 'quotes',
 			name : 'Famous Quotes',
 			icon : 'fa-quote-right',
+			attribution : [
+				{ url: 'https://market.mashape.com/andruxnet/random-famous-quotes', name: 'Mashape - Famous Random Quotes' }
+			],
 			count : quotes.length
 		};
 	}
@@ -54,7 +57,6 @@ function QuotesQuestions($http) {
 			}
 		});	
 	}
-
 
 	self.nextQuestion = function(selector) {
 		return new Promise((resolve, reject) => {

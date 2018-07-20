@@ -60,6 +60,10 @@ function VideoGameQuestions($http, youtube) {
 			type : 'videogames',
 			name : 'Video Games',
 			icon : 'fa-gamepad',
+			attribution : [
+				{ url: 'https://youtube.com', name: 'YouTube' },
+				{ url: 'https://www.igdb.com', name: 'IGDB' }
+			],
 			count : Object.keys(types).map((t) => types[t].correct(countSelector)).reduce((a, b) => { return a + b; }, 0)
 		};
 	}

@@ -7,6 +7,9 @@ function GenericCategoryLoader($interpolate, $parse) {
 		description.type = /.*?([a-zA-Z0-9]+).json/.exec(name)[1];
 		description.count = parsed.questions.length * parsed.data.length;
 		description.static = true;
+		if (!description.attribution) {
+			description.attribution = [];
+		}
 		var questions = parsed.questions.reduce((map, obj) => { //Convert to a object so we can reuse the same selection mechanism by weight as regular categories
 			map[Object.keys(map).length] = obj;
 			if (!obj.weight) {

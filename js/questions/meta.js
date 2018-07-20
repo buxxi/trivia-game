@@ -58,6 +58,9 @@ function CurrentGameQuestions($injector, avatars) {
 			type : 'game',
 			name : 'Current Game',
 			icon : 'fa-history',
+			attribution : [
+				{ url: 'https://github.com/buxxi/webrtc-trivia', name: 'GitHub' }
+			],
 			count : Object.keys(types).length
 		};
 	}

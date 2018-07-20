@@ -36,6 +36,9 @@ function ActorQuestions($http) {
 			type : 'actors',
 			name : 'Actors',
 			icon : 'fa-user',
+			attribution : [
+				{ url: 'https://www.themoviedb.org', name: 'TheMovieDB' }
+			],
 			count : Object.keys(types).map((t) => types[t].count()).reduce((a, b) => a + b, 0)
 		};
 	}

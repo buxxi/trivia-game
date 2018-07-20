@@ -22,16 +22,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		return Object.keys(game.players()).length;
 	};
 
-	$scope.poweredBy = [
-		{ url: 'https://spotify.com', name: 'Spotify' },
-		{ url: 'https://youtube.com', name: 'YouTube' },
-		{ url: 'https://www.themoviedb.org', name: 'TheMovieDB' },
-		{ url: 'https://restcountries.eu', name: 'REST Countries' },
-		{ url: 'https://developers.google.com/chart', name: 'Google Charts' },
-		{ url: 'https://market.mashape.com/andruxnet/random-famous-quotes', name: 'Mashape - Famous Random Quotes' },
-		{ url: 'https://www.igdb.com', name: 'IGDB' },
-		{ url: 'https://www.thecocktaildb.com', name: 'TheCocktailDB' }
-	]
+	$scope.poweredBy = categories.attribution();
 
 	$scope.countQuestions = function() {
 		return categories.countQuestions(config.categories);
@@ -193,6 +184,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 
 	categories.init().then(() => {
 		$scope.availableCategories = categories.available();
+		$scope.poweredBy = categories.attribution();
 		$scope.$digest();
 		moveCarousel();
 	});

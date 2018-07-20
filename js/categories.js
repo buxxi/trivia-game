@@ -270,6 +270,15 @@ function Categories(movies, music, geography, quotes, videogames, drinks, actors
 		return Object.keys(input).filter((category) => input[category]).map((c) => categoryByType(c).describe().count).reduce((a, b) => a + b, 0);
 	}
 
+	self.attribution = function() {
+		var attribution = categories.reduce((result, current) => result.concat(current.describe().attribution), []);
+		var attributionMap = {};
+		for (attr of attribution) {
+			attributionMap[attr.name] = attr;
+		}
+		return Object.values(attributionMap);
+	}
+
 	self.nextQuestion = function() {
 		var selector = new QuestionSelector();
 		var category = selector.fromWeightedObject(enabledCategories);

@@ -46,6 +46,9 @@ function MusicQuestions($http) {
 			type : 'music',
 			name : 'Music',
 			icon : 'fa-music',
+			attribution : [
+				{ url: 'https://spotify.com', name: 'Spotify' }
+			],
 			count : tracks.length * Object.keys(types).length
 		};
 	}

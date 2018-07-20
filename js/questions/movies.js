@@ -30,6 +30,10 @@ function MovieQuestions($http, youtube) {
 			type : 'movies',
 			name : 'Movies',
 			icon : 'fa-film',
+			attribution : [
+				{ url: 'https://youtube.com', name: 'YouTube' },
+				{ url: 'https://www.themoviedb.org', name: 'TheMovieDB' }
+			],
 			count : Object.keys(types).map((t) => types[t].count()).reduce((a, b) => a + b, 0)
 		};
 	}

@@ -37,6 +37,9 @@ function DrinksQuestions($http) {
 			type : 'drinks',
 			name : 'Drinks',
 			icon : 'fa-glass',
+			attribution : [
+				{ url: 'https://www.thecocktaildb.com', name: 'TheCocktailDB' }
+			],
 			count : drinks.length * Object.keys(types).length
 		};
 	}
