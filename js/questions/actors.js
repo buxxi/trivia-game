@@ -5,15 +5,30 @@ function ActorQuestions($http) {
     var tmdbApiKey = '';
     
     var types = {
-		actor_name : {
+		image : {
 			title : (correct) => "Who is this " + (correct.male ? "actor" : "actress") + "?",
 			correct : randomActor,
 			similar : similarActors,
 			format : actorName,
 			view : viewActorImage,
-			count : countActors,
-			weight : 30
-        }
+			count : countActors
+		},
+		age : {
+			title : (correct) => "Who is oldest of these " + (correct.male ? "actors" : "actresses") + "?",
+			correct : randomActor,
+			similar : youngerActors,
+			format : actorName,
+			view : viewBlank,
+			count : countActors
+		},
+		born : {
+			title : (correct) => "Where was " + correct.name + " born?",
+			correct : randomActor,
+			similar : similarActors,
+			format : countryOrState,
+			view : viewBlank,
+			count : countActors
+		}
     };
 
     self.describe = function() {
@@ -31,6 +46,7 @@ function ActorQuestions($http) {
 			try {
 				progress(0, ACTOR_COUNT);
 				actors = await loadActors(progress, cache);
+				console.log(actors);
 				resolve();
 			} catch (e) {
 				reject(e);
@@ -41,16 +57,15 @@ function ActorQuestions($http) {
 	self.nextQuestion = function(selector) {
 		return new Promise((resolve, reject) => {
 			let type = selector.fromWeightedObject(types);
-			let attribution = [];
 
-			let actor = type.correct(selector, attribution);
-			let similar = type.similar(actor, attribution, selector);
+			let actor = type.correct(selector);
+			let similar = type.similar(actor);
 
 			resolve({
 				text : type.title(actor),
-				answers : selector.alternatives(similar, actor, type.format, selector.first),
+				answers : selector.alternatives(similar, actor, type.format, selector.splice),
 				correct : type.format(actor),
-				view : type.view(actor, attribution)
+				view : type.view(actor)
 			});
 		});
 	}
@@ -62,7 +77,7 @@ function ActorQuestions($http) {
 
 			try {
 				while (result.length < ACTOR_COUNT) {
-					let actorsChunk = await loadActorsChunk(page);
+					let actorsChunk = await loadActorsChunk(page++);
 					for (actor of actorsChunk) {
 						actor = await loadActorDetails(actor);
 						result.push(actor);
@@ -90,7 +105,7 @@ function ActorQuestions($http) {
 					};
 				});
 				resolve(result);
-			}).catch(reject);
+			}).catch(retryAfterHandler(() => loadActorsChunk(page), resolve, reject));
 		});
 	}
 
@@ -106,24 +121,29 @@ function ActorQuestions($http) {
 					name : obj.name,
 					photo : obj.profile_path,
 					birthday : new Date(Date.parse(obj.birthday)),
+					place_of_birth : obj.place_of_birth,
 					male : obj.gender == 2
 				});
 
 				resolve(actor);
-			}).catch((err) => {
-				if (err.status == 429) {
-					let time = (parseInt(err.headers()['retry-after']) + 1) * 1000;
-					setTimeout(() => {
-						loadActorDetails(actor).then(resolve).catch(reject);
-					}, time);
-					return;
-				}
-				reject(err);
-			});
+			}).catch(retryAfterHandler(() => loadActorDetails(actor), resolve, reject));
 		});
 	};
 
-	function similarActors(actor, attribution, selector) {
+	function retryAfterHandler(promise, resolve, reject) {
+		return (err) => {
+			if (err.status == 429) {
+				var time = (parseInt(err.headers()['retry-after']) + 1) * 1000;
+				setTimeout(() => {
+					promise().then(resolve).catch(reject);
+				}, time);
+				return;
+			}
+			reject();
+		};
+	}
+
+	function similarActors(actor) {
 		function sameGender(a, b) {
 			return a.male == b.male;
 		}
@@ -134,28 +154,81 @@ function ActorQuestions($http) {
 			return Math.abs(a.birthday.getFullYear() - b.birthday.getFullYear()) <= 5;
 		}
 
-		return actors.filter((a) => sameGender(a, actor) && aboutSameAge(a - actor));
+		return actors.filter((a) => sameGender(a, actor) && aboutSameAge(a - actor) && !!countryOrState(a));
 	}
 
-	function randomActor(selector, attribution) {
-		var actor = selector.fromArray(actors);
-		attribution.push("http://www.themoviedb.org/person/" + actor.id);
-		return actor;
+	function youngerActors(actor) {
+		function sameGender(a, b) {
+			return a.male == b.male;
+		}
+		function younger(a, b) {
+			if (!a.birthday || !b.birthday) {
+				return false;
+			}
+			return a.birthday.getFullYear() > b.birthday.getFullYear();
+		}
+
+		return actors.filter((a) => sameGender(a, actor) && younger(a, actor));	
+	}
+
+	function randomActor(selector) {
+		return selector.fromArray(actors);
 	}
 
 	function actorName(actor) {
 		return actor.name;
 	}
 
+	function countryOrState(actor) {
+		if (!actor.place_of_birth) {
+			return undefined;
+		}
+		let location = actor.place_of_birth.trim();
+		location = location.replace(/ - /g, ', ').replace(/  /, ' ');
+		location = location.split(", ");
+		for (let i = 0; i < location.length; i++) {
+			location[i] = location[i].trim();
+		}
 
-	function viewActorImage(correct, attribution) {
+		if (location.length < 2) {
+			return undefined;
+		}
+
+		let country = location[location.length - 1];
+		let state = location[location.length - 2];
+
+		if (["États-Unis", "Allemagne de l'Ouest"].indexOf(country) > -1) {
+			return undefined; //Not english, do not want
+		}
+
+		if (["USA", "U.S.A", "U.S.", "U.S.A.", "United States"].indexOf(country) > -1) {
+			return state;
+		}
+		if (country == "UK" || country == "EU") {
+			country = state;
+		}
+
+		return country;
+	}
+
+	function viewBlank(correct) {
+		return {			
+			attribution : {
+				title : "Actor",
+				name : correct.name,
+				links : ["http://www.themoviedb.org/person/" + correct.id]
+			}
+		};
+	}
+
+	function viewActorImage(correct) {
 		return {
 			player : 'image',
 			url : "https://image.tmdb.org/t/p/h632" + correct.photo,
 			attribution : {
 				title : "Image of",
 				name : correct.name,
-				links : attribution
+				links : ["http://www.themoviedb.org/person/" + correct.id]
 			}
 		};
 	}
