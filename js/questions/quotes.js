@@ -36,28 +36,23 @@ function QuotesQuestions($http) {
 	self.preload = function(progress, cache, apikeys) {
 		mashapeApiKey = apikeys.mashape;
 
-		return cache.get('quotes', (resolve, reject) => {
+		return cache.get('quotes', async (resolve, reject) => {
 			progress(0, TOTAL_QUOTES);
 
-			var promises = [];
-			var result = [];
-			for (var i = 0; i < TOTAL_QUOTES; i++) {
-				promises.push(loadRandomQuote());
+			try {
+				for (var i = 0; i < TOTAL_QUOTES; i++) {
+					let quote = await loadRandomQuote();
+					if (!quotes.some(q => q.quote == quote.quote)) {
+						quotes.push(quote);
+					}
+					
+					progress(quotes.length, TOTAL_QUOTES);
+				}
+				resolve(quotes);
+			} catch (e) {
+				reject(e);
 			}
-			for (var i = 0; i < (promises.length - 1); i++) {
-				promises[i].then((response) => {
-					result.push(response.data);
-					progress(result.length, TOTAL_QUOTES);
-					return promises[i + 1];
-				});
-			}
-			promises[promises.length - 1].then((response) => {
-				result.push(response.data);
-				resolve(result);
-			});
-		}).then((data) => {
-			quotes = data;
-		});
+		});	
 	}
 
 
@@ -146,13 +141,15 @@ function QuotesQuestions($http) {
 	}
 
 	function loadRandomQuote() {
-		return $http.post('https://andruxnet-random-famous-quotes.p.mashape.com',{}, {
-			params : {
-				'cat' : 'famous'
-			},
-			headers : {
-				'X-Mashape-Key' : mashapeApiKey
-			}
+		return new Promise((resolve, reject) => {
+			$http.post('https://andruxnet-random-famous-quotes.p.mashape.com',{}, {
+				params : {
+					'cat' : 'famous'
+				},
+				headers : {
+					'X-Mashape-Key' : mashapeApiKey
+				}
+			}).then((response) => resolve(response.data[0])).catch(reject);
 		});
 	}
 }
