@@ -128,10 +128,6 @@ function CurrentGameQuestions($injector, avatars) {
 		return selector.numericAlternatives(number, index);
 	}
 
-	function similarPlayers(player, selector) {
-		return players();
-	}
-
 	function otherAvatars(player, selector) {
 		return Object.keys(avatars).map((a) => ({ avatar : a }));
 	}
