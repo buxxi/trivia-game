@@ -105,7 +105,7 @@ function Game($rootScope, $interval, avatars, categories, config) {
 				players[peerid].score += pointsThisRound;
 
 				if (config.allowMultiplier) {
-					players[peerid].multiplier++;
+					players[peerid].multiplier = Math.min(players[peerid].multiplier + 1, config.maxMultiplier);
 				}
 
 				updatePlayerStats(players[peerid], true, pointsThisRound, timer.timeLeft(guesses[peerid].time));

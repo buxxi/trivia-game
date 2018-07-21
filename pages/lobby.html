@@ -49,6 +49,11 @@
 							<input type="number" id="points" step="100" ng-min="1" ng-model="config.pointsPerRound">
 						</div>
 
+						<div class="numeric-input" ng-if="config.allowMultiplier">
+							<label for="maxMultiplier" title="Max multiplier"><i class="fa fa-fw fa-times"></i></label>
+							<input type="number" id="maxMultiplier" step="1" ng-min="1" ng-model="config.maxMultiplier">
+						</div>
+
 						<ul class="circle-checkboxes">
 							<li ng-class="{'selected' : config.stopOnAnswers}">
 								<label for="stop" title="Stop after all answered"><input type="checkbox" id="stop" ng-model="config.stopOnAnswers"><i class="fa fa-stop"></i></label>
@@ -106,8 +111,8 @@
 			<li ng-if="config.allowMultiplier">A correct answer will increase the point-multiplier for the next question</li>
 			<li ng-if="config.allowMultiplier">An invalid answer will reset the point-multiplier to 1x</li>
 			<li ng-if="config.allowMultiplier">Not answering will reset the point-multiplier to 1x</li>
-			<li>You have {{config.time}} seconds to answer each question</li>
-			<li>There is {{countQuestions()}} possible questions in the selected categories</li>
+			<li>You have <b>{{config.time}}</b> seconds to answer each question</li>
+			<li>There is <b>{{countQuestions()}}</b> possible questions in the selected categories</li>
 		</ol>
 
 		<h1><i class="fa fa-fw fa-heart" style="color : #aa0000"></i>Powered by</h1>

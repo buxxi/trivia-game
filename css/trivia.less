@@ -525,6 +525,16 @@ ol {
 	color : @primary;
 	font-size: 2em;
 	display : inline-block;
+	border: 3px solid @primary;
+	border-radius: 1em;
+	overflow: hidden;
+	margin: 0.25em;
+
+	label {
+		background-color: @primary;
+		color: @font;
+		padding: 0.5em 0.25em;
+	}
 
 	input {
 		-moz-appearance : textfield;
@@ -536,8 +546,9 @@ ol {
 		font-size: 1em;
 		font-weight: bold;
 		height : 1.5em;
-		padding-bottom: 0.5em;
-		width : 3em;
+		width : 2.5em;
+		text-align: center;
+		padding-right : 0.25em;
 
 		&:invalid {
 			box-shadow : none;

@@ -14,11 +14,12 @@ triviaApp.config(($routeProvider) => {
 });
 
 triviaApp.constant('config', {
-	questions : 10,
+	questions : 25,
 	time : 30,
 	pointsPerRound : 1000,
 	stopOnAnswers : true,
 	allowMultiplier : true,
+	maxMultiplier : 5,
 	sound : {
 		backgroundMusic : true,
 		soundEffects : true,
