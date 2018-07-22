@@ -39,17 +39,8 @@ function Connection($rootScope, fingerprint) {
 					}
 				});
 
-				sanityCheck = createPeer('mediator' + id, false);
-				sanityCheck.on('connect', () => {
-					mediator.once('close', () => {
-						mediator.removeAllListeners('error');
-						resolve(id);
-					});
-
-					sanityCheck.close();
-				});
 				mediator.connect();
-				sanityCheck.connect();
+				sanityCheck(mediator).then(() => resolve(id)).catch(reject);
 			});
 		});
 	}
@@ -219,6 +210,22 @@ function Connection($rootScope, fingerprint) {
 			});
 
 			peer.connect();
+		});
+	}
+
+	function sanityCheck(mediator) {
+		return new Promise((resolve, reject) => {
+			checkPeer = createPeer(mediator.pairCode, false);
+			checkPeer.on('error', reject);
+			checkPeer.on('connect', () => {
+				mediator.once('close', () => {
+					mediator.removeAllListeners('error');
+					resolve();
+				});
+
+				checkPeer.close();
+			});
+			checkPeer.connect();
 		});
 	}
 
