@@ -10,7 +10,7 @@
 @background : #000000;
 
 html {
-   background: linear-gradient(290deg, fade(@primary, 40%), fade(@primary_border, 30%)), url('https://buxxi.se/trivia/img/simple_dashed.png');
+   background: linear-gradient(290deg, fade(@primary, 40%), fade(@primary_border, 30%)), url('../img/simple_dashed.png');
    background-size: cover, 2em;
    background-blend-mode: screen;
    height : 100%;
@@ -531,9 +531,11 @@ ol {
 	margin: 0.25em;
 
 	label {
-		background-color: @primary;
+		background-color: @primary_border;
+		display : inline-block;
 		color: @font;
-		padding: 0.5em 0.25em;
+		padding: 0.25em;
+		border-right : 1px solid @primary;
 	}
 
 	input {
@@ -545,10 +547,8 @@ ol {
 		color : @font;
 		font-size: 1em;
 		font-weight: bold;
-		height : 1.5em;
-		width : 2.5em;
+		width : 2.75em;
 		text-align: center;
-		padding-right : 0.25em;
 
 		&:invalid {
 			box-shadow : none;
@@ -914,7 +914,7 @@ ol {
 
 	.leader {
 		position : absolute;
-		margin-left : -3.5em;
+		margin-left : 0.5em;
 		margin-top : -2em;
 		width : 3em;
 		height : 3em;
@@ -1033,7 +1033,7 @@ ol {
 
 .category-actions {
 	.circle-checkboxes;
-	
+
 	label {
 		font-size: 0.5em;
 		margin-top : 1.25em;
