@@ -74,7 +74,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 
 	$scope.preload = function(type) {
 		if ($rootScope.preloading[type]) {
-			return;
+			return new Promise((resolve, reject) => resolve());
 		}
 
 		var preload = {
@@ -96,12 +96,16 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 
 		$rootScope.preloading[type] = preload;
 
-		categories.preload(type, preload.progress).then(() => {
-			$scope.$apply(() => preload.done = true);
-		}).catch((err) => {
-			$scope.$apply(() => {
-				console.log(err);
-				preload.failed = true;
+		return new Promise((resolve, reject) => {
+			categories.preload(type, preload.progress).then(() => {
+				$scope.$apply(() => preload.done = true);
+				resolve();
+			}).catch((err) => {
+				$scope.$apply(() => {
+					console.log(err);
+					preload.failed = true;
+					reject(err);
+				});
 			});
 		});
 	}
@@ -127,6 +131,13 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		}
 
 		return allPreloaded;
+	}
+
+	$scope.loadAll = async function() {
+		for (let type of $scope.availableCategories.map(c => c.type)) {
+			config.categories[type] = true;
+			await $scope.preload(type);
+		}
 	}
 
 	$scope.start = function() {

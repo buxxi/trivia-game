@@ -90,8 +90,13 @@
 								</label>
 								<div class="progress" ng-if="config.categories[category.type] && !preloading[category.type].done && !preloading[category.type].failed">{{ preloading[category.type].percentage() }}%</div>
 							</li>
-							<li class="add-category">
+						</ul>
+						<ul class="category-actions">
+							<li>
 								<label title="Add category from JSON file"><i class="fa fa-plus"></i><input type="file" id="jsonfile" onchange="angular.element(this).scope().addCategories(this.files)" accept="application/json" multiple/></label>
+							</li>
+							<li>
+								<label title="Select all categories"><a ng-click="loadAll()"><i class="fa fa-spinner"></i></a></label>
 							</li>
 						</ul>
 
