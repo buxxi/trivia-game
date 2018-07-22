@@ -3,15 +3,22 @@ const dbPromise = idb.open('keyval-store', 1, upgradeDB => {
 });
 
 const idbKeyval = {
-	get(key) {
+	get : function(key) {
 		return dbPromise.then(db => {
 			return db.transaction('keyval').objectStore('keyval').get(key);
 		});
 	},
-	set(key, val) {
+	set : function(key, val) {
 		return dbPromise.then(db => {
 			const tx = db.transaction('keyval', 'readwrite');
 			tx.objectStore('keyval').put(val, key);
+			return tx.complete;
+		});
+	},
+	clear : function() {
+		return dbPromise.then(db => {
+			const tx = db.transaction('keyval', 'readwrite');
+			tx.objectStore('keyval').clear();
 			return tx.complete;
 		});
 	}
@@ -312,6 +319,10 @@ function Categories(movies, music, geography, quotes, videogames, drinks, actors
 
 			reader.readAsText(file, "UTF-8");
 		});
+	}
+
+	self.clearCache = function() {
+		idbKeyval.clear();
 	}
 
 	function categoryByType(type) {

@@ -140,6 +140,14 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		}
 	}
 
+	$scope.clearCache = function() {
+		for (let type of $scope.availableCategories.map(c => c.type)) {
+			config.categories[type] = false;
+			delete $scope.preloading[type];
+		}
+		categories.clearCache();
+	}
+
 	$scope.start = function() {
 		sound.play();
 		game.configure();
