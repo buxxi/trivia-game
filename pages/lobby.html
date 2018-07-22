@@ -25,7 +25,7 @@
 			<li ng-if="playerCount() == 0">No players has joined yet, be the first!</li>
 			<li ng-repeat="(peerid,player) in players()" ng-class="{'fallback' : usingFallbackConnection(peerid), 'disconnected' : hasConnectionError(peerid)}">
 				<a href="" ng-click="kickPlayer(peerid)" class="kick" title="Kick player">
-					<div class="avatar" data-score="{{player.name}}" style="background-color : {{player.color}}; border-color : {{player.color}}"><img ng-src="{{ avatars[player.avatar].url }}"/></div>
+					<div class="avatar" data-score="{{player.name}}" ng-style="{'background-color': player.color, 'border-color': player.color}"><img ng-src="{{ avatars[player.avatar].url }}"/></div>
 				</a>
 			</li>
 		</ul>
@@ -106,7 +106,7 @@
 			<li>Use your phone to select the answer you think is correct</li>
 			<li>A correct answer gives you points</li>
 			<li>An incorrect answer removes points</li>
-			<li>You can't go below 0, so make wild guesses if you're that low on score</li>
+			<li>You can't go below 0, so make wild guesses if you're that low on score </li>
 			<li>You are awarded more points for answering quicker</li>
 			<li ng-if="config.allowMultiplier">A correct answer will increase the point-multiplier for the next question</li>
 			<li ng-if="config.allowMultiplier">An invalid answer will reset the point-multiplier to 1x</li>

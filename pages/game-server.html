@@ -33,7 +33,7 @@
 	<div class="bottom">
 		<ul class="playerlist">
 			<li ng-repeat="(pairCode, player) in players" ng-class="{'disconnected' : hasConnectionError(pairCode), 'score-change-positive': pointChanges[pairCode].points > 0, 'score-change-negative': pointChanges[pairCode].points < 0}">
-				<div class="avatar" data-score="{{ showPlayerName(player) ? player.name : player.score}}" data-multiplier="{{player.multiplier}}" ng-class="{'guessed' : hasGuessed[pairCode]}" style="background-color : {{player.color}}; border-color : {{player.color}}">
+				<div class="avatar" data-score="{{ showPlayerName(player) ? player.name : player.score}}" data-multiplier="{{player.multiplier}}" ng-class="{'guessed' : hasGuessed[pairCode]}" ng-style="{'background-color': player.color, 'border-color': player.color}">
 					<img ng-src="{{ avatars[player.avatar].url }}"/>
 					<img ng-src="{{ crownUrl }}" class="leader" ng-if="isLeadingPlayer(player)"/>
 					<span ng-if="pointChanges[pairCode].points != 0">{{ pointChanges[pairCode].points }}</span>

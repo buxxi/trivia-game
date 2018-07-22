@@ -1,8 +1,8 @@
-<div class="credits" style="animation-duration: {{ duration }}s">
+<div class="credits" ng-style="{'animation-duration': duration + 's'}">
 	<div ng-repeat="(index,score) in scores" ng-class="{'winner' : index == 0, 'loser' : index != 0}">
 		<h1 ng-if="index == 0"><i class="fa fa-fw fa-trophy"></i> Winner</h1>
 		<h1 ng-if="index != 0">{{index + 1}}<sup>{{ ordinal(index + 1) }}</sup> place</h1>
-		<div class="avatar" data-score="{{ score.score }}" style="background-color : {{score.color}}; border-color : {{score.color}}">
+		<div class="avatar" data-score="{{ score.score }}" ng-style="{'background-color': score.color, 'border-color': score.color}">
 			<img ng-src="{{ avatars[score.avatar].url }}"/>
 		</div>
 		<div class="summary">

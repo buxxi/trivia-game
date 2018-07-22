@@ -15,7 +15,7 @@
 		</ul>
 	</div>
 	<div ng-if="!waiting">
-		<div class="stats" style="background-color : {{stats.color}}">
+		<div class="stats" ng-style="{'background-color': stats.color}">
 			<img ng-src="{{ avatars[stats.avatar].url }}"/>
 			<div><i class="fa fa-fw fa-star"></i>{{stats.score}}</div>
 			<div><i class="fa fa-fw fa-times"></i>{{stats.multiplier}}</div>
