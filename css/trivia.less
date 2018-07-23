@@ -90,7 +90,8 @@ h1 {
 		transform : scale(0.5) translateY(-50%);
 	}
 	#correct {
-		animation : resize-correct 0.5s linear normal;
+		visibility: hidden;
+		animation : resize-correct 3s linear normal;
 		color : @font;
 		font-size: 3em;
 		font-size: 6em;
@@ -1053,11 +1054,10 @@ ol {
 }
 
 @keyframes resize-correct {
-	 0% { opacity : 0; transform : scale(0.05) rotateZ(720deg); }
-	25% { opacity : 0.25; transform : scale(0.2) rotateZ(540deg); }
-	50% { opacity : 0.5; transform : scale(0.4) rotateZ(360deg); }
-	75% { opacity : 0.75; transform : scale(0.6) rotateZ(180deg); }
-	100% { opacity : 1; transform : scale(1) rotateZ(0); }
+	0% { visibility: visible; transform : scaleX(10) scaleY(0) translateY(-50%); }
+	20% { visibility: visible; transform : scaleX(1) scaleY(1) translateY(-50%); }
+	80% { visibility: visible; transform : scaleX(1) scaleY(1) translateY(-50%); }
+	100% { visibility: visible; transform : scaleX(0) scaleY(3) translateY(100%); }
 }
 
 @keyframes splash {
