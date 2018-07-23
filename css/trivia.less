@@ -911,14 +911,14 @@ ol {
 		color : red !important;
 		content: "\f0e7";
 	}
+}
 
-	.leader {
-		position : absolute;
-		margin-left : 0.5em;
-		margin-top : -2em;
-		width : 3em;
-		height : 3em;
-	}
+.leader {
+	position : absolute;
+	margin-left : 1.35em;
+	margin-top : -1em;
+	width : 3em;
+	height : 3em;
 }
 
 .score-change(@color, @border) {
@@ -928,8 +928,8 @@ ol {
 	border-style : solid;
 	border-width : 0.25em;
 	color : @font;
-	margin-left: -2.5em;
-	margin-top: -0.5em;
+	margin-left: 0.4em;
+	margin-top: 4.6em;
 	position: absolute;
 	text-shadow: 0px 1px 1px @border;
 	width: 4.5em;
@@ -939,21 +939,22 @@ ol {
 .score-change-positive .avatar {
 	animation : glow-positive 1s linear normal;
 	box-shadow : 0 0 50px @correct, 0 0 25px @correct;
+}
 
-	span {
-		.score-change(@correct, @correct_border);
-		&:before {
-			content : "+";
-		}
+.score-change-positive span {
+	.score-change(@correct, @correct_border);
+	&:before {
+		content : "+";
 	}
 }
 
 .score-change-negative .avatar {
 	animation : glow-negative 1s linear normal;
 	box-shadow : 0 0 50px @incorrect, 0 0 25px @incorrect;
-	span {
-		.score-change(@incorrect, @incorrect_border);
-	}
+}
+
+.score-change-negative span {
+	.score-change(@incorrect, @incorrect_border);
 }
 
 .score-change-negative~.score {
