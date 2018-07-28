@@ -30,7 +30,7 @@ function Connection($rootScope, fingerprint) {
 					reject(err);
 				});
 
-				mediator.on('data', (data) => {
+				mediator.on('dataevent', (data) => {
 					if (data.join) {
 						serverToClient(data.join).then((d) => {
 							joinCallback(d);
@@ -97,15 +97,15 @@ function Connection($rootScope, fingerprint) {
 	self.send = function(data) {
 		if (typeof(data) == 'function') {
 			console.log("Sending client specific data to " + peers.length + " peers");
-			let sentToAll = peers.map((peer) => {
+			let sentToAll = Promise.all(peers.map((peer) => {
 				let pairCode = pairCodeFromPeer(peer);
 				let result = data(pairCode);
 				return peer.sendSync(result);
-			});
+			}));
 			return sentToAll;
 		} else {
 			console.log("Sending: " + JSON.stringify(data) + " to " + peers.length + " peers");
-			let sentToAll = peers.map((peer) => peer.sendSync(data));
+			let sentToAll = Promise.all(peers.map((peer) => peer.sendSync(data)));
 			return sentToAll;
 		}
 	}
@@ -156,7 +156,7 @@ function Connection($rootScope, fingerprint) {
 						join : true
 					});
 
-					peer.on('data', (data) => {
+					peer.on('dataevent', (data) => {
 						dataEvent(peer.pairCode, data);
 					});
 
@@ -195,7 +195,7 @@ function Connection($rootScope, fingerprint) {
 					peer.removeAllListeners('error');
 
 					if (data.join == true) {
-						peer.on('data', (data) => {
+						peer.on('dataevent', (data) => {
 							dataEvent(peer.pairCode, data);
 						});
 
@@ -283,10 +283,36 @@ function Connection($rootScope, fingerprint) {
 		});
 
 		peer.sendSync = function(data) {
-			//TODO: actually make this wait for confirmation
 			return new Promise((resolve, reject) => {
-				peer.send(data);
-				resolve();
+				let key = Math.random().toString(32);
+
+				var timeout;
+
+				let responseListener = (data) => {
+					if (data.sync && data.sync.key == key) {
+						clearTimeout(timeout);
+						peer.removeListener('data', responseListener);
+						if (data.sync.response) {
+							resolve();
+						} else {
+							reject(data.sync.message);
+						}
+					}
+				};
+
+				timeout = setTimeout(() => {
+					peer.removeListener('data', responseListener);
+					reject("Got no response in time");
+				}, 2000);
+
+				peer.on('data', responseListener);
+
+				peer.send({
+					sync : {
+						key : key,
+						data : data
+					}
+				});
 			});
 		}
 
@@ -295,6 +321,33 @@ function Connection($rootScope, fingerprint) {
 				peer.once('connect', resolve);
 			});
 		}
+
+		peer.on('data', function(data) {
+			if (!data.sync) {
+				peer.emit('dataevent', data);
+			} else {
+				if ('response' in data.sync) {
+					return;
+				}
+				try {
+					peer.emit('dataevent', data.sync.data);
+					peer.send({
+						sync : {
+							key : data.sync.key,
+							response : true
+						}
+					})
+				} catch (e) {
+					peer.send({
+						sync : {
+							key : data.sync.key,
+							response : false,
+							message : e.toString()
+						}
+					})
+				}
+			}
+		});
 
 		return peer;
 	}
