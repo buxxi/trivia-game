@@ -202,29 +202,34 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 	}
 
 	function showQuestion(question) {
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			console.log(question);
 
-			var player = playback.player(question.view, question.answers);
-			player.start().then(() => {
+			try {
+				let player = playback.player(question.view, question.answers);
+				await player.start();
+
 				$scope.$apply(() => {
 					$scope.state = 'question';
 					$scope.category = question.view.category.join(": ");
 					$scope.minimizeQuestion = player.minimizeQuestion;
 				});
 
-				connection.send({
+				await connection.send({
 					answers : question.answers
 				});
 
-				game.startTimer().then((pointsThisRound) => {
-					player.stop();
-					return resolve(pointsThisRound);
-				});
+				let pointsThisRound = await game.startTimer();
+				player.stop();
+
 				if (player.pauseMusic) {
 					sound.pause();
 				}
-			}).catch(reject);
+
+				resolve(pointsThisRound);
+			} catch (e) {
+				reject(e);
+			}
 		});
 	}
 

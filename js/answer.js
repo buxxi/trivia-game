@@ -59,10 +59,10 @@ function AnswerController($scope, $location, connection, avatars) {
 	}
 
 	$scope.guess = function(answer) {
-		guess = answer;
+		//TODO: disable buttons while waiting for response
 		connection.send({
 			guess : answer
-		});
+		}).then(() => guess = answer);
 	}
 
 	$scope.buttonClass = function(answer) {
