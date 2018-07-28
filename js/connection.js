@@ -51,8 +51,8 @@ function Connection($rootScope, fingerprint) {
 				mediator = createPeer('mediator' + pairCode, false);
 
 				timeoutAndErrorHandling(mediator, reject, (timeout, cleanUp) => {
-					mediator.once('connect', () => {
-						mediator.send({
+					mediator.once('connect', async () => {
+						await mediator.sendSync({
 							join : { name : name, pairCode : id }
 						});
 
@@ -94,16 +94,16 @@ function Connection($rootScope, fingerprint) {
 	self.send = function(data) {
 		if (typeof(data) == 'function') {
 			console.log("Sending client specific data to " + peers.length + " peers");
-			peers.forEach((peer) => {
-				var pairCode = pairCodeFromPeer(peer);
-				var result = data(pairCode);
-				peer.send(result);
+			let sentToAll = peers.map((peer) => {
+				let pairCode = pairCodeFromPeer(peer);
+				let result = data(pairCode);
+				return peer.sendSync(result);
 			});
+			return sentToAll;
 		} else {
 			console.log("Sending: " + JSON.stringify(data) + " to " + peers.length + " peers");
-			peers.forEach((peer) => {
-				peer.send(data);
-			});
+			let sentToAll = peers.map((peer) => peer.sendSync(data));
+			return sentToAll;
 		}
 	}
 
@@ -148,6 +148,7 @@ function Connection($rootScope, fingerprint) {
 						peer.removeAllListeners('error');
 						peer.removeAllListeners('close');
 
+						//TODO: should not be needed when we make synced requests
 						peer.send({
 							join : true
 						});
@@ -279,6 +280,15 @@ function Connection($rootScope, fingerprint) {
 		peer.once('connect', () => {
 			fixCloseEvent(peer);
 		});
+
+		peer.sendSync = function(data) {
+			//TODO: actually make this wait for confirmation
+			return new Promise((resolve, reject) => {
+				peer.send(data);
+				resolve();
+			});
+		}
+
 		return peer;
 	}
 
