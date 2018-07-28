@@ -153,6 +153,9 @@ function Game($rootScope, $interval, avatars, categories, config) {
 	}
 
 	self.addPlayer = function(peerid, name) {
+		if (name == 'foo') {
+			throw new Error("blacklisted name");
+		}
 		var uniqueName = Object.keys(players).map((id) => players[id].name).indexOf(name) == -1;
 		if (!uniqueName) {
 			throw new Error("The name " + name + " is already in use");

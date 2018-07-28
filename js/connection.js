@@ -31,12 +31,8 @@ function Connection($rootScope, fingerprint) {
 				});
 
 				mediator.on('dataevent', (data) => {
-					if (data.join) {
-						serverToClient(data.join).then((d) => {
-							joinCallback(d);
-							mediator.close();
-						});
-					}
+					joinCallback(data.join); //This will throw an exception that will be returned to the client, depends on the client closing the connection after that...
+					serverToClient(data.join.pairCode).then(() => mediator.close());
 				});
 
 				mediator.connect();
@@ -133,9 +129,9 @@ function Connection($rootScope, fingerprint) {
 		}
 	}
 
-	function serverToClient(data) {
+	function serverToClient(pairCode) {
 		return new Promise((resolve, reject) => {
-			var peer = createPeer('client' + data.pairCode, true);
+			var peer = createPeer('client' + pairCode, true);
 
 			timeoutAndErrorHandling(peer, reject, async (timeout) => {
 				try {
@@ -151,11 +147,6 @@ function Connection($rootScope, fingerprint) {
 					peer.removeAllListeners('error');
 					peer.removeAllListeners('close');
 
-					//TODO: should not be needed when we make synced requests
-					peer.send({
-						join : true
-					});
-
 					peer.on('dataevent', (data) => {
 						dataEvent(peer.pairCode, data);
 					});
@@ -169,11 +160,8 @@ function Connection($rootScope, fingerprint) {
 						$rootScope.$broadcast('connection-closed', peer);
 					});
 
-					resolve(data);
+					resolve();
 				} catch (e) {
-					peer.send({
-						join : e.message
-					});
 					peer.destroy();
 				}
 			});
@@ -188,27 +176,20 @@ function Connection($rootScope, fingerprint) {
 
 			timeoutAndErrorHandling(peer, reject, async (timeout) => {
 				await peer.connectSync();
-				peer.once('data', function(data) {
-					clearTimeout(timeout);
+				clearTimeout(timeout);
 
-					peer.removeAllListeners('close');
-					peer.removeAllListeners('error');
+				peer.removeAllListeners('close');
+				peer.removeAllListeners('error');
 
-					if (data.join == true) {
-						peer.on('dataevent', (data) => {
-							dataEvent(peer.pairCode, data);
-						});
-
-						peer.on('close', () => {
-							$rootScope.$broadcast('connection-closed', peer);
-						});
-
-						resolve(peer);
-					} else {
-						peer.close();
-						reject(data.join);
-					}
+				peer.on('dataevent', (data) => {
+					dataEvent(peer.pairCode, data);
 				});
+
+				peer.on('close', () => {
+					$rootScope.$broadcast('connection-closed', peer);
+				});
+
+				resolve(peer);
 			});
 
 			peer.connect();
