@@ -50,23 +50,23 @@ function Connection($rootScope, fingerprint) {
 			fingerprint.get((id) => {
 				mediator = createPeer('mediator' + pairCode, false);
 
-				timeoutAndErrorHandling(mediator, reject, (timeout, cleanUp) => {
-					mediator.once('connect', async () => {
+				timeoutAndErrorHandling(mediator, reject, async (timeout, cleanUp) => {
+					try {
+						await mediator.connectSync();
 						await mediator.sendSync({
 							join : { name : name, pairCode : id }
 						});
 
 						clearTimeout(timeout);
 
-						clientToServer(id).then((peer) => {
-							cleanUp();
-							peers = [peer];
-							resolve();
-						}).catch((reason) => {
-							cleanUp();
-							reject(reason);
-						});
-					});
+						let peer = await clientToServer(id);
+						cleanUp();
+						peers = [peer];
+						resolve();
+					} catch(reason) {
+						cleanUp();
+						reject(reason);
+					};
 				});
 
 				mediator.connect();
@@ -76,11 +76,14 @@ function Connection($rootScope, fingerprint) {
 
 	self.reconnect = function() {
 		return new Promise((resolve, reject) => {
-			fingerprint.get((id) => {
-				clientToServer(id).then((peer) => {
-						peers = [peer];
-						resolve();
-				}).catch(reject);
+			fingerprint.get(async (id) => {
+				try {
+					let peer = await clientToServer(id);
+					peers = [peer];
+					resolve();
+				} catch(e) {
+					reject(e);
+				}
 			});
 		});
 	}
@@ -134,46 +137,45 @@ function Connection($rootScope, fingerprint) {
 		return new Promise((resolve, reject) => {
 			var peer = createPeer('client' + data.pairCode, true);
 
-			timeoutAndErrorHandling(peer, reject, (timeout) => {
-				peer.on('connect', () => {
-					try {
-						clearTimeout(timeout);
+			timeoutAndErrorHandling(peer, reject, async (timeout) => {
+				try {
+					await peer.connectSync();
+					clearTimeout(timeout);
 
-						if (peerReconnected(peer)) {
-							$rootScope.$broadcast('connection-upgraded', peer);
-						} else {
-							peers.push(peer);
-						}
-
-						peer.removeAllListeners('error');
-						peer.removeAllListeners('close');
-
-						//TODO: should not be needed when we make synced requests
-						peer.send({
-							join : true
-						});
-
-						peer.on('data', (data) => {
-							dataEvent(peer.pairCode, data);
-						});
-
-						peer.on('upgrade', () => {
-							$rootScope.$broadcast('connection-upgraded', peer);
-						});
-
-						peer.on('close', () => {
-							peer.rtcConnected = false; //This can be delayed, so the gui wont be updated correctly. Lets just set the property here, what could go wrong?
-							$rootScope.$broadcast('connection-closed', peer);
-						});
-
-						resolve(data);
-					} catch (e) {
-						peer.send({
-							join : e.message
-						});
-						peer.destroy();
+					if (peerReconnected(peer)) {
+						$rootScope.$broadcast('connection-upgraded', peer);
+					} else {
+						peers.push(peer);
 					}
-				});
+
+					peer.removeAllListeners('error');
+					peer.removeAllListeners('close');
+
+					//TODO: should not be needed when we make synced requests
+					peer.send({
+						join : true
+					});
+
+					peer.on('data', (data) => {
+						dataEvent(peer.pairCode, data);
+					});
+
+					peer.on('upgrade', () => {
+						$rootScope.$broadcast('connection-upgraded', peer);
+					});
+
+					peer.on('close', () => {
+						peer.rtcConnected = false; //This can be delayed, so the gui wont be updated correctly. Lets just set the property here, what could go wrong?
+						$rootScope.$broadcast('connection-closed', peer);
+					});
+
+					resolve(data);
+				} catch (e) {
+					peer.send({
+						join : e.message
+					});
+					peer.destroy();
+				}
 			});
 
 			peer.connect();
@@ -184,29 +186,28 @@ function Connection($rootScope, fingerprint) {
 		return new Promise((resolve, reject) => {
 			var peer = createPeer('client' + id, false);
 
-			timeoutAndErrorHandling(peer, reject, (timeout) => {
-				peer.once('connect', () => {
-					peer.once('data', function(data) {
-						clearTimeout(timeout);
+			timeoutAndErrorHandling(peer, reject, async (timeout) => {
+				await peer.connectSync();
+				peer.once('data', function(data) {
+					clearTimeout(timeout);
 
-						peer.removeAllListeners('close');
-						peer.removeAllListeners('error');
+					peer.removeAllListeners('close');
+					peer.removeAllListeners('error');
 
-						if (data.join == true) {
-							peer.on('data', (data) => {
-								dataEvent(peer.pairCode, data);
-							});
+					if (data.join == true) {
+						peer.on('data', (data) => {
+							dataEvent(peer.pairCode, data);
+						});
 
-							peer.on('close', () => {
-								$rootScope.$broadcast('connection-closed', peer);
-							});
+						peer.on('close', () => {
+							$rootScope.$broadcast('connection-closed', peer);
+						});
 
-							resolve(peer);
-						} else {
-							peer.close();
-							reject(data.join);
-						}
-					});
+						resolve(peer);
+					} else {
+						peer.close();
+						reject(data.join);
+					}
 				});
 			});
 
@@ -286,6 +287,12 @@ function Connection($rootScope, fingerprint) {
 			return new Promise((resolve, reject) => {
 				peer.send(data);
 				resolve();
+			});
+		}
+
+		peer.connectSync = function() {
+			return new Promise((resolve, reject) => {
+				peer.once('connect', resolve);
 			});
 		}
 
