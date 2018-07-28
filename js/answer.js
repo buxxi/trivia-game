@@ -1,6 +1,7 @@
 function AnswerController($scope, $location, connection, avatars) {
 	var correct = null;
 	var guess = null;
+	var sendingData = false;
 	var answers = {};
 
 	$scope.connected = connection.connected();
@@ -59,10 +60,20 @@ function AnswerController($scope, $location, connection, avatars) {
 	}
 
 	$scope.guess = function(answer) {
-		//TODO: disable buttons while waiting for response
+		sendingData = true;
 		connection.send({
 			guess : answer
-		}).then(() => guess = answer);
+		}).then(() => {
+			$scope.$apply(() => {
+				sendingData = false;
+				guess = answer;
+			});
+		}).catch((e) => {
+			$scope.$apply(() => {
+				sendingData = false;
+				guess = null;
+			});				
+		});
 	}
 
 	$scope.buttonClass = function(answer) {
@@ -78,6 +89,6 @@ function AnswerController($scope, $location, connection, avatars) {
 	}
 
 	$scope.hasGuessed = function() {
-		return guess != null;
+		return guess != null || sendingData;
 	}
 }
