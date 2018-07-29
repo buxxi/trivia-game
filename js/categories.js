@@ -65,7 +65,7 @@ function QuestionSelector() {
 
 		var index = 0;
 		while (randomWeight > 0) {
-			randomWeight -= obj[keys[index]].weight;
+			randomWeight -= obj[keys[index]].weight||1;
 			index++;
 		}
 		if (randomWeight < 0) {
