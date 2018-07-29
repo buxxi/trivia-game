@@ -41,7 +41,7 @@ function Connection($rootScope, fingerprint) {
 		});
 	}
 
-	self.join = function(pairCode, name) {
+	self.join = function(pairCode, name, avatar) {
 		return new Promise((resolve, reject) => {
 			fingerprint.get((id) => {
 				mediator = createPeer('mediator' + pairCode, false);
@@ -50,7 +50,7 @@ function Connection($rootScope, fingerprint) {
 					try {
 						await mediator.connectSync();
 						await mediator.sendSync({
-							join : { name : name, pairCode : id }
+							join : { name : name, pairCode : id, avatar : avatar }
 						});
 
 						clearTimeout(timeout);

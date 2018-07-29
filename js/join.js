@@ -1,14 +1,16 @@
-function JoinController($scope, $location, $routeParams, connection) {
+function JoinController($scope, $location, $routeParams, connection, avatars) {
 	var config = {
 		code : $routeParams.code,
-		name : ""
+		name : "",
+		avatar : ""
 	};
 
 	$scope.config = config;
 	$scope.supportsCamera = QCodeDecoder().hasGetUserMedia();
+	$scope.avatars = avatars;
 
 	$scope.join = function() {
-		connection.join(config.code, config.name).then(() => {
+		connection.join(config.code, config.name, config.avatar).then(() => {
 			$scope.$apply(() => {
 				$location.path('/game');
 			});

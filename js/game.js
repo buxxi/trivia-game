@@ -139,12 +139,15 @@ function Game($rootScope, $interval, avatars, categories, config) {
 		}
 	}
 
-	function randomAvatar() {
+	function selectAvatar(preferred) {
 		var unusedAvatars = Object.keys(avatars).filter((avatar) => {
 			return Object.keys(players).map((peerid) => {
 				return players[peerid].avatar;
 			}).indexOf(avatar) == -1;
 		});
+		if (unusedAvatars.indexOf(preferred) > -1) {
+			return preferred;
+		}
 		return unusedAvatars[unusedAvatars.length * Math.random() << 0];
 	}
 
@@ -152,7 +155,7 @@ function Game($rootScope, $interval, avatars, categories, config) {
 		return players;
 	}
 
-	self.addPlayer = function(peerid, name) {
+	self.addPlayer = function(peerid, name, avatar) {
 		var uniqueName = Object.keys(players).map((id) => players[id].name).indexOf(name) == -1;
 		if (!uniqueName) {
 			throw new Error("The name " + name + " is already in use");
@@ -161,7 +164,7 @@ function Game($rootScope, $interval, avatars, categories, config) {
 		players[peerid] = {
 			name : name,
 			color : randomColor({ luminosity: 'dark' }),
-			avatar : randomAvatar()
+			avatar : selectAvatar(avatar)
 		};
 	}
 

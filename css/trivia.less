@@ -715,20 +715,46 @@ ol {
 		z-index : 2;
 	}
 	label {
-		border-bottom : 2px solid @primary;
 		display : inline-block;
 		margin : 0.25em 0;
 		width : 100%;
+		font-size: 2em;
 	}
 	input {
 		background-color : @secondary;
-		border : 1px solid @secondary_border;
+		border : 2px solid @primary;
+		border-radius: 0.5em;
 		box-sizing: border-box;
 		color : @primary;
 		font-weight: bold;
-		height : 2.5em;
+		height : 2em;
 		padding : 2px 0.5em;
 		width : 100%;
+		font-size : 2em;
+		margin-bottom: 1em;
+	}
+	.avatar-selector {
+		font-size: 0.4em;
+		clear : both;
+		overflow : hidden;
+
+		label {
+			width : auto;
+			float : left;
+		}
+		input {
+			display : none;
+		}
+		input:checked + .avatar {
+			background-color : @primary;
+		}
+	}
+	.buttons {
+		text-align: center;
+		.btn {
+			float : none;
+			font-size: 2.5em;
+		}
 	}
 }
 

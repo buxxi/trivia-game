@@ -36,8 +36,8 @@ triviaClient.constant('avatars', function(avatars) {
 	turtle : { code :'\uD83D\uDC22' },
 	bee : { code :'\uD83D\uDC1D' },
 	snail : { code :'\uD83D\uDC0C' },
-	penguin : { code :'\uD83D\uDC27' },
-	dromedary : { code :'\uD83D\uDC2A' }
+	penguin : { code :'\uD83D\uDC27' }/*,
+	dromedary : { code :'\uD83D\uDC2A' }*/
 }));
 triviaClient.constant('fingerprint', new Fingerprint2());
 

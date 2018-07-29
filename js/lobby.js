@@ -175,7 +175,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 	}
 
 	connection.host((data) => {
-		game.addPlayer(data.pairCode, data.name);
+		game.addPlayer(data.pairCode, data.name, data.avatar);
 
 		$scope.$digest();
 	}).then((code) => {

@@ -14,14 +14,23 @@
 				</div>
 				<video id="camera" autoplay="true"></video>
 			</div>
+			<div>
+				<label for="avatar-selector">Preferred avatar</label>
+				<div class="avatar-selector">
+					<label ng-repeat="(key, avatar) in avatars">
+						<input type="radio" type="radio" name="avatar" ng-model="config.avatar" value="{{key}}"/>
+						<div class="avatar"><img ng-src="{{ avatar.url }}"/></div>
+					</label>
+				</div>
+			</div>
 
 			<div class="message" ng-if="message">
 				<div>{{ message }}</div>
 			</div>
 
-			<div>
-				<a class="btn" ng-click="join()" ng-disabled="!config.code || !config.name"><i class="fa fa-fw fa-sign-in"></i>Join</a>
+			<div class="buttons">
 				<a class="btn" ng-click="qrscan()" ng-if="supportsCamera"><i class="fa fa-qrcode"></i> Scan</a>
+				<a class="btn" ng-click="join()" ng-disabled="!config.code || !config.name"><i class="fa fa-fw fa-sign-in"></i>Join</a>
 			</div>
 		</form>
 	</div>
