@@ -186,6 +186,7 @@ function MusicQuestions($http) {
 			function accessTokenListener(event) {
 				//TODO: verify origin
 				var accessToken = /access_token=([^&]+)/.exec(event.data);
+				clearInterval(closeListener);
 				popup.close();
 				window.removeEventListener('message', accessTokenListener, false);
 				if (accessToken) {
@@ -198,6 +199,13 @@ function MusicQuestions($http) {
 			window.addEventListener('message', accessTokenListener, false);
 
 			var popup = window.open(url, 'spotify', 'width=600,height=600');
+			
+			var closeListener = setInterval(() => {
+				if (popup.closed) {
+					reject("Popup was closed");
+					clearInterval(closeListener);
+				}
+			}, 100);
 		});
 	}
 
