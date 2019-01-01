@@ -54,7 +54,6 @@ function YoutubePlayer(videoId, playerClass) {
 				videoId: videoId,
 				playerVars : {
 					autoplay : 1,
-					showinfo : 0,
 					controls : 0,
 					hd : 1
 				},
