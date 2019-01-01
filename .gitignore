@@ -4,3 +4,4 @@
 /.htaccess
 /conf/*.json
 .idea/*
+.vscode/*
