@@ -1,12 +1,11 @@
 function VideoGameQuestions($http, youtube) {
 	var self = this;
-	var platforms = {};
 	var games = [];
 
 	var youtubeApiKey = '';
 	var igdbApiKey = '';
+	var igdbBaseURL = '';
 
-	var MINIMUM_PLATFORM_GAMES = 50;
 	var GAMES_PER_PLATFORM = 50;
 
 	var types = {
@@ -32,14 +31,6 @@ function VideoGameQuestions($http, youtube) {
 			similar : similarPlatforms,
 			view : blank,
 			format : gamePlatform,
-			weight : 10
-		},
-		platform_year : {
-			title : (correct) => "In which year was the system '" + correct.name + "' released?",
-			correct : randomPlatform,
-			similar : similarPlatformYears,
-			view : blank,
-			format : platformYear,
 			weight : 10
 		},
 		song : {
@@ -71,17 +62,18 @@ function VideoGameQuestions($http, youtube) {
 	self.preload = function(progress, cache, apikeys) {
 		youtubeApiKey = apikeys.youtube;
 		igdbApiKey = apikeys.igdb;
+		igdbBaseURL = apikeys.igdbBaseURL;
 
 		return new Promise(async (resolve, reject) => {
 			try {
-				platforms = await loadPlatforms(cache);
-				let toLoadPlatforms = Object.keys(platforms).filter((p) => platforms[p].games >= MINIMUM_PLATFORM_GAMES);
+				let platforms = await loadPlatforms(cache);
+				let toLoadPlatforms = Object.keys(platforms);
 				let total = toLoadPlatforms.length * GAMES_PER_PLATFORM;
 
 				progress(games.length, total);
 
 				for (let platform of toLoadPlatforms) {
-					let gamesChunk = await loadGames(platform, cache);
+					let gamesChunk = await loadGames(platform, platforms, cache);
 					games = games.concat(gamesChunk);
 					progress(games.length, total);
 				}
@@ -117,21 +109,16 @@ function VideoGameQuestions($http, youtube) {
 		});
 	}
 
-	function loadGames(platform, cache) {
+	function loadGames(platform, platforms, cache) {
 		return cache.get(platform, (resolve, reject) => {
-			$http.get('/trivia/igdb-api.py/games/', {
-				params : {
-					fields : 'name,url,first_release_date,release_dates,screenshots,keywords,themes,genres',
-					limit : GAMES_PER_PLATFORM,
-					offset : 0,
-					order : 'rating:desc',
-					'filter[screenshots][exists]' : '',
-					'filter[release_dates.platform][eq]' : platform
-				},
-				headers : {
-					'user-key' : igdbApiKey
+			$http.post(igdbBaseURL + 'games/',
+				'fields name,url,first_release_date,platforms,screenshots,keywords,themes,genres; where platforms = ' + platform + ' & first_release_date != null & screenshots != null & rating_count > 2; limit ' + GAMES_PER_PLATFORM + '; offset 0; sort rating desc;',
+				{
+					headers : {
+						'user-key' : igdbApiKey
+					}
 				}
-			}).then((response) => {
+			).then((response) => {
 				function tag(prefix, arr) {
 					if (!arr) {
 						return [];
@@ -144,13 +131,48 @@ function VideoGameQuestions($http, youtube) {
 					return {
 						name : game.name,
 						release_date : release_date(game.first_release_date),
-						screenshots : game.screenshots.map((ss) => ss.cloudinary_id),
-						platforms : game.release_dates.map((rd) => platforms[rd.platform] ? platforms[rd.platform].name : null).filter((p, i, arr) => p != null && arr.indexOf(p) == i),
+						screenshots : game.screenshots,
+						platforms : game.platforms.map((p) => platforms[p] ? platforms[p].name : null).filter((p, i, arr) => p != null && arr.indexOf(p) == i),
 						tags : [].concat(tag('k', game.keywords)).concat(tag('t', game.themes)).concat(tag('g', game.genres)),
 						attribution : game.url
 					};
 				});
+				loadScreenshots(games).then(resolve);
+			}).catch(reject);
+		});
+	}
+
+	function loadScreenshots(games) {
+		return new Promise(async (resolve, reject) => {
+			try {
+				let screenshotIds = games.flatMap(g => g.screenshots);
+				var result = {};
+				while (screenshotIds.length > 0) {
+					var chunkResult = await loadScreenshotChunk(screenshotIds.splice(0, 50));
+					Object.assign(result, chunkResult);
+				}
+				for (var game of games) {
+					game.screenshots = game.screenshots.map(id => result[id]).filter(id => !!id);
+				}
 				resolve(games);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+
+	function loadScreenshotChunk(ids) {
+		return new Promise((resolve, reject) => {
+			$http.post(igdbBaseURL + 'screenshots/','fields id,image_id; where id = (' + ids.join(',') + '); limit 50;', {
+				headers : {
+					'user-key' : igdbApiKey
+				}
+			}).then((response) => {
+				let result = {};
+				for (var screenshot of response.data) {
+					result[screenshot.id] = screenshot.image_id;
+				}
+				resolve(result);
 			}).catch(reject);
 		});
 	}
@@ -173,28 +195,15 @@ function VideoGameQuestions($http, youtube) {
 
 	function loadPlatformChunk(offset) {
 		return new Promise((resolve, reject) => {
-			$http.get('/trivia/igdb-api.py/platforms/', {
-				params : {
-					fields : 'name,generation,games,versions.release_dates.date',
-					limit : 50,
-					offset : offset
-				},
+			$http.post(igdbBaseURL + 'platforms/','fields id,name; where category = (1,5); limit 50; offset ' + offset + ';', {
 				headers : {
 					'user-key' : igdbApiKey
 				}
 			}).then((response) => {
 				let result = {};
 				response.data.forEach((platform) => {
-					if (!platform.versions) {
-						platform.versions = [];
-					}
-					let release_dates = platform.versions.map((v) => v.release_dates ? v.release_dates.map((d)  => d.date) : []).reduce((a, b) => [].concat(a).concat(b), []);
-
 					result[platform.id] = {
-						name : platform.name,
-						generation : platform.generation,
-						games : platform.games ? platform.games.length : 0,
-						release_date : release_date(release_dates.length > 0 ? release_dates.reduce(function(a, b) { return a < b ? a : b }) : 0)
+						name : platform.name
 					}
 				});
 				resolve(result);
@@ -243,13 +252,6 @@ function VideoGameQuestions($http, youtube) {
 		return selector.fromArray(games.filter((g) => g.songs));
 	}
 
-	function randomPlatform(selector) {
-		function hasDate(p) {
-			return p.release_date != new Date(0).toISOString();
-		};
-		return selector.fromArray(Object.keys(platforms).map((p) => platforms[p]).filter(hasDate));
-	}
-
 	function similarGames(game, selector) {
 		var titleWords = selector.wordsFromString(game.name);
 		return games.map((g) => {
@@ -262,10 +264,6 @@ function VideoGameQuestions($http, youtube) {
 
 	function similarGameYears(game, selector) {
 		return selector.yearAlternatives(gameYear(game), 3).map((year) => ({ release_date : year }));
-	}
-
-	function similarPlatformYears(platform, selector) {
-		return selector.yearAlternatives(platformYear(platform), 3).map((year) => ({ release_date : year }));
 	}
 
 	function similarPlatforms(game, selector) {
@@ -326,19 +324,11 @@ function VideoGameQuestions($http, youtube) {
 		return new Date("" + game.release_date).getFullYear();
 	}
 
-	function platformYear(platform) {
-		return new Date("" + platform.release_date).getFullYear();
-	}
-
 	function gamePlatform(game) {
 		return game.platforms[0];
 	}
 
 	function release_date(time) {
-		try {
-			return new Date(time).toISOString();
-		} catch (e) {
-			return new Date(0).toISOString();
-		}
+		return new Date(time * 1000).toISOString();
 	}
 }
