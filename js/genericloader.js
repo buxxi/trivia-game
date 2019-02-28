@@ -1,4 +1,4 @@
-function GenericCategoryLoader($interpolate) {
+function GenericCategoryLoader() {
 	var self = this;
 
 	self.create = function(name, input) {
@@ -17,11 +17,11 @@ function GenericCategoryLoader($interpolate) {
 			}
 			return map;
 		}, {});
-		return new GenericCategory($interpolate, description, questions, parsed.data);
+		return new GenericCategory(description, questions, parsed.data);
 	}
 }
 
-function GenericCategory($interpolate, description, questions, data) {
+function GenericCategory(description, questions, data) {
 	var self = this;
 
 	self.describe = function() {
@@ -41,7 +41,7 @@ function GenericCategory($interpolate, description, questions, data) {
 	}
 
 	self.nextQuestion = function(selector) {
-		var question = new GenericQuestion($interpolate, selector.fromWeightedObject(questions));
+		var question = new GenericQuestion(selector.fromWeightedObject(questions));
 		var correct = question.correct(data, selector);
 
 		return new Promise((resolve, reject) => {
@@ -59,11 +59,11 @@ function GenericCategory($interpolate, description, questions, data) {
 	}
 }
 
-function GenericQuestion($interpolate, model) {
+function GenericQuestion(model) {
 	var self = this;
 
 	self.title = function(correct) {
-		return $interpolate(model.question.format)({
+		return interpolate(model.question.format, {
 			'correct' : correct
 		});
 	}
@@ -91,7 +91,7 @@ function GenericQuestion($interpolate, model) {
 	}
 
 	self.format = function(answer) {
-		return $interpolate(model.answers.format)({
+		return interpolate(model.answers.format, {
 			'answer' : answer
 		});
 	}
@@ -104,7 +104,7 @@ function GenericQuestion($interpolate, model) {
 		var clone = JSON.parse(JSON.stringify(source));
 		function interpolateRecursive(obj) {
 			if (typeof obj === 'string') {
-				return $interpolate(obj)(data);
+				return interpolate(obj, data);
 			}
 			for (var i in obj) {
 				obj[i] = interpolateRecursive(obj[i]);
@@ -113,5 +113,12 @@ function GenericQuestion($interpolate, model) {
 		}
 
 		return interpolateRecursive(clone);
+	}
+
+	function interpolate(text, data) {
+		text = text.replace(/{{[\s]*([^}\s]+)[\s]*}}/g, '${this.$1}'); //Replace {{ key1.key2 }} with ${this.key1.key2}
+		let template = new Function("return `" + text + "`;");
+		let result = template.call(data);
+		return result;
 	}
 }
