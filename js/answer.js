@@ -1,4 +1,4 @@
-function AnswerController($scope, $location, connection, avatars) {
+function AnswerController($scope, connection, avatars) {
 	var correct = null;
 	var guess = null;
 	var sendingData = false;

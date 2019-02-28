@@ -94,7 +94,7 @@ function Game(avatars, categories, config) {
 	var self = this;
 	var players = {};
 	var guesses = {};
-	var session = {};
+	var session = { history : () => [] };
 	var timer = {};
 
 	function calculatePoints() {
