@@ -219,7 +219,7 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 					answers : question.answers
 				});
 
-				let pointsThisRound = await game.startTimer();
+				let pointsThisRound = await game.startTimer(() => { if (!$scope.$$phase) { $scope.$digest(); }});
 				player.stop();
 
 				if (player.pauseMusic) {

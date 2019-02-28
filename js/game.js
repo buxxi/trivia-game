@@ -39,7 +39,7 @@ function Session(totalQuestions) {
 	}
 }
 
-function Timer($interval, timePerQuestion, pointsPerRound) {
+function Timer(timePerQuestion, pointsPerRound) {
 	var self = this;
 	var start = 0;
 	var end = 0;
@@ -63,12 +63,13 @@ function Timer($interval, timePerQuestion, pointsPerRound) {
 		return Math.ceil((end - time) / (end - start) * pointsPerRound);
 	}
 
-	self.run = function(onStop) {
+	self.run = function(callback, onStop) {
 		start = new Date().getTime();
 		end = start + (1000 * timePerQuestion);
 		running = true;
 
-		var cancel = $interval(() => {
+		var cancel = setInterval(() => {
+			callback();
 			if (new Date().getTime() > end) {
 				console.log("interval stopping");
 				self.stop();
@@ -77,7 +78,7 @@ function Timer($interval, timePerQuestion, pointsPerRound) {
 
 		self.stop = function() {
 			running = false;
-			$interval.cancel(cancel);
+			clearInterval(cancel);
 			onStop();
 		}
 	}
@@ -89,7 +90,7 @@ function Timer($interval, timePerQuestion, pointsPerRound) {
 	}
 }
 
-function Game($rootScope, $interval, avatars, categories, config) {
+function Game(avatars, categories, config) {
 	var self = this;
 	var players = {};
 	var guesses = {};
@@ -187,7 +188,7 @@ function Game($rootScope, $interval, avatars, categories, config) {
 			}
 		});
 		session = new Session(config.questions);
-		timer = new Timer($interval, config.time, config.pointsPerRound);
+		timer = new Timer(config.time, config.pointsPerRound);
 	}
 
 	self.hasGuessed = function(peerid) {
@@ -231,9 +232,9 @@ function Game($rootScope, $interval, avatars, categories, config) {
 		return session;
 	}
 
-	self.startTimer = function() {
+	self.startTimer = function(callback) {
 		return new Promise((resolve, reject) => {
-			timer.run(() => {
+			timer.run(callback, () => {
 				var pointsThisRound = calculatePoints();
 				guesses = {};
 				session.endQuestion();
