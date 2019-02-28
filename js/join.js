@@ -5,56 +5,59 @@ function JoinController($scope, $location, $routeParams, connection, avatars) {
 		avatar : ""
 	};
 
-	$scope.config = config;
-	$scope.supportsCamera = QCodeDecoder().hasGetUserMedia();
-	$scope.avatars = avatars;
-
-	$scope.join = function() {
-		connection.join(config.code, config.name, config.avatar).then(() => {
-			$scope.$apply(() => {
-				$location.path('/game');
-			});
-		}).catch((err) => {
-			$scope.$apply(() => {
-				$scope.message = "Error when joining: " + err;
-			});
-		});
-	}
-
-	$scope.qrscan = function() {
-		var decoder = QCodeDecoder();
-		var video = document.getElementById('camera');
-		video.style.display = 'inline-block';
-
-		resolveBackCamera().then((stream) => {
-			if ("srcObject" in video) {
-				video.srcObject = stream;
-			} else {
-				video.src = window.URL.createObjectURL(stream);
-			}
-
-			function stop() {
-				video.style.display = 'none';
-				stream.getTracks()[0].stop();
-			}
-
-			video.addEventListener('click', stop);
-
-			decoder.decodeFromVideo(video, (err, res) => {
-				if (res) {
+	let app = new Vue({
+		el: '.join',
+		data: {
+			config: config,
+			supportsCamera: QCodeDecoder().hasGetUserMedia(),
+			avatars: avatars,
+			message : undefined
+		},
+		methods: {
+			join: function() {
+				connection.join(config.code, config.name, config.avatar).then(() => {
 					$scope.$apply(() => {
-						config.code = /.*\?code=(.*)/.exec(res)[1];
-
-						if (!!config.name) {
-							$scope.join();
-						}
-
-						stop();
+						$location.path('/game');
 					});
-				}
-			}, true);
-		});
-	};
+				}).catch((err) => {
+					app.message = "Error when joining: " + err;
+				});
+			},
+			
+			qrscan: function() {
+				var decoder = QCodeDecoder();
+				var video = document.getElementById('camera');
+				video.style.display = 'inline-block';
+
+				resolveBackCamera().then((stream) => {
+					if ("srcObject" in video) {
+						video.srcObject = stream;
+					} else {
+						video.src = window.URL.createObjectURL(stream);
+					}
+
+					function stop() {
+						video.style.display = 'none';
+						stream.getTracks()[0].stop();
+					}
+
+					video.addEventListener('click', stop);
+
+					decoder.decodeFromVideo(video, (err, res) => {
+						if (res) {
+							config.code = /.*\?code=(.*)/.exec(res)[1];
+
+							if (!!config.name) {
+								app.join();
+							}
+
+							stop();
+						}
+					}, true);
+				});
+			}
+		}
+	});
 
 	function resolveBackCamera() {
 		return new Promise((resolve, reject) => {

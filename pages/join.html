@@ -4,33 +4,33 @@
 			<div>
 				<label for="name">Name</label>
 				<div>
-					<input type="text" id="name" maxlength="10" ng-model="config.name">
+					<input type="text" id="name" maxlength="10" v-model="config.name">
 				</div>
 			</div>
 			<div>
 				<label for="code">Code</label>
 				<div>
-					<input type="text" id="code" style="text-transform : uppercase" ng-model="config.code">
+					<input type="text" id="code" style="text-transform : uppercase" v-model="config.code">
 				</div>
 				<video id="camera" autoplay="true"></video>
 			</div>
 			<div>
 				<label for="avatar-selector">Preferred avatar</label>
 				<div class="avatar-selector">
-					<label ng-repeat="(key, avatar) in avatars">
-						<input type="radio" type="radio" name="avatar" ng-model="config.avatar" value="{{key}}"/>
-						<div class="avatar"><img ng-src="{{ avatar.url }}"/></div>
+					<label v-for="(avatar, key) in avatars">
+						<input type="radio" type="radio" name="avatar" v-model="config.avatar" v-bind:value="key"/>
+						<div class="avatar"><img v-bind:src="avatar.url"/></div>
 					</label>
 				</div>
 			</div>
 
-			<div class="message" ng-if="message">
+			<div class="message" v-if="message">
 				<div>{{ message }}</div>
 			</div>
 
 			<div class="buttons">
-				<a class="btn" ng-click="qrscan()" ng-if="supportsCamera"><i class="fa fa-qrcode"></i> Scan</a>
-				<a class="btn" ng-click="join()" ng-disabled="!config.code || !config.name"><i class="fa fa-fw fa-sign-in"></i>Join</a>
+				<a class="btn" v-on:click="qrscan" v-if="supportsCamera"><i class="fa fa-qrcode"></i> Scan</a>
+				<a class="btn" v-on:click="join" v-bind:disabled="!config.code || !config.name"><i class="fa fa-fw fa-sign-in"></i>Join</a>
 			</div>
 		</form>
 	</div>
