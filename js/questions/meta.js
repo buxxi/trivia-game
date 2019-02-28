@@ -1,4 +1,4 @@
-function CurrentGameQuestions($injector, avatars) {
+function CurrentGameQuestions(avatars) {
 	var self = this;
 
 	var types = {
@@ -65,9 +65,9 @@ function CurrentGameQuestions($injector, avatars) {
 		};
 	}
 
-	self.preload = function(progress, cache, apikeys) {
+	self.preload = function(progress, cache, apikeys, game) {
 		return new Promise((resolve, reject) => {
-			self.current_game = $injector.get('game'); //This would make it have circular dependencies
+			self.current_game = game; //This would make it have circular dependencies if put in constructor 
 			resolve();
 		});
 	}
@@ -122,7 +122,7 @@ function CurrentGameQuestions($injector, avatars) {
 
 	function countTotal(func) {
 		return (selector) => {
-			return selector.sum(playesr(), func);
+			return selector.sum(players(), func);
 		};
 	}
 

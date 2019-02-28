@@ -101,7 +101,7 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		$rootScope.preloading[type] = preload;
 
 		return new Promise((resolve, reject) => {
-			categories.preload(type, preload.progress).then(() => {
+			categories.preload(type, preload.progress, game).then(() => {
 				$scope.$apply(() => preload.done = true);
 				resolve();
 			}).catch((err) => {

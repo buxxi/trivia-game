@@ -53,7 +53,7 @@ function MusicQuestions() {
 		};
 	}
 
-	self.preload = function(progress, cache, apikeys) {
+	self.preload = function(progress, cache, apikeys, game) {
 		spotifyApiKey = apikeys.spotify;
 		spotifyWhiteListGenres = apikeys.spotifyWhiteList;
 

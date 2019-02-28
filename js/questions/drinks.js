@@ -44,7 +44,7 @@ function DrinksQuestions() {
 		};
 	}
 
-	self.preload = function(progress, cache, apikeys) {
+	self.preload = function(progress, cache, apikeys, game) {
 		return new Promise(async (resolve, reject) => {
 			try {
 				progress(0, TOTAL_DRINKS);

@@ -36,7 +36,7 @@ function QuotesQuestions() {
 		};
 	}
 
-	self.preload = function(progress, cache, apikeys) {
+	self.preload = function(progress, cache, apikeys, game) {
 		mashapeApiKey = apikeys.mashape;
 
 		return new Promise(async (resolve, reject) => {

@@ -43,7 +43,7 @@ function ActorQuestions() {
 		};
 	}
 
-	self.preload = function(progress, cache, apikeys) {
+	self.preload = function(progress, cache, apikeys, game) {
         tmdbApiKey = apikeys.tmdb;
         return new Promise(async (resolve, reject) => {
 			try {

@@ -38,7 +38,7 @@ function MovieQuestions(youtube) {
 		};
 	}
 
-	self.preload = function(progress, cache, apikeys) {
+	self.preload = function(progress, cache, apikeys, game) {
 		youtubeApiKey = apikeys.youtube;
 		tmdbApiKey = apikeys.tmdb;
 

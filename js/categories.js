@@ -256,8 +256,8 @@ function Categories(movies, music, geography, quotes, videogames, drinks, actors
 		return selector.fromArray(jokes);
 	}
 
-	self.preload = function(category, progress) {
-		return categoryByType(category).preload(progress, new Cache(category), apikeys);
+	self.preload = function(category, progress, game) {
+		return categoryByType(category).preload(progress, new Cache(category), apikeys, game);
 	}
 
 	self.configure = function(input) {

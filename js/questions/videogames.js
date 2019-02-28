@@ -59,7 +59,7 @@ function VideoGameQuestions(youtube) {
 		};
 	}
 
-	self.preload = function(progress, cache, apikeys) {
+	self.preload = function(progress, cache, apikeys, game) {
 		youtubeApiKey = apikeys.youtube;
 		igdbApiKey = apikeys.igdb;
 		igdbBaseURL = apikeys.igdbBaseURL;
