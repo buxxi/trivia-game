@@ -1,4 +1,4 @@
-function YoutubeLoader($http) {
+function YoutubeLoader() {
 	var self = this;
 	var YOUTUBE_REGION = 'SE';
 
@@ -7,34 +7,27 @@ function YoutubeLoader($http) {
 			var result = [];
 
 			function loadUploads() {
-				$http.get('https://www.googleapis.com/youtube/v3/channels', {
-					params : {
-						id : channelId,
-						key : apiKey,
-						part : 'contentDetails'
-					}
-				}).then((response) => {
-					loadPage(response.data.items[0].contentDetails.relatedPlaylists.uploads);
+				fetch(`https://www.googleapis.com/youtube/v3/channels?id=${channelId}&key=${apiKey}&part=contentDetails`).
+				then(toJSON).
+				then((data) => {
+					loadPage(data.items[0].contentDetails.relatedPlaylists.uploads);
 				});
 			}
 
 			function loadPage(playListId, pageToken) {
-				$http.get('https://www.googleapis.com/youtube/v3/playlistItems', {
-					params : {
-						key : apiKey,
-						playlistId : playListId,
-						part : 'id,snippet,contentDetails',
-						maxResults : 50,
-						pageToken : pageToken
-					}
-				}).
-				then((response) => {
+				var url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${apiKey}&playlistId=${playListId}&part=id,snippet,contentDetails&maxResults=50`;
+				if (pageToken) {
+					url = url = `${url}&pageToken=${pageToken}`;
+				}
+				fetch(url).
+				then(toJSON).
+				then((data) => {
 					var current = result.length;
-					var total = response.data.pageInfo.totalResults;
+					var total = data.pageInfo.totalResults;
 					progress(current, total);
-					var nextPage = response.data.nextPageToken;
+					var nextPage = data.nextPageToken;
 
-					result = result.concat(response.data.items.map((item) => {
+					result = result.concat(data.items.map((item) => {
 						return {
 							id : item.contentDetails.videoId,
 							title : item.snippet.title
@@ -57,17 +50,13 @@ function YoutubeLoader($http) {
 
 	self.checkEmbedStatus = function(videoId, apiKey) {
 		return new Promise((resolve, reject) => {
-			$http.get('https://www.googleapis.com/youtube/v3/videos', {
-				params : {
-					key : apiKey,
-					id : videoId,
-					part : 'status,contentDetails'
-				}
-			}).then((response) => {
-				if (response.data.items.length == 0) {
+			fetch(`https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${videoId}&part=status,contentDetails`).
+			then(toJSON).
+			then((data) => {
+				if (data.items.length == 0) {
 					return reject("Video not found");
 				}
-				var item = response.data.items[0];
+				var item = data.items[0];
 				if (!item.status.embeddable) {
 					return reject("Video not embeddable");
 				}
@@ -85,4 +74,10 @@ function YoutubeLoader($http) {
 		});
 	}
 
+	function toJSON(response) { //TODO: copy pasted
+		if (!response.ok) {
+			throw response;
+		}
+		return response.json();
+	}
 }

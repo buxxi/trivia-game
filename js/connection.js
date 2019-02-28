@@ -252,7 +252,7 @@ function Connection($rootScope, fingerprint) {
 		var peer = new SocketPeer({
 			pairCode: pairCode.toLowerCase(),
 			socketFallback: true,
-			url: serverUrl + '/socketpeer/',
+			url: serverUrl + '/trivia/socketpeer/', //TODO: make this configurable instead
 			reconnect: reconnect,
 			autoconnect: false,
 			serveLibrary: false,

@@ -1,4 +1,4 @@
-function MovieQuestions($http, youtube) {
+function MovieQuestions(youtube) {
 	var self = this;
 	var movies = [];
 	var youtubeApiKey = '';
@@ -147,28 +147,22 @@ function MovieQuestions($http, youtube) {
 
 	function loadSimilarMovies(movie, attribution, selector) {
 		return new Promise((resolve, reject) => {
-			$http.get('https://api.themoviedb.org/3/search/movie', {
-				params : {
-					api_key : tmdbApiKey,
-					query : movie.title,
-					year : movie.year
-				}
-			}).then((response) => {
-				if (response.data.results.length != 1) {
+			fetch(`https://api.themoviedb.org/3/search/movie?api_key=${tmdbApiKey}&query=${movie.title}&year=${movie.year}`).
+			then(toJSON).
+			then(data => {
+				if (data.results.length != 1) {
 					return reject("Didn't find an exact match for the movie metadata");
 				}
-				var id = response.data.results[0].id;
+				var id = data.results[0].id;
 
-				return $http.get('https://api.themoviedb.org/3/movie/' + id + '/similar', {
-					params : {
-						api_key : tmdbApiKey
-					}
-				}).then((response) => {
-					if (response.data.results.length < 3) {
+				return fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=${tmdbApiKey}`).
+				then(toJSON).
+				then(data => {
+					if (data.results.length < 3) {
 						return reject("Got less than 3 similar movies");
 					}
 
-					var similar = response.data.results.map((item) => {
+					var similar = data.results.map((item) => {
 						return {
 							title : item.title,
 							year : new Date(item.release_date).getFullYear()
@@ -226,5 +220,12 @@ function MovieQuestions($http, youtube) {
 
 	function countUniqueClips() {
 		return movies.map((m) => m.videos.length).reduce((a, b) => a + b, 0);
+	}
+
+	function toJSON(response) { //TODO: copy pasted
+		if (!response.ok) {
+			throw response;
+		}
+		return response.json();
 	}
 }

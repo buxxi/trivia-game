@@ -1,4 +1,4 @@
-function MusicQuestions($http) {
+function MusicQuestions() {
 	var self = this;
 	var tracks = [];
 	var TRACKS_BY_CATEGORY = 100;
@@ -127,20 +127,23 @@ function MusicQuestions($http) {
 		});
 	}
 
+	function toJSON(response) { //TODO: copy pasted
+		if (!response.ok) {
+			throw response;
+		}
+		return response.json();
+	}
+
 	function loadCategoryChunk(accessToken, category, popularity) {
 		return new Promise((resolve, reject) => {
-			$http.get('https://api.spotify.com/v1/recommendations', {
-				params : {
-					seed_genres : category,
-					min_popularity : popularity,
-					max_popularity : popularity + 9,
-					limit : TRACKS_BY_CATEGORY
-				},
+			fetch(`https://api.spotify.com/v1/recommendations?seed_genres=${category}&min_popularity=${popularity}&max_popularity=${popularity + 9}&limit=${TRACKS_BY_CATEGORY}`, {
 				headers : {
 					Authorization : 'Bearer ' + accessToken
 				}
-			}).then((response) => {
-				var result = response.data.tracks.filter((track) => !!track.preview_url).map((track) => {
+			}).
+			then(toJSON).
+			then((data) => {
+				var result = data.tracks.filter((track) => !!track.preview_url).map((track) => {
 					return {
 						title : parseTitle(track.name),
 						artist : {
@@ -161,12 +164,14 @@ function MusicQuestions($http) {
 
 	function loadSpotifyCategories(accessToken, cache) {
 		return cache.get('categories', (resolve, reject) => {
-			$http.get('https://api.spotify.com/v1/recommendations/available-genre-seeds', {
+			fetch('https://api.spotify.com/v1/recommendations/available-genre-seeds', {
 				headers : {
 					Authorization : 'Bearer ' + accessToken
 				}
-			}).then((response) => {
-				var genres = response.data.genres;
+			}).
+			then(toJSON).
+			then(data => {
+				var genres = data.genres;
 				if (spotifyWhiteListGenres) {
 					genres = genres.filter((g) => spotifyWhiteListGenres.indexOf(g) > -1);
 				} else {
@@ -231,15 +236,14 @@ function MusicQuestions($http) {
 
 	function loadArtistsChunk(accessToken, category, chunkedIds) {
 		return new Promise((resolve, reject) => {
-			$http.get('https://api.spotify.com/v1/artists', {
-				params : {
-					ids : chunkedIds.join(',')
-				},
+			fetch(`https://api.spotify.com/v1/artists?ids=${chunkedIds.join(',')}`, {
 				headers : {
 					Authorization : 'Bearer ' + accessToken
 				}
-			}).then((response) => {
-				var artists = response.data.artists.filter(artist => {
+			}).
+			then(toJSON).
+			then(data => {
+				var artists = data.artists.filter(artist => {
 					var genres = artist.genres.map(genre => genre.toLowerCase().replace(' ', '-'));
 					return genres.indexOf(category) > -1;
 				});
@@ -251,7 +255,7 @@ function MusicQuestions($http) {
 	function retryAfterHandler(promise, resolve, reject) {
 		return (err) => {
 			if (err.status == 429) {
-				var time = (parseInt(err.headers()['retry-after']) + 1) * 1000;
+				var time = (parseInt(err.headers.get('retry-after')) + 1) * 1000;
 				setTimeout(() => {
 					promise().then(resolve).catch(reject);
 				}, time);

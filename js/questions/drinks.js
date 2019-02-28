@@ -1,4 +1,4 @@
-function DrinksQuestions($http) {
+function DrinksQuestions() {
 	var self = this;
 	var drinks = [];
 	var TOTAL_DRINKS = 50;
@@ -45,22 +45,15 @@ function DrinksQuestions($http) {
 	}
 
 	self.preload = function(progress, cache, apikeys) {
-		return cache.get('drinks', async (resolve, reject) => {
-			progress(0, TOTAL_DRINKS);
-
+		return new Promise(async (resolve, reject) => {
 			try {
-				for (let i = 0; i < TOTAL_DRINKS; i++) {
-					let drink = await loadRandomDrink();
-					if (!drinks.some(d => d.name == drink.name)) {
-						drinks.push(drink);
-					}
-					progress(drinks.length, TOTAL_DRINKS);
-				}
+				progress(0, TOTAL_DRINKS);
+				drinks = await loadDrinks(cache, progress);
+				progress(TOTAL_DRINKS, TOTAL_DRINKS);
+				resolve();
 			} catch (e) {
 				reject(e);
 			}
-			
-			resolve();
 		});
 	}
 
@@ -79,10 +72,37 @@ function DrinksQuestions($http) {
 		});
 	}
 
+	function loadDrinks(cache, progress) {
+		return cache.get('drinks', async (resolve, reject) => {
+			progress(0, TOTAL_DRINKS);
+
+			try {
+				for (let i = 0; i < TOTAL_DRINKS; i++) {
+					let drink = await loadRandomDrink();
+					if (!drinks.some(d => d.name == drink.name)) {
+						drinks.push(drink);
+					}
+					progress(drinks.length, TOTAL_DRINKS);
+				}
+				resolve(drinks);
+			} catch (e) {
+				reject(e);
+			}
+
+		});
+	}
+
 	function loadRandomDrink() {
+		function toJSON(response) { //TODO: copy pasted
+			if (!response.ok) {
+				throw response;
+			}
+			return response.json();
+		}
+
 		return new Promise((resolve, reject) => {
-			$http.get('https://www.thecocktaildb.com/api/json/v1/1/random.php').then((response) => {
-				let data = response.data.drinks[0];
+			fetch('https://www.thecocktaildb.com/api/json/v1/1/random.php').then(toJSON).then((responseData) => {
+				let data = responseData.drinks[0];
 				let drink = {
 					name : data['strDrink'],
 					ingredients : Object.keys(data).filter((k) => k.indexOf("strIngredient") > -1).map((k) => data[k]).filter((v) => !!v),

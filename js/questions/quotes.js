@@ -1,4 +1,4 @@
-function QuotesQuestions($http) {
+function QuotesQuestions() {
 	var self = this;
 	var quotes = [];
 	var TOTAL_QUOTES = 50;
@@ -39,23 +39,16 @@ function QuotesQuestions($http) {
 	self.preload = function(progress, cache, apikeys) {
 		mashapeApiKey = apikeys.mashape;
 
-		return cache.get('quotes', async (resolve, reject) => {
-			progress(0, TOTAL_QUOTES);
-
+		return new Promise(async (resolve, reject) => {
 			try {
-				for (var i = 0; i < TOTAL_QUOTES; i++) {
-					let quote = await loadRandomQuote();
-					if (!quotes.some(q => q.quote == quote.quote)) {
-						quotes.push(quote);
-					}
-					
-					progress(quotes.length, TOTAL_QUOTES);
-				}
-				resolve(quotes);
+				progress(0, TOTAL_QUOTES);
+				quotes = await loadQuotes(cache, progress);
+				progress(TOTAL_QUOTES, TOTAL_QUOTES);
+				resolve();
 			} catch (e) {
 				reject(e);
 			}
-		});	
+		});
 	}
 
 	self.nextQuestion = function(selector) {
@@ -111,7 +104,6 @@ function QuotesQuestions($http) {
 			return aKeys.every((i) => a[i] == b[i]);
 		}
 
-		var charArray = quote.word.split("");
 		var words = quotes.map((q) => nlp(q.quote).terms().trim().out('array')); //Extract words
 		words = [].concat.apply([], words); //Flatten array of arrays
 		words = words.filter((word, index) => word != '' && words.indexOf(word) == index); //Remove duplicates
@@ -142,16 +134,39 @@ function QuotesQuestions($http) {
 		};
 	}
 
+	function loadQuotes(cache, progress) {
+		return cache.get('quotes', async (resolve, reject) => {
+			try {
+				for (var i = 0; i < TOTAL_QUOTES; i++) {
+					let quote = await loadRandomQuote();
+					if (!quotes.some(q => q.quote == quote.quote)) {
+						quotes.push(quote);
+					}
+					
+					progress(quotes.length, TOTAL_QUOTES);
+				}
+				resolve(quotes);
+			} catch (e) {
+				reject(e);
+			}
+		});	
+	}
+
 	function loadRandomQuote() {
+		function toJSON(response) { //TODO: copy pasted
+			if (!response.ok) {
+				throw response;
+			}
+			return response.json();
+		}
+
 		return new Promise((resolve, reject) => {
-			$http.post('https://andruxnet-random-famous-quotes.p.mashape.com',{}, {
-				params : {
-					'cat' : 'famous'
-				},
+			fetch('https://andruxnet-random-famous-quotes.p.mashape.com/?cat=famous',{
+				method : 'POST',
 				headers : {
 					'X-Mashape-Key' : mashapeApiKey
 				}
-			}).then((response) => resolve(response.data[0])).catch(reject);
+			}).then(toJSON).then((data) => resolve(data[0])).catch(reject);
 		});
 	}
 }

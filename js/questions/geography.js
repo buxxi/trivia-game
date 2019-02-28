@@ -1,4 +1,4 @@
-function GeographyQuestions($http) {
+function GeographyQuestions() {
 	var self = this;
 	var countries = [];
 
@@ -115,9 +115,18 @@ function GeographyQuestions($http) {
 	}
 
 	function loadCountries(cache) {
+		function toJSON(response) { //TODO: copy pasted
+			if (!response.ok) {
+				throw response;
+			}
+			return response.json();
+		}
+
 		return cache.get('countries', (resolve, reject) => {
-			$http.get('https://restcountries.eu/rest/v2/all').then((response) => {
-				var result = response.data.map((country) => {
+			window.fetch('https://restcountries.eu/rest/v2/all').
+			then(toJSON).
+			then((data) => {
+				let result = data.map((country) => {
 					return {
 						code : country.alpha2Code,
 						region : country.subregion,
@@ -125,7 +134,7 @@ function GeographyQuestions($http) {
 						population : country.population,
 						capital : country.capital,
 						area : country.area,
-						neighbours : country.borders.map((code) => response.data.find((c) => code == c.alpha3Code).name),
+						neighbours : country.borders.map((code) => data.find((c) => code == c.alpha3Code).name),
 						flag : country.flag
 					}
 				});

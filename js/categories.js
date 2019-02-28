@@ -220,7 +220,7 @@ function QuestionSelector() {
 	}
 }
 
-function Categories(movies, music, geography, quotes, videogames, drinks, actors, meta, genericloader, $http) {
+function Categories(movies, music, geography, quotes, videogames, drinks, actors, meta, genericloader) {
 	var self = this;
 	var categories = [movies, music, geography, quotes, videogames, drinks, actors, meta];
 	var enabledCategories = [];
@@ -232,13 +232,13 @@ function Categories(movies, music, geography, quotes, videogames, drinks, actors
 			if (Object.keys(apikeys).length != 0) {
 				return resolve();
 			}
-			$http.get('conf/api-keys.json').then((response) => {
-				Object.assign(apikeys, response.data);
+			fetch('conf/api-keys.json').then(response => response.json()).then(data => {
+				Object.assign(apikeys, data);
 			}).then(() => {
 				return Promise.all(apikeys.other.map((url) => self.loadFromURL(url))).then(resolve).catch(reject);
 			}).catch(reject);
-			$http.get('conf/jokes.json').then((response) => {
-				jokes = response.data;
+			fetch('conf/jokes.json').then(response => response.json()).then(data => {
+				jokes = data;
 			});
 		});
 	}
@@ -265,7 +265,7 @@ function Categories(movies, music, geography, quotes, videogames, drinks, actors
 			var c = categoryByType(value);
 			obj[value] = {
 				weight : 2,
-				nextQuestion : c.nextQuestion,
+				nextQuestion : (selector) => c.nextQuestion(selector),
 				name : c.describe().name
 			};
 
@@ -300,8 +300,8 @@ function Categories(movies, music, geography, quotes, videogames, drinks, actors
 
 	self.loadFromURL = function(url) {
 		return new Promise((resolve, reject) => {
-			$http.get(url).then((response) => {
-				var newCategory = genericloader.create(url, JSON.stringify(response.data));
+			fetch(url).then(response => response.json()).then(data => {
+				var newCategory = genericloader.create(url, JSON.stringify(data));
 				categories.push(newCategory);
 				resolve(newCategory.describe().type);
 			}).catch(reject);

@@ -83,8 +83,12 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 			done : false,
 			failed : false,
 			progress : function(current, total) {
-				preload.current = current;
-				preload.total = total;
+				if(!$scope.$$phase) {
+					$scope.$apply(() => {
+						preload.current = current;
+						preload.total = total;
+					});
+				}
 			},
 			percentage : function() {
 				return Math.ceil(preload.current / Math.max(preload.total, 1) * 100);

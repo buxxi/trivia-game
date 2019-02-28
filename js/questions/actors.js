@@ -1,4 +1,4 @@
-function ActorQuestions($http) {
+function ActorQuestions() {
     var self = this;
     var actors = [];
     var ACTOR_COUNT = 500;
@@ -49,7 +49,6 @@ function ActorQuestions($http) {
 			try {
 				progress(0, ACTOR_COUNT);
 				actors = await loadActors(progress, cache);
-				console.log(actors);
 				resolve();
 			} catch (e) {
 				reject(e);
@@ -94,15 +93,19 @@ function ActorQuestions($http) {
 		});
 	}
 
+	function toJSON(response) {
+		if (!response.ok) {
+			throw response;
+		}
+		return response.json();
+	}
+
 	function loadActorsChunk(page) {
 		return new Promise((resolve, reject) => {
-			$http.get('https://api.themoviedb.org/3/person/popular', {
-				params : {
-					api_key : tmdbApiKey,
-					page : page
-				}
-			}).then((response) => {
-				let result = response.data.results.filter((actor) => !actor.adult).map((actor) => {
+			fetch(`https://api.themoviedb.org/3/person/popular?api_key=${tmdbApiKey}&page=${page}`).
+			then(toJSON).
+			then((data) => {
+				let result = data.results.filter((actor) => !actor.adult).map((actor) => {
 					return {
 						id : actor.id
 					};
@@ -114,18 +117,15 @@ function ActorQuestions($http) {
 
 	function loadActorDetails(actor) {
 		return new Promise((resolve, reject) => {
-			$http.get('https://api.themoviedb.org/3/person/' + actor.id, {
-				params : {
-					api_key : tmdbApiKey
-				}
-			}).then((response) => {
-				let obj = response.data;
+			fetch(`https://api.themoviedb.org/3/person/${actor.id}?api_key=${tmdbApiKey}`).
+			then(toJSON).
+			then((data) => {
 				Object.assign(actor, {
-					name : obj.name,
-					photo : obj.profile_path,
-					birthday : new Date(Date.parse(obj.birthday)),
-					place_of_birth : obj.place_of_birth,
-					male : obj.gender == 2
+					name : data.name,
+					photo : data.profile_path,
+					birthday : new Date(Date.parse(data.birthday)),
+					place_of_birth : data.place_of_birth,
+					male : data.gender == 2
 				});
 
 				resolve(actor);
@@ -136,7 +136,7 @@ function ActorQuestions($http) {
 	function retryAfterHandler(promise, resolve, reject) {
 		return (err) => {
 			if (err.status == 429) {
-				var time = (parseInt(err.headers()['retry-after']) + 1) * 1000;
+				var time = (parseInt(err.headers.get('retry-after')) + 1) * 1000;
 				setTimeout(() => {
 					promise().then(resolve).catch(reject);
 				}, time);

@@ -1,4 +1,4 @@
-function VideoGameQuestions($http, youtube) {
+function VideoGameQuestions(youtube) {
 	var self = this;
 	var games = [];
 
@@ -111,14 +111,16 @@ function VideoGameQuestions($http, youtube) {
 
 	function loadGames(platform, platforms, cache) {
 		return cache.get(platform, (resolve, reject) => {
-			$http.post(igdbBaseURL + 'games/',
-				'fields name,url,first_release_date,platforms,screenshots,keywords,themes,genres; where platforms = ' + platform + ' & first_release_date != null & screenshots != null & rating_count > 2; limit ' + GAMES_PER_PLATFORM + '; offset 0; sort rating desc;',
-				{
-					headers : {
-						'user-key' : igdbApiKey
-					}
-				}
-			).then((response) => {
+			let data = `fields name,url,first_release_date,platforms,screenshots,keywords,themes,genres; where platforms = ${platform} & first_release_date != null & screenshots != null & rating_count > 2; limit ${GAMES_PER_PLATFORM}; offset 0; sort rating desc;`;
+			fetch(igdbBaseURL + 'games/',{
+				method : 'POST',
+				headers : {
+					'user-key' : igdbApiKey
+				},
+				body : data
+			}).
+			then(toJSON).
+			then(data => {
 				function tag(prefix, arr) {
 					if (!arr) {
 						return [];
@@ -127,11 +129,11 @@ function VideoGameQuestions($http, youtube) {
 					return arr.map((i) => prefix + i);
 				}
 
-				let games = response.data.map((game) => {
+				let games = data.map((game) => {
 					return {
 						name : game.name,
 						release_date : release_date(game.first_release_date),
-						screenshots : game.screenshots,
+						screenshots : game.screenshots.slice(0,3),
 						platforms : game.platforms.map((p) => platforms[p] ? platforms[p].name : null).filter((p, i, arr) => p != null && arr.indexOf(p) == i),
 						tags : [].concat(tag('k', game.keywords)).concat(tag('t', game.themes)).concat(tag('g', game.genres)),
 						attribution : game.url
@@ -148,7 +150,7 @@ function VideoGameQuestions($http, youtube) {
 				let screenshotIds = games.flatMap(g => g.screenshots);
 				var result = {};
 				while (screenshotIds.length > 0) {
-					var chunkResult = await loadScreenshotChunk(screenshotIds.splice(0, 50));
+					var chunkResult = await loadScreenshotChunk(screenshotIds.splice(0, 10));
 					Object.assign(result, chunkResult);
 				}
 				for (var game of games) {
@@ -163,13 +165,18 @@ function VideoGameQuestions($http, youtube) {
 
 	function loadScreenshotChunk(ids) {
 		return new Promise((resolve, reject) => {
-			$http.post(igdbBaseURL + 'screenshots/','fields id,image_id; where id = (' + ids.join(',') + '); limit 50;', {
+			let data = `fields id,image_id; where id = (${ids.join(',')}); limit 10;`;
+			fetch(igdbBaseURL + 'screenshots/', {
+				method : 'POST',
 				headers : {
 					'user-key' : igdbApiKey
-				}
-			}).then((response) => {
+				},
+				body : data
+			}).
+			then(toJSON).
+			then(data => {
 				let result = {};
-				for (var screenshot of response.data) {
+				for (var screenshot of data) {
 					result[screenshot.id] = screenshot.image_id;
 				}
 				resolve(result);
@@ -195,13 +202,18 @@ function VideoGameQuestions($http, youtube) {
 
 	function loadPlatformChunk(offset) {
 		return new Promise((resolve, reject) => {
-			$http.post(igdbBaseURL + 'platforms/','fields id,name; where category = (1,5); limit 50; offset ' + offset + ';', {
+			let data = `fields id,name; where category = (1,5); limit 50; offset ${offset};`
+			fetch(igdbBaseURL + 'platforms/', {
+				method : 'POST',
 				headers : {
 					'user-key' : igdbApiKey
-				}
-			}).then((response) => {
+				},
+				body : data
+			}).
+			then(toJSON).
+			then((data) => {
 				let result = {};
-				response.data.forEach((platform) => {
+				data.forEach((platform) => {
 					result[platform.id] = {
 						name : platform.name
 					}
@@ -330,5 +342,12 @@ function VideoGameQuestions($http, youtube) {
 
 	function release_date(time) {
 		return new Date(time * 1000).toISOString();
+	}
+
+	function toJSON(response) { //TODO: copy pasted
+		if (!response.ok) {
+			throw response;
+		}
+		return response.json();
 	}
 }

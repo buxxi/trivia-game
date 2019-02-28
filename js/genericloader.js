@@ -1,4 +1,4 @@
-function GenericCategoryLoader($interpolate, $parse) {
+function GenericCategoryLoader($interpolate) {
 	var self = this;
 
 	self.create = function(name, input) {
@@ -17,11 +17,11 @@ function GenericCategoryLoader($interpolate, $parse) {
 			}
 			return map;
 		}, {});
-		return new GenericCategory($interpolate, $parse, description, questions, parsed.data);
+		return new GenericCategory($interpolate, description, questions, parsed.data);
 	}
 }
 
-function GenericCategory($interpolate, $parse, description, questions, data) {
+function GenericCategory($interpolate, description, questions, data) {
 	var self = this;
 
 	self.describe = function() {
@@ -41,7 +41,7 @@ function GenericCategory($interpolate, $parse, description, questions, data) {
 	}
 
 	self.nextQuestion = function(selector) {
-		var question = new GenericQuestion($interpolate, $parse, questions, selector.fromWeightedObject(questions));
+		var question = new GenericQuestion($interpolate, selector.fromWeightedObject(questions));
 		var correct = question.correct(data, selector);
 
 		return new Promise((resolve, reject) => {
@@ -59,7 +59,7 @@ function GenericCategory($interpolate, $parse, description, questions, data) {
 	}
 }
 
-function GenericQuestion($interpolate, $parse, questions, model) {
+function GenericQuestion($interpolate, model) {
 	var self = this;
 
 	self.title = function(correct) {
