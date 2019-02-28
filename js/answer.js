@@ -1,94 +1,77 @@
 function AnswerController($scope, connection, avatars) {
-	var correct = null;
-	var guess = null;
-	var sendingData = false;
-	var answers = {};
-
-	$scope.connected = connection.connected();
-	$scope.waiting = true;
-	$scope.message = $scope.connected ? 'Waiting for the game to start' : 'Not connected';
-	$scope.answers = {};
-	$scope.avatars = avatars;
+	let app = new Vue({
+		el: '.answer',
+		data: {
+			connected: connection.connected(),
+			waiting: true,
+			hasGuessed: false,
+			message: connection.connected() ? 'Waiting for the game to start' : 'Not connected',
+			answers: {},
+			avatars: avatars,
+			stats: {},
+			correct: undefined,
+			guess: undefined
+		},
+		methods: {
+			reconnect: function() {
+				connection.reconnect().then(() => {
+					this.connected = connection.connected();
+					this.message = 'Waiting for next question';
+				}).catch((err) => {
+					this.message = "Error when reconnecting: " + err;
+				});
+			},
+			makeGuess: function(answer) {
+				this.hasGuessed = true;
+				connection.send({
+					guess : answer
+				}).then(() => {
+					this.guess = answer;
+				}).catch((e) => {
+					this.hasGuessed = false;
+					this.guess = null;			
+				});
+			},
+			buttonClass: function(answer) {
+				if (this.correct && this.correct == answer) {
+					return "correct";
+				} else if (this.correct && answer == this.guess && this.correct != this.guess) {
+					return "incorrect";
+				} else if (!this.correct && answer == this.guess) {
+					return "selected";
+				} else {
+					return "";
+				}
+			}
+		}
+	});
 
 	$scope.$on('data-answers', (event, pairCode, data) => {
-		$scope.$apply(() => {
-			$scope.answers = data;
-			$scope.waiting = false;
-			correct = null;
-			guess = null;
-		});
+		app.answers = data;
+		app.waiting = false;
+		app.correct = null;
+		app.guess = null;
+		app.hasGuessed = false;
 	});
 
 	$scope.$on('data-correct', (event, pairCode, data) => {
-		$scope.$apply(() => {
-			correct = data;
-		});
+		app.correct = data;
 	});
 
 	$scope.$on('data-wait', (event, pairCode, data) => {
-		$scope.$apply(() => {
-			$scope.answers = {};
-			$scope.waiting = true;
-			$scope.message = 'Waiting for next question';
-		});
+		app.answers = {};
+		app.waiting = true;
+		app.message = 'Waiting for next question';
 	});
 
 	$scope.$on('data-stats', (event, pairCode, data) => {
-			$scope.stats = data;
+		app.stats = data;
 	});
 
 	$scope.$on('connection-closed', () => {
-		$scope.$apply(() => {
-			$scope.answers = {};
-			$scope.waiting = true;
-			$scope.message = 'The host closed the connection';
-			$scope.connected = false;
-		});
+		app.answers = {};
+		app.waiting = true;
+		app.message = 'The host closed the connection';
+		app.connected = false;
 	});
-
-	$scope.reconnect = function() {
-		connection.reconnect().then(() => {
-			$scope.$apply(() => {
-				$scope.connected = connection.connected();
-				$scope.message = 'Waiting for next question';
-			});
-		}).catch((err) => {
-			$scope.$apply(() => {
-				$scope.message = "Error when reconnecting: " + err;
-			});
-		});
-	}
-
-	$scope.guess = function(answer) {
-		sendingData = true;
-		connection.send({
-			guess : answer
-		}).then(() => {
-			$scope.$apply(() => {
-				sendingData = false;
-				guess = answer;
-			});
-		}).catch((e) => {
-			$scope.$apply(() => {
-				sendingData = false;
-				guess = null;
-			});				
-		});
-	}
-
-	$scope.buttonClass = function(answer) {
-		if (correct && correct == answer) {
-			return "correct";
-		} else if (correct && answer == guess && correct != guess) {
-			return "incorrect";
-		} else if (!correct && answer == guess) {
-			return "selected";
-		} else {
-			return "";
-		}
-	}
-
-	$scope.hasGuessed = function() {
-		return guess != null || sendingData;
-	}
 }
