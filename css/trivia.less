@@ -88,6 +88,25 @@ h1 {
 		text-align: center;
 		text-shadow: 2px 2px 2px grey;
 		transform : scale(0.5) translateY(-50%);
+
+		&.full-animation {
+			animation : resize-title 3s linear normal forwards;
+			display : block;
+			opacity : 1;
+			position : fixed;
+			top : 50%;
+			transform : scale(2) translateY(-50%);
+			width : 100%;
+		}
+		
+		&.full-static {
+			display : block;
+			opacity : 1;
+			position : fixed;
+			top : 50%;
+			transform : translateY(-50%);
+			width : 100%;
+		}
 	}
 	#correct {
 		visibility: hidden;
@@ -104,15 +123,6 @@ h1 {
 		transform: translateY(-50%);
 		width : 100%;
 		z-index: 3;
-	}
-	.title.full {
-		animation : resize-title 3s linear normal forwards;
-		display : block;
-		opacity : 1;
-		position : fixed;
-		top : 50%;
-		transform : scale(2) translateY(-50%);
-		width : 100%;
 	}
 	.index {
 		left: 0.5em;

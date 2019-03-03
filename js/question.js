@@ -121,51 +121,87 @@ function CategorySpinner(categories, flipCallback, show) {
 	};
 }
 
-function QuestionController($scope, $location, $timeout, connection, game, playback, sound, avatars, categories) {
+function QuestionController($scope, $location, connection, game, playback, sound, avatars, categories) {
 	if (typeof(game.session().finished) != 'function') { //TODO: make a better check
 		$location.path("/");
 	}
 
-	$scope.timer = game.timer();
-	$scope.players = game.players();
-	$scope.session = game.session();
-	$scope.title = "";
-	$scope.pointChanges = {};
-	$scope.state = "loading";
-	$scope.hasGuessed = {};
-	$scope.avatars = avatars;
-	$scope.crownUrl = /src=\"(.*?)\"/.exec(twemoji.parse("\uD83D\uDC51"))[1];
-	$scope.hasConnectionError = connection.connectionError;
-	$scope.showPlayerName = (player) => game.timer().timeLeft() % 10 >= 5;
-	$scope.isLeadingPlayer = (player) => {
-		var playerScoreCount = Object.values($scope.players).filter((p) => p.score >= player.score).length;
-		return playerScoreCount == 1;
-	}
+	let app = new Vue({
+		el: '.question',
+		data: {
+			spinner : {
+				categories: []
+			},
+			timer: {
+				running: false,
+				score: 0,
+				timeLeft: 0,
+				percentageLeft: 0
+			},
+			players: mapToMap(game.players(), (player) => { return (
+				{
+					name : player.name,
+					color : player.color,
+					avatar : player.avatar,
+					totalPoints : 0,
+					pointChange : 0,
+					multiplier : 1,
+					guessed : false,
+					connectionError : false
+				}
+			)}),
+			session: {
+				index : 0,
+				total : 0,
+				currentCategory : undefined
+			},
+			title: '',
+			state: 'loading',
+			avatars: avatars,
+			crownUrl: /src=\"(.*?)\"/.exec(twemoji.parse("\uD83D\uDC51"))[1],
+			error: undefined
+		},
+		computed: {
+			showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; },
+		},
+		methods: {
+			isLeadingPlayer: function (player) {
+				let playerScoreCount = Object.values(this.players).filter((p) => p.totalPoints >= player.totalPoints).length;
+				return playerScoreCount == 1;
+			},
+			achievedPoints: function (player) {
+				return player.pointChange > 0;
+			},
+			lostPoints: function(player) {
+				return player.pointChange < 0;
+			}
+		}
+	});
 
 	$scope.$on("data-guess", (event, pairCode, data) => {
-		$scope.$apply(() => {
-			game.guess(pairCode, data);
-			$scope.hasGuessed[pairCode] = true;
-			sound.beep(Object.keys($scope.hasGuessed).length);
-		});
+		game.guess(pairCode, data);
+		app.players[pairCode].guessed = true;
+		sound.beep(Object.values(app.players).filter((p) => p.guessed).length);
 	});
 
 	$scope.$on("connection-closed", (event, conn) => {
-		$scope.$digest();
+		for (pairCode in app.players) {
+			app.players[pairCode].connectionError = connection.connectionErrors(pairCode);
+		}
 	});
 
 	function showLoadingNextQuestion() {
 		return new Promise((resolve, reject) => {
 			var spinner = new CategorySpinner(categories, sound.click, game.showCategorySpinner());
 
-			$scope.state = 'loading';
-			$scope.title = 'Selecting next question';
-			$scope.categories = spinner.categories;
+			app.state = 'loading';
+			app.title = 'Selecting next question';
+			app.spinner.categories = spinner.categories;
 
 			game.nextQuestion().then((question) => {
-				$scope.$digest();
+				updateSession(game.session());
 				spinner.start().then(() => {
-					sound.speak(game.session().question().view.category.join(": "), () => resolve(question));
+					sound.speak(app.session.currentCategory, () => resolve(question));
 				}).catch(reject);
 				setTimeout(() => spinner.stop().catch(reject), 2000);
 			}).catch(reject);
@@ -174,10 +210,8 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 
 	function showPreQuestion(question) {
 		return new Promise((resolve, reject) => {
-			$scope.$apply(() => {
-				$scope.state = 'pre-question';
-				$scope.title = question.text;
-			});
+			app.state = 'pre-question';
+			app.title = question.text;
 
 			connection.send((peerid) => {
 				return { stats : game.stats(peerid) };
@@ -192,7 +226,7 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 					resolve(question);
 				}
 			});
-			$timeout(() => {
+			setTimeout(() => {
 				timelimit = true;
 				if (spoken) {
 					resolve(question);
@@ -209,18 +243,16 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 				let player = playback.player(question.view, question.answers);
 				await player.start();
 
-				$scope.$apply(() => {
-					$scope.state = 'question';
-					$scope.category = question.view.category.join(": ");
-					$scope.minimizeQuestion = player.minimizeQuestion;
-				});
+				app.state = 'question';
+				app.minimizeQuestion = player.minimizeQuestion;
 
 				await connection.send({
 					answers : question.answers
 				});
 
-				let pointsThisRound = await game.startTimer(() => { if (!$scope.$$phase) { $scope.$digest(); }});
+				let pointsThisRound = await game.startTimer(updateTimer);
 				player.stop();
+				app.timer.running = false;
 
 				if (player.pauseMusic) {
 					sound.pause();
@@ -245,20 +277,19 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 			connection.send({
 				correct : correct.key
 			});
-			$scope.$apply(() => {
-				$scope.title = "The correct answer was";
-				$scope.correct = correct;
-				$scope.state = 'post-question';
-				$scope.pointChanges = pointsThisRound;
-				$scope.hasGuessed = {};
-			});
-			$timeout(() => {
-				$scope.$apply(() => {
-					$scope.pointChanges = {};
-				})
+
+			app.title = "The correct answer was";
+			app.correct = correct;
+			app.state = 'post-question';
+			updatePoints(pointsThisRound);
+
+			setTimeout(() => {
+				updatePoints({});
+			
 				connection.send({
 					wait : {}
 				});
+
 				resolve();
 			}, 3000);
 		});
@@ -266,11 +297,11 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 
 	function showError(err) {
 		console.log(err);
-		$scope.$apply(() => {
-			$scope.error = err.toString();
-		});
-		$timeout(() => {
-			delete $scope.error;
+
+		app.error = err.toString();
+
+		setTimeout(() => {
+			app.error = undefined;
 			gameLoop();
 		}, 3000);
 	}
@@ -283,6 +314,37 @@ function QuestionController($scope, $location, $timeout, connection, game, playb
 				$location.path('/results');
 			})
 		}
+	}
+
+	function updateTimer(timer) {
+		app.timer.running = timer.running();
+		app.timer.score = timer.score();
+		app.timer.timeLeft = timer.timeLeft();
+		app.timer.percentageLeft = timer.percentageLeft();
+	}
+
+	function updateSession(session) {
+		app.session.index = session.index();
+		app.session.total = session.total();
+		app.session.currentCategory = session.question().view.category.join(": ");
+	}
+
+	function updatePoints(pointChanges) {
+		for (pairCode in app.players) {
+			let player = app.players[pairCode];
+			player.pointChange = pairCode in pointChanges ? pointChanges[pairCode].points : 0;
+			player.multiplier = pairCode in pointChanges ? pointChanges[pairCode].multiplier : 1;
+			player.guessed = false;
+			player.totalPoints = game.players()[pairCode].score;
+		}
+	}
+
+	function mapToMap(input, mapFunction) {
+		let result = {};
+		for (let i in input) {
+			result[i] = mapFunction(input[i]);
+		}
+		return result;
 	}
 
 	gameLoop();

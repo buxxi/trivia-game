@@ -68,8 +68,9 @@ function Timer(timePerQuestion, pointsPerRound) {
 		end = start + (1000 * timePerQuestion);
 		running = true;
 
+		callback(self);
 		var cancel = setInterval(() => {
-			callback();
+			callback(self);
 			if (new Date().getTime() > end) {
 				console.log("interval stopping");
 				self.stop();
