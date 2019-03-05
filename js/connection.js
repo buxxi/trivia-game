@@ -1,16 +1,16 @@
-function Connection($rootScope, fingerprint) {
+function Connection(fingerprint) {
 	var self = this;
 	var mediator = { pairCode : null };
 	var serverUrl = window.location.href.toString().substr(0, window.location.href.toString().indexOf(window.location.pathname));
 	var peers = [];
+	var listeners = {};
 
 	function dataEvent(pairCode, data) {
 		if (pairCode.indexOf("client") == 0) {
 			pairCode = pairCode.substr(6);
 		}
 		var command = Object.keys(data)[0];
-		var params = data[command];
-		$rootScope.$broadcast('data-' + command, pairCode, params);
+		broadcast('data-' + command, pairCode, data[command]);
 	}
 
 	self.disconnect = function() {
@@ -129,6 +129,23 @@ function Connection($rootScope, fingerprint) {
 		}
 	}
 
+	self.on = function(eventName, listener) {
+		if (typeof listeners[eventName] != 'object') {
+			listeners[eventName] = [];	
+		}
+
+		listeners[eventName].push(listener);
+	}
+
+	function broadcast(eventName, pairCode, data) {
+		if (typeof listeners[eventName] == 'object') {
+			for (var i = 0; i < listeners[eventName].length; i++) {
+				let listener = listeners[eventName][i];
+				listener(pairCode, data);
+			} 
+		}
+	}
+
 	function serverToClient(pairCode) {
 		return new Promise((resolve, reject) => {
 			var peer = createPeer('client' + pairCode, true);
@@ -139,7 +156,7 @@ function Connection($rootScope, fingerprint) {
 					clearTimeout(timeout);
 
 					if (peerReconnected(peer)) {
-						$rootScope.$broadcast('connection-upgraded', peer);
+						broadcast('connection-upgraded', peer.pairCode, {});
 					} else {
 						peers.push(peer);
 					}
@@ -152,12 +169,12 @@ function Connection($rootScope, fingerprint) {
 					});
 
 					peer.on('upgrade', () => {
-						$rootScope.$broadcast('connection-upgraded', peer);
+						broadcast('connection-upgraded', peer.pairCode, {});
 					});
 
 					peer.on('close', () => {
 						peer.rtcConnected = false; //This can be delayed, so the gui wont be updated correctly. Lets just set the property here, what could go wrong?
-						$rootScope.$broadcast('connection-closed', peer);
+						broadcast('connection-closed', peer.pairCode, {});
 					});
 
 					resolve();
@@ -186,7 +203,7 @@ function Connection($rootScope, fingerprint) {
 				});
 
 				peer.on('close', () => {
-					$rootScope.$broadcast('connection-closed', peer);
+					broadcast('connection-closed', peer.pairCode, {});
 				});
 
 				resolve(peer);

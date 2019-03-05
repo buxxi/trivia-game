@@ -178,13 +178,13 @@ function QuestionController($scope, $location, connection, game, playback, sound
 		}
 	});
 
-	$scope.$on("data-guess", (event, pairCode, data) => {
+	connection.on("data-guess", (pairCode, data) => {
 		game.guess(pairCode, data);
 		app.players[pairCode].guessed = true;
 		sound.beep(Object.values(app.players).filter((p) => p.guessed).length);
 	});
 
-	$scope.$on("connection-closed", (event, conn) => {
+	connection.on("connection-closed", (pairCode, data) => {
 		for (pairCode in app.players) {
 			app.players[pairCode].connectionError = connection.connectionErrors(pairCode);
 		}

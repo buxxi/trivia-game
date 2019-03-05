@@ -190,8 +190,8 @@ function LobbyController($rootScope, $scope, $location, $routeParams, connection
 		refreshPlayers();
 	}).then((code) => {
 		app.code = code;
-		$scope.$on("connection-upgraded", refreshPlayers);
-		$scope.$on("connection-closed", refreshPlayers);
+		connection.on("connection-upgraded", refreshPlayers);
+		connection.on("connection-closed", refreshPlayers);
 	}).catch((err) => {
 		app.message = "Error when creating connection: " + err;
 	});

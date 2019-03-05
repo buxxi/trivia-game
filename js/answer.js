@@ -1,4 +1,4 @@
-function AnswerController($scope, connection, avatars) {
+function AnswerController(connection, avatars) {
 	let app = new Vue({
 		el: '.answer',
 		data: {
@@ -46,7 +46,7 @@ function AnswerController($scope, connection, avatars) {
 		}
 	});
 
-	$scope.$on('data-answers', (event, pairCode, data) => {
+	connection.on('data-answers', (pairCode, data) => {
 		app.answers = data;
 		app.waiting = false;
 		app.correct = null;
@@ -54,21 +54,21 @@ function AnswerController($scope, connection, avatars) {
 		app.hasGuessed = false;
 	});
 
-	$scope.$on('data-correct', (event, pairCode, data) => {
+	connection.on('data-correct', (pairCode, data) => {
 		app.correct = data;
 	});
 
-	$scope.$on('data-wait', (event, pairCode, data) => {
+	connection.on('data-wait', (pairCode, data) => {
 		app.answers = {};
 		app.waiting = true;
 		app.message = 'Waiting for next question';
 	});
 
-	$scope.$on('data-stats', (event, pairCode, data) => {
+	connection.on('data-stats', (pairCode, data) => {
 		app.stats = data;
 	});
 
-	$scope.$on('connection-closed', () => {
+	connection.on('connection-closed', (pairCode, data) => {
 		app.answers = {};
 		app.waiting = true;
 		app.message = 'The host closed the connection';
