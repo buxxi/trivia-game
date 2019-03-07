@@ -7,7 +7,6 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 
 ### Libraries used:
 - Vue.js: https://vuejs.org/
-- Angular.js: https://angularjs.org
 - LessCSS: http://lesscss.org/
 - FontAwesome: http://fontawesome.io/
 - SocketPeer: https://github.com/cvan/socketpeer
