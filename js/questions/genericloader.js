@@ -1,3 +1,5 @@
+import QuestionSelector from '../selector.js';
+
 export default function GenericCategoryLoader() {
 	var self = this;
 
