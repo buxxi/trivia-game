@@ -1,81 +1,76 @@
-var triviaApp = angular.module('triviaServer', ['ngRoute']);
+import avatars from './avatars.js';
+import Lobby from './lobby.js';
+import Question from './question.js';
+import Results from './results.js';
 
-triviaApp.config(($routeProvider) => {
-	$routeProvider.when('/', {
-			templateUrl : 'pages/lobby.html',
-			controller  : 'lobbyController'
-		}).when('/game', {
-			templateUrl : 'pages/game-server.html',
-			controller  : 'questionController'
-		}).when('/results', {
-			templateUrl : 'pages/results.html',
-			controller : 'resultController'
+function loadTemplate(url, component) {
+	return (resolve, reject) => {
+		fetch(url).then((response) => response.text()).then((data) => {
+			component.template = data;
+			resolve(component);
 		});
-});
+	};
+}
 
-triviaApp.constant('config', {
-	questions : 25,
-	time : 30,
-	pointsPerRound : 1000,
-	stopOnAnswers : true,
-	allowMultiplier : true,
-	maxMultiplier : 5,
-	sound : {
-		backgroundMusic : true,
-		soundEffects : true,
-		text2Speech : true
+const fingerprint = new Fingerprint2();
+const connection = new Connection(fingerprint);
+const youtube = new YoutubeLoader();
+const movies = new MovieQuestions(youtube);
+const music = new MusicQuestions();
+const geography = new GeographyQuestions();
+const quotes = new QuotesQuestions();
+const videogames = new VideoGameQuestions(youtube);
+const drinks = new DrinksQuestions();
+const actors = new ActorQuestions();
+const meta = new CurrentGameQuestions(avatars);
+const genericloader = new GenericCategoryLoader();
+const categories = new Categories(movies, music, geography, quotes, videogames, drinks, actors, meta, genericloader);
+const game = new Game(avatars, categories);
+const sound = new SoundController(game);
+const playback = new Playback();
+
+const routes = [
+  	{ 
+		path: '/',
+		component: loadTemplate('./pages/lobby.html', Lobby),
+		props: (route) => ({ 
+				connection: connection,
+				game: game,
+				categories: categories,
+				sound: sound,
+				avatars: avatars,
+				fingerprint: fingerprint,
+				fakePlayers: route.query.fakePlayers,
+				forcePairCode : route.query.forcePairCode
+		}) 
 	},
-	categories : {},
-	fullscreen : false,
-	categorySpinner : true
+	{
+		path: '/game',
+		component: loadTemplate('./pages/game-server.html', Question),
+		props: (route) => ({ 
+			connection: connection,
+			game: game,
+			playback: playback,
+			sound: sound,
+			avatars: avatars,
+			categories: categories
+		})		 
+	},
+	{
+		path: '/results',
+		component: loadTemplate('./pages/results.html', Results),
+		props: (route) => ({ 
+			game: game,
+			sound: sound,
+			avatars: avatars
+		})		 
+	},
+];
+
+const router = new VueRouter({
+  routes
 });
 
-triviaApp.constant('avatars', function(avatars) {
-		Object.values(avatars).forEach((avatar) => {
-			avatar.url = /src=\"(.*?)\"/.exec(twemoji.parse(avatar.code))[1];
-		});
-		return avatars;
-	}({
-	monkey : { code :'\uD83D\uDC35' },
-	dog : { code :'\uD83D\uDC36' },
-	wolf : { code :'\uD83D\uDC3A' },
-	cat : { code :'\uD83D\uDC31' },
-	lion : { code :'\uD83E\uDD81' },
-	tiger : { code :'\uD83D\uDC2F' },
-	horse : { code :'\uD83D\uDC34' },
-	cow : { code :'\uD83D\uDC2E' },
-	dragon : { code :'\uD83D\uDC32' },
-	pig : { code :'\uD83D\uDC37' },
-	mouse : { code :'\uD83D\uDC2D' },
-	hamster : { code :'\uD83D\uDC39' },
-	rabbit : { code :'\uD83D\uDC30' },
-	bear : { code :'\uD83D\uDC3B' },
-	panda : { code :'\uD83D\uDC3C' },
-	frog : { code :'\uD83D\uDC38' },
-	octopus : { code :'\uD83D\uDC19' },
-	turtle : { code :'\uD83D\uDC22' },
-	bee : { code :'\uD83D\uDC1D' },
-	snail : { code :'\uD83D\uDC0C' },
-	penguin : { code :'\uD83D\uDC27' }/*,
-	dromedary : { code :'\uD83D\uDC2A' }*/
-}));
-triviaApp.constant('fingerprint', new Fingerprint2());
-
-triviaApp.service('sound', SoundController);
-triviaApp.service('connection', Connection);
-triviaApp.service('youtube', YoutubeLoader);
-triviaApp.service('genericloader', GenericCategoryLoader);
-triviaApp.service('drinks', DrinksQuestions);
-triviaApp.service('geography', GeographyQuestions);
-triviaApp.service('movies', MovieQuestions);
-triviaApp.service('music', MusicQuestions);
-triviaApp.service('quotes', QuotesQuestions);
-triviaApp.service('videogames', VideoGameQuestions);
-triviaApp.service('actors', ActorQuestions);
-triviaApp.service('meta', CurrentGameQuestions);
-triviaApp.service('categories', Categories);
-triviaApp.service('playback', Playback);
-triviaApp.service('game', Game);
-triviaApp.controller('questionController', QuestionController);
-triviaApp.controller('lobbyController', LobbyController);
-triviaApp.controller('resultController', ResultsController);
+const app = new Vue({
+  router
+}).$mount('#main');

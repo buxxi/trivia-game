@@ -1,5 +1,6 @@
-function SoundController(config) {
+function SoundController(game) {
 	var self = this;
+	var config = game.config();
 
 	var backgroundMusic = new Pizzicato.Sound('sound/background.mp3', () => {
 		backgroundMusic.volume = 0.10;

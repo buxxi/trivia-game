@@ -91,12 +91,28 @@ function Timer(timePerQuestion, pointsPerRound) {
 	}
 }
 
-function Game(avatars, categories, config) {
+function Game(avatars, categories) {
 	var self = this;
 	var players = {};
 	var guesses = {};
 	var session = { history : () => [] };
 	var timer = {};
+	var config = {
+		questions : 25,
+		time : 30,
+		pointsPerRound : 1000,
+		stopOnAnswers : true,
+		allowMultiplier : true,
+		maxMultiplier : 5,
+		sound : {
+			backgroundMusic : true,
+			soundEffects : true,
+			text2Speech : true
+		},
+		categories : {},
+		fullscreen : false,
+		categorySpinner : true
+	};
 
 	function calculatePoints() {
 		var result = {};
@@ -155,6 +171,10 @@ function Game(avatars, categories, config) {
 
 	self.players = function() {
 		return players;
+	}
+
+	self.config = function() {
+		return config;
 	}
 
 	self.addPlayer = function(peerid, name, avatar) {

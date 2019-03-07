@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="triviaServer">
+<html>
 	<head>
 		<link rel="stylesheet" href="css/font-awesome.min.css" />
 		<link rel="stylesheet/less" href="css/trivia.less"/>
@@ -9,8 +9,7 @@
 
 		<script src="js/ext/less.min.js"></script>
 		<script src="js/ext/vue.js"></script>
-		<script src="js/ext/angular.min.js"></script>
-		<script src="js/ext/angular-route.min.js"></script>
+		<script src="js/ext/vue-router.js"></script>
 		<script src="js/ext/socketpeer.min.js"></script>
 		<script src="js/ext/pizzicato.min.js"></script>
 		<script src="js/ext/qcode-decoder.min.js"></script>
@@ -22,7 +21,6 @@
 		<script src="js/ext/idb.js"></script>
 		<script src="js/ext/compromise.min.js"></script>
 
-		<script src="js/question.js"></script>
 		<script src="js/sound.js"></script>
 		<script src="js/connection.js"></script>
 		<script src="js/youtubeloader.js"></script>
@@ -38,9 +36,6 @@
 		<script src="js/categories.js"></script>
 		<script src="js/playback.js"></script>
 		<script src="js/game.js"></script>
-		<script src="js/lobby.js"></script>
-		<script src="js/results.js"></script>
-		<script src="js/server.js"></script>
 
 		<title>WebRTC-Trivia Server</title>
 
@@ -48,7 +43,8 @@
 	</head>
 	<body id="server">
 		<div id="main">
-			<div ng-view></div>
+			<router-view></router-view>
 		</div>
+		<script type="module" src="js/server.js"></script>
 	</body>
 </html>

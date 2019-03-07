@@ -1,46 +1,26 @@
-var triviaClient = angular.module('triviaClient', ['ngRoute']);
+import Join from './join.js';
+import Answer from './answer.js';
 
-triviaClient.config(($routeProvider) => {
-	$routeProvider.when('/', {
-			templateUrl : 'pages/join.html',
-			controller  : 'joinController'
-		}).when('/game', {
-			templateUrl : 'pages/game-client.html',
-			controller  : 'answerController'
+function loadTemplate(url, component) {
+	return (resolve, reject) => {
+		fetch(url).then((response) => response.text()).then((data) => {
+			component.template = data;
+			resolve(component);
 		});
+	};
+}
+
+const connection = new Connection(new Fingerprint2());
+
+const routes = [
+  { path: '/', component: loadTemplate('./pages/join.html', Join), props: (route) => ({ code: route.query.code, connection: connection }) },
+  { path: '/game', component: loadTemplate('./pages/game-client.html', Answer), props: { connection: connection }}
+];
+
+const router = new VueRouter({
+  routes
 });
 
-triviaClient.constant('avatars', function(avatars) {
-		Object.values(avatars).forEach((avatar) => {
-			avatar.url = /src=\"(.*?)\"/.exec(twemoji.parse(avatar.code))[1];
-		});
-		return avatars;
-	}({
-	monkey : { code :'\uD83D\uDC35' },
-	dog : { code :'\uD83D\uDC36' },
-	wolf : { code :'\uD83D\uDC3A' },
-	cat : { code :'\uD83D\uDC31' },
-	lion : { code :'\uD83E\uDD81' },
-	tiger : { code :'\uD83D\uDC2F' },
-	horse : { code :'\uD83D\uDC34' },
-	cow : { code :'\uD83D\uDC2E' },
-	dragon : { code :'\uD83D\uDC32' },
-	pig : { code :'\uD83D\uDC37' },
-	mouse : { code :'\uD83D\uDC2D' },
-	hamster : { code :'\uD83D\uDC39' },
-	rabbit : { code :'\uD83D\uDC30' },
-	bear : { code :'\uD83D\uDC3B' },
-	panda : { code :'\uD83D\uDC3C' },
-	frog : { code :'\uD83D\uDC38' },
-	octopus : { code :'\uD83D\uDC19' },
-	turtle : { code :'\uD83D\uDC22' },
-	bee : { code :'\uD83D\uDC1D' },
-	snail : { code :'\uD83D\uDC0C' },
-	penguin : { code :'\uD83D\uDC27' }/*,
-	dromedary : { code :'\uD83D\uDC2A' }*/
-}));
-triviaClient.constant('fingerprint', new Fingerprint2());
-
-triviaClient.service('connection', Connection);
-triviaClient.controller('answerController', AnswerController);
-triviaClient.controller('joinController', JoinController);
+const app = new Vue({
+  router
+}).$mount('#main');
