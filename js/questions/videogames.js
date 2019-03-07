@@ -1,10 +1,13 @@
-function VideoGameQuestions(youtube) {
+import YoutubeLoader from '../youtubeloader.js';
+
+export default function VideoGameQuestions() {
 	var self = this;
 	var games = [];
 
 	var youtubeApiKey = '';
 	var igdbApiKey = '';
 	var igdbBaseURL = '';
+	var youtube = new YoutubeLoader();
 
 	var GAMES_PER_PLATFORM = 50;
 

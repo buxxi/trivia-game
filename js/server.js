@@ -2,6 +2,11 @@ import avatars from './avatars.js';
 import Lobby from './lobby.js';
 import Question from './question.js';
 import Results from './results.js';
+import Categories from './categories.js';
+import Connection from './connection.js';
+import Game from './game.js';
+import SoundController from './sound.js';
+import Playback from './playback.js';
 
 function loadTemplate(url, component) {
 	return (resolve, reject) => {
@@ -14,18 +19,8 @@ function loadTemplate(url, component) {
 
 const fingerprint = new Fingerprint2();
 const connection = new Connection(fingerprint);
-const youtube = new YoutubeLoader();
-const movies = new MovieQuestions(youtube);
-const music = new MusicQuestions();
-const geography = new GeographyQuestions();
-const quotes = new QuotesQuestions();
-const videogames = new VideoGameQuestions(youtube);
-const drinks = new DrinksQuestions();
-const actors = new ActorQuestions();
-const meta = new CurrentGameQuestions(avatars);
-const genericloader = new GenericCategoryLoader();
-const categories = new Categories(movies, music, geography, quotes, videogames, drinks, actors, meta, genericloader);
-const game = new Game(avatars, categories);
+const categories = new Categories();
+const game = new Game(categories);
 const sound = new SoundController(game);
 const playback = new Playback();
 

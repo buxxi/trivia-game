@@ -1,4 +1,4 @@
-function ActorQuestions() {
+export default function ActorQuestions() {
     var self = this;
     var actors = [];
     var ACTOR_COUNT = 500;

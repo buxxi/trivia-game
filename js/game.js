@@ -1,3 +1,5 @@
+import avatars from './avatars.js';
+
 function Session(totalQuestions) {
 	var self = this;
 	var currentQuestion = {
@@ -91,7 +93,7 @@ function Timer(timePerQuestion, pointsPerRound) {
 	}
 }
 
-function Game(avatars, categories) {
+export default function Game(categories) {
 	var self = this;
 	var players = {};
 	var guesses = {};

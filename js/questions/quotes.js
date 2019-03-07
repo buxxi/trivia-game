@@ -1,4 +1,4 @@
-function QuotesQuestions() {
+export default function QuotesQuestions() {
 	var self = this;
 	var quotes = [];
 	var TOTAL_QUOTES = 50;

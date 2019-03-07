@@ -1,4 +1,4 @@
-function YoutubeLoader() {
+export default function YoutubeLoader() {
 	var self = this;
 	var YOUTUBE_REGION = 'SE';
 

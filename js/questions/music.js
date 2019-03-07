@@ -1,4 +1,4 @@
-function MusicQuestions() {
+export default function MusicQuestions() {
 	var self = this;
 	var tracks = [];
 	var TRACKS_BY_CATEGORY = 100;

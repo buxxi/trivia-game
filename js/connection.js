@@ -1,4 +1,4 @@
-function Connection(fingerprint) {
+export default function Connection(fingerprint) {
 	var self = this;
 	var mediator = { pairCode : null };
 	var serverUrl = window.location.href.toString().substr(0, window.location.href.toString().indexOf(window.location.pathname));
@@ -215,7 +215,7 @@ function Connection(fingerprint) {
 
 	function sanityCheck(mediator) {
 		return new Promise((resolve, reject) => {
-			checkPeer = createPeer(mediator.pairCode, false);
+			let checkPeer = createPeer(mediator.pairCode, false);
 			checkPeer.on('error', reject);
 			checkPeer.on('connect', () => {
 				mediator.once('close', () => {

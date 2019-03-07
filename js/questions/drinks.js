@@ -1,4 +1,4 @@
-function DrinksQuestions() {
+export default function DrinksQuestions() {
 	var self = this;
 	var drinks = [];
 	var TOTAL_DRINKS = 50;

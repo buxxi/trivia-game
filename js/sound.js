@@ -1,4 +1,4 @@
-function SoundController(game) {
+export default function SoundController(game) {
 	var self = this;
 	var config = game.config();
 

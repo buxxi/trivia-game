@@ -201,7 +201,7 @@ function AnswersViewer(answers) {
 
 function noop() {}
 
-function Playback() {
+export default function Playback() {
 	var self = this;
 
 	var players = {

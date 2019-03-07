@@ -1,8 +1,11 @@
-function MovieQuestions(youtube) {
+import YoutubeLoader from '../youtubeloader.js';
+
+export default function MovieQuestions() {
 	var self = this;
 	var movies = [];
 	var youtubeApiKey = '';
 	var tmdbApiKey = '';
+	var youtube = new YoutubeLoader();
 
 	var types = {
 		title : {

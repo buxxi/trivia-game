@@ -1,4 +1,4 @@
-function GeographyQuestions() {
+export default function GeographyQuestions() {
 	var self = this;
 	var countries = [];
 

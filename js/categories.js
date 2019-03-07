@@ -1,3 +1,13 @@
+import MovieQuestions from './questions/movies.js';
+import VideoGameQuestions from './questions/videogames.js';
+import CurrentGameQuestions from './questions/meta.js';
+import ActorQuestions from './questions/actors.js';
+import DrinksQuestions from './questions/drinks.js';
+import GeographyQuestions from './questions/geography.js';
+import MusicQuestions from './questions/music.js';
+import QuotesQuestions from './questions/quotes.js';
+import GenericCategoryLoader from './genericloader.js';
+
 const dbPromise = idb.open('keyval-store', 1, upgradeDB => {
 	upgradeDB.createObjectStore('keyval');
 });
@@ -184,7 +194,7 @@ function QuestionSelector() {
 
 	self.sum = function(arr, func) {
 		func = func || ((obj) => obj);
-		return result = arr.map(func).reduce((a, b) => a + b, 0);
+		return arr.map(func).reduce((a, b) => a + b, 0);
 	}
 
 	self.max = function(arr, func) {
@@ -220,12 +230,23 @@ function QuestionSelector() {
 	}
 }
 
-function Categories(movies, music, geography, quotes, videogames, drinks, actors, meta, genericloader) {
+export default function Categories() {
 	var self = this;
-	var categories = [movies, music, geography, quotes, videogames, drinks, actors, meta];
+
+	var categories = [
+		new MovieQuestions(),
+		new MusicQuestions(),
+		new GeographyQuestions(),
+		new QuotesQuestions(),
+		new VideoGameQuestions(),
+		new DrinksQuestions(),
+		new ActorQuestions(),
+		new CurrentGameQuestions()
+	];
 	var enabledCategories = [];
 	var apikeys = {};
 	var jokes = [];
+	var genericloader = new GenericCategoryLoader();
 
 	self.init = function() {
 		return new Promise((resolve, reject) => {

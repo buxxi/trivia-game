@@ -1,4 +1,6 @@
-function CurrentGameQuestions(avatars) {
+import avatars from '../avatars.js';
+
+export default function CurrentGameQuestions() {
 	var self = this;
 
 	var types = {

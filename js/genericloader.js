@@ -1,4 +1,4 @@
-function GenericCategoryLoader() {
+export default function GenericCategoryLoader() {
 	var self = this;
 
 	self.create = function(name, input) {
