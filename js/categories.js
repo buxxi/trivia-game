@@ -7,52 +7,7 @@ import GeographyQuestions from './questions/geography.js';
 import MusicQuestions from './questions/music.js';
 import QuotesQuestions from './questions/quotes.js';
 import GenericCategoryLoader from './genericloader.js';
-
-const dbPromise = idb.open('keyval-store', 1, upgradeDB => {
-	upgradeDB.createObjectStore('keyval');
-});
-
-const idbKeyval = {
-	get : function(key) {
-		return dbPromise.then(db => {
-			return db.transaction('keyval').objectStore('keyval').get(key);
-		});
-	},
-	set : function(key, val) {
-		return dbPromise.then(db => {
-			const tx = db.transaction('keyval', 'readwrite');
-			tx.objectStore('keyval').put(val, key);
-			return tx.complete;
-		});
-	},
-	clear : function() {
-		return dbPromise.then(db => {
-			const tx = db.transaction('keyval', 'readwrite');
-			tx.objectStore('keyval').clear();
-			return tx.complete;
-		});
-	}
-}
-
-function Cache(primaryKey) {
-	var self = this;
-
-	self.get = function(subKey, promiseFunction) {
-		return new Promise((resolve, reject) => {
-			var key = primaryKey + "-" + subKey;
-
-			idbKeyval.get(key).then((val) => {
-				if (!val) {
-					promiseFunction((result) => {
-						idbKeyval.set(key, result).then(() => resolve(result)).catch(reject);
-					}, reject);
-				} else {
-					resolve(val);
-				}
-			}).catch(reject);
-		});
-	}
-}
+import Cache from './cache.js';
 
 function QuestionSelector() {
 	var self = this;
@@ -343,7 +298,7 @@ export default function Categories() {
 	}
 
 	self.clearCache = function() {
-		idbKeyval.clear();
+		new Cache().clearAll();
 	}
 
 	function categoryByType(type) {
