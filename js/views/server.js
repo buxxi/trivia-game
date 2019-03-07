@@ -1,12 +1,12 @@
-import avatars from './avatars.js';
-import Lobby from './lobby.js';
-import Question from './question.js';
-import Results from './results.js';
-import Categories from './categories.js';
-import Connection from './connection.js';
-import Game from './game.js';
-import SoundController from './sound.js';
-import Playback from './playback.js';
+import avatars from '../avatars.js';
+import Lobby from '../components/lobby.js';
+import Question from '../components/question.js';
+import Results from '../components/results.js';
+import Categories from '../categories.js';
+import Connection from '../connection.js';
+import Game from '../game.js';
+import SoundController from '../sound.js';
+import Playback from '../playback.js';
 
 function loadTemplate(url, component) {
 	return (resolve, reject) => {

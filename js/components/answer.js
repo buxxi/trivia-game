@@ -1,4 +1,4 @@
-import avatars from './avatars.js';
+import avatars from '../avatars.js';
 
 export default {
 	data: function() { return({

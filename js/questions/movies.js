@@ -1,4 +1,4 @@
-import YoutubeLoader from '../youtubeloader.js';
+import YoutubeLoader from './youtubeloader.js';
 
 export default function MovieQuestions() {
 	var self = this;

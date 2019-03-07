@@ -6,7 +6,7 @@ import DrinksQuestions from './questions/drinks.js';
 import GeographyQuestions from './questions/geography.js';
 import MusicQuestions from './questions/music.js';
 import QuotesQuestions from './questions/quotes.js';
-import GenericCategoryLoader from './genericloader.js';
+import GenericCategoryLoader from './questions/genericloader.js';
 import Cache from './cache.js';
 
 function QuestionSelector() {
