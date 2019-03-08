@@ -80,7 +80,7 @@ export default function ActorQuestions() {
 			try {
 				while (result.length < ACTOR_COUNT) {
 					let actorsChunk = await loadActorsChunk(page++);
-					for (actor of actorsChunk) {
+					for (var actor of actorsChunk) {
 						actor = await loadActorDetails(actor);
 						result.push(actor);
 						progress(result.length, ACTOR_COUNT);
