@@ -1,21 +1,27 @@
-function BlankPlayer() {
-	var self = this;
-
-	self.start = function() {
+class BlankPlayer {
+	constructor() {
+		this.pauseMusic = false;
+		this.minimizeQuestion = false;
+	}
+	
+	start() {
 		return new Promise((resolve, reject) => {
 			resolve();
 		});
 	}
 
-	self.stop = () => {};
-	self.pauseMusic = false;
-	self.minimizeQuestion = false;
+	stop() {}
 }
 
-function ImageViewer(url) {
-	var self = this;
+class ImageViewer {
+	constructor(url) {
+		this.url = url;
+		this.pauseMusic = false;
+		this.minimizeQuestion = true;
+	}
 
-	self.start = function() {
+	start() {
+		let url = this.url;
 		return new Promise((resolve, reject) => {
 			var img = new Image();
 			img.onload = () => {
@@ -29,29 +35,35 @@ function ImageViewer(url) {
 		});
 	}
 
-
-	self.stop = clear;
-	self.pauseMusic = false;
-	self.minimizeQuestion = true;
+	stop() {
+		clear();
+	}
 }
 
-function YoutubePlayer(videoId, playerClass) {
-	var self = this;
-	var player = {};
+class YoutubePlayer {
+	constructor(videoId, playerClass) {
+		this.videoId = videoId;
+		this.playerClass = playerClass;
+		this.player = {};
+		this.pauseMusic = true;
+		this.minimizeQuestion = true;
+	}
 
-	self.start = function() {
+	start() {
+		let self = this;
+		
 		return new Promise((resolve, reject) => {
-			document.getElementById('content').innerHTML = '<div class="' + playerClass + '" id="player"></div>';
+			document.getElementById('content').innerHTML = '<div class="' + self.playerClass + '" id="player"></div>';
 
 			var startTimeout = setTimeout(() => {
 				self.stop();
 				reject("Didn't start playback before timeout");
 			}, 5000);
 
-			player = new YT.Player('player', {
+			self.player = new YT.Player('player', {
 				height: '100%',
 				width: '100%',
-				videoId: videoId,
+				videoId: self.videoId,
 				playerVars : {
 					autoplay : 1,
 					controls : 0,
@@ -69,49 +81,57 @@ function YoutubePlayer(videoId, playerClass) {
 		});
 	}
 
-	self.stop = function() {
-		player.stopVideo();
+	stop() {
+		this.player.stopVideo();
 		clear();
 	}
-
-	self.pauseMusic = true;
-	self.minimizeQuestion = true;
 }
 
-function Mp3Player(mp3) {
-	var self = this;
-	var player =  {};
+class Mp3Player {
+	constructor(mp3) {
+		this.mp3 = mp3;
+		this.player = {};
+		this.pauseMusic = true;
+		this.minimizeQuestion = true;
+	}
 
-	self.start = function() {
+	start() {
+		let self = this;
+
 		return new Promise((resolve, reject) => {
 			document.getElementById('content').innerHTML = '<div id="player"></div>';
-			player = new Audio();
-			player.addEventListener('canplaythrough', () => {
-				player.play();
+			self.player = new Audio();
+			self.player.addEventListener('canplaythrough', () => {
+				self.player.play();
 				resolve();
 			});
-			player.addEventListener('error', (err) => {
+			self.player.addEventListener('error', (err) => {
 				reject(err);
 			});
-			player.src = mp3;
+			self.player.src = self.mp3;
 		});
 	}
 
-	self.stop = function() {
+	stop() {
 		clear();
-		player.pause();
-		player = null;
+		this.player.pause();
+		this.player = null;
 	}
 }
 
-function Mp3WavePlayer(mp3) {
-	var self = this;
-	var player = {};
+class Mp3WavePlayer {
+	constructor(mp3) {
+		this.mp3 = mp3;
+		this.player = {};
+		this.pauseMusic = true;
+		this.minimizeQuestion = true;
+	}
 
-	self.start = function() {
+	start() {
+		let self = this;
 		return new Promise((resolve, reject) => {
 			document.getElementById('content').innerHTML = '<div class="wavesurfer" id="player"></div>';
-			player = WaveSurfer.create({
+			self.player = WaveSurfer.create({
 				container: '#player',
 				waveColor: 'white',
 				progressColor: '#337ab7',
@@ -120,70 +140,78 @@ function Mp3WavePlayer(mp3) {
 				barWidth : 3
 			});
 
-			player.on('ready', () => {
-				player.setVolume(0.3);
-				player.play();
+			self.player.on('ready', () => {
+				self.player.setVolume(0.3);
+				self.player.play();
 				resolve();
 			});
 
-			player.on('error', (err) => {
+			self.player.on('error', (err) => {
 				if (err.trim() == "XHR error:") {
-					self.loadFallback(resolve, reject);
+					self.loadFallback(resolve, reject); //TODO: this is not defined?
 				} else {
 					reject(err);
 				}
 			});
 
-			player.load(mp3);
+			self.player.load(self.mp3);
 		});
 	}
 
-	self.stop = function() {
-		player.stop();
-		player.destroy();
+	stop() {
+		this.player.stop();
+		this.player.destroy();
 		clear();
 	}
-
-	self.pauseMusic = true;
-	self.minimizeQuestion = true;
 }
 
-function QuoteText(quote) {
-	var self = this;
+class QuoteText {
+	constructor(quote) {
+		this.quote = quote;
+		this.pauseMusic = false;
+		this.minimizeQuestion = true;
+	}
 
-	self.start = function() {
+	start() {
+		let quote = this.quote;
 		return new Promise((resolve, reject) => {
 			document.getElementById('content').innerHTML = '<div class="quote" id="player"><i class="fa fa-fw fa-quote-left"></i><p>' + quote + '</p><i class="fa fa-fw fa-quote-right"></i></div>';
 			resolve();
 		});
 	}
 
-	self.stop = clear;
-
-	self.pauseMusic = false;
-	self.minimizeQuestion = true;
+	stop() {
+		clear();
+	}
 }
 
-function ListViewer(list) {
-	var self = this;
-
-	self.start = function() {
+class ListViewer {
+	constructor(list) {
+		this.list = list;
+		this.pauseMusic = false;
+		this.minimizeQuestion = true;
+	}
+	start() {
+		let list = this.list;
 		return new Promise((resolve, reject) => {
 			document.getElementById('content').innerHTML = '<div class="list" id="player"><ol><li>' + list.join("</li><li>") + '</li></ol></i></div>';
 			resolve();
 		});
 	}
 
-	self.stop = clear;
-
-	self.pauseMusic = false;
-	self.minimizeQuestion = true;
+	stop() {
+		clear();
+	}
 }
 
-function AnswersViewer(answers) {
-	var self = this;
+class AnswersViewer {
+	constructor(answers) {
+		this.answers = answers;
+		this.pauseMusic = false;
+		this.minimizeQuestion = true;
+	}
 
-	self.start = function() {
+	start() {
 		return new Promise((resolve, reject) => {
 			document.getElementById('content').innerHTML = '<div class="list-answers" id="player"><ol>' +
 				'<li class="btn-A">' + answers.A + '</li>' +
@@ -195,10 +223,9 @@ function AnswersViewer(answers) {
 		});
 	}
 
-	self.stop = clear;
-
-	self.pauseMusic = false;
-	self.minimizeQuestion = true;
+	stop() {
+		clear();
+	}
 }
 
 function clear() {
