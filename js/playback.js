@@ -7,7 +7,7 @@ function BlankPlayer() {
 		});
 	}
 
-	self.stop = noop;
+	self.stop = () => {};
 	self.pauseMusic = false;
 	self.minimizeQuestion = false;
 }
@@ -30,7 +30,7 @@ function ImageViewer(url) {
 	}
 
 
-	self.stop = noop;
+	self.stop = clear;
 	self.pauseMusic = false;
 	self.minimizeQuestion = true;
 }
@@ -71,7 +71,7 @@ function YoutubePlayer(videoId, playerClass) {
 
 	self.stop = function() {
 		player.stopVideo();
-		document.getElementById('content').innerHTML = '<div id="player"></div>';
+		clear();
 	}
 
 	self.pauseMusic = true;
@@ -98,6 +98,7 @@ function Mp3Player(mp3) {
 	}
 
 	self.stop = function() {
+		clear();
 		player.pause();
 		player = null;
 	}
@@ -140,6 +141,7 @@ function Mp3WavePlayer(mp3) {
 	self.stop = function() {
 		player.stop();
 		player.destroy();
+		clear();
 	}
 
 	self.pauseMusic = true;
@@ -156,7 +158,7 @@ function QuoteText(quote) {
 		});
 	}
 
-	self.stop = noop;
+	self.stop = clear;
 
 	self.pauseMusic = false;
 	self.minimizeQuestion = true;
@@ -172,7 +174,7 @@ function ListViewer(list) {
 		});
 	}
 
-	self.stop = noop;
+	self.stop = clear;
 
 	self.pauseMusic = false;
 	self.minimizeQuestion = true;
@@ -193,13 +195,15 @@ function AnswersViewer(answers) {
 		});
 	}
 
-	self.stop = noop;
+	self.stop = clear;
 
 	self.pauseMusic = false;
 	self.minimizeQuestion = true;
 }
 
-function noop() {}
+function clear() {
+	document.getElementById('content').innerHTML = '';
+}
 
 export default function Playback() {
 	var self = this;

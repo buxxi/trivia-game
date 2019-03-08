@@ -142,8 +142,8 @@ class WaitForAnswersState {
 
 			console.log(this.question);
 
+			let player = app.playback.player(this.question.view, this.question.answers);
 			try {
-				let player = app.playback.player(this.question.view, this.question.answers);
 				await player.start();
 
 				app.state = 'question';
@@ -163,6 +163,7 @@ class WaitForAnswersState {
 
 				resolve(pointsThisRound);
 			} catch (e) {
+				player.stop();
 				reject(e);
 			}
 		});
@@ -195,7 +196,6 @@ class ShowCorrectAnswerState {
 			}
 
 			let correct = this.app.game.correctAnswer();
-			document.getElementById('content').innerHTML = '';
 			app.connection.send({
 				correct : correct.key
 			});
@@ -235,6 +235,7 @@ class QuestionError {
 			this.app.error = this.err.toString();
 
 			setTimeout(() => {
+
 				this.app.error = undefined;
 				resolve();
 			}, 3000);
