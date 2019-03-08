@@ -42,6 +42,7 @@ class ImageViewer {
 
 class YoutubePlayer {
 	constructor(videoId, playerClass) {
+		console.log(playerClass);
 		this.videoId = videoId;
 		this.playerClass = playerClass;
 		this.player = {};
@@ -53,14 +54,14 @@ class YoutubePlayer {
 		let self = this;
 		
 		return new Promise((resolve, reject) => {
-			document.getElementById('content').innerHTML = '<div class="' + self.playerClass + '" id="player"></div>';
+			document.getElementById('content').innerHTML = '<div class="' + self.playerClass + '" id="player"><div id="video"></div></div>';
 
 			var startTimeout = setTimeout(() => {
 				self.stop();
 				reject("Didn't start playback before timeout");
 			}, 5000);
 
-			self.player = new YT.Player('player', {
+			self.player = new YT.Player('video', {
 				height: '100%',
 				width: '100%',
 				videoId: self.videoId,

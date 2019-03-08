@@ -235,6 +235,27 @@ h1 {
 	visibility : hidden;
 }
 
+#player.youtube {
+	&:before {
+    content: "";
+    display: block;
+    width: 100%;
+    position: absolute;
+    background-color: black;
+    height: 60px;
+    top: 0;
+	}
+	&:after {
+    content: "";
+    display: block;
+    width: 100%;
+    position: absolute;
+    background-color: black;
+    height: 60px;
+    bottom: 0;
+	}
+}
+
 #player.list ol {
 	font-size: 2em;
 }
