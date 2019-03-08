@@ -81,7 +81,7 @@ export default function Categories() {
 	self.attribution = function() {
 		var attribution = categories.reduce((result, current) => result.concat(current.describe().attribution), []);
 		var attributionMap = {};
-		for (attr of attribution) {
+		for (let attr of attribution) {
 			attributionMap[attr.name] = attr;
 		}
 		return Object.values(attributionMap);
