@@ -62,7 +62,7 @@ function mapToMap(input, mapFunction) {
 	return result;
 }
 
-class LoadingNextQuestion {
+class LoadingNextQuestionState {
 	constructor(app) {
 		this.app = app;
 	}
@@ -87,11 +87,11 @@ class LoadingNextQuestion {
 	}
 
 	nextState(question) {
-		return new PreQuestion(this.app, question);
+		return new PresentQuestionState(this.app, question);
 	}
 }
 
-class PreQuestion {
+class PresentQuestionState {
 	constructor(app, question) {
 		this.app = app;
 		this.question = question;
@@ -126,11 +126,11 @@ class PreQuestion {
 	}
 
 	nextState(question) {
-		return new ShowQuestion(this.app, question);
+		return new WaitForAnswersState(this.app, question);
 	}
 }
 
-class ShowQuestion {
+class WaitForAnswersState {
 	constructor(app, question) {
 		this.app = app;
 		this.question = question;
@@ -169,11 +169,11 @@ class ShowQuestion {
 	}
 
 	nextState(pointsThisRound) {
-		return new PostQuestion(this.app, pointsThisRound);
+		return new ShowCorrectAnswerState(this.app, pointsThisRound);
 	}
 }
 
-class PostQuestion {
+class ShowCorrectAnswerState {
 	constructor(app, pointsThisRound) {
 		this.app = app;
 		this.pointsThisRound = pointsThisRound;
@@ -256,7 +256,7 @@ class GameLoop {
 			var state;
 			while (this.app.game.hasMoreQuestions()) {
 				try {
-					state = new LoadingNextQuestion(this.app);
+					state = new LoadingNextQuestionState(this.app);
 					while (state) {
 						let result = await state.run();
 						state = state.nextState(result);
