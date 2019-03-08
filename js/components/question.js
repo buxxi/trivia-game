@@ -36,7 +36,9 @@ export default {
 			}
 		});
 
-		new GameLoop(app).run().then(() => this.app.$router.push('/results'));
+		new GameLoop(app).run().then(() => {
+			app.$router.push('/results');
+		});
 	},
 	methods: {
 		isLeadingPlayer: function (player) {
@@ -67,20 +69,25 @@ class LoadingNextQuestion {
 
 	run() {
 		return new Promise((resolve, reject) => {
-			let spinner = new CategorySpinner(this.app.categories, this.app.sound.click, this.app.game.showCategorySpinner());
+			let app = this.app;
+			let spinner = new CategorySpinner(app.categories, app.sound.click, app.game.showCategorySpinner());
 
-			this.app.state = 'loading';
-			this.app.title = 'Selecting next question';
-			this.app.spinner.categories = spinner.categories;
+			app.state = 'loading';
+			app.title = 'Selecting next question';
+			app.spinner.categories = spinner.categories;
 
-			this.app.game.nextQuestion().then((question) => {
-				this.app.session.update(this.app.game.session());
+			app.game.nextQuestion().then((question) => {
+				app.session.update(app.game.session());
 				spinner.start().then(() => {
-					this.app.sound.speak(this.app.session.currentCategory, () => resolve(question));
+					app.sound.speak(app.session.currentCategory, () => resolve(question));
 				}).catch(reject);
 				setTimeout(() => spinner.stop().catch(reject), 2000);
 			}).catch(reject);
 		});
+	}
+
+	nextState(question) {
+		return new PreQuestion(this.app, question);
 	}
 }
 
@@ -92,17 +99,18 @@ class PreQuestion {
 
 	run() {
 		return new Promise((resolve, reject) => {
-			this.app.state = 'pre-question';
-			this.app.title = this.question.text;
+			let app = this.app;
+			app.state = 'pre-question';
+			app.title = this.question.text;
 
-			this.app.connection.send((peerid) => {
-				return { stats : this.app.game.stats(peerid) };
+			app.connection.send((peerid) => {
+				return { stats : app.game.stats(peerid) };
 			});
 
 			var spoken = false;
 			var timelimit = false;
 
-			this.app.sound.speak(this.question.text, () => {
+			app.sound.speak(this.question.text, () => {
 				spoken = true;
 				if (timelimit) {
 					resolve(this.question);
@@ -115,6 +123,10 @@ class PreQuestion {
 				}
 			}, 3000);
 		});
+	}
+
+	nextState(question) {
+		return new ShowQuestion(this.app, question);
 	}
 }
 
@@ -154,6 +166,10 @@ class ShowQuestion {
 				reject(e);
 			}
 		});
+	}
+
+	nextState(pointsThisRound) {
+		return new PostQuestion(this.app, pointsThisRound);
 	}
 }
 
@@ -200,6 +216,10 @@ class PostQuestion {
 			}, 3000);
 		});
 	}
+
+	nextState() {
+		return false;
+	}
 }
 
 class QuestionError {
@@ -220,6 +240,10 @@ class QuestionError {
 			}, 3000);
 		});
 	}
+
+	nextState() {
+		return false;
+	}
 }
 
 class GameLoop {
@@ -233,13 +257,10 @@ class GameLoop {
 			while (this.app.game.hasMoreQuestions()) {
 				try {
 					state = new LoadingNextQuestion(this.app);
-					let question = await state.run();
-					state = new PreQuestion(this.app, question);
-					await state.run();
-					state = new ShowQuestion(this.app, question);
-					let pointsThisRound = await state.run();
-					state = new PostQuestion(this.app, pointsThisRound);
-					await state.run();
+					while (state) {
+						let result = await state.run();
+						state = state.nextState(result);
+					}
 				} catch (e) {
 					state = new QuestionError(this.app, e);
 					await state.run();
