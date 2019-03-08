@@ -1,13 +1,5 @@
 import CategorySpinner from '../spinner.js';
 
-function mapToMap(input, mapFunction) {
-	let result = {};
-	for (let i in input) {
-		result[i] = mapFunction(input[i]);
-	}
-	return result;
-}
-
 export default {
 	data: function() { return({
 		spinner : {
@@ -43,147 +35,8 @@ export default {
 				app.players[pairCode].connectionError = connection.connectionErrors(pairCode);
 			}
 		});
-	
-		function showLoadingNextQuestion() {
-			return new Promise((resolve, reject) => {
-				let spinner = new CategorySpinner(app.categories, app.sound.click, app.game.showCategorySpinner());
-	
-				app.state = 'loading';
-				app.title = 'Selecting next question';
-				app.spinner.categories = spinner.categories;
-	
-				app.game.nextQuestion().then((question) => {
-					updateSession(app.game.session());
-					spinner.start().then(() => {
-						app.sound.speak(app.session.currentCategory, () => resolve(question));
-					}).catch(reject);
-					setTimeout(() => spinner.stop().catch(reject), 2000);
-				}).catch(reject);
-			});
-		}
-	
-		function showPreQuestion(question) {
-			return new Promise((resolve, reject) => {
-				app.state = 'pre-question';
-				app.title = question.text;
-	
-				app.connection.send((peerid) => {
-					return { stats : app.game.stats(peerid) };
-				});
-	
-				var spoken = false;
-				var timelimit = false;
-	
-				app.sound.speak(question.text, () => {
-					spoken = true;
-					if (timelimit) {
-						resolve(question);
-					}
-				});
-				setTimeout(() => {
-					timelimit = true;
-					if (spoken) {
-						resolve(question);
-					}
-				}, 3000);
-			});
-		}
-	
-		function showQuestion(question) {
-			return new Promise(async (resolve, reject) => {
-				console.log(question);
-	
-				try {
-					let player = app.playback.player(question.view, question.answers);
-					await player.start();
-	
-					app.state = 'question';
-					app.minimizeQuestion = player.minimizeQuestion;
-	
-					await app.connection.send({
-						answers : question.answers
-					});
-	
-					let pointsThisRound = await app.game.startTimer(updateTimer);
-					player.stop();
-					app.timer.running = false;
-	
-					if (player.pauseMusic) {
-						app.sound.pause();
-					}
-	
-					resolve(pointsThisRound);
-				} catch (e) {
-					reject(e);
-				}
-			});
-		}
-	
-		function showPostQuestion(pointsThisRound) {
-			return new Promise((resolve, reject) => {
-				app.sound.play();
-				if (Object.values(pointsThisRound).some(p => p.multiplier <= -4)) {
-					app.sound.trombone();
-				}
-	
-				let correct = app.game.correctAnswer();
-				document.getElementById('content').innerHTML = '';
-				app.connection.send({
-					correct : correct.key
-				});
-	
-				app.title = "The correct answer was";
-				app.correct = correct;
-				app.state = 'post-question';
-				updatePoints(pointsThisRound);
-	
-				setTimeout(() => {
-					updatePoints({});
-				
-					app.connection.send({
-						wait : {}
-					});
-	
-					resolve();
-				}, 3000);
-			});
-		}
-	
-		function showError(err) {
-			console.log(err);
-	
-			app.error = err.toString();
-	
-			setTimeout(() => {
-				app.error = undefined;
-				gameLoop();
-			}, 3000);
-		}
-	
-		function gameLoop() {
-			if (app.game.hasMoreQuestions()) {
-				showLoadingNextQuestion().then(showPreQuestion).then(showQuestion).then(showPostQuestion).then(gameLoop).catch(showError);
-			} else {
-				app.$router.push('/results');
-			}
-		}
-	
-		function updateTimer(timer) {
-			app.timer.update(timer);
-		}
-	
-		function updateSession(session) {
-			app.session.update(session);
-		}
-	
-		function updatePoints(pointChanges) {
-			for (let pairCode in app.players) {
-				let player = app.players[pairCode];
-				player.updatePoints(pointChanges[pairCode], app.game.players()[pairCode].score);
-			}
-		}
-	
-		gameLoop();
+
+		new GameLoop(app).run().then(() => this.app.$router.push('/results'));
 	},
 	methods: {
 		isLeadingPlayer: function (player) {
@@ -198,6 +51,204 @@ export default {
 		}
 	}
 };
+
+function mapToMap(input, mapFunction) {
+	let result = {};
+	for (let i in input) {
+		result[i] = mapFunction(input[i]);
+	}
+	return result;
+}
+
+class LoadingNextQuestion {
+	constructor(app) {
+		this.app = app;
+	}
+
+	run() {
+		return new Promise((resolve, reject) => {
+			let spinner = new CategorySpinner(this.app.categories, this.app.sound.click, this.app.game.showCategorySpinner());
+
+			this.app.state = 'loading';
+			this.app.title = 'Selecting next question';
+			this.app.spinner.categories = spinner.categories;
+
+			this.app.game.nextQuestion().then((question) => {
+				this.app.session.update(this.app.game.session());
+				spinner.start().then(() => {
+					this.app.sound.speak(this.app.session.currentCategory, () => resolve(question));
+				}).catch(reject);
+				setTimeout(() => spinner.stop().catch(reject), 2000);
+			}).catch(reject);
+		});
+	}
+}
+
+class PreQuestion {
+	constructor(app, question) {
+		this.app = app;
+		this.question = question;
+	}
+
+	run() {
+		return new Promise((resolve, reject) => {
+			this.app.state = 'pre-question';
+			this.app.title = this.question.text;
+
+			this.app.connection.send((peerid) => {
+				return { stats : this.app.game.stats(peerid) };
+			});
+
+			var spoken = false;
+			var timelimit = false;
+
+			this.app.sound.speak(this.question.text, () => {
+				spoken = true;
+				if (timelimit) {
+					resolve(this.question);
+				}
+			});
+			setTimeout(() => {
+				timelimit = true;
+				if (spoken) {
+					resolve(this.question);
+				}
+			}, 3000);
+		});
+	}
+}
+
+class ShowQuestion {
+	constructor(app, question) {
+		this.app = app;
+		this.question = question;
+	}
+
+	run() {
+		return new Promise(async (resolve, reject) => {
+			let app = this.app;
+
+			console.log(this.question);
+
+			try {
+				let player = app.playback.player(this.question.view, this.question.answers);
+				await player.start();
+
+				app.state = 'question';
+				app.minimizeQuestion = player.minimizeQuestion;
+
+				await app.connection.send({
+					answers : this.question.answers
+				});
+
+				let pointsThisRound = await app.game.startTimer((timer) => app.timer.update(timer));
+				player.stop();
+				app.timer.running = false;
+
+				if (player.pauseMusic) {
+					app.sound.pause();
+				}
+
+				resolve(pointsThisRound);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+}
+
+class PostQuestion {
+	constructor(app, pointsThisRound) {
+		this.app = app;
+		this.pointsThisRound = pointsThisRound;
+	}
+
+	run() {
+		function updatePoints(app, pointChanges) {
+			for (let pairCode in app.players) {
+				let player = app.players[pairCode];
+				player.updatePoints(pointChanges[pairCode], app.game.players()[pairCode].score);
+			}
+		}
+
+		return new Promise((resolve, reject) => {
+			let app = this.app;
+			app.sound.play();
+			if (Object.values(this.pointsThisRound).some(p => p.multiplier <= -4)) {
+				app.sound.trombone();
+			}
+
+			let correct = this.app.game.correctAnswer();
+			document.getElementById('content').innerHTML = '';
+			app.connection.send({
+				correct : correct.key
+			});
+
+			app.title = "The correct answer was";
+			app.correct = correct;
+			app.state = 'post-question';
+			updatePoints(app, this.pointsThisRound);
+
+			setTimeout(() => {
+				updatePoints(app, {});
+			
+				app.connection.send({
+					wait : {}
+				});
+
+				resolve();
+			}, 3000);
+		});
+	}
+}
+
+class QuestionError {
+	constructor(app, err) {
+		this.app = app;
+		this.err = err;
+	}
+
+	run() {
+		return new Promise((resolve, reject) => {
+			console.log(this.err);
+
+			this.app.error = this.err.toString();
+
+			setTimeout(() => {
+				this.app.error = undefined;
+				resolve();
+			}, 3000);
+		});
+	}
+}
+
+class GameLoop {
+	constructor(app) {
+		this.app = app;
+	}
+
+	run() {
+		return new Promise(async (resolve, reject) => {
+			var state;
+			while (this.app.game.hasMoreQuestions()) {
+				try {
+					state = new LoadingNextQuestion(this.app);
+					let question = await state.run();
+					state = new PreQuestion(this.app, question);
+					await state.run();
+					state = new ShowQuestion(this.app, question);
+					let pointsThisRound = await state.run();
+					state = new PostQuestion(this.app, pointsThisRound);
+					await state.run();
+				} catch (e) {
+					state = new QuestionError(this.app, e);
+					await state.run();
+				}
+			}
+			resolve();
+		});
+	}
+}
 
 class SessionData {
 	constructor() {
