@@ -13,29 +13,9 @@ export default {
 		spinner : {
 			categories: []
 		},
-		timer: {
-			running: false,
-			score: 0,
-			timeLeft: 0,
-			percentageLeft: 0
-		},
-		players: mapToMap(this.game.players(), (player) => { return (
-			{
-				name : player.name,
-				color : player.color,
-				avatar : player.avatar,
-				totalPoints : 0,
-				pointChange : 0,
-				multiplier : 1,
-				guessed : false,
-				connectionError : false
-			}
-		)}),
-		session: {
-			index : 0,
-			total : 0,
-			currentCategory : undefined
-		},
+		timer: new TimerData(),
+		players: mapToMap(this.game.players(), (player) => new PlayerData(player)),
+		session: new SessionData(),
 		title: '',
 		state: 'loading',
 		crownUrl: /src=\"(.*?)\"/.exec(twemoji.parse("\uD83D\uDC51"))[1],
@@ -189,25 +169,17 @@ export default {
 		}
 	
 		function updateTimer(timer) {
-			app.timer.running = timer.running();
-			app.timer.score = timer.score();
-			app.timer.timeLeft = timer.timeLeft();
-			app.timer.percentageLeft = timer.percentageLeft();
+			app.timer.update(timer);
 		}
 	
 		function updateSession(session) {
-			app.session.index = session.index();
-			app.session.total = session.total();
-			app.session.currentCategory = session.question().view.category.join(": ");
+			app.session.update(session);
 		}
 	
 		function updatePoints(pointChanges) {
 			for (let pairCode in app.players) {
 				let player = app.players[pairCode];
-				player.pointChange = pairCode in pointChanges ? pointChanges[pairCode].points : 0;
-				player.multiplier = pairCode in pointChanges ? pointChanges[pairCode].multiplier : 1;
-				player.guessed = false;
-				player.totalPoints = app.game.players()[pairCode].score;
+				player.updatePoints(pointChanges[pairCode], app.game.players()[pairCode].score);
 			}
 		}
 	
@@ -227,3 +199,52 @@ export default {
 	}
 };
 
+class SessionData {
+	constructor() {
+		this.index = 0;
+		this.total = 0;
+		this.currentCategory = undefined;
+	}
+
+	update(session) {
+		this.index = session.index();
+		this.total = session.total();
+		this.currentCategory = session.question().view.category.join(": ");
+	}
+}
+
+class PlayerData {
+	constructor(player) {
+		this.name = player.name;
+		this.color = player.color;
+		this.avatar = player.avatar;
+		this.totalPoints = 0;
+		this.pointChange = 0;
+		this.multiplier = 1;
+		this.guessed = false;
+		this.connectionError = false;
+	}
+
+	updatePoints(pointChanges, totalPoints) {
+		this.pointChange = pointChanges ? pointChanges.points : 0;
+		this.multiplier = pointChanges ? pointChanges.multiplier : 1;
+		this.guessed = false;
+		this.totalPoints = totalPoints;
+	}
+}
+
+class TimerData {
+	constructor() {
+		this.running = false;
+		this.score = 0;
+		this.timeLeft = 0;
+		this.percentageLeft = 0;
+	}
+	
+	update(timer) {
+		this.running = timer.running();
+		this.score = timer.score();
+		this.timeLeft = timer.timeLeft();
+		this.percentageLeft = timer.percentageLeft();
+	}
+}
