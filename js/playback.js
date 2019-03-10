@@ -74,6 +74,7 @@ class YoutubePlayer {
 					onStateChange: (state) => {
 						if (state.data == 1) {
 							clearTimeout(startTimeout);
+							document.getElementById("player").classList.add('playing');
 							resolve();
 						}
 					}

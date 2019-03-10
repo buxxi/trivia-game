@@ -236,23 +236,23 @@ h1 {
 }
 
 #player.youtube {
-	&:before {
-    content: "";
-    display: block;
-    width: 100%;
-    position: absolute;
-    background-color: black;
-    height: 60px;
-    top: 0;
+	&.playing:before {
+		content: "";
+		display: block;
+		width: 100%;
+		position: absolute;
+		background-color: black;
+		height: 60px;
+		top: 0;
 	}
-	&:after {
-    content: "";
-    display: block;
-    width: 100%;
-    position: absolute;
-    background-color: black;
-    height: 60px;
-    bottom: 0;
+	&.playing:after {
+		content: "";
+		display: block;
+		width: 100%;
+		position: absolute;
+		background-color: black;
+		height: 60px;
+		bottom: 0;
 	}
 }
 
