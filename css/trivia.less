@@ -473,11 +473,22 @@ h1 {
 
 .connect {
 	.qr {
+		display: inline-block;
+		background-color: @secondary;
+		border-radius: 1em 1em 0 0;
+		margin-bottom: -5px;
+		border: 5px solid @primary;
+		width: 20vw;
+		height: 20vw;
+		overflow: hidden;
+		i {
+			line-height: 20vw;
+			color: @primary;
+			font-size: 10vw;
+		}
 		img {
-			border-radius: 1em 1em 0 0;
-			margin-bottom : -5px;
-			border : 5px solid @primary;
-			width : 20vw;
+			max-width: 100%;
+			max-height: 100%;
 		}
 	}
 	.code {

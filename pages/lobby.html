@@ -1,15 +1,13 @@
 <div class="lobby">
 	<div class="connect">
 		<h1>WebRTC Trivia</h1>
-		<div v-if="code == null">
-			<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
-			<span class="fa-3x">Loading...</span>
-		</div>
-		<div v-if="code != null">
+		<div>
 			<div class="qr">
-				<img v-bind:src="qrUrl"/>
+				<img v-if="code != null" v-bind:src="qrUrl"/>
+				<i v-if="code == null" class="fa fa-cog fa-spin fa-fw"></i>
 			</div>
-			<div class="code">{{ code }}</div>
+			<div class="code" v-if="code != null">{{ code }}</div>
+			<div class="code" v-if="code == null">Loading...</div>
 		</div>
 		<div class="instructions" v.bind:data-url="serverUrl">
 			<div>
