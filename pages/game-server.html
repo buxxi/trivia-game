@@ -26,7 +26,7 @@
 			<li v-for="cat in spinner.categories" v-bind:data-spinner-stop="cat.name == session.currentCategory ? 'true' : undefined">
 				<i v-if="cat.icon.indexOf('url:') == -1" v-bind:class="['fa','fa-fw',cat.icon]"></i>
 				<img v-if="cat.icon.indexOf('url:') == 0" v-bind:src="cat.icon.substr(4)"/>
-				{{cat.name}}
+				<span>{{cat.name}}</span>
 			</li>
 		</ul>
 	</div>

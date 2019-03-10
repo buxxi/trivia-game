@@ -385,7 +385,7 @@ h1 {
 		display : block;
 		position : absolute;
 		top : 50%;
-		margin-top : -0.3em;
+		margin-top : -0.2em;
 		margin-left : -0.15em;
 		z-index : 2;
 	}
@@ -405,6 +405,7 @@ h1 {
 			width : 1em;
 			filter: grayscale(100%) contrast(1000%) invert(100%);
 			mix-blend-mode: screen;
+			vertical-align: sub;
 		}
 	}
 	li:nth-child(1) {
@@ -447,6 +448,10 @@ h1 {
 	&.highlight li:nth-child(4) {
 		background-color :@correct !important;
 		transition-duration: 0.1s !important;
+		* {
+			transition: font-size 0.5s linear;
+			font-size : 1.75em;
+		}
 	}
 }
 
