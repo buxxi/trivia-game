@@ -1,272 +1,55 @@
-export default function Connection(fingerprint) {
-	var self = this;
-	var mediator = { pairCode : null };
-	var serverUrl = window.location.href.toString().substr(0, window.location.href.toString().indexOf(window.location.pathname));
-	var peers = [];
-	var listeners = {};
-
-	function dataEvent(pairCode, data) {
-		if (pairCode.indexOf("client") == 0) {
-			pairCode = pairCode.substr(6);
-		}
-		var command = Object.keys(data)[0];
-		broadcast('data-' + command, pairCode, data[command]);
+class BaseConnection {
+	constructor(fingerprint) {
+		this._fingerprint = fingerprint;
+		this._listeners = {};
+		this._mediator = { pairCode : null };
+		this._peers = [];
 	}
 
-	self.disconnect = function() {
-		mediator.close();
-	}
-
-	self.host = function(joinCallback) {
-		return new Promise((resolve, reject) => {
-			fingerprint.get((id) => {
-				if (mediator.pairCode != null) {
-					return resolve(id);
-				}
-
-				mediator = createPeer('mediator' + id, true);
-
-				mediator.once('error', (err) => {
-					reject(err);
-				});
-
-				mediator.on('dataevent', (data) => {
-					joinCallback(data.join); //This will throw an exception that will be returned to the client, depends on the client closing the connection after that...
-					serverToClient(data.join.pairCode).then(() => mediator.close());
-				});
-
-				mediator.connect();
-				sanityCheck(mediator).then(() => resolve(id)).catch(reject);
-			});
-		});
-	}
-
-	self.join = function(pairCode, name, avatar) {
-		return new Promise((resolve, reject) => {
-			fingerprint.get((id) => {
-				mediator = createPeer('mediator' + pairCode, false);
-
-				timeoutAndErrorHandling(mediator, reject, async (timeout, cleanUp) => {
-					try {
-						await mediator.connectSync();
-						await mediator.sendSync({
-							join : { name : name, pairCode : id, avatar : avatar }
-						});
-
-						clearTimeout(timeout);
-
-						let peer = await clientToServer(id);
-						cleanUp();
-						peers = [peer];
-						resolve();
-					} catch(reason) {
-						cleanUp();
-						reject(reason);
-					};
-				});
-
-				mediator.connect();
-			});
-		});
-	}
-
-	self.reconnect = function() {
-		return new Promise((resolve, reject) => {
-			fingerprint.get(async (id) => {
-				try {
-					let peer = await clientToServer(id);
-					peers = [peer];
-					resolve();
-				} catch(e) {
-					reject(e);
-				}
-			});
-		});
-	}
-
-	self.close = function(pairCode) {
-		var peer = peerFromPairCode(pairCode);
-		peer.destroy();
-		peers = peers.filter((p) => p.pairCode != peer.pairCode);
-	}
-
-	self.send = function(data) {
+	send(data) {
 		if (typeof(data) == 'function') {
-			console.log("Sending client specific data to " + peers.length + " peers");
-			let sentToAll = Promise.all(peers.map((peer) => {
-				let pairCode = pairCodeFromPeer(peer);
+			console.log("Sending client specific data to " + this._peers.length + " peers");
+			let sentToAll = Promise.all(this._peers.map((peer) => {
+				let pairCode = peer.pairCode.substr(6); //Remove the client-prefix
 				let result = data(pairCode);
 				return peer.sendSync(result);
 			}));
 			return sentToAll;
 		} else {
-			console.log("Sending: " + JSON.stringify(data) + " to " + peers.length + " peers");
-			let sentToAll = Promise.all(peers.map((peer) => peer.sendSync(data)));
+			console.log("Sending: " + JSON.stringify(data) + " to " + this._peers.length + " peers");
+			let sentToAll = Promise.all(this._peers.map((peer) => peer.sendSync(data)));
 			return sentToAll;
 		}
 	}
 
-	self.connected = function() {
-		return peers.reduce((res, val) => {
-			return res || val.socketConnected || val.rtcConnected;
-		}, false);
-	}
-
-	self.usingFallback = function(pairCode) {
-		try {
-			return !peerFromPairCode(pairCode).rtcConnected;
-		} catch (e) {
-			return true;
-		}
-	}
-
-	self.connectionError = function(pairCode) {
-		try {
-			var peer = peerFromPairCode(pairCode);
-			return !peer.rtcConnected && !peer.socketConnected;
-		} catch (e) {
-			return true;
-		}
-	}
-
-	self.on = function(eventName, listener) {
-		if (typeof listeners[eventName] != 'object') {
-			listeners[eventName] = [];	
+	on(eventName, listener) {
+		if (typeof this._listeners[eventName] != 'object') {
+			this._listeners[eventName] = [];	
 		}
 
-		listeners[eventName].push(listener);
+		this._listeners[eventName].push(listener);
 	}
 
-	function broadcast(eventName, pairCode, data) {
-		if (typeof listeners[eventName] == 'object') {
-			for (var i = 0; i < listeners[eventName].length; i++) {
-				let listener = listeners[eventName][i];
+	_broadcast(eventName, pairCode, data) {
+		if (typeof this._listeners[eventName] == 'object') {
+			for (var i = 0; i < this._listeners[eventName].length; i++) {
+				let listener = this._listeners[eventName][i];
 				listener(pairCode, data);
 			} 
 		}
 	}
 
-	function serverToClient(pairCode) {
-		return new Promise((resolve, reject) => {
-			var peer = createPeer('client' + pairCode, true);
-
-			timeoutAndErrorHandling(peer, reject, async (timeout) => {
-				try {
-					await peer.connectSync();
-					clearTimeout(timeout);
-
-					if (peerReconnected(peer)) {
-						broadcast('connection-upgraded', peer.pairCode, {});
-					} else {
-						peers.push(peer);
-					}
-
-					peer.removeAllListeners('error');
-					peer.removeAllListeners('close');
-
-					peer.on('dataevent', (data) => {
-						dataEvent(peer.pairCode, data);
-					});
-
-					peer.on('upgrade', () => {
-						broadcast('connection-upgraded', peer.pairCode, {});
-					});
-
-					peer.on('close', () => {
-						peer.rtcConnected = false; //This can be delayed, so the gui wont be updated correctly. Lets just set the property here, what could go wrong?
-						broadcast('connection-closed', peer.pairCode, {});
-					});
-
-					resolve();
-				} catch (e) {
-					peer.destroy();
-				}
-			});
-
-			peer.connect();
-		});
-	}
-
-	function clientToServer(id) {
-		return new Promise((resolve, reject) => {
-			var peer = createPeer('client' + id, false);
-
-			timeoutAndErrorHandling(peer, reject, async (timeout) => {
-				await peer.connectSync();
-				clearTimeout(timeout);
-
-				peer.removeAllListeners('close');
-				peer.removeAllListeners('error');
-
-				peer.on('dataevent', (data) => {
-					dataEvent(peer.pairCode, data);
-				});
-
-				peer.on('close', () => {
-					broadcast('connection-closed', peer.pairCode, {});
-				});
-
-				resolve(peer);
-			});
-
-			peer.connect();
-		});
-	}
-
-	function sanityCheck(mediator) {
-		return new Promise((resolve, reject) => {
-			let checkPeer = createPeer(mediator.pairCode, false);
-			checkPeer.on('error', reject);
-			checkPeer.on('connect', () => {
-				mediator.once('close', () => {
-					mediator.removeAllListeners('error');
-					resolve();
-				});
-
-				checkPeer.close();
-			});
-			checkPeer.connect();
-		});
-	}
-
-	function peerReconnected(peer) {
-		for (var i = 0; i < peers.length; i++) {
-			if (peer.pairCode == peers[i].pairCode) {
-				return true;
-			}
+	_broadcastDataEvent(pairCode, data) {
+		if (pairCode.indexOf("client") == 0) {
+			pairCode = pairCode.substr(6);
 		}
-		return false;
+		var command = Object.keys(data)[0];
+		this._broadcast('data-' + command, pairCode, data[command]);
 	}
 
-	function timeoutAndErrorHandling(peer, reject, callback) {
-		function cleanUp() {
-			peer.removeAllListeners('close');
-			peer.removeAllListeners('connect');
-			peer.removeAllListeners('error');
-			peer.removeAllListeners('data');
-			peer.close();
-		}
-
-		peer.once('close', () => {
-			cleanUp();
-			reject("Connection closed");
-		});
-
-		peer.once('error', (err) => {
-			cleanUp();
-			reject("Connection error: " + err);
-		});
-
-		var timeout = setTimeout(() => {
-			cleanUp();
-			reject('No one listening on Pair Code ' + peer.pairCode);
-		}, 3000);
-
-		callback(timeout, cleanUp);
-	}
-
-	function createPeer(pairCode, reconnect) {
-		var peer = new SocketPeer({
+	_createPeer(pairCode, reconnect) {
+		const serverUrl = window.location.href.toString().substr(0, window.location.href.toString().indexOf(window.location.pathname));
+		let peer = new SocketPeer({
 			pairCode: pairCode.toLowerCase(),
 			socketFallback: true,
 			url: serverUrl + '/trivia/socketpeer/', //TODO: make this configurable instead
@@ -275,17 +58,23 @@ export default function Connection(fingerprint) {
 			serveLibrary: false,
 			debug: false
 		});
-
+	
 		peer.once('connect', () => {
-			fixCloseEvent(peer);
+			 //TODO: make a bug report that this is not triggered, server also modified to actually close the connection
+			let old = peer.socket.onclose;
+			peer.socket.onclose = () => {
+				peer.socketConnected = false;
+				peer.emit('close');
+				old();
+			};
 		});
-
+	
 		peer.sendSync = function(data) {
 			return new Promise((resolve, reject) => {
 				let key = Math.random().toString(32);
-
+	
 				var timeout;
-
+	
 				let responseListener = (data) => {
 					if (data.sync && data.sync.key == key) {
 						clearTimeout(timeout);
@@ -297,14 +86,14 @@ export default function Connection(fingerprint) {
 						}
 					}
 				};
-
+	
 				timeout = setTimeout(() => {
 					peer.removeListener('data', responseListener);
 					reject("Got no response in time");
 				}, 2000);
-
+	
 				peer.on('data', responseListener);
-
+	
 				peer.send({
 					sync : {
 						key : key,
@@ -313,13 +102,13 @@ export default function Connection(fingerprint) {
 				});
 			});
 		}
-
+	
 		peer.connectSync = function() {
 			return new Promise((resolve, reject) => {
 				peer.once('connect', resolve);
 			});
 		}
-
+	
 		peer.on('data', function(data) {
 			if (!data.sync) {
 				peer.emit('dataevent', data);
@@ -346,30 +135,249 @@ export default function Connection(fingerprint) {
 				}
 			}
 		});
-
+	
 		return peer;
 	}
 
-	function fixCloseEvent(peer) { //TODO: make a bug report that this is not triggered, server also modified to actually close the connection
-		var old = peer.socket.onclose;
-		peer.socket.onclose = () => {
-			peer.socketConnected = false;
-			peer.emit('close');
-			old();
-		};
-		return peer;
+	_timeoutAndErrorHandling(peer, reject, callback) {
+		function cleanUp() {
+			peer.removeAllListeners('close');
+			peer.removeAllListeners('connect');
+			peer.removeAllListeners('error');
+			peer.removeAllListeners('data');
+			peer.close();
+		}
+	
+		peer.once('close', () => {
+			cleanUp();
+			reject("Connection closed");
+		});
+	
+		peer.once('error', (err) => {
+			cleanUp();
+			reject("Connection error: " + err);
+		});
+	
+		var timeout = setTimeout(() => {
+			cleanUp();
+			reject('No one listening on Pair Code ' + peer.pairCode);
+		}, 3000);
+	
+		callback(timeout, cleanUp);
+	}
+}
+
+class ClientConnection extends BaseConnection {
+	constructor(fingerprint) {
+		super(fingerprint);
 	}
 
-	function pairCodeFromPeer(peer) {
-		return peer.pairCode.substr(6);
+	join(pairCode, name, avatar) {
+		return new Promise((resolve, reject) => {
+			this._fingerprint.get((id) => {
+				this._mediator = this._createPeer('mediator' + pairCode, false);
+
+				this._timeoutAndErrorHandling(this._mediator, reject, async (timeout, cleanUp) => {
+					try {
+						await this._mediator.connectSync();
+						await this._mediator.sendSync({
+							join : { name : name, pairCode : id, avatar : avatar }
+						});
+
+						clearTimeout(timeout);
+
+						let peer = await this._connect(id);
+						cleanUp();
+						this._peers = [peer];
+						resolve();
+					} catch(reason) {
+						cleanUp();
+						reject(reason);
+					};
+				});
+
+				this._mediator.connect();
+			});
+		});
 	}
 
-	function peerFromPairCode(pairCode) {
-		for (var i = 0; i < peers.length; i++) {
-			if (peers[i].pairCode == 'client' + pairCode) {
-				return peers[i];
+	reconnect() {
+		return new Promise((resolve, reject) => {
+			this._fingerprint.get(async (id) => {
+				try {
+					let peer = await this._connect(id);
+					this._peers = [peer];
+					resolve();
+				} catch(e) {
+					reject(e);
+				}
+			});
+		});
+	}
+
+	connected() {
+		return this._peers.reduce((res, val) => {
+			return res || val.socketConnected || val.rtcConnected;
+		}, false);
+	}
+
+	_connect(id) {
+		return new Promise((resolve, reject) => {
+			let peer = this._createPeer('client' + id, false);
+
+			this._timeoutAndErrorHandling(peer, reject, async (timeout) => {
+				await peer.connectSync();
+				clearTimeout(timeout);
+
+				peer.removeAllListeners('close');
+				peer.removeAllListeners('error');
+
+				peer.on('dataevent', (data) => {
+					this._broadcastDataEvent(peer.pairCode, data);
+				});
+
+				peer.on('close', () => {
+					this._broadcast('connection-closed', peer.pairCode, {});
+				});
+
+				resolve(peer);
+			});
+
+			peer.connect();
+		});
+	}
+}
+
+class ConnectionListener extends BaseConnection {
+	constructor(fingerprint) {
+		super(fingerprint);
+	}
+
+	host(joinCallback) {
+		return new Promise((resolve, reject) => {
+			this._fingerprint.get((id) => {
+				if (this._mediator.pairCode != null) {
+					return resolve(id);
+				}
+
+				this._mediator = this._createPeer('mediator' + id, true);
+
+				this._mediator.once('error', (err) => {
+					reject(err);
+				});
+
+				this._mediator.on('dataevent', (data) => {
+					joinCallback(data.join); //This will throw an exception that will be returned to the client, depends on the client closing the connection after that...
+					this._connect(data.join.pairCode).then(() => this._mediator.close());
+				});
+
+				this._mediator.connect();
+				this._sanityCheck().then(() => resolve(id)).catch(reject);
+			});
+		});
+	}
+
+	close(pairCode) {
+		let peer = this._peerFromPairCode(pairCode);
+		peer.destroy();
+		this._peers = this._peers.filter((p) => p.pairCode != peer.pairCode);
+	}
+
+	disconnect() {
+		this._mediator.close();
+	}
+
+	usingFallback(pairCode) {
+		try {
+			return !this._peerFromPairCode(pairCode).rtcConnected;
+		} catch (e) {
+			return true;
+		}
+	}
+
+	connectionError(pairCode) {
+		try {
+			let peer = this._peerFromPairCode(pairCode);
+			return !peer.rtcConnected && !peer.socketConnected;
+		} catch (e) {
+			return true;
+		}
+	}
+
+	_peerReconnected(peer) {
+		for (var i = 0; i < this._peers.length; i++) {
+			if (peer.pairCode == this._peers[i].pairCode) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	_peerFromPairCode(pairCode) {
+		for (var i = 0; i < this._peers.length; i++) {
+			if (this._peers[i].pairCode == 'client' + pairCode) {
+				return this._peers[i];
 			}
 		}
 		throw new Error("No peer with Pair Code: " + pairCode);
 	}
-};
+
+	_sanityCheck() {
+		return new Promise((resolve, reject) => {
+			let checkPeer = this._createPeer(this._mediator.pairCode, false);
+			checkPeer.on('error', reject);
+			checkPeer.on('connect', () => {
+				this._mediator.once('close', () => {
+					this._mediator.removeAllListeners('error');
+					resolve();
+				});
+	
+				checkPeer.close();
+			});
+			checkPeer.connect();
+		});
+	}
+
+	_connect(pairCode) {
+		return new Promise((resolve, reject) => {
+			let peer = this._createPeer('client' + pairCode, true);
+
+			this._timeoutAndErrorHandling(peer, reject, async (timeout) => {
+				try {
+					await peer.connectSync();
+					clearTimeout(timeout);
+
+					if (this._peerReconnected(peer)) {
+						this._broadcast('connection-upgraded', peer.pairCode, {});
+					} else {
+						this._peers.push(peer);
+					}
+
+					peer.removeAllListeners('error');
+					peer.removeAllListeners('close');
+
+					peer.on('dataevent', (data) => {
+						this._broadcastDataEvent(peer.pairCode, data);
+					});
+
+					peer.on('upgrade', () => {
+						this._broadcast('connection-upgraded', peer.pairCode, {});
+					});
+
+					peer.on('close', () => {
+						peer.rtcConnected = false; //This can be delayed, so the gui wont be updated correctly. Lets just set the property here, what could go wrong?
+						this._broadcast('connection-closed', peer.pairCode, {});
+					});
+
+					resolve();
+				} catch (e) {
+					peer.destroy();
+				}
+			});
+
+			peer.connect();
+		});
+	}
+}
+
+export {ClientConnection, ConnectionListener};

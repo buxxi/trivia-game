@@ -3,7 +3,7 @@ import Lobby from '../components/lobby.js';
 import Question from '../components/question.js';
 import Results from '../components/results.js';
 import Categories from '../categories.js';
-import Connection from '../connection.js';
+import {ConnectionListener} from '../connection.js';
 import Game from '../game.js';
 import SoundController from '../sound.js';
 import Playback from '../playback.js';
@@ -18,7 +18,7 @@ function loadTemplate(url, component) {
 }
 
 const fingerprint = new Fingerprint2();
-const connection = new Connection(fingerprint);
+const connection = new ConnectionListener(fingerprint);
 const categories = new Categories();
 const game = new Game(categories);
 const sound = new SoundController(game);

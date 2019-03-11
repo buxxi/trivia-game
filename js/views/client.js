@@ -1,6 +1,6 @@
 import Join from '../components/join.js';
 import Answer from '../components/answer.js';
-import Connection from '../connection.js';
+import {ClientConnection} from '../connection.js';
 
 function loadTemplate(url, component) {
 	return (resolve, reject) => {
@@ -11,7 +11,7 @@ function loadTemplate(url, component) {
 	};
 }
 
-const connection = new Connection(new Fingerprint2());
+const connection = new ClientConnection(new Fingerprint2());
 
 const routes = [
   { path: '/', component: loadTemplate('./pages/join.html', Join), props: (route) => ({ code: route.query.code, connection: connection }) },
