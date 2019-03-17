@@ -215,6 +215,7 @@ class AnswersViewer {
 
 	start() {
 		return new Promise((resolve, reject) => {
+			let answers = this.answers;
 			document.getElementById('content').innerHTML = '<div class="list-answers" id="player"><ol>' +
 				'<li class="btn-A">' + answers.A + '</li>' +
 				'<li class="btn-B">' + answers.B + '</li>' +
