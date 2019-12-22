@@ -26,6 +26,11 @@ export default {
 		avatars: avatars,
 		message : undefined
 	})},
+	computed: {
+		validated: function() {
+			return this.config.code && this.config.name;
+		}
+	},
 	props: ['code', 'connection'],
 	methods: {
 		join: function() {
@@ -37,8 +42,9 @@ export default {
 		},
 		
 		qrscan: function() {
-			var decoder = QCodeDecoder();
-			var video = document.getElementById('camera');
+			let config = this.config;
+			let decoder = QCodeDecoder();
+			let video = document.getElementById('camera');
 			video.style.display = 'inline-block';
 
 			resolveBackCamera().then((stream) => {

@@ -184,7 +184,7 @@ class ShowCorrectAnswerState {
 		function updatePoints(app, pointChanges) {
 			for (let pairCode in app.players) {
 				let player = app.players[pairCode];
-				player.updatePoints(pointChanges[pairCode], app.game.players()[pairCode].score);
+				player.updatePoints(pointChanges[pairCode], app.game.players()[pairCode]);
 			}
 		}
 
@@ -300,9 +300,9 @@ class PlayerData {
 
 	updatePoints(pointChanges, totalPoints) {
 		this.pointChange = pointChanges ? pointChanges.points : 0;
-		this.multiplier = pointChanges ? pointChanges.multiplier : 1;
+		this.multiplier = totalPoints.multiplier;
 		this.guessed = false;
-		this.totalPoints = totalPoints;
+		this.totalPoints = totalPoints.score;
 	}
 }
 

@@ -30,7 +30,7 @@
 
 			<div class="buttons">
 				<a class="btn" v-on:click="qrscan" v-if="supportsCamera"><i class="fa fa-qrcode"></i> Scan</a>
-				<a class="btn" v-on:click="join" v-bind:disabled="!config.code || !config.name"><i class="fa fa-fw fa-sign-in"></i>Join</a>
+				<a class="btn" v-on:click="join" v-bind:disabled="!validated"><i class="fa fa-fw fa-sign-in"></i>Join</a>
 			</div>
 		</form>
 	</div>

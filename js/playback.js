@@ -42,7 +42,6 @@ class ImageViewer {
 
 class YoutubePlayer {
 	constructor(videoId, playerClass) {
-		console.log(playerClass);
 		this.videoId = videoId;
 		this.playerClass = playerClass;
 		this.player = {};
