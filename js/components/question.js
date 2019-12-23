@@ -50,6 +50,12 @@ export default {
 		},
 		lostPoints: function(player) {
 			return player.pointChange < 0;
+		},
+		isCurrentCategory: function(category) {
+			if (this.session.currentCategory) {
+				return category.name == this.session.currentCategory.name;
+			}
+			return false;
 		}
 	}
 };
@@ -79,7 +85,7 @@ class LoadingNextQuestionState {
 			app.game.nextQuestion().then((question) => {
 				app.session.update(app.game.session());
 				spinner.start().then(() => {
-					app.sound.speak(app.session.currentCategory, () => resolve(question));
+					app.sound.speak(app.session.currentCategory.fullName, () => resolve(question));
 				}).catch(reject);
 				setTimeout(() => spinner.stop().catch(reject), 2000);
 			}).catch(reject);
@@ -282,7 +288,7 @@ class SessionData {
 	update(session) {
 		this.index = session.index();
 		this.total = session.total();
-		this.currentCategory = session.question().view.category.join(": ");
+		this.currentCategory = session.category();
 	}
 }
 

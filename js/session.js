@@ -4,6 +4,7 @@ export default function Session(totalQuestions) {
 		answers : {}
 	};
 	var previousQuestions = [];
+	var currentCategory = undefined;
 
 	self.index = function() {
 		return previousQuestions.length + 1;
@@ -13,13 +14,14 @@ export default function Session(totalQuestions) {
 		return totalQuestions;
 	}
 
-	self.newQuestion = function(question) {
+	self.newQuestion = function(category, question) {
 		previousQuestions.forEach((q) => {
 			if (q.text == question.text && q.correct == question.correct) {
 				throw new Error("Duplicate question");
 			}
 		});
 		currentQuestion = question;
+		currentCategory = category;
 	}
 
 	self.endQuestion = function() {
@@ -36,5 +38,14 @@ export default function Session(totalQuestions) {
 
 	self.question = function() {
 		return currentQuestion;
+	}
+
+	self.category = function() {
+		var name = currentCategory.name;
+		var subCategoryName = currentQuestion.view.category
+		return {
+			name : name,
+			fullName: name + (subCategoryName ? ": " + subCategoryName : "")
+		};
 	}
 }

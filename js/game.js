@@ -186,10 +186,7 @@ export default function Game(categories) {
 
 	self.nextQuestion = function() {
 		return new Promise((resolve, reject) => {
-			categories.nextQuestion().then((question) => {
-				session.newQuestion(question);
-				resolve(question);
-			}).catch(reject);
+			categories.nextQuestion(session).then(resolve).catch(reject);
 		});
 	}
 }

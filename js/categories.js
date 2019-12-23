@@ -87,7 +87,7 @@ export default function Categories() {
 		return Object.values(attributionMap);
 	}
 
-	self.nextQuestion = function() {
+	self.nextQuestion = function(session) {
 		var selector = new QuestionSelector();
 		var category = selector.fromWeightedObject(enabledCategories);
 
@@ -96,7 +96,7 @@ export default function Categories() {
 		});
 		category.weight = 2;
 
-		return category.nextQuestion(selector).then(shuffleAnswers).then(attachCategory(category));
+		return category.nextQuestion(selector).then(shuffleAnswers).then(updateSession(category, session));
 	}
 
 	self.loadFromURL = function(url) {
@@ -151,14 +151,10 @@ export default function Categories() {
 		});
 	}
 
-	function attachCategory(category) {
+	function updateSession(category, session) {
 		return function(question) {
 			return new Promise((resolve, reject) => {
-				if (question.view.category) {
-					question.view.category = [category.name, question.view.category];
-				} else {
-					question.view.category = [category.name];
-				}
+				session.newQuestion(category, question);
 				resolve(question);
 			});
 		};

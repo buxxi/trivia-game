@@ -5,7 +5,7 @@
 					<span class="current">{{ session.index }}</span>
 					<span class="total">{{ session.total }}</span>
 				</div>
-				<div class="category infobox" v-if="session.currentCategory">{{ session.currentCategory }}</div>
+				<div class="category infobox" v-if="session.currentCategory">{{ session.currentCategory.fullName }}</div>
 			</div>
 			<div class="message" v-if="error">{{ error }}</div>
 			<div class="title" v-bind:class="{'full-animation' : state == 'pre-question', 'full-static' : (state == 'question' && !minimizeQuestion)}">{{ title }}</div>
@@ -23,7 +23,7 @@
 	<div id="correct" v-if="state == 'post-question'" v-bind:class="'btn-' + correct['key']">{{ correct['answer'] }}</div>
 	<div id="category-spinner" v-if="state == 'loading'">
 		<ul class="spinner" v-if="spinner.categories.length != 0">
-			<li v-for="cat in spinner.categories" v-bind:data-spinner-stop="cat.name == session.currentCategory ? 'true' : undefined">
+			<li v-for="cat in spinner.categories" v-bind:data-spinner-stop="isCurrentCategory(cat)">
 				<i v-if="cat.icon.indexOf('url:') == -1" v-bind:class="['fa','fa-fw',cat.icon]"></i>
 				<img v-if="cat.icon.indexOf('url:') == 0" v-bind:src="cat.icon.substr(4)"/>
 				<span>{{cat.name}}</span>
