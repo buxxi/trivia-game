@@ -3,7 +3,7 @@
 - [x] Start a new branch
 - [x] Create NodeJS project with server that has websocket
 - [x] Serve client from the NodeJS server
-- [ ] Serve game monitor from the NodeJS server
+- [x] Serve game monitor from the NodeJS server
 - [ ] Move question loading to the server side
 - [ ] Move game logic to the server side
 - [ ] Make the client communicate with the server

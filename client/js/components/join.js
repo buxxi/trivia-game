@@ -1,4 +1,4 @@
-import avatars from '../js/avatars.js';
+import avatars from '../avatars.js';
 
 function resolveBackCamera() {
 	return new Promise((resolve, reject) => {
