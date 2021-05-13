@@ -1,0 +1,24 @@
+{
+  "name": "trivia-game",
+  "version": "1.0.0",
+  "description": "A trivia game which uses smart phones as controllers",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buxxi/webrtc-trivia.git"
+  },
+  "author": "BuXXi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/buxxi/webrtc-trivia/issues"
+  },
+  "homepage": "https://github.com/buxxi/webrtc-trivia#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "ws": "^7.4.5"
+  }
+}
