@@ -1,5 +1,5 @@
 {
-  "name": "trivia-game",
+  "name": "trivia-game-server",
   "version": "1.0.0",
   "description": "A trivia game which uses smart phones as controllers",
   "main": "index.js",
