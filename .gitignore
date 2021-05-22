@@ -3,6 +3,7 @@
 # Example .gitignore files: https://github.com/github/gitignore
 /.htaccess
 /server/node_modules
+/server/.cache
 /conf/*.json
 .idea/*
 .vscode/*

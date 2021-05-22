@@ -1,65 +1,36 @@
-/*const dbPromise = idb.open('keyval-store', 1, upgradeDB => {
-	upgradeDB.createObjectStore('keyval');
-});
+const fs = require("fs").promises;
 
-const idbKeyval = {
-	get : function(key) {
-		return dbPromise.then(db => {
-			return db.transaction('keyval').objectStore('keyval').get(key);
-		});
-	},
-	set : function(key, val) {
-		return dbPromise.then(db => {
-			const tx = db.transaction('keyval', 'readwrite');
-			tx.objectStore('keyval').put(val, key);
-			return tx.complete;
-		});
-	},
-	clear : function() {
-		return dbPromise.then(db => {
-			const tx = db.transaction('keyval', 'readwrite');
-			tx.objectStore('keyval').clear();
-			return tx.complete;
-		});
+const CACHE_PATH = '.cache';
+
+class FileSystemCache {
+	constructor(primaryKey) {
+		this._primaryKey = primaryKey;
 	}
-}
 
-export default function Cache(primaryKey) {
-	var self = this;
-
-	self.get = function(subKey, promiseFunction) {
-		return new Promise((resolve, reject) => {
-			var key = primaryKey + "-" + subKey;
-
-			idbKeyval.get(key).then((val) => {
-				if (!val) {
-					promiseFunction((result) => {
-						idbKeyval.set(key, result).then(() => resolve(result)).catch(reject);
-					}, reject);
-				} else {
-					resolve(val);
-				}
-			}).catch(reject);
-		});
-    }
-    
-    self.clearAll = function() {
-        idbKeyval.clear();
-    }
-}*/
-
-class NoCache {
 	get(subKey, promiseFunction) {
-		return new Promise((resolve, reject) => {
-			promiseFunction(result => {
-				resolve(result);
-			});
+		return new Promise(async (resolve, reject) => {
+			let folderPath = `${CACHE_PATH}/${this._primaryKey}`;
+			let filePath = `${folderPath}/${subKey}.json`
+			try {
+				let data = await fs.readFile(filePath);
+				resolve(JSON.parse(data));
+			} catch (e) {
+				promiseFunction(async (result) => {
+					try {
+						await fs.mkdir(folderPath, { recursive: true });
+						await fs.writeFile(filePath, JSON.stringify(result));
+						resolve(result);
+					} catch(e) {
+						reject(e);
+					}
+				}, reject);
+			}
 		});
 	}
 
 	clearAll() {
-
+		throw new Error("Not implemented");
 	}
 }
 
-module.exports = NoCache;
+module.exports = FileSystemCache;
