@@ -12,3 +12,4 @@
 - [ ] Use LESS (or migrate to SASS) by build time instead of runtime
 - [ ] Use NPM-modules for client/monitor
 - [ ] Dockerify that process
+- [ ] Merge to master and rename project
