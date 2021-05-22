@@ -1,5 +1,9 @@
 const uuid = require('uuid').v4;
 
+Protocol = {
+	JOIN_MONITOR: "JOIN_MONITOR"
+}
+
 class ResponseListener {
 	constructor(id, resolve, reject) {
 		this.id = id;
@@ -69,6 +73,10 @@ class PromisifiedWebSocket {
 		return this._on(event, undefined, false);
     }
 
+	remove(event) {
+		this._listeners = this._listeners.filter(l => !l.isRequestListener(event));
+	}
+
 	_on(event, timeout, once) {
 		let self = this;
 		var listener;
@@ -87,7 +95,7 @@ class PromisifiedWebSocket {
 				return this;
             },
 			catch: function(f) {
-				if (timeout && once) {
+				if (once) {
 					Promise.race([listenerPromise, self._timeout(timeout)]).catch(err => {
 						self._listeners = self._listeners.filter(l => l !== listener);
 						f(err);
@@ -146,6 +154,9 @@ class PromisifiedWebSocket {
 	}
 
 	_timeout(timeout) {
+		if (!timeout) {
+			return new Promise((resolve, reject) => {});
+		}
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {
 				reject(new Error("Timeout reached"));
@@ -193,4 +204,4 @@ class PromisifiedWebSocket {
 	}
 }
 
-module.exports = PromisifiedWebSocket;
+module.exports = {PromisifiedWebSocket, Protocol};

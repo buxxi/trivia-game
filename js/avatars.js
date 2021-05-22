@@ -2,7 +2,9 @@ class Avatar {
     constructor(name, code) {
         this.name = name;
         this.code = code;
-        this.url = /src=\"(.*?)\"/.exec(twemoji.parse(this.code))[1];
+        if (typeof(twemoji) !== 'undefined') { //TODO
+            this.url = /src=\"(.*?)\"/.exec(twemoji.parse(this.code))[1];
+        }
     }
 }
 
@@ -40,4 +42,6 @@ let avatars = mapByName([
 /*,
     dromedary : new Avatar('dromedary', '\uD83D\uDC2A')*/
 
-export default avatars;
+module.exports = {
+    avatars : avatars
+};

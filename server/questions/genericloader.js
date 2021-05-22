@@ -1,9 +1,10 @@
-import QuestionSelector from '../selector.js';
+const QuestionSelector = require('../selector.js');
 
-export default function GenericCategoryLoader() {
-	var self = this;
+class GenericCategoryLoader {
+	constructor() {
+	}
 
-	self.create = function(name, input) {
+	create(name, input) {
 		var parsed = JSON.parse(input);
 		var description = parsed.description;
 		description.type = /.*?([a-zA-Z0-9]+).json/.exec(name)[1];
@@ -23,34 +24,38 @@ export default function GenericCategoryLoader() {
 	}
 }
 
-function GenericCategory(description, questions, data) {
-	var self = this;
-
-	self.describe = function() {
-		return description;
+class GenericCategory {
+	constructor(description, questions, data) {
+		this._description = description;
+		this._questions = questions;
+		this._data = data;
 	}
 
-	self.preload = function(progress) {
+	describe() {
+		return this._description;
+	}
+
+	preload(progress) {
 		return new Promise((resolve, reject) => {
 			var selector = new QuestionSelector();
 			var sanityCheck = [];
 			for (var i = 0; i < 100; i++) {
-				sanityCheck.push(self.nextQuestion(selector));
+				sanityCheck.push(this.nextQuestion(selector));
 			}
 
 			Promise.all(sanityCheck).then(resolve).catch(reject);
 		});
 	}
 
-	self.nextQuestion = function(selector) {
-		var question = new GenericQuestion(selector.fromWeightedObject(questions));
-		var correct = question.correct(data, selector);
+	nextQuestion(selector) {
+		var question = new GenericQuestion(selector.fromWeightedObject(this._questions));
+		var correct = question.correct(this._data, selector);
 
 		return new Promise((resolve, reject) => {
 			try {
 				resolve({
 					text : question.title(correct),
-					answers : question.similar(correct, data, selector),
+					answers : question.similar(correct, this._data, selector),
 					correct : question.format(correct),
 					view : question.attribution(correct)
 				});
@@ -61,17 +66,19 @@ function GenericCategory(description, questions, data) {
 	}
 }
 
-function GenericQuestion(model) {
-	var self = this;
+class GenericQuestion {
+	constructor(model) {
+		this._model = model;
+	}
 
-	self.title = function(correct) {
-		return interpolate(model.question.format, {
+	title(correct) {
+		return _interpolate(this._model.question.format, {
 			'correct' : correct
 		});
 	}
 
-	self.correct = function(data, selector) {
-		var pattern = model.answers.selector.correct;
+	correct(data, selector) {
+		var pattern = this._model.answers.selector.correct;
 		var fn = new Function("all", "selector", "return " + pattern);
 
 		var correct = fn(data, selector, pattern);
@@ -83,26 +90,26 @@ function GenericQuestion(model) {
 		return correct;
 	}
 
-	self.similar = function(correct, data, selector) {
-		var pattern = model.answers.selector.alternatives;
-		var sorted = model.answers.selector.sorted;
+	similar(correct, data, selector) {
+		var pattern = this._model.answers.selector.alternatives;
+		var sorted = this._model.answers.selector.sorted;
 
 		var fn = new Function("all", "correct", "selector", "return " + pattern);
 
-		return selector.alternatives(fn(data, correct, selector), correct, self.format, sorted ? selector.first : selector.splice);
+		return selector.alternatives(fn(data, correct, selector), correct, this.format, sorted ? selector.first : selector.splice);
 	}
 
-	self.format = function(answer) {
-		return interpolate(model.answers.format, {
+	format(answer) {
+		return this._interpolate(this.model.answers.format, {
 			'answer' : answer
 		});
 	}
 
-	self.attribution = function(obj) {
-		return cloneAndInterpolate(obj, model.view);
+	attribution(obj) {
+		return this._cloneAndInterpolate(obj, this.model.view);
 	}
 
-	function cloneAndInterpolate(data, source) {
+	_cloneAndInterpolate(data, source) {
 		var clone = JSON.parse(JSON.stringify(source));
 		function interpolateRecursive(obj) {
 			if (typeof obj === 'string') {
@@ -117,10 +124,12 @@ function GenericQuestion(model) {
 		return interpolateRecursive(clone);
 	}
 
-	function interpolate(text, data) {
+	_interpolate(text, data) {
 		text = text.replace(/{{[\s]*([^}\s]+)[\s]*}}/g, '${this.$1}'); //Replace {{ key1.key2 }} with ${this.key1.key2}
 		let template = new Function("return `" + text + "`;");
 		let result = template.call(data);
 		return result;
 	}
 }
+
+module.exports = GenericCategoryLoader;

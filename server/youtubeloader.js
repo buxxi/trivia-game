@@ -1,8 +1,10 @@
-export default function YoutubeLoader() {
-	var self = this;
-	var YOUTUBE_REGION = 'SE';
+class YoutubeLoader {
+	constructor() {
+		var self = this;
+		var YOUTUBE_REGION = 'SE';
+	}
 
-	self.loadChannel = function(channelId, progress, apiKey) {
+	loadChannel(channelId, progress, apiKey) {
 		return new Promise((resolve, reject) => {
 			var result = [];
 
@@ -48,7 +50,7 @@ export default function YoutubeLoader() {
 		});
 	}
 
-	self.checkEmbedStatus = function(videoId, apiKey) {
+	checkEmbedStatus(videoId, apiKey) {
 		return new Promise((resolve, reject) => {
 			fetch(`https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${videoId}&part=status,contentDetails`).
 			then(toJSON).
@@ -74,10 +76,12 @@ export default function YoutubeLoader() {
 		});
 	}
 
-	function toJSON(response) { //TODO: copy pasted
+	_toJSON(response) { //TODO: copy pasted
 		if (!response.ok) {
 			throw response;
 		}
 		return response.json();
 	}
 }
+
+module.exports = YoutubeLoader;

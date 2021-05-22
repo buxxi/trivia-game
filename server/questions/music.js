@@ -1,47 +1,48 @@
-export default function MusicQuestions() {
-	var self = this;
-	var tracks = [];
-	var TRACKS_BY_CATEGORY = 100;
-	
-	var spotifyWhiteListGenres = [];
-	var spotifyApiKey = '';
+const TRACKS_BY_CATEGORY = 100;
 
-	var types = {
-		title : {
-			title : (correct) => "What is the name of this song?",
-			correct : randomTrack,
-			similar : similarTracks,
-			format : trackTitle,
-			view : mp3Track,
-			weight : 40
-		},
-		artist : {
-			title : (correct) => "Which artist is this?",
-			correct : randomTrack,
-			similar : similarTracks,
-			format : artistName,
-			view : mp3Track,
-			weight : 30
-		},
-		album : {
-			title : (correct) => "From which album is this song?",
-			correct : randomTrack,
-			similar : similarTracks,
-			format : albumName,
-			view : mp3Track,
-			weight : 10
-		},
-		artistImage : {
-			title : (correct) => "Name the artist in the image",
-			correct : randomTrack,
-			similar : similarTracks,
-			format : artistName,
-			view : artistImage,
-			weight : 20
-		}
-	};
+class MusicQuestions {
+	constructor() {
+		this._tracks = [];
+		this._spotifyWhiteListGenres = [];
+		this._spotifyApiKey = '';
 
-	self.describe = function() {
+		this._types = {
+			title : {
+				title : (correct) => "What is the name of this song?",
+				correct : this._randomTrack,
+				similar : this._similarTracks,
+				format : this._trackTitle,
+				view : this._mp3Track,
+				weight : 40
+			},
+			artist : {
+				title : (correct) => "Which artist is this?",
+				correct : this._randomTrack,
+				similar : this._similarTracks,
+				format : this._artistName,
+				view : this._mp3Track,
+				weight : 30
+			},
+			album : {
+				title : (correct) => "From which album is this song?",
+				correct : this._randomTrack,
+				similar : this._similarTracks,
+				format : this._albumName,
+				view : this._mp3Track,
+				weight : 10
+			},
+			artistImage : {
+				title : (correct) => "Name the artist in the image",
+				correct : this._randomTrack,
+				similar : this._similarTracks,
+				format : this._artistName,
+				view : this._artistImage,
+				weight : 20
+			}
+		};
+	}
+
+	describe() {
 		return {
 			type : 'music',
 			name : 'Music',
@@ -53,27 +54,27 @@ export default function MusicQuestions() {
 		};
 	}
 
-	self.preload = function(progress, cache, apikeys, game) {
-		spotifyApiKey = apikeys.spotify;
-		spotifyWhiteListGenres = apikeys.spotifyWhiteList;
+	preload(progress, cache, apikeys, game) {
+		this._spotifyApiKey = apikeys.spotify;
+		this._spotifyWhiteListGenres = apikeys.spotifyWhiteList;
 
 		return new Promise(async (resolve, reject) => {
-			if (tracks.length != 0) {
+			if (this._tracks.length != 0) {
 				resolve();
 				return;
 			}
 			
 			try {
-				var accessToken = await loadSpotifyAccessToken();
-				var categories = await loadSpotifyCategories(accessToken, cache);
+				let accessToken = await this._loadSpotifyAccessToken();
+				let categories = await this._loadSpotifyCategories(accessToken, cache);
 				
 				progress(0, categories.length);
 				var loaded = 0;
 
-				for (var category of categories) {
-					var categoryData = await loadCategory(accessToken, category, cache);
+				for (let category of categories) {
+					let categoryData = await loadCategory(accessToken, category, cache);
 					loaded++;
-					tracks = tracks.concat(categoryData);
+					this._tracks = this._tracks.concat(categoryData);
 					progress(loaded, categories.length);
 				}
 
@@ -84,9 +85,9 @@ export default function MusicQuestions() {
 		});
 	}
 
-	self.nextQuestion = function(selector) {
+	nextQuestion(selector) {
 		return new Promise((resolve, reject) => {
-			var type = selector.fromWeightedObject(types);
+			var type = selector.fromWeightedObject(this._types);
 			var track = type.correct(selector);
 
 			resolve({
@@ -98,7 +99,7 @@ export default function MusicQuestions() {
 		});
 	}
 
-	function parseTitle(title) {
+	_parseTitle(title) {
 		var junked = /(.*?) (\(|-|\[)[^\(\-\[]*(Remaster|Studio|Best of|acoustic|Re-recorded|feat.|Radio Edit|Radio Mix|Club Mix|Original Mix|Original Version).*/i.exec(title);
 		if (junked) {
 			title = junked[1];
@@ -107,19 +108,19 @@ export default function MusicQuestions() {
 		return title;
 	}
 
-	function loadCategory(accessToken, category, cache) {
+	_loadCategory(accessToken, category, cache) {
 		return cache.get(category, async (resolve, reject) => {
 			var tracks = [];
 			var popularity = 0;
 
 			try {
 				for (var popularity = 0; popularity < 100; popularity += 10) {
-					var chunkResult = await loadCategoryChunk(accessToken, category, popularity);
+					var chunkResult = await this._loadCategoryChunk(accessToken, category, popularity);
 					tracks = tracks.concat(chunkResult);
 				}
 
-				var artists = await loadArtists(uniqueArtistIds(tracks), category, accessToken);
-				tracks = mergeTracksAndArtists(tracks, artists);
+				var artists = await this._loadArtists(this._uniqueArtistIds(tracks), category, accessToken);
+				tracks = this._mergeTracksAndArtists(tracks, artists);
 				resolve(tracks);
 			} catch (e) {
 				reject(e);
@@ -127,21 +128,21 @@ export default function MusicQuestions() {
 		});
 	}
 
-	function toJSON(response) { //TODO: copy pasted
+	_toJSON(response) { //TODO: copy pasted
 		if (!response.ok) {
 			throw response;
 		}
 		return response.json();
 	}
 
-	function loadCategoryChunk(accessToken, category, popularity) {
+	_loadCategoryChunk(accessToken, category, popularity) {
 		return new Promise((resolve, reject) => {
 			fetch(`https://api.spotify.com/v1/recommendations?seed_genres=${category}&min_popularity=${popularity}&max_popularity=${popularity + 9}&limit=${TRACKS_BY_CATEGORY}`, {
 				headers : {
 					Authorization : 'Bearer ' + accessToken
 				}
 			}).
-			then(toJSON).
+			then(this._toJSON).
 			then((data) => {
 				var result = data.tracks.filter((track) => !!track.preview_url).map((track) => {
 					return {
@@ -158,18 +159,18 @@ export default function MusicQuestions() {
 					};
 				});
 				resolve(result);
-			}).catch(retryAfterHandler(() => loadCategoryChunk(accessToken, category, popularity), resolve, reject));	
+			}).catch(this._retryAfterHandler(() => this._loadCategoryChunk(accessToken, category, popularity), resolve, reject));	
 		});
 	}
 
-	function loadSpotifyCategories(accessToken, cache) {
+	_loadSpotifyCategories(accessToken, cache) {
 		return cache.get('categories', (resolve, reject) => {
 			fetch('https://api.spotify.com/v1/recommendations/available-genre-seeds', {
 				headers : {
 					Authorization : 'Bearer ' + accessToken
 				}
 			}).
-			then(toJSON).
+			then(this._toJSON).
 			then(data => {
 				var genres = data.genres;
 				if (spotifyWhiteListGenres) {
@@ -178,11 +179,11 @@ export default function MusicQuestions() {
 					spotifyWhiteListGenres = genres;
 				}
 				resolve(genres);
-			}).catch(retryAfterHandler(() => loadSpotifyCategories(accessToken, cache), resolve, reject));
+			}).catch(this._retryAfterHandler(() => this._loadSpotifyCategories(accessToken, cache), resolve, reject));
 		});
 	}
 
-	function loadSpotifyAccessToken() {
+	_loadSpotifyAccessToken() {
 		return new Promise((resolve, reject) => {
 			var path = window.location.href.substr(0, window.location.href.lastIndexOf('/trivia'));
 			var redirect_uri = path + '/trivia/spotifyauth.html';
@@ -214,13 +215,13 @@ export default function MusicQuestions() {
 		});
 	}
 
-	function loadArtists(artistIds, category, accessToken) {
+	_loadArtists(artistIds, category, accessToken) {
 		return new Promise(async (resolve, reject) => {
 			var artists = [];
 
 			try {
 				while (artistIds.length > 0) {
-					var chunkResult = await loadArtistsChunk(accessToken, category, artistIds.splice(0, 50));
+					var chunkResult = await this._loadArtistsChunk(accessToken, category, artistIds.splice(0, 50));
 					artists = artists.concat(chunkResult);
 				}
 			} catch (e) {
@@ -234,28 +235,28 @@ export default function MusicQuestions() {
 		})
 	}
 
-	function loadArtistsChunk(accessToken, category, chunkedIds) {
+	_loadArtistsChunk(accessToken, category, chunkedIds) {
 		return new Promise((resolve, reject) => {
 			fetch(`https://api.spotify.com/v1/artists?ids=${chunkedIds.join(',')}`, {
 				headers : {
 					Authorization : 'Bearer ' + accessToken
 				}
 			}).
-			then(toJSON).
+			then(this._toJSON).
 			then(data => {
 				var artists = data.artists.filter(artist => {
 					var genres = artist.genres.map(genre => genre.toLowerCase().replace(' ', '-'));
 					return genres.indexOf(category) > -1;
 				});
 				resolve(artists);
-			}).catch(retryAfterHandler(() => loadArtistsChunk(accessToken, category, chunkedIds), resolve, reject));
+			}).catch(this._retryAfterHandler(() => this._loadArtistsChunk(accessToken, category, chunkedIds), resolve, reject));
 		});
 	}
 
-	function retryAfterHandler(promise, resolve, reject) {
+	_retryAfterHandler(promise, resolve, reject) {
 		return (err) => {
 			if (err.status == 429) {
-				var time = (parseInt(err.headers.get('retry-after')) + 1) * 1000;
+				let time = (parseInt(err.headers.get('retry-after')) + 1) * 1000;
 				setTimeout(() => {
 					promise().then(resolve).catch(reject);
 				}, time);
@@ -265,9 +266,9 @@ export default function MusicQuestions() {
 		};
 	}
 
-	function mergeTracksAndArtists(tracks, artists) {
+	_mergeTracksAndArtists(tracks, artists) {
 		return tracks.filter(track => !!artists[track.artist.id]).map(track => {
-			var images = artists[track.artist.id].images;
+			let images = artists[track.artist.id].images;
 			if (images.length > 0) {
 				track.artist.image = images[0].url;
 			}
@@ -275,14 +276,14 @@ export default function MusicQuestions() {
 		});
 	}
 
-	function uniqueArtistIds(tracks) {
-		var artistIds = tracks.map((track) => track.artist.id).filter((item, pos, arr) => {
+	_uniqueArtistIds(tracks) {
+		let artistIds = tracks.map((track) => track.artist.id).filter((item, pos, arr) => {
 			return arr.indexOf(item) == pos;
 		});
 		return artistIds;
 	}
 
-	function randomTrack(selector) {
+	_randomTrack(selector) {
 		var categoryWeight = {};
 		tracks.forEach((track) => {
 			if (!categoryWeight[track.category]) {
@@ -297,7 +298,7 @@ export default function MusicQuestions() {
 		return selector.fromArray(tracks, (track) => track.category == category);
 	}
 
-	function similarTracks(track, selector) {
+	_similarTracks(track, selector) {
 		var allowedCategories = [track.category];
 		var differentGenreCount = Math.floor((10 - track.popularity) / 2);
 		for (var i = 0; i < differentGenreCount; i++) {
@@ -309,19 +310,19 @@ export default function MusicQuestions() {
 		});
 	}
 
-	function trackTitle(track) {
+	_trackTitle(track) {
 		return track.title;
 	}
 
-	function artistName(track) {
+	_artistName(track) {
 		return track.artist.name;
 	}
 
-	function albumName(track) {
+	_albumName(track) {
 		return track.album;
 	}
 
-	function artistImage(track) {
+	_artistImage(track) {
 		return {
 			player : 'image',
 			url : track.artist.image,
@@ -333,7 +334,7 @@ export default function MusicQuestions() {
 		}
 	}
 
-	function mp3Track(track) {
+	_mp3Track(track) {
 		return {
 			player : 'mp3',
 			category : track.category,
@@ -346,3 +347,5 @@ export default function MusicQuestions() {
 		}
 	}
 }
+
+module.exports = MusicQuestions;

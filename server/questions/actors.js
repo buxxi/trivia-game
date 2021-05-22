@@ -1,37 +1,39 @@
-export default function ActorQuestions() {
-    var self = this;
-    var actors = [];
-    var ACTOR_COUNT = 500;
-    var tmdbApiKey = '';
-    
-    var types = {
-		image : {
-			title : (correct) => "Who is this " + (correct.male ? "actor" : "actress") + "?",
-			correct : randomActor,
-			similar : similarActors,
-			format : actorName,
-			view : viewActorImage,
-			count : countActors
-		},
-		age : {
-			title : (correct) => "Who is oldest of these " + (correct.male ? "actors" : "actresses") + "?",
-			correct : randomActor,
-			similar : youngerActors,
-			format : actorName,
-			view : viewBlank,
-			count : countActors
-		},
-		born : {
-			title : (correct) => "Where was " + correct.name + " born?",
-			correct : randomActor,
-			similar : similarActors,
-			format : countryOrState,
-			view : viewBlank,
-			count : countActors
-		}
-    };
+const ACTOR_COUNT = 500;
 
-    self.describe = function() {
+class ActorQuestions {
+	constructor() {
+		this._actors = [];
+		this._tmdbApiKey = '';
+    
+		this._types = {
+			image : {
+				title : (correct) => "Who is this " + (correct.male ? "actor" : "actress") + "?",
+				correct : this._randomActor,
+				similar : this._similarActors,
+				format : this._actorName,
+				view : this._viewActorImage,
+				count : this._countActors
+			},
+			age : {
+				title : (correct) => "Who is oldest of these " + (correct.male ? "actors" : "actresses") + "?",
+				correct : this._randomActor,
+				similar : this._youngerActors,
+				format : this._actorName,
+				view : this._viewBlank,
+				count : this._countActors
+			},
+			born : {
+				title : (correct) => "Where was " + correct.name + " born?",
+				correct : this._randomActor,
+				similar : this._similarActors,
+				format : this._countryOrState,
+				view : this._viewBlank,
+				count : this._countActors
+			}
+		};
+	}
+
+    describe() {
 		return {
 			type : 'actors',
 			name : 'Actors',
@@ -39,16 +41,16 @@ export default function ActorQuestions() {
 			attribution : [
 				{ url: 'https://www.themoviedb.org', name: 'TheMovieDB' }
 			],
-			count : Object.keys(types).map((t) => types[t].count()).reduce((a, b) => a + b, 0)
+			count : Object.keys(this._types).map((t) => this._types[t].count()).reduce((a, b) => a + b, 0)
 		};
 	}
 
-	self.preload = function(progress, cache, apikeys, game) {
-        tmdbApiKey = apikeys.tmdb;
+	preload(progress, cache, apikeys, game) {
+        this._tmdbApiKey = apikeys.tmdb;
         return new Promise(async (resolve, reject) => {
 			try {
 				progress(0, ACTOR_COUNT);
-				actors = await loadActors(progress, cache);
+				this._actors = await loadActors(progress, cache);
 				resolve();
 			} catch (e) {
 				reject(e);
@@ -56,9 +58,9 @@ export default function ActorQuestions() {
         });
     }
 
-	self.nextQuestion = function(selector) {
+	nextQuestion(selector) {
 		return new Promise((resolve, reject) => {
-			let type = selector.fromWeightedObject(types);
+			let type = selector.fromWeightedObject(this._types);
 
 			let actor = type.correct(selector);
 			let similar = type.similar(actor);
@@ -72,16 +74,16 @@ export default function ActorQuestions() {
 		});
 	}
 
-	function loadActors(progress, cache) {
+	_loadActors(progress, cache) {
 		return cache.get('actors', async (resolve, reject) => {
 			let result = [];
 			let page = 1;
 
 			try {
 				while (result.length < ACTOR_COUNT) {
-					let actorsChunk = await loadActorsChunk(page++);
+					let actorsChunk = await this._loadActorsChunk(page++);
 					for (var actor of actorsChunk) {
-						actor = await loadActorDetails(actor);
+						actor = await this._loadActorDetails(actor);
 						result.push(actor);
 						progress(result.length, ACTOR_COUNT);
 					}
@@ -93,17 +95,17 @@ export default function ActorQuestions() {
 		});
 	}
 
-	function toJSON(response) {
+	_toJSON(response) {
 		if (!response.ok) {
 			throw response;
 		}
 		return response.json();
 	}
 
-	function loadActorsChunk(page) {
+	_loadActorsChunk(page) {
 		return new Promise((resolve, reject) => {
-			fetch(`https://api.themoviedb.org/3/person/popular?api_key=${tmdbApiKey}&page=${page}`).
-			then(toJSON).
+			fetch(`https://api.themoviedb.org/3/person/popular?api_key=${this._tmdbApiKey}&page=${page}`).
+			then(this._toJSON).
 			then((data) => {
 				let result = data.results.filter((actor) => !actor.adult).map((actor) => {
 					return {
@@ -111,14 +113,14 @@ export default function ActorQuestions() {
 					};
 				});
 				resolve(result);
-			}).catch(retryAfterHandler(() => loadActorsChunk(page), resolve, reject));
+			}).catch(this._retryAfterHandler(() => this._loadActorsChunk(page), resolve, reject));
 		});
 	}
 
-	function loadActorDetails(actor) {
+	_loadActorDetails(actor) {
 		return new Promise((resolve, reject) => {
-			fetch(`https://api.themoviedb.org/3/person/${actor.id}?api_key=${tmdbApiKey}`).
-			then(toJSON).
+			fetch(`https://api.themoviedb.org/3/person/${actor.id}?api_key=${this._tmdbApiKey}`).
+			then(this._toJSON).
 			then((data) => {
 				Object.assign(actor, {
 					name : data.name,
@@ -129,11 +131,11 @@ export default function ActorQuestions() {
 				});
 
 				resolve(actor);
-			}).catch(retryAfterHandler(() => loadActorDetails(actor), resolve, reject));
+			}).catch(this._retryAfterHandler(() => this._loadActorDetails(actor), resolve, reject));
 		});
 	};
 
-	function retryAfterHandler(promise, resolve, reject) {
+	_retryAfterHandler(promise, resolve, reject) {
 		return (err) => {
 			if (err.status == 429) {
 				var time = (parseInt(err.headers.get('retry-after')) + 1) * 1000;
@@ -146,7 +148,7 @@ export default function ActorQuestions() {
 		};
 	}
 
-	function similarActors(actor) {
+	_similarActors(actor) {
 		function sameGender(a, b) {
 			return a.male == b.male;
 		}
@@ -157,10 +159,10 @@ export default function ActorQuestions() {
 			return Math.abs(a.birthday.getFullYear() - b.birthday.getFullYear()) <= 5;
 		}
 
-		return actors.filter((a) => sameGender(a, actor) && aboutSameAge(a - actor) && !!countryOrState(a));
+		return this._actors.filter((a) => sameGender(a, actor) && aboutSameAge(a - actor) && !!countryOrState(a));
 	}
 
-	function youngerActors(actor) {
+	_youngerActors(actor) {
 		function sameGender(a, b) {
 			return a.male == b.male;
 		}
@@ -171,18 +173,18 @@ export default function ActorQuestions() {
 			return a.birthday.getFullYear() > b.birthday.getFullYear();
 		}
 
-		return actors.filter((a) => sameGender(a, actor) && younger(a, actor));	
+		return this._actors.filter((a) => sameGender(a, actor) && younger(a, actor));	
 	}
 
-	function randomActor(selector) {
-		return selector.fromArray(actors);
+	_randomActor(selector) {
+		return selector.fromArray(this._actors);
 	}
 
-	function actorName(actor) {
+	_actorName(actor) {
 		return actor.name;
 	}
 
-	function countryOrState(actor) {
+	_countryOrState(actor) {
 		if (!actor.place_of_birth) {
 			return undefined;
 		}
@@ -214,7 +216,7 @@ export default function ActorQuestions() {
 		return country;
 	}
 
-	function viewBlank(correct) {
+	_viewBlank(correct) {
 		return {			
 			attribution : {
 				title : "Actor",
@@ -224,7 +226,7 @@ export default function ActorQuestions() {
 		};
 	}
 
-	function viewActorImage(correct) {
+	_viewActorImage(correct) {
 		return {
 			player : 'image',
 			url : "https://image.tmdb.org/t/p/h632" + correct.photo,
@@ -236,7 +238,9 @@ export default function ActorQuestions() {
 		};
 	}
 
-	function countActors() {
-		return actors.length;
+	_countActors() {
+		return this._actors.length;
 	}
 }
+
+module.exports = ActorQuestions;

@@ -1,34 +1,34 @@
-import MovieQuestions from './questions/movies.js';
-import VideoGameQuestions from './questions/videogames.js';
-import CurrentGameQuestions from './questions/meta.js';
-import ActorQuestions from './questions/actors.js';
-import DrinksQuestions from './questions/drinks.js';
-import GeographyQuestions from './questions/geography.js';
-import MusicQuestions from './questions/music.js';
-import QuotesQuestions from './questions/quotes.js';
-import GenericCategoryLoader from './questions/genericloader.js';
-import Cache from './cache.js';
-import QuestionSelector from './selector.js';
+const MovieQuestions = require('./questions/movies.js');
+const VideoGameQuestions = require('./questions/videogames.js');
+const CurrentGameQuestions = require('./questions/meta.js');
+const ActorQuestions = require('./questions/actors.js');
+const DrinksQuestions = require('./questions/drinks.js');
+const GeographyQuestions = require('./questions/geography.js');
+const MusicQuestions = require('./questions/music.js');
+const QuotesQuestions = require('./questions/quotes.js');
+const GenericCategoryLoader = require('./questions/genericloader.js');
+const Cache = require('./cache.js');
+const QuestionSelector = require('./selector.js');
 
-export default function Categories() {
-	var self = this;
+class Categories {
+	constructor() {
+		this._categories = [
+			new ActorQuestions(),
+			new DrinksQuestions(),
+			new GeographyQuestions(),
+			new CurrentGameQuestions(),
+			new MovieQuestions(),
+			new MusicQuestions(),
+			new QuotesQuestions(),
+			new VideoGameQuestions()	
+		];
+		this._enabledCategories = [];
+		this._apikeys = {};
+		this._jokes = [];
+		this._genericloader = new GenericCategoryLoader();
+	}
 
-	var categories = [
-		new MovieQuestions(),
-		new MusicQuestions(),
-		new GeographyQuestions(),
-		new QuotesQuestions(),
-		new VideoGameQuestions(),
-		new DrinksQuestions(),
-		new ActorQuestions(),
-		new CurrentGameQuestions()
-	];
-	var enabledCategories = [];
-	var apikeys = {};
-	var jokes = [];
-	var genericloader = new GenericCategoryLoader();
-
-	self.init = function() {
+	init() {
 		return new Promise((resolve, reject) => {
 			if (Object.keys(apikeys).length != 0) {
 				return resolve();
@@ -44,24 +44,24 @@ export default function Categories() {
 		});
 	}
 
-	self.available = function() {
+	available() {
 		return categories.map((category) => category.describe());
 	}
 
-	self.enabled = function() {
+	enabled() {
 		return self.available().filter((category) => !!enabledCategories[category.type]);
 	}
 
-	self.joke = function() {
+	joke() {
 		var selector = new QuestionSelector();
 		return selector.fromArray(jokes);
 	}
 
-	self.preload = function(category, progress, game) {
+	preload(category, progress, game) {
 		return categoryByType(category).preload(progress, new Cache(category), apikeys, game);
 	}
 
-	self.configure = function(input) {
+	configure(input) {
 		enabledCategories = Object.keys(input).filter((category) => input[category]).reduce((obj, value) => {
 			var c = categoryByType(value);
 			obj[value] = {
@@ -74,11 +74,11 @@ export default function Categories() {
 		}, {});
 	}
 
-	self.countQuestions = function(input) {
+	countQuestions(input) {
 		return Object.keys(input).filter((category) => input[category]).map((c) => categoryByType(c).describe().count).reduce((a, b) => a + b, 0);
 	}
 
-	self.attribution = function() {
+	attribution() {
 		var attribution = categories.reduce((result, current) => result.concat(current.describe().attribution), []);
 		var attributionMap = {};
 		for (let attr of attribution) {
@@ -87,7 +87,7 @@ export default function Categories() {
 		return Object.values(attributionMap);
 	}
 
-	self.nextQuestion = function(session) {
+	nextQuestion(session) {
 		var selector = new QuestionSelector();
 		var category = selector.fromWeightedObject(enabledCategories);
 
@@ -99,7 +99,7 @@ export default function Categories() {
 		return category.nextQuestion(selector).then(shuffleAnswers).then(updateSession(category, session));
 	}
 
-	self.loadFromURL = function(url) {
+	loadFromURL(url) {
 		return new Promise((resolve, reject) => {
 			fetch(url).then(response => response.json()).then(data => {
 				var newCategory = genericloader.create(url, JSON.stringify(data));
@@ -109,7 +109,7 @@ export default function Categories() {
 		});
 	}
 
-	self.loadFromFile = function(file) {
+	loadFromFile(file) {
 		return new Promise((resolve, reject) => {
 			var reader = new FileReader(file);
 			reader.onload = (e) => {
@@ -122,11 +122,11 @@ export default function Categories() {
 		});
 	}
 
-	self.clearCache = function() {
+	clearCache() {
 		new Cache().clearAll();
 	}
 
-	function categoryByType(type) {
+	categoryByType(type) {
 			for (var i = 0; i < categories.length; i++) {
 			if (categories[i].describe().type == type) {
 				return categories[i];
@@ -135,7 +135,7 @@ export default function Categories() {
 		throw new Error("No such category: " + type);
 	}
 
-	function shuffleAnswers(question) {
+	shuffleAnswers(question) {
 		return new Promise((resolve, reject) => {
 			var selector = new QuestionSelector();
 
@@ -151,7 +151,7 @@ export default function Categories() {
 		});
 	}
 
-	function updateSession(category, session) {
+	updateSession(category, session) {
 		return function(question) {
 			return new Promise((resolve, reject) => {
 				session.newQuestion(category, question);
@@ -160,3 +160,5 @@ export default function Categories() {
 		};
 	}
 }
+
+module.exports = Categories;

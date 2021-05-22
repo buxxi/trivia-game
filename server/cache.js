@@ -1,4 +1,4 @@
-const dbPromise = idb.open('keyval-store', 1, upgradeDB => {
+/*const dbPromise = idb.open('keyval-store', 1, upgradeDB => {
 	upgradeDB.createObjectStore('keyval');
 });
 
@@ -46,4 +46,22 @@ export default function Cache(primaryKey) {
     self.clearAll = function() {
         idbKeyval.clear();
     }
+}*/
+
+class NoCache {
+	get(subKey, promiseFunction) {
+		return new Promise((resolve, reject) => {
+			promiseFunction(result => {
+				resolve(result);
+			});
+		});
+	}
+
+	clearAll() {
+
+	}
+}
+
+module.exports = {
+	Cache : NoCache
 }

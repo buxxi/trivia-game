@@ -1,52 +1,53 @@
-import YoutubeLoader from './youtubeloader.js';
+const YoutubeLoader = require('../youtubeloader');
 
-export default function VideoGameQuestions() {
-	var self = this;
-	var games = [];
+const GAMES_PER_PLATFORM = 50;
 
-	var youtubeApiKey = '';
-	var igdbApiKey = '';
-	var igdbBaseURL = '';
-	var youtube = new YoutubeLoader();
+class VideoGameQuestions {
+	constructor() {
+		this._games = [];
 
-	var GAMES_PER_PLATFORM = 50;
+		this._youtubeApiKey = '';
+		this._igdbApiKey = '';
+		this._igdbBaseURL = '';
+		this._youtube = new YoutubeLoader();
 
-	var types = {
-		screenshot : {
-			title : (correct) => "What game is this a screenshot of?",
-			correct : randomGame,
-			similar : similarGames,
-			view : screenshot,
-			format : gameTitle,
-			weight : 45
-		},
-		year : {
-			title : (correct) => "In which year was '" + correct.name + "' first released?",
-			correct : randomGame,
-			similar : similarGameYears,
-			view : blank,
-			format : gameYear,
-			weight : 10
-		},
-		platform : {
-			title : (correct) => "'" + correct.name + "' was released to one of these platforms, which one?",
-			correct : randomGame,
-			similar : similarPlatforms,
-			view : blank,
-			format : gamePlatform,
-			weight : 10
-		},
-		song : {
-			title : (correct) => "From which games soundtrack is this song?",
-			correct : randomGameWithSong,
-			similar : similarGames,
-			view : songVideo,
-			format : gameTitle,
-			weight : 25
+		this._types = {
+			screenshot : {
+				title : (correct) => "What game is this a screenshot of?",
+				correct : this._randomGame,
+				similar : this._similarGames,
+				view : this._screenshot,
+				format : this._gameTitle,
+				weight : 45
+			},
+			year : {
+				title : (correct) => "In which year was '" + correct.name + "' first released?",
+				correct : this._randomGame,
+				similar : this._similarGameYears,
+				view : this._blank,
+				format : this._gameYear,
+				weight : 10
+			},
+			platform : {
+				title : (correct) => "'" + correct.name + "' was released to one of these platforms, which one?",
+				correct : this._randomGame,
+				similar : this._similarPlatforms,
+				view : this._blank,
+				format : this._gamePlatform,
+				weight : 10
+			},
+			song : {
+				title : (correct) => "From which games soundtrack is this song?",
+				correct : this._randomGameWithSong,
+				similar : this._similarGames,
+				view : this._songVideo,
+				format : this._gameTitle,
+				weight : 25
+			}
 		}
 	}
 
-	self.describe = function() {
+	describe() {
 		let countSelector = {
 			fromArray : (arr) => { return arr.length; }
 		};
@@ -58,31 +59,31 @@ export default function VideoGameQuestions() {
 				{ url: 'https://youtube.com', name: 'YouTube' },
 				{ url: 'https://www.igdb.com', name: 'IGDB' }
 			],
-			count : Object.keys(types).map((t) => types[t].correct(countSelector)).reduce((a, b) => { return a + b; }, 0)
+			count : Object.keys(this._types).map((t) => this._types[t].correct(countSelector)).reduce((a, b) => { return a + b; }, 0)
 		};
 	}
 
-	self.preload = function(progress, cache, apikeys, game) {
-		youtubeApiKey = apikeys.youtube;
-		igdbApiKey = apikeys.igdb;
-		igdbBaseURL = apikeys.igdbBaseURL;
+	preload(progress, cache, apikeys, game) {
+		this._youtubeApiKey = apikeys.youtube;
+		this._igdbApiKey = apikeys.igdb;
+		this._igdbBaseURL = apikeys.igdbBaseURL;
 
 		return new Promise(async (resolve, reject) => {
 			try {
-				let platforms = await loadPlatforms(cache);
+				let platforms = await this._loadPlatforms(cache);
 				let toLoadPlatforms = Object.keys(platforms);
 				let total = toLoadPlatforms.length * GAMES_PER_PLATFORM;
 
 				progress(games.length, total);
 
 				for (let platform of toLoadPlatforms) {
-					let gamesChunk = await loadGames(platform, platforms, cache);
-					games = games.concat(gamesChunk);
+					let gamesChunk = await this._loadGames(platform, platforms, cache);
+					this._games = this._games.concat(gamesChunk);
 					progress(games.length, total);
 				}
 
-				let videos = await loadVideos(progress, cache);
-				matchVideosToGames(videos, games);
+				let videos = await this._loadVideos(progress, cache);
+				this._matchVideosToGames(videos, games);
 
 				resolve();
 			} catch (e) {
@@ -91,9 +92,9 @@ export default function VideoGameQuestions() {
 		});
 	}
 
-	self.nextQuestion = function(selector) {
+	nextQuestion(selector) {
 		return new Promise((resolve, reject) => {
-			let type = selector.fromWeightedObject(types);
+			let type = selector.fromWeightedObject(this._types);
 			let correct = type.correct(selector);
 			let similar = type.similar(correct, selector);
 
@@ -106,23 +107,23 @@ export default function VideoGameQuestions() {
 		});
 	}
 
-	function loadVideos(progress, cache) {
+	_loadVideos(progress, cache) {
 		return cache.get('songs', (resolve, reject) => {
-			youtube.loadChannel('UC6iBH7Pmiinoe902-JqQ7aQ', progress, youtubeApiKey).then(resolve).catch(reject);
+			this._youtube.loadChannel('UC6iBH7Pmiinoe902-JqQ7aQ', progress, this._youtubeApiKey).then(resolve).catch(reject);
 		});
 	}
 
-	function loadGames(platform, platforms, cache) {
+	_loadGames(platform, platforms, cache) {
 		return cache.get(platform, (resolve, reject) => {
 			let data = `fields name,url,first_release_date,platforms,screenshots,keywords,themes,genres; where platforms = ${platform} & first_release_date != null & screenshots != null & rating_count > 2; limit ${GAMES_PER_PLATFORM}; offset 0; sort rating desc;`;
-			fetch(igdbBaseURL + 'games/',{
+			fetch(this._igdbBaseURL + 'games/',{
 				method : 'POST',
 				headers : {
-					'user-key' : igdbApiKey
+					'user-key' : this._igdbApiKey
 				},
 				body : data
 			}).
-			then(toJSON).
+			then(this._toJSON).
 			then(data => {
 				function tag(prefix, arr) {
 					if (!arr) {
@@ -142,18 +143,18 @@ export default function VideoGameQuestions() {
 						attribution : game.url
 					};
 				});
-				loadScreenshots(games).then(resolve);
+				this._loadScreenshots(games).then(resolve);
 			}).catch(reject);
 		});
 	}
 
-	function loadScreenshots(games) {
+	_loadScreenshots(games) {
 		return new Promise(async (resolve, reject) => {
 			try {
 				let screenshotIds = games.flatMap(g => g.screenshots);
 				var result = {};
 				while (screenshotIds.length > 0) {
-					var chunkResult = await loadScreenshotChunk(screenshotIds.splice(0, 10));
+					var chunkResult = await this._loadScreenshotChunk(screenshotIds.splice(0, 10));
 					Object.assign(result, chunkResult);
 				}
 				for (var game of games) {
@@ -166,17 +167,17 @@ export default function VideoGameQuestions() {
 		});
 	}
 
-	function loadScreenshotChunk(ids) {
+	_loadScreenshotChunk(ids) {
 		return new Promise((resolve, reject) => {
 			let data = `fields id,image_id; where id = (${ids.join(',')}); limit 10;`;
-			fetch(igdbBaseURL + 'screenshots/', {
+			fetch(this._igdbBaseURL + 'screenshots/', {
 				method : 'POST',
 				headers : {
-					'user-key' : igdbApiKey
+					'user-key' : this._igdbApiKey
 				},
 				body : data
 			}).
-			then(toJSON).
+			then(this._toJSON).
 			then(data => {
 				let result = {};
 				for (var screenshot of data) {
@@ -187,13 +188,13 @@ export default function VideoGameQuestions() {
 		});
 	}
 
-	function loadPlatforms(cache) {
+	_loadPlatforms(cache) {
 		return cache.get('platforms', async (resolve, reject) => {
 			try {
 				let result = {};
 				let chunkResult;
 				do {
-					chunkResult = await loadPlatformChunk(Object.keys(result).length);
+					chunkResult = await this._loadPlatformChunk(Object.keys(result).length);
 					result = Object.assign(result, chunkResult);
 				} while (Object.keys(chunkResult).length == 50);
 				resolve(result);
@@ -203,17 +204,17 @@ export default function VideoGameQuestions() {
 		});
 	}
 
-	function loadPlatformChunk(offset) {
+	_loadPlatformChunk(offset) {
 		return new Promise((resolve, reject) => {
 			let data = `fields id,name; where category = (1,5); limit 50; offset ${offset};`
-			fetch(igdbBaseURL + 'platforms/', {
+			fetch(this._igdbBaseURL + 'platforms/', {
 				method : 'POST',
 				headers : {
-					'user-key' : igdbApiKey
+					'user-key' : this._igdbApiKey
 				},
 				body : data
 			}).
-			then(toJSON).
+			then(this._toJSON).
 			then((data) => {
 				let result = {};
 				data.forEach((platform) => {
@@ -226,12 +227,12 @@ export default function VideoGameQuestions() {
 		});
 	};
 
-	function matchVideosToGames(videos, games) {
+	_matchVideosToGames(videos, games) {
 		let gamesByName = {};
 		for (game of games) {
-			gamesByName[toAlphaNumeric(game.name)] = game;
+			gamesByName[this._toAlphaNumeric(game.name)] = game;
 		}
-		parseTitles(videos).forEach((t) => {
+		this._parseTitles(videos).forEach((t) => {
 			let game = gamesByName[t.title];
 			if (game) {
 				game.songs = game.songs || [];
@@ -240,7 +241,7 @@ export default function VideoGameQuestions() {
 		});
 	}
 
-	function parseTitles(videos) {
+	_parseTitles(videos) {
 		return videos.map((v) => {
 			let match = v.title.match(/Best VGM [0-9]+ - (.*?)( - ).*/);
 			if (!match) {
@@ -249,25 +250,25 @@ export default function VideoGameQuestions() {
 
 			return {
 				id : v.id,
-				title : toAlphaNumeric(match[1])
+				title : this._toAlphaNumeric(match[1])
 			};
 		}).filter((v) => v != null);
 	}
 
-	function toAlphaNumeric(str) {
+	_toAlphaNumeric(str) {
 		let x = /[^a-z0-9]/g;
 		return str.toLowerCase().replace(x, '');
 	}
 
-	function randomGame(selector) {
-		return selector.fromArray(games);
+	_randomGame(selector) {
+		return selector.fromArray(this._games);
 	}
 
-	function randomGameWithSong(selector) {
-		return selector.fromArray(games.filter((g) => g.songs));
+	_randomGameWithSong(selector) {
+		return selector.fromArray(this._games.filter((g) => g.songs));
 	}
 
-	function similarGames(game, selector) {
+	_similarGames(game, selector) {
 		var titleWords = selector.wordsFromString(game.name);
 		return games.map((g) => {
 			return {
@@ -277,11 +278,11 @@ export default function VideoGameQuestions() {
 		}).sort((a, b) => a.score - b.score).map((node) => node.game);
 	}
 
-	function similarGameYears(game, selector) {
+	_similarGameYears(game, selector) {
 		return selector.yearAlternatives(gameYear(game), 3).map((year) => ({ release_date : year }));
 	}
 
-	function similarPlatforms(game, selector) {
+	_similarPlatforms(game, selector) {
 		function dateDifference(a, b) {
 			return selector.dateDistance(a.release_date, game.release_date) - selector.dateDistance(b.release_date, game.release_date);
 		}
@@ -295,19 +296,19 @@ export default function VideoGameQuestions() {
 		]
 	}
 
-	function screenshot(game, selector) {
+	_screenshot(game, selector) {
 		return {
 			player : 'image',
 			url : 'https://images.igdb.com/igdb/image/upload/t_screenshot_huge/' + selector.fromArray(game.screenshots) + '.jpg',
 			attribution : {
 				title : "Screenshot of",
-				name : gameTitle(game) + " (" + gameYear(game) + ")",
+				name : this._gameTitle(game) + " (" + this._gameYear(game) + ")",
 				links : [game.attribution]
 			}
 		}
 	}
 
-	function songVideo(game, selector) {
+	_songVideo(game, selector) {
 		let videoId = selector.fromArray(game.songs);
 
 		return {
@@ -315,42 +316,44 @@ export default function VideoGameQuestions() {
 			videoId : videoId,
 			attribution : {
 				title : "Music from",
-				name : gameTitle(game) + " (" + gameYear(game) + ")",
+				name : this._gameTitle(game) + " (" + this._gameYear(game) + ")",
 				links : [game.attribution, 'http://www.youtube.com/watch?v=' + videoId]
 			}
 		}
 	}
 
-	function blank(game, selector) {
+	_blank(game, selector) {
 		return {
 			attribution : {
 				title : "Featured game",
-				name : gameTitle(game) + " (" + gameYear(game) + ")",
+				name : this._gameTitle(game) + " (" + this._gameYear(game) + ")",
 				links : [game.attribution]
 			}
 		}
 	}
 
-	function gameTitle(game) {
+	_gameTitle(game) {
 		return game.name;
 	}
 
-	function gameYear(game) {
+	_gameYear(game) {
 		return new Date("" + game.release_date).getFullYear();
 	}
 
-	function gamePlatform(game) {
+	_gamePlatform(game) {
 		return game.platforms[0];
 	}
 
-	function release_date(time) {
+	_release_date(time) {
 		return new Date(time * 1000).toISOString();
 	}
 
-	function toJSON(response) { //TODO: copy pasted
+	_toJSON(response) { //TODO: copy pasted
 		if (!response.ok) {
 			throw response;
 		}
 		return response.json();
 	}
 }
+
+module.exports = VideoGameQuestions;

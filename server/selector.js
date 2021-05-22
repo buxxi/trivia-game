@@ -1,18 +1,20 @@
-export default function QuestionSelector() {
-	var self = this;
+class QuestionSelector {
+	constructor() {
+		var self = this;
+	}
 
-	self.random = function(max) {
+	random(max) {
 		return max * Math.random() << 0;
 	}
 
-	self.fromArray = function(arr, filter) {
+	fromArray(arr, filter) {
 		if (filter != undefined) {
 			arr = arr.filter(filter);
 		}
 		return arr[self.random(arr.length)];
 	};
 
-	self.fromWeightedObject = function(obj) {
+	fromWeightedObject(obj) {
 		var keys = Object.keys(obj);
 		var total = self.sum(keys.map((k) => obj[k].weight||1));
 		var randomWeight = self.random(total);
@@ -29,21 +31,21 @@ export default function QuestionSelector() {
 		return obj[keys[index]];
 	}
 
-	self.splice = function(arr) {
+	splice(arr) {
 		if (arr.length == 0) {
 			throw new Error("Trying to splice empty array");
 		}
 		return arr.splice(self.random(arr.length), 1)[0];
 	};
 
-	self.first = function(arr) {
+	first(arr) {
 		if (arr.length == 0) {
 			throw new Error("Trying to get first element of empty array");
 		}
 		return arr.shift();
 	}
 
-	self.alternatives = function(list, correct, toString, picker) {
+	alternatives(list, correct, toString, picker) {
 		var list = list.slice();
 		var result = [toString(correct)];
 		while (result.length < 4) {
@@ -62,7 +64,7 @@ export default function QuestionSelector() {
 		return result;
 	}
 
-	self.prioritizeAlternatives = function() {
+	prioritizeAlternatives() {
 		for (var i = 0; i < arguments.length; i++) {
 			if (arguments[i].length >= 3) {
 				return arguments[i];
@@ -71,7 +73,7 @@ export default function QuestionSelector() {
 		throw new Error("None of the lists provided has enough alternatives");
 	}
 
-	self.sortCompareCorrect = function(arr, compare, correct, mapping) {
+	sortCompareCorrect(arr, compare, correct, mapping) {
 		if (mapping == undefined) {
 			mapping = (i) => i;
 		}
@@ -80,15 +82,15 @@ export default function QuestionSelector() {
 		});
 	}
 
-	self.hasAllCommon = function(arr1, arr2) {
+	hasAllCommon(arr1, arr2) {
 		return self.countCommon(arr1, arr2) == arr2.length;
 	}
 
-	self.hasNoneCommon = function(arr1, arr2) {
+	hasNoneCommon(arr1, arr2) {
 		return self.countCommon(arr1, arr2) == 0;
 	}
 
-	self.countCommon = function(arr1, arr2) {
+	countCommon(arr1, arr2) {
 		if (!arr1 || !arr2) {
 			return 0;
 		}
@@ -102,16 +104,16 @@ export default function QuestionSelector() {
 		}, 0);
 	}
 
-	self.wordsFromString = function(s) {
+	wordsFromString(s) {
 		return s.split(/[^a-zA-Z0-9]/).filter((s) => s.length > 0).map((s) => s.toLowerCase());
 	}
 
-	self.dateDistance = function(a, b) {
+	dateDistance(a, b) {
 		var dist = Math.abs(new Date(Date.parse(a)).getFullYear() - new Date(Date.parse(b)).getFullYear());
 		return Math.floor(Math.log(Math.max(dist, 1)));
 	}
 
-	self.levenshteinDistance = function(a, b) { //copied from and modified to use array instead: https://gist.github.com/andrei-m/982927
+	levenshteinDistance(a, b) { //copied from and modified to use array instead: https://gist.github.com/andrei-m/982927
 		if(a.length == 0 || b.length == 0) {
 			return (a || b).length;
 		}
@@ -136,26 +138,26 @@ export default function QuestionSelector() {
 		return m[b.length][a.length];
 	}
 
-	self.sum = function(arr, func) {
+	sum(arr, func) {
 		func = func || ((obj) => obj);
 		return arr.map(func).reduce((a, b) => a + b, 0);
 	}
 
-	self.max = function(arr, func) {
+	max(arr, func) {
 		func = func || ((obj) => obj);
 		return arr.reduce((a, b) => func(a) > func(b) ? a : b);
 	}
 
-	self.min = function(arr, func) {
+	min(arr, func) {
 		func = func || ((obj) => obj);
 		return arr.reduce((a, b) => func(a) < func(b) ? a : b);
 	}
 
-	self.yearAlternatives = function(correct, maxJump) {
+	yearAlternatives(correct, maxJump) {
 		return self.numericAlternatives(correct, maxJump, new Date().getFullYear());
 	}
 
-	self.numericAlternatives = function(year, maxJump, maxAllowedValue) {
+	numericAlternatives(year, maxJump, maxAllowedValue) {
 		maxAllowedValue = maxAllowedValue||Infinity;
 		var min = year;
 		var max = min;
@@ -172,4 +174,8 @@ export default function QuestionSelector() {
 		}
 		return result;
 	}
+}
+
+module.exports = {
+	QuestionSelector: QuestionSelector
 }

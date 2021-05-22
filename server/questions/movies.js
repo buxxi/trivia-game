@@ -1,34 +1,35 @@
-import YoutubeLoader from './youtubeloader.js';
+const YoutubeLoader = require('../youtubeloader');
 
-export default function MovieQuestions() {
-	var self = this;
-	var movies = [];
-	var youtubeApiKey = '';
-	var tmdbApiKey = '';
-	var youtube = new YoutubeLoader();
+class MovieQuestions {
+	constructor() {
+		this._movies = [];
+		this._youtubeApiKey = '';
+		this._tmdbApiKey = '';
+		this._youtube = new YoutubeLoader();
 
-	var types = {
-		title : {
-			title : (correct) => "What is the title of this movie?",
-			correct : randomMovieClip,
-			similar : loadSimilarMovies,
-			format : movieTitle,
-			view : viewMovieClip,
-			count : countUniqueClips,
-			weight : 75
-		},
-		year : {
-			title : (correct) => "What year is this movie from?",
-			correct : randomMovieClip,
-			similar : loadSimilarYears,
-			format : movieYear,
-			view : viewMovieClip,
-			count : countUniqueClips,
-			weight : 25
-		}
-	};
+		this._types = {
+			title : {
+				title : (correct) => "What is the title of this movie?",
+				correct : this._randomMovieClip,
+				similar : this._loadSimilarMovies,
+				format : this._movieTitle,
+				view : this._viewMovieClip,
+				count : this._countUniqueClips,
+				weight : 75
+			},
+			year : {
+				title : (correct) => "What year is this movie from?",
+				correct : this._randomMovieClip,
+				similar : this._loadSimilarYears,
+				format : this._movieYear,
+				view : this._viewMovieClip,
+				count : this._countUniqueClips,
+				weight : 25
+			}
+		};
+	}
 
-	self.describe = function() {
+	describe() {
 		return {
 			type : 'movies',
 			name : 'Movies',
@@ -37,18 +38,18 @@ export default function MovieQuestions() {
 				{ url: 'https://youtube.com', name: 'YouTube' },
 				{ url: 'https://www.themoviedb.org', name: 'TheMovieDB' }
 			],
-			count : Object.keys(types).map((t) => types[t].count()).reduce((a, b) => a + b, 0)
+			count : Object.keys(this._types).map((t) => this._types[t].count()).reduce((a, b) => a + b, 0)
 		};
 	}
 
-	self.preload = function(progress, cache, apikeys, game) {
-		youtubeApiKey = apikeys.youtube;
-		tmdbApiKey = apikeys.tmdb;
+	preload(progress, cache, apikeys, game) {
+		this._youtubeApiKey = apikeys.youtube;
+		this._tmdbApiKey = apikeys.tmdb;
 
 		return new Promise(async (resolve, reject) => {
 			try {
-				var videos = await loadYoutubeVideos(progress, cache);
-				movies = parseTitles(videos);
+				var videos = await this._loadYoutubeVideos(progress, cache);
+				this._movies = this._parseTitles(videos);
 				resolve();
 			} catch (e) {
 				reject(e);
@@ -56,9 +57,9 @@ export default function MovieQuestions() {
 		});
 	}
 
-	self.nextQuestion = function(selector) {
+	nextQuestion(selector) {
 		return new Promise(async (resolve, reject) => {
-			var type = selector.fromWeightedObject(types);
+			var type = selector.fromWeightedObject(this._types);
 			var attribution = [];
 
 			try {
@@ -73,7 +74,7 @@ export default function MovieQuestions() {
 				});
 			} catch(err) {
 				if (typeof(err) == 'string') {
-					return self.nextQuestion(selector).then(resolve).catch(reject);
+					return this.nextQuestion(selector).then(resolve).catch(reject);
 				} else {
 					reject(err);
 				}
@@ -81,7 +82,7 @@ export default function MovieQuestions() {
 		});
 	}
 
-	function parseTitle(input) {
+	_parseTitle(input) {
 		var blackList = ["Trailer","Teaser","TV Spot","BROWSE","MASHUP","Most Popular","in GENRE","MovieClips Picks","DVD Extra", "Featurette"];
 		for (var i = 0; i < blackList.length; i++) {
 			if (input.indexOf(blackList[i]) != -1) {
@@ -114,10 +115,10 @@ export default function MovieQuestions() {
 		return null;
 	}
 
-	function parseTitles(result) {
+	_parseTitles(result) {
 		var movies = {};
 		result.forEach((video) => {
-			var metadata = parseTitle(video.title);
+			let metadata = parseTitle(video.title);
 			if (metadata) {
 				var movie = movies[metadata.title];
 				if (!movie) {
@@ -142,30 +143,30 @@ export default function MovieQuestions() {
 		return movies;
 	}
 
-	function loadYoutubeVideos(progress, cache) {
+	_loadYoutubeVideos(progress, cache) {
 		return cache.get('videos', (resolve, reject) => {
-			youtube.loadChannel('UC3gNmTGu-TTbFPpfSs5kNkg', progress, youtubeApiKey).then(resolve).catch(reject);
+			this._youtube.loadChannel('UC3gNmTGu-TTbFPpfSs5kNkg', progress, this._youtubeApiKey).then(resolve).catch(reject);
 		});
 	}
 
-	function loadSimilarMovies(movie, attribution, selector) {
+	_loadSimilarMovies(movie, attribution, selector) {
 		return new Promise((resolve, reject) => {
-			fetch(`https://api.themoviedb.org/3/search/movie?api_key=${tmdbApiKey}&query=${movie.title}&year=${movie.year}`).
-			then(toJSON).
+			fetch(`https://api.themoviedb.org/3/search/movie?api_key=${this._tmdbApiKey}&query=${movie.title}&year=${movie.year}`).
+			then(this._toJSON).
 			then(data => {
 				if (data.results.length != 1) {
 					return reject("Didn't find an exact match for the movie metadata");
 				}
-				var id = data.results[0].id;
+				let id = data.results[0].id;
 
-				return fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=${tmdbApiKey}`).
-				then(toJSON).
+				return fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=${this._tmdbApiKey}`).
+				then(this._toJSON).
 				then(data => {
 					if (data.results.length < 3) {
 						return reject("Got less than 3 similar movies");
 					}
 
-					var similar = data.results.map((item) => {
+					let similar = data.results.map((item) => {
 						return {
 							title : item.title,
 							year : new Date(item.release_date).getFullYear()
@@ -179,19 +180,19 @@ export default function MovieQuestions() {
 		});
 	}
 
-	function loadSimilarYears(movie, attribute, selector) {
+	_loadSimilarYears(movie, attribute, selector) {
 		return new Promise((resolve, reject) => {
 			resolve(selector.yearAlternatives(movie.year, 5).map((year) => { return { year : year }; }));
 		});
 	}
 
-	function randomMovieClip(selector, attribution) {
+	_randomMovieClip(selector, attribution) {
 		return new Promise((resolve, reject) => {
-			var movie = selector.fromArray(movies);
-			var videoId = selector.fromArray(movie.videos);
-			youtube.checkEmbedStatus(videoId, youtubeApiKey).then(() => {
+			let movie = selector.fromArray(this._movies);
+			let videoId = selector.fromArray(movie.videos);
+			this._youtube.checkEmbedStatus(videoId, this._youtubeApiKey).then(() => {
 				attribution.push('http://www.youtube.com/watch?v=' + videoId);
-				var copy = Object.assign({}, movie); //Copy the movie object so we don't modify the original and replace the array of videos with a single video
+				let copy = Object.assign({}, movie); //Copy the movie object so we don't modify the original and replace the array of videos with a single video
 				copy.videos = [videoId];
 				resolve(copy);
 			}).catch((err) => {
@@ -201,15 +202,15 @@ export default function MovieQuestions() {
 		});
 	}
 
-	function movieTitle(movie) {
+	_movieTitle(movie) {
 		return movie.title;
 	}
 
-	function movieYear(movie) {
+	_movieYear(movie) {
 		return movie.year;
 	}
 
-	function viewMovieClip(correct, attribution) {
+	_viewMovieClip(correct, attribution) {
 		return {
 			player : 'youtube',
 			videoId : correct.videos[0],
@@ -221,14 +222,16 @@ export default function MovieQuestions() {
 		};
 	}
 
-	function countUniqueClips() {
-		return movies.map((m) => m.videos.length).reduce((a, b) => a + b, 0);
+	_countUniqueClips() {
+		return this._movies.map((m) => m.videos.length).reduce((a, b) => a + b, 0);
 	}
 
-	function toJSON(response) { //TODO: copy pasted
+	_toJSON(response) { //TODO: copy pasted
 		if (!response.ok) {
 			throw response;
 		}
 		return response.json();
 	}
 }
+
+module.exports = MovieQuestions;
