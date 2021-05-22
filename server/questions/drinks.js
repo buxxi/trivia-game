@@ -1,3 +1,5 @@
+const fetch = require("node-fetch");
+
 const TOTAL_DRINKS = 50;
 
 class DrinksQuestions {
@@ -7,28 +9,28 @@ class DrinksQuestions {
 		this._types = {
 			all : {
 				title : (correct) => "What drink do you get if you mix the following ingredients?",
-				correct : this._randomDrink,
-				similar : this._similarDrinks,
-				load : this._loadList,
-				format : this._resolveName,
+				correct : (correct) => this._randomDrink(correct),
+				similar : (correct, selector) => this._similarDrinks(correct, selector),
+				load : (correct) => this._loadList(correct),
+				format : (correct) => this._resolveName(correct),
 				randomAnswer : false,
 				weight : 50
 			},
 			single : {
 				title : (correct) => "Which of these ingredients do you need to make a " + correct.drink.name + "?",
-				correct : this._randomIngredient,
-				similar : this._differentIngredients,
-				load : this._loadBlankIngredient,
-				format : this._resolveName,
+				correct : (correct) => this._randomIngredient(correct),
+				similar : (correct, selector) => this._differentIngredients(correct, selector),
+				load : (correct) => this._loadBlankIngredient(correct),
+				format : (correct) =>this._resolveName(correct),
 				randomAnswer : true,
 				weight : 25
 			},
 			glass : {
 				title : (correct) => "What kind of glass should you serve a " + correct.name + " in?",
-				correct : this._randomDrinkWithGlass,
-				similar : this._drinksWithGlass,
-				load : this._loadBlankDrink,
-				format : this._resolveGlass,
+				correct : (correct) => this._randomDrinkWithGlass(correct),
+				similar : (correct, selector) => this._drinksWithGlass(correct, selector),
+				load : (correct) => this._loadBlankDrink(correct),
+				format : (correct) => this._resolveGlass(correct),
 				randomAnswer : true,
 				weight : 25
 			}
@@ -68,7 +70,7 @@ class DrinksQuestions {
 
 			resolve({
 				text : type.title(correct),
-				answers : selector.alternatives(type.similar(correct, selector), correct, type.format, type.randomAnswer ? selector.splice : selector.first),
+				answers : selector.alternatives(type.similar(correct, selector), correct, type.format, type.randomAnswer ? arr => selector.splice(arr) : arr => selector.first(arr)),
 				correct : type.format(correct),
 				view : type.load(correct)
 			});
