@@ -1,6 +1,5 @@
 class QuestionSelector {
 	constructor() {
-		var self = this;
 	}
 
 	random(max) {
@@ -11,13 +10,13 @@ class QuestionSelector {
 		if (filter != undefined) {
 			arr = arr.filter(filter);
 		}
-		return arr[self.random(arr.length)];
+		return arr[this.random(arr.length)];
 	};
 
 	fromWeightedObject(obj) {
-		var keys = Object.keys(obj);
-		var total = self.sum(keys.map((k) => obj[k].weight||1));
-		var randomWeight = self.random(total);
+		let keys = Object.keys(obj);
+		let total = this.sum(keys.map((k) => obj[k].weight||1));
+		let randomWeight = this.random(total);
 
 		var index = 0;
 		while (randomWeight > 0) {
@@ -35,7 +34,7 @@ class QuestionSelector {
 		if (arr.length == 0) {
 			throw new Error("Trying to splice empty array");
 		}
-		return arr.splice(self.random(arr.length), 1)[0];
+		return arr.splice(this.random(arr.length), 1)[0];
 	};
 
 	first(arr) {
@@ -83,11 +82,11 @@ class QuestionSelector {
 	}
 
 	hasAllCommon(arr1, arr2) {
-		return self.countCommon(arr1, arr2) == arr2.length;
+		return this.countCommon(arr1, arr2) == arr2.length;
 	}
 
 	hasNoneCommon(arr1, arr2) {
-		return self.countCommon(arr1, arr2) == 0;
+		return this.countCommon(arr1, arr2) == 0;
 	}
 
 	countCommon(arr1, arr2) {
@@ -154,7 +153,7 @@ class QuestionSelector {
 	}
 
 	yearAlternatives(correct, maxJump) {
-		return self.numericAlternatives(correct, maxJump, new Date().getFullYear());
+		return this.numericAlternatives(correct, maxJump, new Date().getFullYear());
 	}
 
 	numericAlternatives(year, maxJump, maxAllowedValue) {
@@ -176,6 +175,4 @@ class QuestionSelector {
 	}
 }
 
-module.exports = {
-	QuestionSelector: QuestionSelector
-}
+module.exports = QuestionSelector;

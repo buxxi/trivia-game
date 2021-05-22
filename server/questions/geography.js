@@ -1,3 +1,5 @@
+const fetch = require("node-fetch");
+
 class GeographyQuestions {
 	constructor() {
 		this._countries = [];
@@ -5,58 +7,58 @@ class GeographyQuestions {
 		this._types = {
 			flags : {
 				title : (correct) => "Which country does this flag belong to?",
-				format : this._formatName,
-				correct : this._randomCountry,
-				similar : this._similarCountries,
+				format : (correct) => this._formatName(correct),
+				correct : (selector) => this._randomCountry(selector),
+				similar : (correct) => this._similarCountries(correct),
 				load : (correct) => this._loadImage(correct.flag),
 				weight : 30
 			},
 			shape : {
 				title : (correct) => "Which country has this shape?",
-				format : this._formatName,
-				correct : this._randomCountry,
-				similar : this._similarCountries,
+				format : (correct) => this._formatName(correct),
+				correct : (selector) => this._randomCountry(selector),
+				similar : (correct) => this._similarCountries(correct),
 				load : (correct) => this._loadImage('https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + correct.code + '&chco=00000000|307bbb&chf=bg,s,00000000&cht=map:auto=50,50,50,50'),
 				weight : 15
 			},
 			highpopulation : {
 				title : (correct) => "Which of these countries has the largest population?",
-				format : this._formatName,
-				correct : this._randomCountry,
-				similar : this._similarPopulationCountries,
-				load : (correct) => loadBlank(),
+				format : (correct) => this._formatName(correct),
+				correct : (selector) => this._randomCountry(selector),
+				similar : (correct) => this._similarPopulationCountries(correct),
+				load : (correct) => this._loadBlank(),
 				weight : 10
 			},
 			capital : {
 				title : (correct) => "In which country is " + correct.capital + " the capital?",
-				format : this._formatName,
-				correct : this._randomCountry,
-				similar : this._similarCountries,
-				load : (correct) => loadBlank(),
+				format : (correct) => this._formatName(correct),
+				correct : (selector) => this._randomCountry(selector),
+				similar : (correct) => this._similarCountries(correct),
+				load : (correct) => this._loadBlank(),
 				weight : 15
 			},
 			borders : {
 				title : (correct) => "Which country has borders to all these countries: " + correct.neighbours + "?",
-				format : this._formatName,
-				correct : this._randomCountryWith2Neighbours,
-				similar : this._similarNeighbouringCountries,
-				load : (correct) => loadBlank(),
+				format : (correct) => this._formatName(correct),
+				correct : (selector) => this._randomCountryWith2Neighbours(selector),
+				similar : (correct) => this._similarNeighbouringCountries(correct),
+				load : (correct) => this._loadBlank(),
 				weight : 10
 			},
 			region : {
 				title : (correct) => "Where is " + correct.name + " located?",
-				format : this._formatRegion,
-				correct : this._randomCountry,
-				similar : this._allCountries,
-				load : (correct) => loadBlank(),
+				format : (correct) => this._formatRegion(correct),
+				correct : (selector) => this._randomCountry(selector),
+				similar : (correct) => this._allCountries(correct),
+				load : (correct) => this._loadBlank(),
 				weight : 10
 			},
 			area : {
 				title : (correct) => "Which of these countries has the largest land area?",
-				format : this._formatName,
-				correct : this._randomCountry,
-				similar : this._similarAreaCountries,
-				load : (correct) => loadBlank(),
+				format : (correct) => this._formatName(correct),
+				correct : (selector) => this._randomCountry(selector),
+				similar : (correct) => this._similarAreaCountries(correct),
+				load : (correct) => this._loadBlank(),
 				weight : 10
 			}
 		}
@@ -71,7 +73,7 @@ class GeographyQuestions {
 				{ url: 'https://restcountries.eu', name: 'REST Countries' },
 				{ url: 'https://developers.google.com/chart', name: 'Google Charts' }
 			],
-			count : countries.length * Object.keys(types).length
+			count : this._countries.length * Object.keys(this._types).length
 		};
 	}
 
@@ -79,7 +81,7 @@ class GeographyQuestions {
 		return new Promise(async (resolve, reject) => {
 			try {
 				progress(0, 1);
-				countries = await loadCountries(cache);
+				this._countries = await this._loadCountries(cache);
 				progress(1, 1);
 				resolve();
 			} catch (e) {
@@ -91,7 +93,7 @@ class GeographyQuestions {
 	nextQuestion(selector) {
 		return new Promise(async (resolve, reject) => {
 			try {
-				var type = selector.fromWeightedObject(types);
+				var type = selector.fromWeightedObject(this._types);
 
 				var correct = type.correct(selector);
 				var similar = type.similar(correct);
@@ -105,7 +107,7 @@ class GeographyQuestions {
 
 				resolve({
 					text : title,
-					answers : selector.alternatives(similar, correct, type.format, types['region'] == type ? selector.splice : selector.first),
+					answers : selector.alternatives(similar, correct, type.format, this._types['region'] == type ? arr => selector.splice(arr) : arr => selector.first(arr)),
 					correct : type.format(correct),
 					view : view
 				});
@@ -116,16 +118,9 @@ class GeographyQuestions {
 	}
 
 	_loadCountries(cache) {
-		function toJSON(response) { //TODO: copy pasted
-			if (!response.ok) {
-				throw response;
-			}
-			return response.json();
-		}
-
 		return cache.get('countries', (resolve, reject) => {
-			window.fetch('https://restcountries.eu/rest/v2/all').
-			then(toJSON).
+			fetch('https://restcountries.eu/rest/v2/all').
+			then(this._toJSON).
 			then((data) => {
 				let result = data.map((country) => {
 					return {
@@ -145,23 +140,23 @@ class GeographyQuestions {
 	}
 
 	_randomCountry(selector) {
-		return selector.fromArray(countries);
+		return selector.fromArray(this._countries);
 	}
 
 	_randomCountryWith2Neighbours(selector) {
-		return selector.fromArray(countries.filter((c) => c.neighbours.length >= 2));
+		return selector.fromArray(this._countries.filter((c) => c.neighbours.length >= 2));
 	}
 
 	_allCountries() {
-		return countries;
+		return this._countries;
 	}
 
 	_similarNeighbouringCountries(country) {
-		return similarCountries(country).filter(c => !country.neighbours.includes(c)).filter(c => !country.neighbours.every((o) => c.neighbours.includes(o)));
+		return this._similarCountries(country).filter(c => !country.neighbours.includes(c)).filter(c => !country.neighbours.every((o) => c.neighbours.includes(o)));
 	}
 
 	_similarCountries(country) {
-		return countries.filter(function(c) {
+		return this._countries.filter(function(c) {
 			return country.region == c.region;
 		});
 	}
@@ -171,7 +166,7 @@ class GeographyQuestions {
 			return Math.floor(Math.log(c.area));
 		}
 
-		return countries.filter((c) => c.area < country.area).sort((a, b) => areaSort(b) - areaSort(a));
+		return this._countries.filter((c) => c.area < country.area).sort((a, b) => areaSort(b) - areaSort(a));
 	}
 
 	_similarPopulationCountries(country) {
@@ -179,7 +174,7 @@ class GeographyQuestions {
 			return Math.floor(Math.log(c.population));
 		}
 
-		return countries.filter((c) => c.population < country.population).sort((a, b) => populationSort(b) - populationSort(a));
+		return this._countries.filter((c) => c.population < country.population).sort((a, b) => populationSort(b) - populationSort(a));
 	}
 
 	_formatName(country) {
@@ -203,6 +198,13 @@ class GeographyQuestions {
 		return new Promise((resolve, reject) => {
 			resolve({});
 		});
+	}
+
+	_toJSON(response) { //TODO: copy pasted
+		if (!response.ok) {
+			throw response;
+		}
+		return response.json();
 	}
 }
 

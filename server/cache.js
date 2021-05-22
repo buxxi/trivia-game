@@ -62,6 +62,4 @@ class NoCache {
 	}
 }
 
-module.exports = {
-	Cache : NoCache
-}
+module.exports = NoCache;
