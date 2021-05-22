@@ -5,51 +5,51 @@ class CurrentGameQuestions {
 		this._types = {
 			avatar : {
 				title : (correct) => "What animal does " + correct.name + " have as avatar?",
-				correct : this._randomPlayer,
-				similar : this._otherAvatars,
-				format : this._resolveAvatar,
+				correct : (correct) => this._randomPlayer(correct),
+				similar : (correct, selector) => this._otherAvatars(correct, selector),
+				format : (correct) => this._resolveAvatar(correct),
 				attribution : "Featured avatar"
 			},
 			correct : {
 				title : (correct) => "Who has the most correct answers so far?",
-				correct : this._playerWithMost((p) => p.stats.correct),
-				similar : this._playersWithLower((p) => p.stats.correct),
-				format : this._resolveName,
+				correct : (selector) => this._playerWithMost(selector, (p) => p.stats.correct),
+				similar : (correct, selector) => this._playersWithLower(correct, selector, (p) => p.stats.correct),
+				format : (correct) => this._resolveName(correct),
 				attribution : "Most correct player"
 			},
 			wrong : {
 				title : (correct) => "Who has the most incorrect answers so far?",
-				correct : this._playerWithMost((p) => p.stats.wrong),
-				similar : this._playersWithLower((p) => p.stats.wrong),
-				format : this._resolveName,
+				correct : (selector) => this._playerWithMost(selector, (p) => p.stats.wrong),
+				similar : (correct, selector) => this._playersWithLower(correct, selector, (p) => p.stats.wrong),
+				format : (correct) => this._resolveName(correct),
 				attribution : "Most incorrect player"
 			},
 			total_correct : {
 				title : (correct) => "What is the total amount of correct answers so far?",
-				correct : this._countTotal((p) => p.stats.correct),
-				similar : this._numericAlternatives,
-				format : this._formatValue,
+				correct : (selector) => this._countTotal(selector, (p) => p.stats.correct),
+				similar : (correct, selector) => this._numericAlternatives(correct, selector),
+				format : (correct) => this._formatValue(correct),
 				attribution : "Total correct answers"
 			},
 			total_wrong : {
 				title : (correct) => "What is the total amount of incorrect answers so far?",
-				correct : this._countTotal((p) => p.stats.wrong),
-				similar : this._numericAlternatives,
-				format : this._formatValue,
+				correct : (selector) => this._countTotal(selector, (p) => p.stats.wrong),
+				similar : (correct, selector) => this._numericAlternatives(correct, selector),
+				format : (correct) => this._formatValue(correct),
 				attribution : "Total incorrect answers"
 			},
 			fastest : {
 				title : (correct) => "Who has made the fastest correct answers so far?",
-				correct : this._playerWithMost((p) => p.stats.fastest),
-				similar : this._playersWithLower((p) => p.stats.fastest),
-				format : this._resolveName,
+				correct : (selector) => this._playerWithMost(selector, (p) => p.stats.fastest),
+				similar : (correct, selector) => this._playersWithLower(correct, selector, (p) => p.stats.fastest),
+				format : (correct) => this._resolveName(correct),
 				attribution : "Fastest player"
 			},
 			slowest : {
 				title : (correct) => "Who has made the slowest correct answers so far?",
-				correct : this._playerWithLeast((p) => p.stats.slowest),
-				similar : this._playersWithHigher((p) => p.stats.slowest),
-				format : this._resolveName,
+				correct : (selector) => this._playerWithLeast(selector, (p) => p.stats.slowest),
+				similar : (correct, selector) => this._playersWithHigher(correct, selector, (p) => p.stats.slowest),
+				format : (correct) => this._resolveName(correct),
 				attribution : "Slowest player"
 			}
 		}
@@ -81,7 +81,7 @@ class CurrentGameQuestions {
 
 			resolve({
 				text : type.title(correct),
-				answers : selector.alternatives(type.similar(correct, selector), correct, type.format, selector.splice),
+				answers : selector.alternatives(type.similar(correct, selector), correct, type.format, (arr) => selector.splice(arr)),
 				correct : type.format(correct),
 				view : {
 					attribution : {
@@ -98,34 +98,25 @@ class CurrentGameQuestions {
 		return selector.fromArray(this._players());
 	}
 
-	_playerWithMost(func) {
-		return (selector) => {
-			return selector.max(this._players(), func);
-		};
+	_playerWithMost(selector, func) {
+		console.log(this._players().map(func));
+		return selector.max(this._players(), func);
 	}
 
-	_playersWithLower(func) {
-		return (player, selector) => {
-			return this._players().filter((p) => func(p) < func(player));
-		};
+	_playersWithLower(player, selector, func) {
+		return this._players().filter((p) => func(p) < func(player));
 	}
 
-	_playerWithLeast(func) {
-		return (selector) => {
-			return selector.min(this._players(), func);
-		};
+	_playerWithLeast(selector, func) {
+		return selector.min(this._players(), func);
 	}
 
-	_playersWithHigher(func) {
-		return (player, selector) => {
-			return this._players().filter((p) => func(p) > func(player));
-		};
+	_playersWithHigher(player, selector, func) {
+		return this._players().filter((p) => func(p) > func(player));
 	}
 
-	_countTotal(func) {
-		return (selector) => {
-			return selector.sum(this._players(), func);
-		};
+	_countTotal(selector, func) {
+		return selector.sum(this._players(), func);
 	}
 
 	_numericAlternatives(number, selector) {
@@ -134,6 +125,7 @@ class CurrentGameQuestions {
 	}
 
 	_otherAvatars(player, selector) {
+		console.log(Object.keys(avatars));
 		return Object.keys(avatars).map((a) => ({ avatar : a }));
 	}
 

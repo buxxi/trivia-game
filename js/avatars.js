@@ -42,6 +42,4 @@ let avatars = mapByName([
 /*,
     dromedary : new Avatar('dromedary', '\uD83D\uDC2A')*/
 
-module.exports = {
-    avatars : avatars
-};
+module.exports = avatars;
