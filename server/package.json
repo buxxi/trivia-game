@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/buxxi/webrtc-trivia#readme",
   "dependencies": {
+    "compromise": "^13.11.2",
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",
     "uuid": "^8.3.2",
