@@ -48,8 +48,8 @@ class GenericCategory {
 	}
 
 	nextQuestion(selector) {
-		var question = new GenericQuestion(selector.fromWeightedObject(this._questions));
-		var correct = question.correct(this._data, selector);
+		let question = new GenericQuestion(selector.fromWeightedObject(this._questions));
+		let correct = question.correct(this._data, selector);
 
 		return new Promise((resolve, reject) => {
 			try {
@@ -72,16 +72,16 @@ class GenericQuestion {
 	}
 
 	title(correct) {
-		return _interpolate(this._model.question.format, {
+		return this._interpolate(this._model.question.format, {
 			'correct' : correct
 		});
 	}
 
 	correct(data, selector) {
-		var pattern = this._model.answers.selector.correct;
-		var fn = new Function("all", "selector", "return " + pattern);
+		let pattern = this._model.answers.selector.correct;
+		let fn = new Function("all", "selector", "return " + pattern);
 
-		var correct = fn(data, selector, pattern);
+		let correct = fn(data, selector, pattern);
 
 		if (!correct) {
 			throw new Error("No correct answer found");
@@ -91,31 +91,32 @@ class GenericQuestion {
 	}
 
 	similar(correct, data, selector) {
-		var pattern = this._model.answers.selector.alternatives;
-		var sorted = this._model.answers.selector.sorted;
+		let pattern = this._model.answers.selector.alternatives;
+		let sorted = this._model.answers.selector.sorted;
 
-		var fn = new Function("all", "correct", "selector", "return " + pattern);
+		let fn = new Function("all", "correct", "selector", "return " + pattern);
 
-		return selector.alternatives(fn(data, correct, selector), correct, this.format, sorted ? selector.first : selector.splice);
+		return selector.alternatives(fn(data, correct, selector), correct, answer => this.format(answer), sorted ? (arr) => selector.first(arr) : (arr) => selector.splice(arr));
 	}
 
 	format(answer) {
-		return this._interpolate(this.model.answers.format, {
+		return this._interpolate(this._model.answers.format, {
 			'answer' : answer
 		});
 	}
 
 	attribution(obj) {
-		return this._cloneAndInterpolate(obj, this.model.view);
+		return this._cloneAndInterpolate(obj, this._model.view);
 	}
 
 	_cloneAndInterpolate(data, source) {
-		var clone = JSON.parse(JSON.stringify(source));
+		let self = this;
+		let clone = JSON.parse(JSON.stringify(source));
 		function interpolateRecursive(obj) {
 			if (typeof obj === 'string') {
-				return interpolate(obj, data);
+				return self._interpolate(obj, data);
 			}
-			for (var i in obj) {
+			for (let i in obj) {
 				obj[i] = interpolateRecursive(obj[i]);
 			}
 			return obj;

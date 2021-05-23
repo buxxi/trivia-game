@@ -1,3 +1,5 @@
+const fs = require("fs").promises;
+
 const MovieQuestions = require('./questions/movies.js');
 const VideoGameQuestions = require('./questions/videogames.js');
 const CurrentGameQuestions = require('./questions/meta.js');
@@ -20,7 +22,7 @@ class Categories {
 			new MovieQuestions(),
 			new MusicQuestions(),
 			new QuotesQuestions(),
-			new VideoGameQuestions()	
+			new VideoGameQuestions()
 		];
 		this._enabledCategories = [];
 		this._apikeys = {};
@@ -29,18 +31,25 @@ class Categories {
 	}
 
 	init() {
-		return new Promise((resolve, reject) => {
-			if (Object.keys(apikeys).length != 0) {
+		return new Promise(async (resolve, reject) => {
+			if (Object.keys(this._apikeys).length != 0) {
 				return resolve();
 			}
-			fetch('conf/api-keys.json').then(response => response.json()).then(data => {
-				Object.assign(apikeys, data);
-			}).then(() => {
-				return Promise.all(apikeys.other.map((url) => self.loadFromURL(url))).then(resolve).catch(reject);
-			}).catch(reject);
-			fetch('conf/jokes.json').then(response => response.json()).then(data => {
-				jokes = data;
-			});
+			try {
+				let apiKeysData = await fs.readFile('../conf/api-keys.json');
+				Object.assign(this._apikeys, JSON.parse(apiKeysData));
+				for (let path of this._apikeys.other) {
+					let categoryData = await fs.readFile(path);
+					var newCategory = this._genericloader.create(path, categoryData);
+					this._categories.push(newCategory);
+				}
+				let jokesData = await fs.readFile('../conf/jokes.json');
+				this._jokes = JSON.parse(jokesData);
+
+				resolve();
+			} catch (e) {
+				reject(e);
+			}
 		});
 	}
 
@@ -97,29 +106,6 @@ class Categories {
 		category.weight = 2;
 
 		return category.nextQuestion(selector).then(shuffleAnswers).then(updateSession(category, session));
-	}
-
-	loadFromURL(url) {
-		return new Promise((resolve, reject) => {
-			fetch(url).then(response => response.json()).then(data => {
-				var newCategory = genericloader.create(url, JSON.stringify(data));
-				categories.push(newCategory);
-				resolve(newCategory.describe().type);
-			}).catch(reject);
-		});
-	}
-
-	loadFromFile(file) {
-		return new Promise((resolve, reject) => {
-			var reader = new FileReader(file);
-			reader.onload = (e) => {
-				var newCategory = genericloader.create(file.name, reader.result);
-				categories.push(newCategory);
-				resolve(newCategory.describe().type);
-			};
-
-			reader.readAsText(file, "UTF-8");
-		});
 	}
 
 	clearCache() {
