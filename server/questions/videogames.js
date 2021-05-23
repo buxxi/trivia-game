@@ -1,47 +1,50 @@
+const fetch = require("node-fetch");
+
 const YoutubeLoader = require('../youtubeloader');
 
 const GAMES_PER_PLATFORM = 50;
 
 class VideoGameQuestions {
-	constructor() {
+	constructor(youtubeApiKey, igdbClientId, igdbClientSecret) {
 		this._games = [];
+		this._platforms = [];
 
-		this._youtubeApiKey = '';
-		this._igdbApiKey = '';
-		this._igdbBaseURL = '';
-		this._youtube = new YoutubeLoader();
+		this._igdbClientId = igdbClientId;
+		this._igdbClientSecret = igdbClientSecret;
+		this._igdbBaseURL = 'https://api.igdb.com/v4/';
+		this._youtube = new YoutubeLoader('UCzRj15rxSdLAbANoZsbyWjg', youtubeApiKey);
 
 		this._types = {
 			screenshot : {
 				title : (correct) => "What game is this a screenshot of?",
-				correct : this._randomGame,
-				similar : this._similarGames,
-				view : this._screenshot,
-				format : this._gameTitle,
+				correct : (selector) => this._randomGame(selector),
+				similar : (correct, selector) => this._similarGames(correct, selector),
+				view : (correct, selector) => this._screenshot(correct, selector),
+				format : (correct) => this._gameTitle(correct),
 				weight : 45
 			},
 			year : {
 				title : (correct) => "In which year was '" + correct.name + "' first released?",
-				correct : this._randomGame,
-				similar : this._similarGameYears,
-				view : this._blank,
-				format : this._gameYear,
+				correct : (selector) => this._randomGame(selector),
+				similar : (correct, selector) => this._similarGameYears(correct, selector),
+				view : (correct, selector) => this._blank(correct, selector),
+				format : (correct) => this._gameYear(correct),
 				weight : 10
 			},
 			platform : {
 				title : (correct) => "'" + correct.name + "' was released to one of these platforms, which one?",
-				correct : this._randomGame,
-				similar : this._similarPlatforms,
-				view : this._blank,
-				format : this._gamePlatform,
+				correct : (selector) => this._randomGame(selector),
+				similar : (correct, selector) => this._similarPlatforms(correct, selector),
+				view : (correct, selector) => this._blank(correct, selector),
+				format : (correct) => this._gamePlatform(correct),
 				weight : 10
 			},
 			song : {
 				title : (correct) => "From which games soundtrack is this song?",
-				correct : this._randomGameWithSong,
-				similar : this._similarGames,
-				view : this._songVideo,
-				format : this._gameTitle,
+				correct : (selector) => this._randomGameWithSong(selector),
+				similar : (correct, selector) => this._similarGames(correct, selector),
+				view : (correct, selector) => this._songVideo(correct, selector),
+				format : (correct) => this._gameTitle(correct),
 				weight : 25
 			}
 		}
@@ -64,26 +67,24 @@ class VideoGameQuestions {
 	}
 
 	preload(progress, cache, apikeys, game) {
-		this._youtubeApiKey = apikeys.youtube;
-		this._igdbApiKey = apikeys.igdb;
-		this._igdbBaseURL = apikeys.igdbBaseURL;
-
 		return new Promise(async (resolve, reject) => {
 			try {
-				let platforms = await this._loadPlatforms(cache);
-				let toLoadPlatforms = Object.keys(platforms);
+				let token = await this._loadTwitchAccessToken();
+				this._platforms = await this._loadPlatforms(cache, token);
+				
+				let toLoadPlatforms = Object.keys(this._platforms);
 				let total = toLoadPlatforms.length * GAMES_PER_PLATFORM;
 
-				progress(games.length, total);
+				progress(this._games.length, total);
 
 				for (let platform of toLoadPlatforms) {
-					let gamesChunk = await this._loadGames(platform, platforms, cache);
+					let gamesChunk = await this._loadGames(platform, this._platforms, cache, token);
 					this._games = this._games.concat(gamesChunk);
-					progress(games.length, total);
+					progress(this._games.length, total);
 				}
 
 				let videos = await this._loadVideos(progress, cache);
-				this._matchVideosToGames(videos, games);
+				this._matchVideosToGames(videos, this._games);
 
 				resolve();
 			} catch (e) {
@@ -100,31 +101,48 @@ class VideoGameQuestions {
 
 			resolve({
 				text : type.title(correct),
-				answers : selector.alternatives(similar, correct, type.format, selector.first),
+				answers : selector.alternatives(similar, correct, type.format, (arr) => selector.first(arr)),
 				correct : type.format(correct),
 				view : type.view(correct, selector)
 			});
 		});
 	}
 
-	_loadVideos(progress, cache) {
-		return cache.get('songs', (resolve, reject) => {
-			this._youtube.loadChannel('UC6iBH7Pmiinoe902-JqQ7aQ', progress, this._youtubeApiKey).then(resolve).catch(reject);
+	_loadTwitchAccessToken() {
+		return new Promise(async (resolve, reject) => {
+			try {
+				let url = `https://id.twitch.tv/oauth2/token?client_id=${this._igdbClientId}&client_secret=${this._igdbClientSecret}&grant_type=client_credentials`;
+				let response = await fetch(url, {
+					method: 'POST'
+				});
+				let data = await this._toJSON(response);
+				resolve(data.access_token);
+			} catch (e) {
+				reject(e);
+			}
 		});
 	}
 
-	_loadGames(platform, platforms, cache) {
-		return cache.get(platform, (resolve, reject) => {
-			let data = `fields name,url,first_release_date,platforms,screenshots,keywords,themes,genres; where platforms = ${platform} & first_release_date != null & screenshots != null & rating_count > 2; limit ${GAMES_PER_PLATFORM}; offset 0; sort rating desc;`;
-			fetch(this._igdbBaseURL + 'games/',{
-				method : 'POST',
-				headers : {
-					'user-key' : this._igdbApiKey
-				},
-				body : data
-			}).
-			then(this._toJSON).
-			then(data => {
+	_loadVideos(progress, cache) {
+		return cache.get('songs', (resolve, reject) => {
+			this._youtube.loadChannel(progress).then(resolve).catch(reject);
+		});
+	}
+
+	_loadGames(platform, platforms, cache, token) {
+		return cache.get(platform, async (resolve, reject) => {
+			try {
+				let inputData = `fields name,url,first_release_date,platforms,screenshots,keywords,themes,genres; where platforms = ${platform} & first_release_date != null & screenshots != null & rating_count > 2; limit ${GAMES_PER_PLATFORM}; offset 0; sort rating desc;`;
+				let response = await fetch(this._igdbBaseURL + 'games/',{
+					method : 'POST',
+					headers : {
+						'Client-ID' : this._igdbClientId,
+						'Authorization': `Bearer ${token}`
+					},
+					body : inputData
+				});
+				let data = await this._toJSON(response);
+
 				function tag(prefix, arr) {
 					if (!arr) {
 						return [];
@@ -132,6 +150,8 @@ class VideoGameQuestions {
 
 					return arr.map((i) => prefix + i);
 				}
+
+				let release_date = this._release_date;
 
 				let games = data.map((game) => {
 					return {
@@ -143,18 +163,21 @@ class VideoGameQuestions {
 						attribution : game.url
 					};
 				});
-				this._loadScreenshots(games).then(resolve);
-			}).catch(reject);
+				let result = await this._loadScreenshots(games, token);
+				resolve(result);
+			} catch(e) {
+				reject(e);
+			};
 		});
 	}
 
-	_loadScreenshots(games) {
+	_loadScreenshots(games, token) {
 		return new Promise(async (resolve, reject) => {
 			try {
 				let screenshotIds = games.flatMap(g => g.screenshots);
 				var result = {};
 				while (screenshotIds.length > 0) {
-					var chunkResult = await this._loadScreenshotChunk(screenshotIds.splice(0, 10));
+					var chunkResult = await this._loadScreenshotChunk(screenshotIds.splice(0, 10), token);
 					Object.assign(result, chunkResult);
 				}
 				for (var game of games) {
@@ -167,36 +190,39 @@ class VideoGameQuestions {
 		});
 	}
 
-	_loadScreenshotChunk(ids) {
-		return new Promise((resolve, reject) => {
-			let data = `fields id,image_id; where id = (${ids.join(',')}); limit 10;`;
-			fetch(this._igdbBaseURL + 'screenshots/', {
-				method : 'POST',
-				headers : {
-					'user-key' : this._igdbApiKey
-				},
-				body : data
-			}).
-			then(this._toJSON).
-			then(data => {
+	_loadScreenshotChunk(ids, token) {
+		return new Promise(async (resolve, reject) => {
+			try {
+				let inputData = `fields id,image_id; where id = (${ids.join(',')}); limit 10;`;
+				let response = await fetch(this._igdbBaseURL + 'screenshots/', {
+					method : 'POST',
+					headers : {
+						'Client-ID' : this._igdbClientId,
+						'Authorization': `Bearer ${token}`
+					},
+					body : inputData
+				});
+				let data = await this._toJSON(response);
 				let result = {};
 				for (var screenshot of data) {
 					result[screenshot.id] = screenshot.image_id;
 				}
 				resolve(result);
-			}).catch(reject);
+			} catch(e) {
+				reject(e);
+			};
 		});
 	}
 
-	_loadPlatforms(cache) {
+	_loadPlatforms(cache, token) {
 		return cache.get('platforms', async (resolve, reject) => {
 			try {
 				let result = {};
 				let chunkResult;
 				do {
-					chunkResult = await this._loadPlatformChunk(Object.keys(result).length);
+					chunkResult = await this._loadPlatformChunk(Object.keys(result).length, token);
 					result = Object.assign(result, chunkResult);
-				} while (Object.keys(chunkResult).length == 50);
+				} while (false && Object.keys(chunkResult).length == 50);
 				resolve(result);
 			} catch(e) {
 				reject(e);
@@ -204,18 +230,19 @@ class VideoGameQuestions {
 		});
 	}
 
-	_loadPlatformChunk(offset) {
-		return new Promise((resolve, reject) => {
-			let data = `fields id,name; where category = (1,5); limit 50; offset ${offset};`
-			fetch(this._igdbBaseURL + 'platforms/', {
-				method : 'POST',
-				headers : {
-					'user-key' : this._igdbApiKey
-				},
-				body : data
-			}).
-			then(this._toJSON).
-			then((data) => {
+	_loadPlatformChunk(offset, token) {
+		return new Promise(async (resolve, reject) => {
+			try {
+				let inputData = `fields id,name; where category = (1,5); limit 50; offset ${offset};`
+				let response = await fetch(this._igdbBaseURL + 'platforms/', {
+					method : 'POST',
+					headers : {
+						'Client-ID' : this._igdbClientId,
+						'Authorization': `Bearer ${token}`
+					},
+					body : inputData
+				});
+				let data = await this._toJSON(response);
 				let result = {};
 				data.forEach((platform) => {
 					result[platform.id] = {
@@ -223,13 +250,15 @@ class VideoGameQuestions {
 					}
 				});
 				resolve(result);
-			}).catch(reject);
+			} catch(e) {
+				reject(e);
+			}
 		});
 	};
 
 	_matchVideosToGames(videos, games) {
 		let gamesByName = {};
-		for (game of games) {
+		for (let game of games) {
 			gamesByName[this._toAlphaNumeric(game.name)] = game;
 		}
 		this._parseTitles(videos).forEach((t) => {
@@ -242,16 +271,23 @@ class VideoGameQuestions {
 	}
 
 	_parseTitles(videos) {
+		let patterns = [
+			/VGM [0-9]+ - (.*?)( - ).*/i,
+			/(.*) OST[\s]*-? .*/i,
+		];
+
 		return videos.map((v) => {
-			let match = v.title.match(/Best VGM [0-9]+ - (.*?)( - ).*/);
-			if (!match) {
-				return null;
+			for (let pattern of patterns) {
+				let match = v.title.match(pattern);
+				if (match) {
+					return {
+						id : v.id,
+						title : this._toAlphaNumeric(match[1])
+					};
+				}
 			}
 
-			return {
-				id : v.id,
-				title : this._toAlphaNumeric(match[1])
-			};
+			return null;
 		}).filter((v) => v != null);
 	}
 
@@ -270,7 +306,7 @@ class VideoGameQuestions {
 
 	_similarGames(game, selector) {
 		var titleWords = selector.wordsFromString(game.name);
-		return games.map((g) => {
+		return this._games.map((g) => {
 			return {
 				game : g,
 				score : selector.levenshteinDistance(titleWords, selector.wordsFromString(g.name)) + selector.levenshteinDistance(game.tags, g.tags) + selector.dateDistance(game.release_date, g.release_date)
@@ -279,7 +315,7 @@ class VideoGameQuestions {
 	}
 
 	_similarGameYears(game, selector) {
-		return selector.yearAlternatives(gameYear(game), 3).map((year) => ({ release_date : year }));
+		return selector.yearAlternatives(this._gameYear(game), 3).map((year) => ({ release_date : year }));
 	}
 
 	_similarPlatforms(game, selector) {
@@ -287,7 +323,7 @@ class VideoGameQuestions {
 			return selector.dateDistance(a.release_date, game.release_date) - selector.dateDistance(b.release_date, game.release_date);
 		}
 
-		var unused = Object.keys(platforms).map((p) => platforms[p]).filter((p) => game.platforms.indexOf(p) == -1).sort(dateDifference);
+		var unused = Object.keys(this._platforms).map((p) => this._platforms[p]).filter((p) => game.platforms.indexOf(p) == -1).sort(dateDifference);
 
 		return [
 			{ platforms : [selector.splice(unused).name] },

@@ -38,7 +38,7 @@ class Categories {
 					new MovieQuestions(this._apikeys.youtube, this._apikeys.tmdb),
 					new MusicQuestions(), //
 					new QuotesQuestions(this._apikeys.mashape),
-					new VideoGameQuestions() //	
+					new VideoGameQuestions(this._apikeys.youtube, this._apikeys.igdb_client_id, this._apikeys.igdb_client_secret)
 				]
 
 				for (let path of this._apikeys.other) {
