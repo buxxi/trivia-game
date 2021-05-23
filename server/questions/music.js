@@ -1,42 +1,44 @@
+const fetch = require("node-fetch");
+
 const TRACKS_BY_CATEGORY = 100;
 
 class MusicQuestions {
-	constructor() {
+	constructor(spotifyApiKey, spotifyWhiteListGenres) {
 		this._tracks = [];
-		this._spotifyWhiteListGenres = [];
-		this._spotifyApiKey = '';
+		this._spotifyWhiteListGenres = spotifyWhiteListGenres;
+		this._spotifyApiKey = spotifyApiKey;
 
 		this._types = {
 			title : {
 				title : (correct) => "What is the name of this song?",
-				correct : this._randomTrack,
-				similar : this._similarTracks,
-				format : this._trackTitle,
-				view : this._mp3Track,
+				correct : (selector) => this._randomTrack(selector),
+				similar : (correct, selector) => this._similarTracks(correct, selector),
+				format : (correct) => this._trackTitle(correct),
+				view : (correct) => this._mp3Track(correct),
 				weight : 40
 			},
 			artist : {
 				title : (correct) => "Which artist is this?",
-				correct : this._randomTrack,
-				similar : this._similarTracks,
-				format : this._artistName,
-				view : this._mp3Track,
+				correct : (selector) => this._randomTrack(selector),
+				similar : (correct, selector) => this._similarTracks(correct, selector),
+				format : (correct) => this._artistName(correct),
+				view : (correct) => this._mp3Track(correct),
 				weight : 30
 			},
 			album : {
 				title : (correct) => "From which album is this song?",
-				correct : this._randomTrack,
-				similar : this._similarTracks,
-				format : this._albumName,
-				view : this._mp3Track,
+				correct : (selector) => this._randomTrack(selector),
+				similar : (correct, selector) => this._similarTracks(correct, selector),
+				format : (correct) => this._albumName(correct),
+				view : (correct) => this._mp3Track(correct),
 				weight : 10
 			},
 			artistImage : {
 				title : (correct) => "Name the artist in the image",
-				correct : this._randomTrack,
-				similar : this._similarTracks,
-				format : this._artistName,
-				view : this._artistImage,
+				correct : (selector) => this._randomTrack(selector),
+				similar : (correct, selector) => this._similarTracks(correct, selector),
+				format : (correct) => this._artistName(correct),
+				view : (correct) => this._artistImage(correct),
 				weight : 20
 			}
 		};
@@ -50,14 +52,11 @@ class MusicQuestions {
 			attribution : [
 				{ url: 'https://spotify.com', name: 'Spotify' }
 			],
-			count : tracks.length * Object.keys(types).length
+			count : this._tracks.length * Object.keys(this._types).length
 		};
 	}
 
 	preload(progress, cache, apikeys, game) {
-		this._spotifyApiKey = apikeys.spotify;
-		this._spotifyWhiteListGenres = apikeys.spotifyWhiteList;
-
 		return new Promise(async (resolve, reject) => {
 			if (this._tracks.length != 0) {
 				resolve();
@@ -67,12 +66,12 @@ class MusicQuestions {
 			try {
 				let accessToken = await this._loadSpotifyAccessToken();
 				let categories = await this._loadSpotifyCategories(accessToken, cache);
-				
+
 				progress(0, categories.length);
 				var loaded = 0;
 
 				for (let category of categories) {
-					let categoryData = await loadCategory(accessToken, category, cache);
+					let categoryData = await this._loadCategory(accessToken, category, cache);
 					loaded++;
 					this._tracks = this._tracks.concat(categoryData);
 					progress(loaded, categories.length);
@@ -92,7 +91,7 @@ class MusicQuestions {
 
 			resolve({
 				text : type.title(track),
-				answers : selector.alternatives(type.similar(track, selector), track, type.format, selector.splice),
+				answers : selector.alternatives(type.similar(track, selector), track, type.format, (arr) => selector.splice(arr)),
 				correct : type.format(track),
 				view : type.view(track)
 			});
@@ -136,14 +135,17 @@ class MusicQuestions {
 	}
 
 	_loadCategoryChunk(accessToken, category, popularity) {
-		return new Promise((resolve, reject) => {
-			fetch(`https://api.spotify.com/v1/recommendations?seed_genres=${category}&min_popularity=${popularity}&max_popularity=${popularity + 9}&limit=${TRACKS_BY_CATEGORY}`, {
-				headers : {
-					Authorization : 'Bearer ' + accessToken
-				}
-			}).
-			then(this._toJSON).
-			then((data) => {
+		return new Promise(async (resolve, reject) => {
+			try {
+				let url = `https://api.spotify.com/v1/recommendations?seed_genres=${category}&min_popularity=${popularity}&max_popularity=${popularity + 9}&limit=${TRACKS_BY_CATEGORY}`;
+				let response = await fetch(url, {
+					headers : {
+						Authorization : 'Bearer ' + accessToken
+					}
+				});
+				let data = await this._toJSON(response);
+				let parseTitle = this._parseTitle;
+
 				var result = data.tracks.filter((track) => !!track.preview_url).map((track) => {
 					return {
 						title : parseTitle(track.name),
@@ -159,32 +161,38 @@ class MusicQuestions {
 					};
 				});
 				resolve(result);
-			}).catch(this._retryAfterHandler(() => this._loadCategoryChunk(accessToken, category, popularity), resolve, reject));	
+			} catch(e) {
+				this._retryAfterHandler(() => this._loadCategoryChunk(accessToken, category, popularity), resolve, reject);	
+			}
 		});
 	}
 
 	_loadSpotifyCategories(accessToken, cache) {
-		return cache.get('categories', (resolve, reject) => {
-			fetch('https://api.spotify.com/v1/recommendations/available-genre-seeds', {
-				headers : {
-					Authorization : 'Bearer ' + accessToken
-				}
-			}).
-			then(this._toJSON).
-			then(data => {
+		return cache.get('categories', async (resolve, reject) => {
+			try {
+				let response = await fetch('https://api.spotify.com/v1/recommendations/available-genre-seeds', {
+					headers : {
+						Authorization : 'Bearer ' + accessToken
+					}
+				});
+				let data = await this._toJSON(response);
 				var genres = data.genres;
-				if (spotifyWhiteListGenres) {
-					genres = genres.filter((g) => spotifyWhiteListGenres.indexOf(g) > -1);
+				if (this._spotifyWhiteListGenres) {
+					genres = genres.filter((g) => this._spotifyWhiteListGenres.indexOf(g) > -1);
 				} else {
-					spotifyWhiteListGenres = genres;
+					this._spotifyWhiteListGenres = genres;
 				}
 				resolve(genres);
-			}).catch(this._retryAfterHandler(() => this._loadSpotifyCategories(accessToken, cache), resolve, reject));
+			} catch(e) {
+				console.log(e);
+				this._retryAfterHandler(() => this._loadSpotifyCategories(accessToken, cache), resolve, reject);
+			}
 		});
 	}
 
 	_loadSpotifyAccessToken() {
 		return new Promise((resolve, reject) => {
+			/*
 			var path = window.location.href.substr(0, window.location.href.lastIndexOf('/trivia'));
 			var redirect_uri = path + '/trivia/spotifyauth.html';
 			var url = 'https://accounts.spotify.com/authorize?client_id=' + spotifyApiKey + '&response_type=token&redirect_uri=' + encodeURIComponent(redirect_uri);
@@ -212,6 +220,8 @@ class MusicQuestions {
 					clearInterval(closeListener);
 				}
 			}, 100);
+			*/
+			reject("TODO: need to fix this somehow...");
 		});
 	}
 
@@ -221,7 +231,7 @@ class MusicQuestions {
 
 			try {
 				while (artistIds.length > 0) {
-					var chunkResult = await this._loadArtistsChunk(accessToken, category, artistIds.splice(0, 50));
+					let chunkResult = await this._loadArtistsChunk(accessToken, category, artistIds.splice(0, 50));
 					artists = artists.concat(chunkResult);
 				}
 			} catch (e) {
@@ -236,20 +246,22 @@ class MusicQuestions {
 	}
 
 	_loadArtistsChunk(accessToken, category, chunkedIds) {
-		return new Promise((resolve, reject) => {
-			fetch(`https://api.spotify.com/v1/artists?ids=${chunkedIds.join(',')}`, {
-				headers : {
-					Authorization : 'Bearer ' + accessToken
-				}
-			}).
-			then(this._toJSON).
-			then(data => {
+		return new Promise(async (resolve, reject) => {
+			try {
+				let response = await fetch(`https://api.spotify.com/v1/artists?ids=${chunkedIds.join(',')}`, {
+					headers : {
+						Authorization : 'Bearer ' + accessToken
+					}
+				});
+				let data = await this._toJSON(response);
 				var artists = data.artists.filter(artist => {
 					var genres = artist.genres.map(genre => genre.toLowerCase().replace(' ', '-'));
 					return genres.indexOf(category) > -1;
 				});
 				resolve(artists);
-			}).catch(this._retryAfterHandler(() => this._loadArtistsChunk(accessToken, category, chunkedIds), resolve, reject));
+			} catch(e) {
+				this._retryAfterHandler(() => this._loadArtistsChunk(accessToken, category, chunkedIds), resolve, reject);
+			}
 		});
 	}
 
@@ -285,7 +297,7 @@ class MusicQuestions {
 
 	_randomTrack(selector) {
 		var categoryWeight = {};
-		tracks.forEach((track) => {
+		this._tracks.forEach((track) => {
 			if (!categoryWeight[track.category]) {
 				categoryWeight[track.category] = { name : track.category, weight : track.popularity };
 			} else {
@@ -295,17 +307,17 @@ class MusicQuestions {
 
 		var category = selector.fromWeightedObject(categoryWeight).name;
 
-		return selector.fromArray(tracks, (track) => track.category == category);
+		return selector.fromArray(this._tracks, (track) => track.category == category);
 	}
 
 	_similarTracks(track, selector) {
 		var allowedCategories = [track.category];
 		var differentGenreCount = Math.floor((10 - track.popularity) / 2);
 		for (var i = 0; i < differentGenreCount; i++) {
-			allowedCategories.push(selector.fromArray(spotifyWhiteListGenres)); //This could possibly add the same category many times
+			allowedCategories.push(selector.fromArray(this._spotifyWhiteListGenres)); //This could possibly add the same category many times
 		}
 		
-		return tracks.filter(function(s) {
+		return this._tracks.filter(function(s) {
 			return allowedCategories.indexOf(s.category) != -1;
 		});
 	}

@@ -36,7 +36,7 @@ class Categories {
 					new GeographyQuestions(),
 					new CurrentGameQuestions(),
 					new MovieQuestions(this._apikeys.youtube, this._apikeys.tmdb),
-					new MusicQuestions(), //
+					new MusicQuestions(this._apikeys.spotify, this._apikeys.spotifyWhiteList),
 					new QuotesQuestions(this._apikeys.mashape),
 					new VideoGameQuestions(this._apikeys.youtube, this._apikeys.igdb_client_id, this._apikeys.igdb_client_secret)
 				]
