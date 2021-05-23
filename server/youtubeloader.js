@@ -1,68 +1,41 @@
+const fetch = require("node-fetch");
+
+const YOUTUBE_REGION = 'SE';
+
 class YoutubeLoader {
-	constructor() {
-		var self = this;
-		var YOUTUBE_REGION = 'SE';
+	constructor(channelId, apiKey) {
+		this._channelId = channelId;
+		this._apiKey = apiKey;
 	}
 
-	loadChannel(channelId, progress, apiKey) {
-		return new Promise((resolve, reject) => {
-			var result = [];
-
-			function loadUploads() {
-				fetch(`https://www.googleapis.com/youtube/v3/channels?id=${channelId}&key=${apiKey}&part=contentDetails`).
-				then(toJSON).
-				then((data) => {
-					loadPage(data.items[0].contentDetails.relatedPlaylists.uploads);
-				});
+	loadChannel(progress) {
+		return new Promise(async (resolve, reject) => {
+			try {
+				let response = await fetch(`https://www.googleapis.com/youtube/v3/channels?id=${this._channelId}&key=${this._apiKey}&part=contentDetails`);
+				let data = await this._toJSON(response);
+				var result = [];
+				let playListId = data.items[0].contentDetails.relatedPlaylists.uploads;
+				result = await this._loadPage(result, progress, playListId);
+				resolve(result);
+			} catch (e) {
+				reject(e);
 			}
-
-			function loadPage(playListId, pageToken) {
-				var url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${apiKey}&playlistId=${playListId}&part=id,snippet,contentDetails&maxResults=50`;
-				if (pageToken) {
-					url = url = `${url}&pageToken=${pageToken}`;
-				}
-				fetch(url).
-				then(toJSON).
-				then((data) => {
-					var current = result.length;
-					var total = data.pageInfo.totalResults;
-					progress(current, total);
-					var nextPage = data.nextPageToken;
-
-					result = result.concat(data.items.map((item) => {
-						return {
-							id : item.contentDetails.videoId,
-							title : item.snippet.title
-						}
-					}));
-					if (nextPage) {
-						loadPage(playListId, nextPage);
-					} else {
-						resolve(result);
-					}
-				}).catch((err) => {
-					console.log(err);
-					loadPage(playListId, pageToken);
-				});
-			}
-
-			loadUploads();
 		});
 	}
 
-	checkEmbedStatus(videoId, apiKey) {
-		return new Promise((resolve, reject) => {
-			fetch(`https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${videoId}&part=status,contentDetails`).
-			then(toJSON).
-			then((data) => {
+	checkEmbedStatus(videoId) {
+		return new Promise(async (resolve, reject) => {
+			try {
+				let response = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${this._apiKey}&id=${videoId}&part=status,contentDetails`);
+				let data = await this._toJSON(response);
 				if (data.items.length == 0) {
 					return reject("Video not found");
 				}
-				var item = data.items[0];
+				let item = data.items[0];
 				if (!item.status.embeddable) {
 					return reject("Video not embeddable");
 				}
-				var regionRestriction = item.contentDetails.regionRestriction;
+				let regionRestriction = item.contentDetails.regionRestriction;
 				if (regionRestriction) {
 					if (regionRestriction.blocked && regionRestriction.blocked.indexOf(YOUTUBE_REGION) != -1) {
 						return reject("Video is not available in " + YOUTUBE_REGION);
@@ -72,7 +45,41 @@ class YoutubeLoader {
 					}
 				}
 				resolve();
-			});
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+
+	_loadPage(result, progress, playListId, pageToken) {
+		return new Promise(async (resolve, reject) => {
+			var url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${this._apiKey}&playlistId=${playListId}&part=id,snippet,contentDetails&maxResults=50`;
+			if (pageToken) {
+				url = url = `${url}&pageToken=${pageToken}`;
+			}
+			try {
+				let response = await fetch(url);
+				let data = await this._toJSON(response);
+				var current = result.length;
+				var total = data.pageInfo.totalResults;
+				progress(current, total);
+				var nextPage = data.nextPageToken;
+
+				result = result.concat(data.items.map((item) => {
+					return {
+						id : item.contentDetails.videoId,
+						title : item.snippet.title
+					}
+				}));
+				if (nextPage) {
+					result = await this._loadPage(result, progress, playListId, nextPage);
+					resolve(result);
+				} else {
+					resolve(result);
+				}
+			} catch(e) {
+				reject(e);
+			};
 		});
 	}
 

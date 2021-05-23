@@ -14,16 +14,7 @@ const QuestionSelector = require('./selector.js');
 
 class Categories {
 	constructor() {
-		this._categories = [
-			new ActorQuestions(),
-			new DrinksQuestions(),
-			new GeographyQuestions(),
-			new CurrentGameQuestions(),
-			new MovieQuestions(),
-			new MusicQuestions(),
-			new QuotesQuestions(),
-			new VideoGameQuestions()
-		];
+		this._categories =  [];
 		this._enabledCategories = [];
 		this._apikeys = {};
 		this._jokes = [];
@@ -38,6 +29,18 @@ class Categories {
 			try {
 				let apiKeysData = await fs.readFile('../conf/api-keys.json');
 				Object.assign(this._apikeys, JSON.parse(apiKeysData));
+
+				this._categories = [
+					new ActorQuestions(), //
+					new DrinksQuestions(),
+					new GeographyQuestions(),
+					new CurrentGameQuestions(),
+					new MovieQuestions(this._apikeys.youtube, this._apikeys.tmdb),
+					new MusicQuestions(), //
+					new QuotesQuestions(),
+					new VideoGameQuestions() //	
+				]
+
 				for (let path of this._apikeys.other) {
 					let categoryData = await fs.readFile(path);
 					var newCategory = this._genericloader.create(path, categoryData);

@@ -1,29 +1,29 @@
+const fetch = require("node-fetch");
 const YoutubeLoader = require('../youtubeloader');
 
 class MovieQuestions {
-	constructor() {
+	constructor(youtubeApiKey, tmdbApiKey) {
 		this._movies = [];
-		this._youtubeApiKey = '';
-		this._tmdbApiKey = '';
-		this._youtube = new YoutubeLoader();
+		this._tmdbApiKey = tmdbApiKey;
+		this._youtube = new YoutubeLoader('UC3gNmTGu-TTbFPpfSs5kNkg', youtubeApiKey);
 
 		this._types = {
 			title : {
 				title : (correct) => "What is the title of this movie?",
-				correct : this._randomMovieClip,
-				similar : this._loadSimilarMovies,
-				format : this._movieTitle,
-				view : this._viewMovieClip,
-				count : this._countUniqueClips,
+				correct : (selector, attribution) => this._randomMovieClip(selector, attribution),
+				similar : (correct, attribution, selector) => this._loadSimilarMovies(correct, attribution, selector),
+				format : (correct) => this._movieTitle(correct),
+				view : (correct, attribution) => this._viewMovieClip(correct, attribution),
+				count : () => this._countUniqueClips(),
 				weight : 75
 			},
 			year : {
 				title : (correct) => "What year is this movie from?",
-				correct : this._randomMovieClip,
-				similar : this._loadSimilarYears,
-				format : this._movieYear,
-				view : this._viewMovieClip,
-				count : this._countUniqueClips,
+				correct : (selector, attribution) => this._randomMovieClip(selector, attribution),
+				similar : (correct, attribution, selector) => this._loadSimilarYears(correct, attribution, selector),
+				format : (correct) => this._movieYear(correct),
+				view : (correct, attribution) => this._viewMovieClip(correct, attribution),
+				count : () => this._countUniqueClips(),
 				weight : 25
 			}
 		};
@@ -43,12 +43,9 @@ class MovieQuestions {
 	}
 
 	preload(progress, cache, apikeys, game) {
-		this._youtubeApiKey = apikeys.youtube;
-		this._tmdbApiKey = apikeys.tmdb;
-
 		return new Promise(async (resolve, reject) => {
 			try {
-				var videos = await this._loadYoutubeVideos(progress, cache);
+				let videos = await this._loadYoutubeVideos(progress, cache);
 				this._movies = this._parseTitles(videos);
 				resolve();
 			} catch (e) {
@@ -90,6 +87,7 @@ class MovieQuestions {
 			}
 		}
 		var patterns = [
+			/(.*) \((\d+)\) - .* | Movieclips/i,
 			/.*?- (.*) \(\d+\/\d+\) Movie CLIP \((\d+)\) HD/i,
 			/(.*?) \(\d+\/\d+\) Movie CLIP - .* \((\d+)\) HD/i,
 			/(.*?) #\d+ Movie CLIP - .* \((\d+)\) HD/i,
@@ -118,7 +116,8 @@ class MovieQuestions {
 	_parseTitles(result) {
 		var movies = {};
 		result.forEach((video) => {
-			let metadata = parseTitle(video.title);
+			let metadata = this._parseTitle(video.title);
+
 			if (metadata) {
 				var movie = movies[metadata.title];
 				if (!movie) {
@@ -145,38 +144,38 @@ class MovieQuestions {
 
 	_loadYoutubeVideos(progress, cache) {
 		return cache.get('videos', (resolve, reject) => {
-			this._youtube.loadChannel('UC3gNmTGu-TTbFPpfSs5kNkg', progress, this._youtubeApiKey).then(resolve).catch(reject);
+			this._youtube.loadChannel(progress).then(resolve).catch(reject);
 		});
 	}
 
 	_loadSimilarMovies(movie, attribution, selector) {
-		return new Promise((resolve, reject) => {
-			fetch(`https://api.themoviedb.org/3/search/movie?api_key=${this._tmdbApiKey}&query=${movie.title}&year=${movie.year}`).
-			then(this._toJSON).
-			then(data => {
-				if (data.results.length != 1) {
+		return new Promise(async (resolve, reject) => {
+			try {
+				let movieResponse = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${this._tmdbApiKey}&query=${movie.title}&year=${movie.year}`);
+				let movieData = await this._toJSON(movieResponse);
+				if (movieData.results.length != 1) {
 					return reject("Didn't find an exact match for the movie metadata");
 				}
-				let id = data.results[0].id;
+				let id = movieData.results[0].id;
 
-				return fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=${this._tmdbApiKey}`).
-				then(this._toJSON).
-				then(data => {
-					if (data.results.length < 3) {
-						return reject("Got less than 3 similar movies");
-					}
+				let similarResponse = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=${this._tmdbApiKey}`);
+				let similarData = await this._toJSON(similarResponse);
+				if (similarData.results.length < 3) {
+					return reject("Got less than 3 similar movies");
+				}
 
-					let similar = data.results.map((item) => {
-						return {
-							title : item.title,
-							year : new Date(item.release_date).getFullYear()
-						};
-					});
-
-					attribution.push("http://www.themoviedb.org/movie/" + id);
-					return resolve(similar);
+				let similar = similarData.results.map((item) => {
+					return {
+						title : item.title,
+						year : new Date(item.release_date).getFullYear()
+					};
 				});
-			});
+
+				attribution.push("http://www.themoviedb.org/movie/" + id);
+				resolve(similar);
+			} catch (e) {
+				reject(e);
+			}
 		});
 	}
 
@@ -190,7 +189,7 @@ class MovieQuestions {
 		return new Promise((resolve, reject) => {
 			let movie = selector.fromArray(this._movies);
 			let videoId = selector.fromArray(movie.videos);
-			this._youtube.checkEmbedStatus(videoId, this._youtubeApiKey).then(() => {
+			this._youtube.checkEmbedStatus(videoId).then(() => {
 				attribution.push('http://www.youtube.com/watch?v=' + videoId);
 				let copy = Object.assign({}, movie); //Copy the movie object so we don't modify the original and replace the array of videos with a single video
 				copy.videos = [videoId];
