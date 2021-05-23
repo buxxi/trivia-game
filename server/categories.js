@@ -31,7 +31,7 @@ class Categories {
 				Object.assign(this._apikeys, JSON.parse(apiKeysData));
 
 				this._categories = [
-					new ActorQuestions(), //
+					new ActorQuestions(this._apikeys.tmdb),
 					new DrinksQuestions(),
 					new GeographyQuestions(),
 					new CurrentGameQuestions(),

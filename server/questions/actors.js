@@ -1,34 +1,36 @@
+const fetch = require("node-fetch");
+
 const ACTOR_COUNT = 500;
 
 class ActorQuestions {
-	constructor() {
+	constructor(tmdbApiKey) {
 		this._actors = [];
-		this._tmdbApiKey = '';
+		this._tmdbApiKey = tmdbApiKey;
     
 		this._types = {
 			image : {
 				title : (correct) => "Who is this " + (correct.male ? "actor" : "actress") + "?",
-				correct : this._randomActor,
-				similar : this._similarActors,
-				format : this._actorName,
-				view : this._viewActorImage,
-				count : this._countActors
+				correct : (selector) => this._randomActor(selector),
+				similar : (correct) => this._similarActors(correct),
+				format : (correct) => this._actorName(correct),
+				view : (correct) => this._viewActorImage(correct),
+				count : () => this._countActors()
 			},
 			age : {
 				title : (correct) => "Who is oldest of these " + (correct.male ? "actors" : "actresses") + "?",
-				correct : this._randomActor,
-				similar : this._youngerActors,
-				format : this._actorName,
-				view : this._viewBlank,
-				count : this._countActors
+				correct : (selector) => this._randomActor(selector),
+				similar : (correct) => this._youngerActors(correct),
+				format : (correct) => this._actorName(correct),
+				view : (correct) => this._viewBlank(correct),
+				count : () => this._countActors()
 			},
 			born : {
 				title : (correct) => "Where was " + correct.name + " born?",
-				correct : this._randomActor,
-				similar : this._similarActors,
-				format : this._countryOrState,
-				view : this._viewBlank,
-				count : this._countActors
+				correct : (selector) => this._randomActor(selector),
+				similar : (correct) => this._similarActors(correct),
+				format : (correct) => this._countryOrState(correct),
+				view : (correct) => this._viewBlank(correct),
+				count : () => this._countActors()
 			}
 		};
 	}
@@ -46,11 +48,10 @@ class ActorQuestions {
 	}
 
 	preload(progress, cache, apikeys, game) {
-        this._tmdbApiKey = apikeys.tmdb;
         return new Promise(async (resolve, reject) => {
 			try {
 				progress(0, ACTOR_COUNT);
-				this._actors = await loadActors(progress, cache);
+				this._actors = await this._loadActors(progress, cache);
 				resolve();
 			} catch (e) {
 				reject(e);
@@ -67,7 +68,7 @@ class ActorQuestions {
 
 			resolve({
 				text : type.title(actor),
-				answers : selector.alternatives(similar, actor, type.format, selector.splice),
+				answers : selector.alternatives(similar, actor, type.format, (arr) => selector.splice(arr)),
 				correct : type.format(actor),
 				view : type.view(actor)
 			});
@@ -103,35 +104,39 @@ class ActorQuestions {
 	}
 
 	_loadActorsChunk(page) {
-		return new Promise((resolve, reject) => {
-			fetch(`https://api.themoviedb.org/3/person/popular?api_key=${this._tmdbApiKey}&page=${page}`).
-			then(this._toJSON).
-			then((data) => {
+		return new Promise(async (resolve, reject) => {
+			try {
+				let response = await fetch(`https://api.themoviedb.org/3/person/popular?api_key=${this._tmdbApiKey}&page=${page}`);
+				let data = await this._toJSON(response);
 				let result = data.results.filter((actor) => !actor.adult).map((actor) => {
 					return {
 						id : actor.id
 					};
 				});
 				resolve(result);
-			}).catch(this._retryAfterHandler(() => this._loadActorsChunk(page), resolve, reject));
+			} catch(e) {
+				this._retryAfterHandler(() => this._loadActorsChunk(page), resolve, reject);
+			}
 		});
 	}
 
 	_loadActorDetails(actor) {
-		return new Promise((resolve, reject) => {
-			fetch(`https://api.themoviedb.org/3/person/${actor.id}?api_key=${this._tmdbApiKey}`).
-			then(this._toJSON).
-			then((data) => {
+		return new Promise(async (resolve, reject) => {
+			try {
+				let response = await fetch(`https://api.themoviedb.org/3/person/${actor.id}?api_key=${this._tmdbApiKey}`);
+				let data = await this._toJSON(response);
 				Object.assign(actor, {
 					name : data.name,
 					photo : data.profile_path,
-					birthday : new Date(Date.parse(data.birthday)),
+					birthday : data.birthday,
 					place_of_birth : data.place_of_birth,
 					male : data.gender == 2
 				});
 
 				resolve(actor);
-			}).catch(this._retryAfterHandler(() => this._loadActorDetails(actor), resolve, reject));
+			} catch(e) {
+				this._retryAfterHandler(() => this._loadActorDetails(actor), resolve, reject);
+			}
 		});
 	};
 
@@ -153,13 +158,13 @@ class ActorQuestions {
 			return a.male == b.male;
 		}
 		function aboutSameAge(a, b) {
-			if (!a.birthday || !b.birthday) {
+			if (!a || !b) {
 				return true;
 			}
-			return Math.abs(a.birthday.getFullYear() - b.birthday.getFullYear()) <= 5;
+			return Math.abs(a - b) <= 5;
 		}
 
-		return this._actors.filter((a) => sameGender(a, actor) && aboutSameAge(a - actor) && !!countryOrState(a));
+		return this._actors.filter((a) => sameGender(a, actor) && aboutSameAge(this._birthYear(a), this._birthYear(actor)) && !!this._countryOrState(a));
 	}
 
 	_youngerActors(actor) {
@@ -167,21 +172,29 @@ class ActorQuestions {
 			return a.male == b.male;
 		}
 		function younger(a, b) {
-			if (!a.birthday || !b.birthday) {
+			if (!a || !b) {
 				return false;
 			}
-			return a.birthday.getFullYear() > b.birthday.getFullYear();
+
+			return a > b;
 		}
 
-		return this._actors.filter((a) => sameGender(a, actor) && younger(a, actor));	
+		return this._actors.filter((a) => sameGender(a, actor) && younger(this._birthYear(a), this._birthYear(actor)));	
 	}
 
 	_randomActor(selector) {
-		return selector.fromArray(this._actors);
+		return selector.fromArray(this._actors.filter(a => !!a.birthday));
 	}
 
 	_actorName(actor) {
 		return actor.name;
+	}
+
+	_birthYear(actor) {
+		if (!actor.birthday) {
+			return undefined;
+		}
+		return new Date(Date.parse(actor.birthday)).getFullYear();
 	}
 
 	_countryOrState(actor) {
@@ -207,7 +220,7 @@ class ActorQuestions {
 		}
 
 		if (["USA", "U.S.A", "U.S.", "U.S.A.", "United States"].indexOf(country) > -1) {
-			return state;
+			return state + ", USA";
 		}
 		if (country == "UK" || country == "EU") {
 			country = state;
