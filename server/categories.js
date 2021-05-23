@@ -57,25 +57,25 @@ class Categories {
 	}
 
 	available() {
-		return categories.map((category) => category.describe());
+		return this._categories.map((category) => category.describe());
 	}
 
 	enabled() {
-		return self.available().filter((category) => !!enabledCategories[category.type]);
+		return this.available().filter((category) => !!this._enabledCategories[category.type]);
 	}
 
 	joke() {
 		var selector = new QuestionSelector();
-		return selector.fromArray(jokes);
+		return selector.fromArray(this._jokes);
 	}
 
 	preload(category, progress, game) {
-		return categoryByType(category).preload(progress, new Cache(category), apikeys, game);
+		return this._categoryByType(category).preload(progress, new Cache(category), game);
 	}
 
 	configure(input) {
-		enabledCategories = Object.keys(input).filter((category) => input[category]).reduce((obj, value) => {
-			var c = categoryByType(value);
+		this._enabledCategories = Object.keys(input).filter((category) => input[category]).reduce((obj, value) => {
+			var c = this._categoryByType(value);
 			obj[value] = {
 				weight : 2,
 				nextQuestion : (selector) => c.nextQuestion(selector),
@@ -87,11 +87,11 @@ class Categories {
 	}
 
 	countQuestions(input) {
-		return Object.keys(input).filter((category) => input[category]).map((c) => categoryByType(c).describe().count).reduce((a, b) => a + b, 0);
+		return Object.keys(input).filter((category) => input[category]).map((c) => this._categoryByType(c).describe().count).reduce((a, b) => a + b, 0);
 	}
 
 	attribution() {
-		var attribution = categories.reduce((result, current) => result.concat(current.describe().attribution), []);
+		var attribution = this._categories.reduce((result, current) => result.concat(current.describe().attribution), []);
 		var attributionMap = {};
 		for (let attr of attribution) {
 			attributionMap[attr.name] = attr;
@@ -101,30 +101,30 @@ class Categories {
 
 	nextQuestion(session) {
 		var selector = new QuestionSelector();
-		var category = selector.fromWeightedObject(enabledCategories);
+		var category = selector.fromWeightedObject(this._enabledCategories);
 
-		Object.keys(enabledCategories).forEach((key) => {
-			enabledCategories[key].weight = enabledCategories[key].weight * 2;
+		Object.keys(this._enabledCategories).forEach((key) => {
+			this._enabledCategories[key].weight = this._enabledCategories[key].weight * 2;
 		});
 		category.weight = 2;
 
-		return category.nextQuestion(selector).then(shuffleAnswers).then(updateSession(category, session));
+		return category.nextQuestion(selector).then(this._shuffleAnswers).then(this._updateSession(category, session));
 	}
 
 	clearCache() {
 		new Cache().clearAll();
 	}
 
-	categoryByType(type) {
-			for (var i = 0; i < categories.length; i++) {
-			if (categories[i].describe().type == type) {
-				return categories[i];
+	_categoryByType(type) {
+			for (var i = 0; i < this._categories.length; i++) {
+			if (this._categories[i].describe().type == type) {
+				return this._categories[i];
 			}
 		}
 		throw new Error("No such category: " + type);
 	}
 
-	shuffleAnswers(question) {
+	_shuffleAnswers(question) {
 		return new Promise((resolve, reject) => {
 			var selector = new QuestionSelector();
 
@@ -140,7 +140,7 @@ class Categories {
 		});
 	}
 
-	updateSession(category, session) {
+	_updateSession(category, session) {
 		return function(question) {
 			return new Promise((resolve, reject) => {
 				session.newQuestion(category, question);

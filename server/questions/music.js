@@ -56,7 +56,7 @@ class MusicQuestions {
 		};
 	}
 
-	preload(progress, cache, apikeys, game) {
+	preload(progress, cache, game) {
 		return new Promise(async (resolve, reject) => {
 			if (this._tracks.length != 0) {
 				resolve();

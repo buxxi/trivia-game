@@ -47,7 +47,7 @@ class ActorQuestions {
 		};
 	}
 
-	preload(progress, cache, apikeys, game) {
+	preload(progress, cache, game) {
         return new Promise(async (resolve, reject) => {
 			try {
 				progress(0, ACTOR_COUNT);

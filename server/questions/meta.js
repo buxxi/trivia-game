@@ -67,7 +67,7 @@ class CurrentGameQuestions {
 		};
 	}
 
-	preload(progress, cache, apikeys, game) {
+	preload(progress, cache, game) {
 		return new Promise((resolve, reject) => {
 			this._current_game = game; //This would make it have circular dependencies if put in constructor 
 			resolve();
