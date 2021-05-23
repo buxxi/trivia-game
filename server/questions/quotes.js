@@ -4,9 +4,9 @@ const nlp = require("compromise");
 const TOTAL_QUOTES = 50;
 
 class QuotesQuestions {
-	constructor() {
+	constructor(mashapeApiKey) {
 		this._quotes = [];	
-		this._mashapeApiKey = '';
+		this._mashapeApiKey = mashapeApiKey;
 		this._types = {
 			author : {
 				title : (correct) => "Who said this famous quote?",
@@ -40,8 +40,6 @@ class QuotesQuestions {
 	}
 
 	preload(progress, cache, apikeys, game) {
-		this._mashapeApiKey = apikeys.mashape;
-
 		return new Promise(async (resolve, reject) => {
 			try {
 				progress(0, TOTAL_QUOTES);

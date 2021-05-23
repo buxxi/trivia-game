@@ -37,7 +37,7 @@ class Categories {
 					new CurrentGameQuestions(),
 					new MovieQuestions(this._apikeys.youtube, this._apikeys.tmdb),
 					new MusicQuestions(), //
-					new QuotesQuestions(),
+					new QuotesQuestions(this._apikeys.mashape),
 					new VideoGameQuestions() //	
 				]
 
