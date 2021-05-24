@@ -10,7 +10,7 @@ $font : #ffffff;
 $background : #000000;
 
 html {
-   background: linear-gradient(290deg, fade($primary, 40%), fade($primary_border, 30%)), url('../img/simple_dashed.png');
+   background: linear-gradient(290deg, transparentize($primary, 0.6), transparentize($primary_border, 0.7)), url('../img/simple_dashed.png');
    background-size: cover, 2em;
    background-blend-mode: screen;
    height : 100%;
