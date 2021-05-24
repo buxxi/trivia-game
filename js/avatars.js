@@ -1,10 +1,10 @@
+const twemoji = require('twemoji');
+
 class Avatar {
     constructor(name, code) {
         this.name = name;
         this.code = code;
-        if (typeof(twemoji) !== 'undefined') { //TODO
-            this.url = /src=\"(.*?)\"/.exec(twemoji.parse(this.code))[1];
-        }
+        this.url = /src=\"(.*?)\"/.exec(twemoji.parse(this.code))[1];
     }
 }
 

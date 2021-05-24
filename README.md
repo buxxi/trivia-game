@@ -9,14 +9,11 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 - Vue.js: https://vuejs.org/
 - LessCSS: http://lesscss.org/
 - FontAwesome: http://fontawesome.io/
-- SocketPeer: https://github.com/cvan/socketpeer
 - qcode-decode: https://github.com/cirocosta/qcode-decoder
 - pizzicato: https://alemangui.github.io/pizzicato
 - wavesurfer: https://wavesurfer-js.org/
 - randomColor: https://github.com/davidmerfield/randomColor
-- Fingerprint2: https://github.com/Valve/fingerprintjs2
 - Twemoji: https://github.com/twitter/twemoji
-- IDB: https://github.com/jakearchibald/idb
 - Compromise: https://github.com/nlp-compromise/compromise
 
 ### API's used:
