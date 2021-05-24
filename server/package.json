@@ -21,6 +21,7 @@
     "compromise": "^13.11.2",
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",
+    "randomcolor": "^0.6.2",
     "uuid": "^8.3.2",
     "ws": "^7.4.5"
   }
