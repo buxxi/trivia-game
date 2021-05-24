@@ -9,7 +9,7 @@
 - [ ] Make the client communicate with the server
 - [ ] Make the monitor communicate with the server
 - [ ] Replace ResponsiveVoice with dependency on self-hosted Text2Speech
-- [ ] Use LESS (or migrate to SASS) by build time instead of runtime
+- [x] Use LESS (or migrate to SASS) by build time instead of runtime
 - [ ] Use NPM-modules for client/monitor
 - [ ] Dockerify that process
 - [ ] Merge to master and rename project

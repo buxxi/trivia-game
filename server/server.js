@@ -1,9 +1,16 @@
 const express = require('express');
+const path = require('path');
+const sass = require('node-sass-middleware');
 const ws = require('ws');
 const app = express();
 const port = 5555;
 
 app.use('/index.html', express.static('index.html'));
+
+app.use(sass({
+	src: path.join(__dirname, '..'),
+	dest: path.join(__dirname, '..')
+}));
 
 //Serve files for client
 app.use('/client', express.static('client'));

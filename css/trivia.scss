@@ -1,23 +1,23 @@
-@primary : #307bbb;
-@primary_border : #133451;
-@secondary : #ffffff;
-@secondary_border : #aaaaaa;
-@incorrect : #880000;
-@incorrect_border : #440000;
-@correct : #008800;
-@correct_border : #004400;
-@font : #ffffff;
-@background : #000000;
+$primary : #307bbb;
+$primary_border : #133451;
+$secondary : #ffffff;
+$secondary_border : #aaaaaa;
+$incorrect : #880000;
+$incorrect_border : #440000;
+$correct : #008800;
+$correct_border : #004400;
+$font : #ffffff;
+$background : #000000;
 
 html {
-   background: linear-gradient(290deg, fade(@primary, 40%), fade(@primary_border, 30%)), url('../img/simple_dashed.png');
+   background: linear-gradient(290deg, fade($primary, 40%), fade($primary_border, 30%)), url('../img/simple_dashed.png');
    background-size: cover, 2em;
    background-blend-mode: screen;
    height : 100%;
 }
 
 body {
-	color : @font;
+	color : $font;
 	font-family: FontAwesome, Ubuntu !important;
 	overflow : hidden;
 
@@ -38,14 +38,14 @@ big {
 }
 
 h1 {
-	color : @secondary_border;
+	color : $secondary_border;
 
 	i {
-		color : @primary;
+		color : $primary;
 	}
 
 	&::after {
-		border: 2px solid @primary;
+		border: 2px solid $primary;
 		content: "";
 		display: block;
 		margin-left: 20%;
@@ -55,7 +55,7 @@ h1 {
 }
 
 .question {
-	#content, #category-spinner {
+	#content, #category-adjust-huener {
 		bottom : 8em;
 		left : 2em;
 		position : fixed;
@@ -81,7 +81,7 @@ h1 {
 		font-weight: 100;
 	}
 	.title {
-		color : @font;
+		color : $font;
 		font-size: 3em;
 		font-size: 6em;
 		font-weight: bold;
@@ -111,7 +111,7 @@ h1 {
 	#correct {
 		visibility: hidden;
 		animation : resize-correct 3s linear normal;
-		color : @font;
+		color : $font;
 		font-size: 3em;
 		font-size: 6em;
 		font-weight: bold;
@@ -143,7 +143,7 @@ h1 {
 
 .credits {
 	animation : 1s scroll linear infinite;
-	color : @font;
+	color : $font;
 	position : relative;
 	text-align: center;
 	width : 100%;
@@ -168,7 +168,7 @@ h1 {
 			font-size: 4em;
 		}
 		a {
-			color : @primary;
+			color : $primary;
 			font-weight: bold;
 			text-decoration: none;
 		}
@@ -196,16 +196,16 @@ h1 {
 		position: relative;
 		top : -2em;
 		.correct {
-			color : @correct;
-			text-shadow : 1px 1px 2px @correct_border;
+			color : $correct;
+			text-shadow : 1px 1px 2px $correct_border;
 		}
 		.failed {
-			color : @incorrect;
-			text-shadow : 1px 1px 2px @incorrect_border;
+			color : $incorrect;
+			text-shadow : 1px 1px 2px $incorrect_border;
 		}
 		.fastest {
-			color : @primary;
-			text-shadow: 1px 1px 2px @primary_border;
+			color : $primary;
+			text-shadow: 1px 1px 2px $primary_border;
 		}
 	}
 	h2 {
@@ -272,7 +272,7 @@ h1 {
 }
 
 .quote {
-	color : @font;
+	color : $font;
 	.fa-quote-left {
 		float : left;
 		font-size : 4em;
@@ -292,7 +292,7 @@ h1 {
 }
 
 .lobby {
-	color : @font;
+	color : $font;
 	.connect {
 		float : left;
 		text-align: center;
@@ -369,7 +369,7 @@ h1 {
 	}
 }
 
-.spinner {
+.adjust-huener {
 	position : relative;
 	height : 10em;
 	padding: 0;
@@ -412,43 +412,43 @@ h1 {
 	}
 	li:nth-child(1) {
 		transform : rotateX(-90deg);
-		background : @primary_border;
+		background : $primary_border;
 		top : 0;
 	}
 
 	li:nth-child(2) {
 		transform : rotateX(-70deg);
-		background : mix(@primary, @primary_border, 25%);
+		background : mix($primary, $primary_border, 25%);
 		top : 0.5em;
 	}
 	li:nth-child(3) {
 		transform : rotateX(-40deg);
-		background : mix(@primary, @primary_border, 50%);
+		background : mix($primary, $primary_border, 50%);
 		top : 2.1em;
 	}
 	li:nth-child(4) {
-		background-color : @primary;
+		background-color : $primary;
 		transform : rotateX(0deg);
 		top : 4.7em;
 	}
 	li:nth-child(5) {
 		transform : rotateX(40deg);
-		background : mix(@primary, @primary_border, 50%);
+		background : mix($primary, $primary_border, 50%);
 		top : 7.3em;
 	}
 	li:nth-child(6) {
 		transform : rotateX(70deg);
-		background : mix(@primary, @primary_border, 25%);
+		background : mix($primary, $primary_border, 25%);
 		top : 8.9em;
 	}
 	li:nth-child(n+7) {
 		transform : rotateX(90deg);
-		background : @primary_border;
+		background : $primary_border;
 		top : 9.4em;
 	}
 
 	&.highlight li:nth-child(4) {
-		background-color :@correct !important;
+		background-color :$correct !important;
 		transition-duration: 0.1s !important;
 		* {
 			transition: font-size 0.5s linear;
@@ -458,10 +458,10 @@ h1 {
 }
 
 #start a {
-	background-color : @primary;
+	background-color : $primary;
 	border-radius: 1em;
-	border: 3px solid @primary_border;
-	color : @font;
+	border: 3px solid $primary_border;
+	color : $font;
 	cursor : pointer;
 	font-size: 2em;
 	margin : 1em;
@@ -471,8 +471,8 @@ h1 {
 	bottom : 0;
 
 	&[disabled='disabled'] {
-		background-color : @incorrect;
-		border : 3px solid @incorrect_border;
+		background-color : $incorrect;
+		border : 3px solid $incorrect_border;
 		cursor : not-allowed;
 		opacity : 0.5;
 	}
@@ -481,16 +481,16 @@ h1 {
 .connect {
 	.qr {
 		display: inline-block;
-		background-color: @secondary;
+		background-color: $secondary;
 		border-radius: 1em 1em 0 0;
 		margin-bottom: -5px;
-		border: 5px solid @primary;
+		border: 5px solid $primary;
 		width: 20vw;
 		height: 20vw;
 		overflow: hidden;
 		i {
 			line-height: 20vw;
-			color: @primary;
+			color: $primary;
 			font-size: 10vw;
 		}
 		img {
@@ -499,7 +499,7 @@ h1 {
 		}
 	}
 	.code {
-		background-color : @primary;
+		background-color : $primary;
 		border-radius : 0 0 1em 1em;
 		display : inline-block;
 		font-size: 1.1em;
@@ -508,7 +508,7 @@ h1 {
 		padding : 1em 0;
 		text-transform: uppercase;
 		width : 20vw;
-		border : 5px solid @primary;
+		border : 5px solid $primary;
 	}
 	ol {
 		font-size: 1.5em;
@@ -526,9 +526,9 @@ ol {
 		margin-bottom : 0.5em;
 		text-align: left;
 		&:before {
-			background-color : @primary_border;
+			background-color : $primary_border;
 			border-radius: 1em;
-			border: 0.1em solid @primary;
+			border: 0.1em solid $primary;
 			content : counter(help);
 			counter-increment: help;
 			display : inline-block;
@@ -562,8 +562,8 @@ ol {
 
 .play {
 	a {
-		background-color : @correct;
-		border : 3px solid @correct_border;
+		background-color : $correct;
+		border : 3px solid $correct_border;
 		border-radius: 1em;
 		cursor : pointer;
 		display : inline-block;
@@ -573,20 +573,20 @@ ol {
 }
 
 .numeric-input {
-	color : @primary;
+	color : $primary;
 	font-size: 1.5em;
 	display : inline-block;
-	border: 3px solid @primary;
+	border: 3px solid $primary;
 	border-radius: 1em;
 	overflow: hidden;
 	margin: 0.25em;
 
 	label {
-		background-color: @primary_border;
+		background-color: $primary_border;
 		display : inline-block;
-		color: @font;
+		color: $font;
 		padding: 0.25em;
-		border-right : 1px solid @primary;
+		border-right : 1px solid $primary;
 	}
 
 	input {
@@ -595,7 +595,7 @@ ol {
 		appearance : textfield;
 		background-color: transparent;
 		border : 0;
-		color : @font;
+		color : $font;
 		font-size: 1em;
 		font-weight: bold;
 		width : 2.75em;
@@ -608,10 +608,10 @@ ol {
 }
 
 .infobox {
-	background-color: @secondary;
+	background-color: $secondary;
 	border-radius: 10px;
-	border: 5px solid @secondary_border;
-	color: @primary;
+	border: 5px solid $secondary_border;
+	color: $primary;
 	font-weight: bold;
 	padding: 0.5em 1em;
 }
@@ -642,18 +642,18 @@ ol {
 	top: 0.7em;
 }
 
-.timer-counter-loop(@counter) when (@counter >= 0) {
-    .timer-counter-loop((@counter - 1));
-
-    &[data-percentage="@{counter}"] {
-        color : @incorrect;
-		&:before {
-			transform: scale(0.5, 0.5);
-			animation: splash 1s linear infinite;
-		}
-		svg #bar {
-			stroke : @incorrect;
-		}
+@mixin timer-counter-loop {
+    @for $i from 10 to 0 {
+        &[data-percentage="${counter}"] {
+            color : $incorrect;
+            &:before {
+                transform: scale(0.5, 0.5);
+                animation: splash 1s linear infinite;
+            }
+            svg #bar {
+                stroke : $incorrect;
+            }
+        }
     }
 }
 
@@ -663,8 +663,8 @@ ol {
 	width : 2em;
 	height : 2em;
 	float : right;
-	color : @primary;
-	.timer-counter-loop(10);
+	color : $primary;
+	@include timer-counter-loop;
 
 	svg {
 		transform : rotate(90deg) scaleX(-1);
@@ -672,12 +672,12 @@ ol {
 		height : 100%;
 		circle {
 			transition: stroke-dashoffset 0.1s linear;
-			stroke: @secondary_border;
+			stroke: $secondary_border;
 			stroke-width: 5px;
-			fill: @secondary;
+			fill: $secondary;
 		}
 		#bar {
-			stroke: @primary;
+			stroke: $primary;
 			fill: transparent;
 		}
 	}
@@ -694,15 +694,15 @@ ol {
 	}
 }
 
-.big-button(@color, @border, @text) {
+@mixin big-button($color, $border, $text){
 	&:before {
-		background-color : @color;
-		border-color : @border;
+		background-color : $color;
+		border-color : $border;
 		border-radius: 2em;
 		border-style : solid;
 		border-width: 1px;
-		color : @font;
-		content : @text;
+		color : $font;
+		content : $text;
 		display : inline-block;
 		font-weight: bold;
 		margin-right : 1em;
@@ -711,27 +711,27 @@ ol {
 }
 
 .btn-A {
-	.big-button(#ff0000, #8b0000, "A");
+	@include big-button(#ff0000, #8b0000, "A");
 }
 
 .btn-B {
-	.big-button(#228b22, #006400, "B");
+	@include big-button(#228b22, #006400, "B");
 }
 
 .btn-C {
-	.big-button(#1e90ff, #4169e1, "C");
+	@include big-button(#1e90ff, #4169e1, "C");
 }
 
 .btn-D {
-	.big-button(#d9a700, #8b6b02, "D");
+	@include big-button(#d9a700, #8b6b02, "D");
 }
 
 .btn {
-	background-color: @primary;
-	border : 0.2em solid @primary_border;
+	background-color: $primary;
+	border : 0.2em solid $primary_border;
 	border-radius: 0.5em;
 	cursor : pointer;
-	display : inline-block;
+	display : block;
 	float : right;
 	font-size: 1.5em;
 	font-weight: bold;
@@ -743,12 +743,12 @@ ol {
 	text-decoration: none;
 
 	&:active {
-		border-color : @secondary_border;
+		border-color : $secondary_border;
 	}
 
 	&[disabled="disabled"] {
-		background-color : @incorrect;
-		border-color : @incorrect_border;
+		background-color : $incorrect;
+		border-color : $incorrect_border;
 		cursor : not-allowed;
 		opacity : 0.5;
 	}
@@ -771,11 +771,11 @@ ol {
 		font-size: 2em;
 	}
 	input {
-		background-color : @secondary;
-		border : 2px solid @primary;
+		background-color : $secondary;
+		border : 2px solid $primary;
 		border-radius: 0.5em;
 		box-sizing: border-box;
-		color : @primary;
+		color : $primary;
 		font-weight: bold;
 		height : 2em;
 		padding : 2px 0.5em;
@@ -796,7 +796,7 @@ ol {
 			display : none;
 		}
 		input:checked + .avatar {
-			background-color : @primary;
+			background-color : $primary;
 		}
 	}
 	.buttons {
@@ -825,16 +825,16 @@ ol {
 	    display: flex;
 	    justify-content: space-around;
 	    align-items: center;
-		border-bottom : 2px solid @primary;
-		text-shadow : 2px 2px 0 @primary;
+		border-bottom : 2px solid $primary;
+		text-shadow : 2px 2px 0 $primary;
 	}
 
 	button {
 		background-color : transparent;
 		border : none;
-		border-bottom : 2px solid @primary;
+		border-bottom : 2px solid $primary;
 		border-radius : 0 !important;
-		color : @font;
+		color : $font;
 		display : block;
 		font-size: 1.5em;
 		height : 20%;
@@ -848,23 +848,23 @@ ol {
 		}
 	}
 	button.correct {
-		background-color: @correct;
-		text-shadow: 2px 2px 4px @correct_border;
+		background-color: $correct;
+		text-shadow: 2px 2px 4px $correct_border;
 	}
 	button.incorrect {
-		background-color: @incorrect;
-		text-shadow: 2px 2px 4px @incorrect_border;
+		background-color: $incorrect;
+		text-shadow: 2px 2px 4px $incorrect_border;
 	}
 	button.selected {
-		background-color : @primary;
-		text-shadow : 2px 2px 4px @primary_border;
+		background-color : $primary;
+		text-shadow : 2px 2px 4px $primary_border;
 	}
 	.fa-stack {
 		margin-top : 25%;
 		width : 2.15em;
 	}
 	.fa-stack-2x {
-		color: @primary;
+		color: $primary;
 	}
 	.fa-stack-1x {
 		animation: splash 0.5s linear normal;
@@ -892,9 +892,9 @@ ol {
 }
 
 .message {
-	background-color : @incorrect;
-	border : 3px solid @incorrect_border;
-	color : @font;
+	background-color : $incorrect;
+	border : 3px solid $incorrect_border;
+	color : $font;
 	padding : 0.5em;
 	margin : 0.5em 0;
 	border-radius: 1em;
@@ -927,7 +927,7 @@ ol {
 	&[data-multiplier]::before {
 		background-color : inherit;
 		border-radius: 2em;
-		color: @font;
+		color: $font;
 		content: attr(data-multiplier) "x";
 		font-weight: bold;
 		margin-left: -1em;
@@ -940,11 +940,11 @@ ol {
 	}
 
 	&[data-score]::after {
-		background-color : @secondary;
+		background-color : $secondary;
 		border-color : inherit;
 		border-style : solid;
 		border-width : 0.25em;
-		color: @primary;
+		color: $primary;
 		content: attr(data-score);
 		display: block;
 		font-weight: bold;
@@ -961,8 +961,8 @@ ol {
 			filter: invert(100%);
 		}
 		&::after {
-			background-color : @primary;
-			color : @font;
+			background-color : $primary;
+			color : $font;
 		}
 	}
 
@@ -998,28 +998,28 @@ ol {
 	height : 3em;
 }
 
-.score-change(@color, @border) {
+@mixin score-change($color, $border){
 	animation: splash 0.5s linear normal;
-	background-color : @color;
+	background-color : $color;
 	border-color : inherit;
 	border-style : solid;
 	border-width : 0.25em;
-	color : @font;
+	color : $font;
 	margin-left: 0.4em;
 	margin-top: 4.6em;
 	position: absolute;
-	text-shadow: 0px 1px 1px @border;
+	text-shadow: 0px 1px 1px $border;
 	width: 4.5em;
 	z-index: 2;
 }
 
 .score-change-positive .avatar {
 	animation : glow-positive 1s linear normal;
-	box-shadow : 0 0 50px @correct, 0 0 25px @correct;
+	box-shadow : 0 0 50px $correct, 0 0 25px $correct;
 }
 
 .score-change-positive span {
-	.score-change(@correct, @correct_border);
+	@include score-change($correct, $correct_border);
 	&:before {
 		content : "+";
 	}
@@ -1027,22 +1027,22 @@ ol {
 
 .score-change-negative .avatar {
 	animation : glow-negative 1s linear normal;
-	box-shadow : 0 0 50px @incorrect, 0 0 25px @incorrect;
+	box-shadow : 0 0 50px $incorrect, 0 0 25px $incorrect;
 }
 
 .score-change-negative span {
-	.score-change(@incorrect, @incorrect_border);
+	@include score-change($incorrect, $incorrect_border);
 }
 
 .score-change-negative~.score {
-	color : @font;
+	color : $font;
 }
 
 .score-change-positive~.score {
-	color : @font;
+	color : $font;
 }
 
-.circle-checkboxes {
+@mixin circle-checkboxes {
 	padding : 0;
 	li {
 		display : inline;
@@ -1059,13 +1059,13 @@ ol {
 	}
 	.selected {
 		label {
-			background : radial-gradient(circle at center, @primary_border 0%, @primary 100%);
+			background : radial-gradient(circle at center, $primary_border 0%, $primary 100%);
 		}
 	}
 	.failed {
 		label {
-			background : radial-gradient(circle at center, @incorrect_border 0%, @incorrect 100%);
-			border-color : @incorrect_border;
+			background : radial-gradient(circle at center, $incorrect_border 0%, $incorrect 100%);
+			border-color : $incorrect_border;
 		}
 	}
 	.progress {
@@ -1075,7 +1075,7 @@ ol {
 		position: absolute;
 		margin-top: -0.6em;
 		margin-left: -3em;
-		background-color: @primary;
+		background-color: $primary;
 		width: 2.5em;
 		height: 2.5em;
 		line-height: 2.5em;
@@ -1083,7 +1083,7 @@ ol {
 		font-weight: bold;
 	}
 	label {
-		border : 3px solid @primary;
+		border : 3px solid $primary;
 		border-radius: 10em;
 		cursor : pointer;
 		display : inline-block;
@@ -1109,8 +1109,12 @@ ol {
 	}
 }
 
+.circle-checkboxes {
+    @include circle-checkboxes();
+}
+
 .category-actions {
-	.circle-checkboxes;
+	@include circle-checkboxes();
 
 	label {
 		font-size: 0.5em;
@@ -1154,13 +1158,13 @@ ol {
 }
 
 @keyframes glow-negative {
-	0% { box-shadow : 0 0 0px @incorrect, 0 0 0px @incorrect }
-	50% { box-shadow : 0 0 100px @incorrect, 0 0 50px @incorrect }
-	100% { box-shadow : 0 0 50px @incorrect, 0 0 25px @incorrect }
+	0% { box-shadow : 0 0 0px $incorrect, 0 0 0px $incorrect }
+	50% { box-shadow : 0 0 100px $incorrect, 0 0 50px $incorrect }
+	100% { box-shadow : 0 0 50px $incorrect, 0 0 25px $incorrect }
 }
 
 @keyframes glow-positive {
-	0% { box-shadow : 0 0 0px @correct, 0 0 0px @correct }
-	50% { box-shadow : 0 0 100px @correct, 0 0 50px @correct }
-	100% { box-shadow : 0 0 50px @correct, 0 0 25px @correct }
+	0% { box-shadow : 0 0 0px $correct, 0 0 0px $correct }
+	50% { box-shadow : 0 0 100px $correct, 0 0 50px $correct }
+	100% { box-shadow : 0 0 50px $correct, 0 0 25px $correct }
 }

@@ -5,9 +5,9 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 ### Sample screenshot:
 ![WebRTC Trivia Screenshot][screenshot]
 
-### Libraries used:
+### Notable libraries used:
 - Vue.js: https://vuejs.org/
-- LessCSS: http://lesscss.org/
+- SASS: https://sass-lang.com/
 - FontAwesome: http://fontawesome.io/
 - qcode-decode: https://github.com/cirocosta/qcode-decoder
 - pizzicato: https://alemangui.github.io/pizzicato
