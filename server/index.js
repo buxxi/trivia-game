@@ -1,8 +1,7 @@
 const server = require('./server');
+const Game = require('./game');
 const Categories = require('./categories');
 const {PromisifiedWebSocket, Protocol} = require('../js/protocol');
-
-const categories = new Categories();
 
 server.addWebSocketConnectionListener(socket => {
 	const psocket = new PromisifiedWebSocket(socket);

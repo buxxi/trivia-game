@@ -27,7 +27,7 @@ class Categories {
 				return resolve();
 			}
 			try {
-				let apiKeysData = await fs.readFile('../conf/api-keys.json');
+				let apiKeysData = await fs.readFile('conf/api-keys.json');
 				Object.assign(this._apikeys, JSON.parse(apiKeysData));
 
 				this._categories = [
@@ -46,7 +46,7 @@ class Categories {
 					var newCategory = this._genericloader.create(path, categoryData);
 					this._categories.push(newCategory);
 				}
-				let jokesData = await fs.readFile('../conf/jokes.json');
+				let jokesData = await fs.readFile('conf/jokes.json');
 				this._jokes = JSON.parse(jokesData);
 
 				resolve();
