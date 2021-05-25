@@ -1,7 +1,7 @@
 import server from './server.mjs';
 import Game from './game.mjs';
 import Categories from './categories.mjs';
-import {PromisifiedWebSocket, Protocol} from '../js/protocol.js';
+import {PromisifiedWebSocket, Protocol} from '../js/protocol.mjs';
 
 server.addWebSocketConnectionListener(socket => {
 	const psocket = new PromisifiedWebSocket(socket);
