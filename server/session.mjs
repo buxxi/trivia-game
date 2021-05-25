@@ -52,4 +52,4 @@ class Session {
 	}
 }
 
-module.exports = Session;
+export default Session;

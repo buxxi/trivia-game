@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+import fetch from 'node-fetch';
 
 const YOUTUBE_REGION = 'SE';
 
@@ -91,4 +91,4 @@ class YoutubeLoader {
 	}
 }
 
-module.exports = YoutubeLoader;
+export default YoutubeLoader;

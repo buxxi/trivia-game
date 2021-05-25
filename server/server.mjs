@@ -1,7 +1,7 @@
-const express = require('express');
-const path = require('path');
-const sass = require('node-sass');
-const ws = require('ws');
+import express from 'express';
+import sass from 'node-sass';
+import ws from 'ws';
+
 const app = express();
 const port = 5555;
 
@@ -44,7 +44,7 @@ server.on('upgrade', (request, socket, head) => {
 	});
 });
 
-module.exports = {
+export default {
     addWebSocketConnectionListener: function(listener) {
         wsServer.on('connection', listener);    
     }

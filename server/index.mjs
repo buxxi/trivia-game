@@ -1,7 +1,7 @@
-const server = require('./server');
-const Game = require('./game');
-const Categories = require('./categories');
-const {PromisifiedWebSocket, Protocol} = require('../js/protocol');
+import server from './server.mjs';
+import Game from './game.mjs';
+import Categories from './categories.mjs';
+import {PromisifiedWebSocket, Protocol} from '../js/protocol.js';
 
 server.addWebSocketConnectionListener(socket => {
 	const psocket = new PromisifiedWebSocket(socket);

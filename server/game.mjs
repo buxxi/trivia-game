@@ -1,7 +1,7 @@
-const avatars = require('../js/avatars.js');
-const randomColor = require('randomcolor');
-const Timer = require('./timer.js');
-const Session = require('./session.js');
+import avatars from '../js/avatars.js';
+import randomColor from 'randomcolor';
+import Timer from './timer.mjs';
+import Session from './session.mjs';
 
 class Player {
 	constructor(name, color, avatar) {
@@ -208,4 +208,4 @@ class Game {
 	}
 }
 
-module.exports = Game;
+export default Game;

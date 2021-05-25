@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+import fetch from 'node-fetch';
 
 const TRACKS_BY_CATEGORY = 100;
 
@@ -360,4 +360,4 @@ class MusicQuestions {
 	}
 }
 
-module.exports = MusicQuestions;
+export default MusicQuestions;

@@ -175,4 +175,4 @@ class QuestionSelector {
 	}
 }
 
-module.exports = QuestionSelector;
+export default QuestionSelector;

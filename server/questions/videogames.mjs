@@ -1,6 +1,5 @@
-const fetch = require("node-fetch");
-
-const YoutubeLoader = require('../youtubeloader');
+import fetch from 'node-fetch';
+import YoutubeLoader from '../youtubeloader.mjs';
 
 const GAMES_PER_PLATFORM = 50;
 
@@ -392,4 +391,4 @@ class VideoGameQuestions {
 	}
 }
 
-module.exports = VideoGameQuestions;
+export default VideoGameQuestions;

@@ -1,4 +1,4 @@
-const avatars = require('../../js/avatars.js');
+import avatars from '../../js/avatars.js';
 
 class CurrentGameQuestions {
 	constructor() {
@@ -146,4 +146,4 @@ class CurrentGameQuestions {
 	}
 }
 
-module.exports = CurrentGameQuestions;
+export default CurrentGameQuestions;

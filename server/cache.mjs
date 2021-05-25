@@ -1,4 +1,4 @@
-const fs = require("fs").promises;
+import { promises as fs } from 'fs';
 
 const CACHE_PATH = '.cache';
 
@@ -33,4 +33,4 @@ class FileSystemCache {
 	}
 }
 
-module.exports = FileSystemCache;
+export default FileSystemCache;

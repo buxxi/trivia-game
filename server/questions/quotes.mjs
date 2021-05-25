@@ -1,5 +1,5 @@
-const fetch = require("node-fetch");
-const nlp = require("compromise");
+import fetch from 'node-fetch';
+import nlp from 'compromise';
 
 const TOTAL_QUOTES = 50;
 
@@ -175,4 +175,4 @@ class QuotesQuestions {
 	}
 }
 
-module.exports = QuotesQuestions;
+export default QuotesQuestions;

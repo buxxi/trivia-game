@@ -1,4 +1,4 @@
-const QuestionSelector = require('../selector.js');
+import QuestionSelector from '../selector.mjs';
 
 class GenericCategoryLoader {
 	constructor() {
@@ -133,4 +133,4 @@ class GenericQuestion {
 	}
 }
 
-module.exports = GenericCategoryLoader;
+export default GenericCategoryLoader;

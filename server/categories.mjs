@@ -1,16 +1,15 @@
-const fs = require("fs").promises;
-
-const MovieQuestions = require('./questions/movies.js');
-const VideoGameQuestions = require('./questions/videogames.js');
-const CurrentGameQuestions = require('./questions/meta.js');
-const ActorQuestions = require('./questions/actors.js');
-const DrinksQuestions = require('./questions/drinks.js');
-const GeographyQuestions = require('./questions/geography.js');
-const MusicQuestions = require('./questions/music.js');
-const QuotesQuestions = require('./questions/quotes.js');
-const GenericCategoryLoader = require('./questions/genericloader.js');
-const Cache = require('./cache.js');
-const QuestionSelector = require('./selector.js');
+import { promises as fs } from 'fs';
+import MovieQuestions from './questions/movies.mjs';
+import VideoGameQuestions from './questions/videogames.mjs';
+import CurrentGameQuestions from './questions/meta.mjs';
+import ActorQuestions from './questions/actors.mjs';
+import DrinksQuestions from './questions/drinks.mjs';
+import GeographyQuestions from './questions/geography.mjs';
+import MusicQuestions from './questions/music.mjs';
+import QuotesQuestions from './questions/quotes.mjs';
+import GenericCategoryLoader from './questions/genericloader.mjs';
+import Cache from './cache.mjs';
+import QuestionSelector from './selector.mjs';
 
 class Categories {
 	constructor() {
@@ -150,4 +149,4 @@ class Categories {
 	}
 }
 
-module.exports = Categories;
+export default Categories;	

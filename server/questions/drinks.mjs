@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+import fetch from 'node-fetch';
 
 const TOTAL_DRINKS = 50;
 
@@ -191,4 +191,4 @@ class DrinksQuestions {
 	}
 }
 
-module.exports = DrinksQuestions;
+export default DrinksQuestions;

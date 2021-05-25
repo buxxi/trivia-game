@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+import fetch from 'node-fetch';
 
 class GeographyQuestions {
 	constructor() {
@@ -208,4 +208,4 @@ class GeographyQuestions {
 	}
 }
 
-module.exports = GeographyQuestions;
+export default GeographyQuestions;

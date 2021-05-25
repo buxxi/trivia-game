@@ -1,5 +1,5 @@
-const fetch = require("node-fetch");
-const YoutubeLoader = require('../youtubeloader');
+import fetch from 'node-fetch';
+import YoutubeLoader from '../youtubeloader.mjs';
 
 class MovieQuestions {
 	constructor(youtubeApiKey, tmdbApiKey) {
@@ -233,4 +233,4 @@ class MovieQuestions {
 	}
 }
 
-module.exports = MovieQuestions;
+export default MovieQuestions;

@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+import fetch from 'node-fetch';
 
 const ACTOR_COUNT = 500;
 
@@ -256,4 +256,4 @@ class ActorQuestions {
 	}
 }
 
-module.exports = ActorQuestions;
+export default ActorQuestions;

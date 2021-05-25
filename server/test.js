@@ -12,3 +12,47 @@ socket.on('open', () => {
 		console.log("Error #1: " + e);
 	});
 });
+
+/*
+(async function() {
+	const categories = new Categories();
+
+	await categories.init();
+
+	const game = new Game(categories);
+
+	game.addPlayer("foo", "MrBoki", "horse");
+	game.addPlayer("bar", "MrBoki2", "horse");
+	game.addPlayer("qwe", "MrBoki3", "horse");
+	game.addPlayer("rty", "MrBoki4", "horse");
+
+	game.config().categories = {
+		'geography' : true
+	};
+	game.config().time = 5;
+
+	await categories.preload("geography", (from, to) => {}, game);
+
+	game.configure();
+	let question = await game.nextQuestion();
+	console.log("First round start");
+	console.log(question);
+	let roundEnd = game.startTimer(() => {});
+
+	console.log("Guessing");
+	await new Promise((resolve, reject) => { setTimeout(resolve, 500); });
+	game.guess("foo", "A");
+	await new Promise((resolve, reject) => { setTimeout(resolve, 500); });
+	game.guess("bar", "B");
+	await new Promise((resolve, reject) => { setTimeout(resolve, 500); });
+	game.guess("qwe", "C");
+	await new Promise((resolve, reject) => { setTimeout(resolve, 500); });
+	game.guess("rty", "D");
+
+	let points = await roundEnd;
+	console.log("First round ended");
+	console.log(points);
+	console.log(game.players());
+
+})();
+*/
