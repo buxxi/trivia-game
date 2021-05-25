@@ -1,16 +1,31 @@
 export default {
 	data: function() { return({
-		config: this.game.config(),
+		config: {
+			questions : 25,
+			time : 30,
+			pointsPerRound : 1000,
+			stopOnAnswers : true,
+			allowMultiplier : true,
+			maxMultiplier : 5,
+			sound : {
+				backgroundMusic : true,
+				soundEffects : true,
+				text2Speech : true
+			},
+			categories : {},
+			fullscreen : false,
+			categorySpinner : true
+		},
 		carouselIndex : 0,
 		code: undefined,
 		availableCategories: [],
+		avatars: {},
 		serverUrl: window.location.hostname + "/trivia",
-		players: [],
+		players: {},
 		poweredBy: [],
-		preloading: {},
 		message : undefined
 	})},
-	props: ['connection', 'game', 'categories', 'connection', 'sound', 'avatars', 'fingerprint', 'forcePairCode', 'fakePlayers'],
+	props: ['connection', 'sound', 'forcePairCode'],
 	computed: {
 		qrUrl: function() { 
 			let localUrl = encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?code=" + this.code); 
@@ -20,7 +35,7 @@ export default {
 			return this.players.length; 
 		},
 		questionCount: function() { 
-			return this.categories.countQuestions(this.config.categories); 
+			return this.availableCategories.filter(c => this.config.categories[c.type]).map(c => c.questionCount).reduce((a, b) => a + b, 0);
 		},
 		startMessage: function() {
 			if (this.players.length == 0) {
@@ -41,7 +56,7 @@ export default {
 			}
 		}
 	},
-	created: function() {
+	created: async function() {
 		let app = this;
 		app.carouselTimeout = 0;
 
@@ -50,53 +65,28 @@ export default {
 				app.carouselIndex = (app.carouselIndex + 1) % app.poweredBy.length;
 			}, 5000);
 		}
-	
-		function refreshPlayers() {
-			let players = app.game.players();
-			app.players = Object.keys(players).map(pairCode => new LobbyPlayer(pairCode, players[pairCode]));
-		}
-
-		if (this.forcePairCode) { //For debugging easier and making it easier for people without QR reader
-			this.fingerprint.get = function(callback) {
-				callback(app.forcePairCode);
-			}
-		}
 		
-		if (this.fakePlayers) { //For debugging layout
-			for (var i = 1; i <= this.fakePlayers; i++) {
-				this.game.addPlayer(i, "Fake" + i);
-			}
+		try {
+			this.code = await this.connection.connect(this.forcePairCode);
+			let categories = await this.connection.loadCategories();
+			this.avatars = await this.connection.loadAvatars();
+			this.availableCategories = categories.map(c => new CategorySelector(c));
+			this.poweredBy = categories.flatMap(c => c.attribution);
+		} catch (e) {
+			console.log(e);
+			this.message = "Error when loading initial setup: " + e.message;
 		}
 
-		this.connection.host((data) => {
-			this.game.addPlayer(data.pairCode, data.name, data.avatar);
-			refreshPlayers();
-		}).then((code) => {
-			this.code = code;
-			this.connection.on("connection-upgraded", refreshPlayers);
-			this.connection.on("connection-closed", refreshPlayers);
-		}).catch((err) => {
-			this.message = "Error when creating connection: " + err;
+		this.connection.onPlayersChange(players => {
+			app.players = Object.keys(players).map(pairCode => new LobbyPlayer(pairCode, players[pairCode]));	
 		});
-	
-		this.categories.init().then(() => {
-			this.availableCategories = this.categories.available().map(c => new CategorySelector(c));
-			this.poweredBy = this.categories.attribution();
-			moveCarousel();
-			refreshPlayers();
-		});
+
+		moveCarousel();
 	},
 	methods: {
-		kickPlayer: function(player) {
-			this.game.removePlayer(player.pairCode);
-			this.connection.close(player.pairCode);	
-			refreshPlayers();		
-		},
-		usingFallbackConnection: function(player) {
-			return this.connection.usingFallback(player.pairCode);
-		},		
-		hasConnectionError: function(player) {
-			return this.connection.connectionError(player.pairCode);
+		kickPlayer: async function(player) {
+			await this.connection.removePlayer(player.pairCode);
+			this.players = this.players.filter(p => p !== player);
 		},
 		toggleFullScreen: function() {
 			var fullScreenMode = () => document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen;
@@ -128,40 +118,29 @@ export default {
 				}
 			}
 		},
-		preload: function(type) {
-			if (this.preloading[type]) {
-				return new Promise((resolve, reject) => resolve());
+		preload: async function(type) {
+			let category = this.availableCategories.find(c => c.type == type);
+			let preload = category.preload;
+
+			if (preload.running || !this.config.categories[type]) {
+				return;
 			}
-	
-			this.preloading[type] = true;
-			let preload = this.availableCategories.find(c => c.type == type).preload;
 
-			return new Promise((resolve, reject) => {
-				function updateProgress(current, total) {
-					preload.current = current;
-					preload.total = total;
-				}
+			preload.running = true;
 
-				this.categories.preload(type, updateProgress, game).then(() => {
-					preload.done = true;
-					resolve();
-				}).catch((err) => {
-					console.log(err);
-					preload.failed = true;
-				});
-			});
-		},
-		preloadPercentage: function(preload) {
-			return Math.ceil(preload.current / Math.max(preload.total, 1) * 100);
-		},
-		preloadShowProgress: function(preload) {
-			return !preload.done || !preload.failed;
-		},
-		preloadingDone: function(preload) {
-			return preload && preload.done;
-		},
-		preloadingFailed: function(preload) {
-			return preload && preload.failed;
+			function updateProgress(current, total) {
+				preload.current = current;
+				preload.total = total;
+			}
+
+			try {
+				category.questionCount = await this.connection.preloadCategory(type, updateProgress);
+				preload.done = true;
+			} catch (e) {
+				console.log(e);
+				preload.failed = true;
+			}
+			preload.running = false;
 		},
 		loadAll: async function() {
 			for (let type of this.availableCategories.map(c => c.type)) {
@@ -172,25 +151,15 @@ export default {
 		clearCache: function() {
 			for (let type of this.availableCategories.map(c => c.type)) {
 				this.config.categories[type] = false;
-				delete this.preloading[type];
 			}
-			this.categories.clearCache();
+			this.connection.clearCache();
 		},
-		startGame: function() {
+		startGame: async function() {
+			this.sound.config(this.config.sound);
 			this.sound.play();
-			this.game.configure();
-			this.connection.disconnect();
+			await this.connection.startGame(this.config);
 			clearInterval(this.carouselTimeout);
 			this.$router.push('/game');
-		},
-		addCategories: function(files) {
-			for (var i = 0; i < files.length; i++) {
-				this.categories.loadFromFile(files[i]).then((type) => {
-					this.availableCategories.push(new CategorySelector(this.categories.available().find(c => c.type == type)));
-					this.preload(type);
-					this.config.categories[type] = true;
-				});
-			}
 		}
 	}
 };
@@ -201,6 +170,7 @@ class LobbyPlayer {
 		this.name = p.name;
 		this.avatar = p.avatar;
 		this.color = p.color;
+		this.connected = true;
 	}
 }
 
@@ -210,11 +180,18 @@ class CategorySelector {
 		this.name = c.name,
 		this.icon = c.icon,
 		this.static = c.static,
+		this.attribution = c.attribution;
+		this.questionCount = 0;
 		this.preload = {
 			current : 0,
 			total : 0,
 			done : false,
+			running: false,
 			failed : false,
 		}
+	}
+
+	preloadPercentage() {
+		return Math.ceil(this.preload.current / Math.max(this.preload.total, 1) * 100);
 	}
 }

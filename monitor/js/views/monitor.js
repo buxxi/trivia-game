@@ -1,12 +1,9 @@
-import avatars from '../avatars.js';
 import Lobby from '../components/lobby.js';
 import Question from '../components/question.js';
 import Results from '../components/results.js';
-import Categories from '../categories.js';
-import {ConnectionListener} from '../connection.js';
-import Game from '../game.js';
 import SoundController from '../sound.js';
 import Playback from '../playback.js';
+import MonitorToServerConnection from '../connection.js';
 
 function loadTemplate(url, component) {
 	return (resolve, reject) => {
@@ -17,12 +14,9 @@ function loadTemplate(url, component) {
 	};
 }
 
-const fingerprint = new Fingerprint2();
-const connection = new ConnectionListener(fingerprint);
-const categories = new Categories();
-const game = new Game(categories);
-const sound = new SoundController(game);
+const sound = new SoundController();
 const playback = new Playback();
+const connection = new MonitorToServerConnection();
 
 const routes = [
   	{ 
@@ -30,11 +24,7 @@ const routes = [
 		component: loadTemplate('./pages/lobby.html', Lobby),
 		props: (route) => ({ 
 				connection: connection,
-				game: game,
-				categories: categories,
 				sound: sound,
-				avatars: avatars,
-				fingerprint: fingerprint,
 				fakePlayers: route.query.fakePlayers,
 				forcePairCode : route.query.forcePairCode
 		}) 
@@ -44,20 +34,15 @@ const routes = [
 		component: loadTemplate('./pages/game-server.html', Question),
 		props: (route) => ({ 
 			connection: connection,
-			game: game,
 			playback: playback,
-			sound: sound,
-			avatars: avatars,
-			categories: categories
+			sound: sound
 		})		 
 	},
 	{
 		path: '/results',
 		component: loadTemplate('./pages/results.html', Results),
 		props: (route) => ({ 
-			game: game,
-			sound: sound,
-			avatars: avatars
+			sound: sound
 		})		 
 	},
 ];

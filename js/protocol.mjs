@@ -1,6 +1,4 @@
-const uuid = require('uuid').v4;
-
-Protocol = {
+const Protocol = {
 	JOIN_MONITOR: "JOIN_MONITOR"
 }
 
@@ -49,7 +47,8 @@ class RequestListener {
 }
 
 class PromisifiedWebSocket {
-    constructor(ws) {
+    constructor(ws, uuidGenerator) {
+		this._uuidGenerator = uuidGenerator;
         this._ws = ws;
         this._listeners = [];
         this._ws.on('message', (message) => {
@@ -59,7 +58,7 @@ class PromisifiedWebSocket {
 
     send(event, requestData, timeout) {
         return Promise.race([new Promise((resolve, reject) => {
-			let id = uuid();
+			let id = this._uuidGenerator();
             this._listeners.push(new ResponseListener(id, resolve, reject));  
 			this._request(event, id, requestData);
         }), this._timeout(timeout)]);
@@ -204,4 +203,4 @@ class PromisifiedWebSocket {
 	}
 }
 
-module.exports = {PromisifiedWebSocket, Protocol};
+export {PromisifiedWebSocket as PromisifiedWebSocket, Protocol as Protocol};

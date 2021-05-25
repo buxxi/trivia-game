@@ -1,60 +1,75 @@
-export default function SoundController(game) {
-	var self = this;
-	var config = game.config();
+class SoundController {
+	constructor() {
+		this._config = {
+			backgroundMusic : true,
+			soundEffects : true,
+			text2Speech : true
+		};
 
-	var backgroundMusic = new Pizzicato.Sound('sound/background.mp3', () => {
-		backgroundMusic.volume = 0.10;
-		backgroundMusic.loop = true;
-	});
+		let backgroundMusic = new Pizzicato.Sound('sound/background.mp3', () => {
+			backgroundMusic.volume = 0.10;
+			backgroundMusic.loop = true;
+		});
 
-	var click = new Pizzicato.Sound('sound/click.mp3', () => {
-		click.volume = 0.2;
-	});
+		let click = new Pizzicato.Sound('sound/click.mp3', () => {
+			click.volume = 0.2;
+		});
 
-	var trombone = new Pizzicato.Sound('sound/sad.mp3', () => {
-		trombone.volume = 0.5;
-	});
+		let trombone = new Pizzicato.Sound('sound/sad.mp3', () => {
+			trombone.volume = 0.5;
+		});
 
-	self.play = function() {
-		if (!config.sound.backgroundMusic) {
+		this._backgroundMusic = backgroundMusic;
+		this._click = click;
+		this._trombone = trombone;
+	}
+
+	config(config) {
+		this._config = config;
+	}
+
+	play() {
+		if (!this._config.backgroundMusic) {
 			return;
 		}
-		backgroundMusic.play();
+		this._backgroundMusic.play();
 	}
 
-	self.pause = function() {
-		if (!config.sound.backgroundMusic) {
+	pause() {
+		if (!this._config.backgroundMusic) {
 			return;
 		}
-		backgroundMusic.pause();
+		this._backgroundMusic.pause();
 	}
 
-	self.click = function() {
-		if (config.sound.soundEffects) {
-			click.clone().play();
+	click() {
+		if (this._config.soundEffects) {
+			this._click.clone().play();
 		}
 	}
 
-	self.beep = function(count) {
-		if (config.sound.soundEffects) {
-			var beep = new Pizzicato.Sound('sound/beep.mp3', () => {
+	beep(count) {
+		if (this._config.soundEffects) {
+			let beep = new Pizzicato.Sound('sound/beep.mp3', () => {
 				beep.play();
 				beep.sourceNode.playbackRate.value = 1.5 + (0.5 * count);
 			});
 		}
 	}
 
-	self.trombone = function() {
-		if (config.sound.soundEffects) {
-			trombone.clone().play();
+	trombone() {
+		if (this._config.soundEffects) {
+			this._trombone.clone().play();
 		}
 	}
 
-	self.speak = function(text, callback) {
-		if (config.sound.text2Speech) {
+	speak(text, callback) {
+		if (this._config.text2Speech) {
 			responsiveVoice.speak(text, "US English Male", {rate : 1.1, pitch : 0.9, onend : callback});
 		} else {
 			callback();
 		}
 	}
 }
+
+export default SoundController;

@@ -21,7 +21,7 @@
 		<h1><i class="fa fa-fw fa-users"></i>Players</h1>
 		<ul class="playerlist">
 			<li v-if="playerCount == 0">No players has joined yet, be the first!</li>
-			<li v-for="player in players" v-bind:class="{'fallback' : usingFallbackConnection(player), 'disconnected' : hasConnectionError(player)}">
+			<li v-for="player in players" v-bind:class="{'disconnected' : !player.connected}">
 				<a v-on:click="kickPlayer(player)" class="kick" title="Kick player">
 					<div class="avatar" v-bind:data-score="player.name" v-bind:style="{'background-color': player.color, 'border-color': player.color}"><img v-bind:src="avatars[player.avatar].url"/></div>
 				</a>
@@ -86,13 +86,10 @@
 									<i v-if="category.icon.indexOf('url:') == -1" v-bind:class="['fa',category.icon]"></i>
 									<img v-if="category.icon.indexOf('url:') == 0" v-bind:src="category.icon.substr(4)"/>
 								</label>
-								<div class="progress" v-if="config.categories[category.type] && !category.preload.done && !category.preload.failed">{{ preloadPercentage(category.preload) }}%</div>
+								<div class="progress" v-if="config.categories[category.type] && !category.preload.done && !category.preload.failed">{{ category.preloadPercentage() }}%</div>
 							</li>
 						</ul>
 						<ul class="category-actions">
-							<li>
-								<label title="Add category from JSON file"><i class="fa fa-plus"></i><input type="file" id="jsonfile" v-on:change="addCategories($event.target.files)" accept="application/json" multiple/></label>
-							</li>
 							<li>
 								<label title="Select all categories"><a v-on:click="loadAll()"><i class="fa fa-spinner"></i></a></label>
 							</li>
