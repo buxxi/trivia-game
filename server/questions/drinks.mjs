@@ -44,8 +44,7 @@ class DrinksQuestions {
 			icon : 'fa-glass',
 			attribution : [
 				{ url: 'https://www.thecocktaildb.com', name: 'TheCocktailDB' }
-			],
-			count : this._drinks.length * Object.keys(this._types).length
+			]
 		};
 	}
 
@@ -55,13 +54,12 @@ class DrinksQuestions {
 				progress(0, TOTAL_DRINKS);
 				this._drinks = await this._loadDrinks(cache, progress);
 				progress(TOTAL_DRINKS, TOTAL_DRINKS);
-				resolve();
+				resolve(this._countQuestions());
 			} catch (e) {
 				reject(e);
 			}
 		});
 	}
-
 
 	nextQuestion(selector) {
 		return new Promise((resolve, reject) => {
@@ -75,6 +73,10 @@ class DrinksQuestions {
 				view : type.load(correct)
 			});
 		});
+	}
+
+	_countQuestions() {
+		return this._drinks.length * Object.keys(this._types).length;
 	}
 
 	_loadDrinks(cache, progress) {

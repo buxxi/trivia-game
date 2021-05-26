@@ -1,4 +1,4 @@
-const twemoji = require('twemoji');
+import twemoji from 'twemoji';
 
 class Avatar {
     constructor(name, code) {
@@ -42,4 +42,4 @@ let avatars = mapByName([
 /*,
     dromedary : new Avatar('dromedary', '\uD83D\uDC2A')*/
 
-module.exports = avatars;
+export default avatars;

@@ -1,4 +1,4 @@
-import avatars from '../../js/avatars.js';
+import avatars from '../avatars.mjs';
 
 class CurrentGameQuestions {
 	constructor() {
@@ -62,15 +62,14 @@ class CurrentGameQuestions {
 			icon : 'fa-history',
 			attribution : [
 				{ url: 'https://github.com/buxxi/webrtc-trivia', name: 'GitHub' }
-			],
-			count : Object.keys(this._types).length
+			]
 		};
 	}
 
 	preload(progress, cache, game) {
 		return new Promise((resolve, reject) => {
 			this._current_game = game; //This would make it have circular dependencies if put in constructor 
-			resolve();
+			resolve(this._countQuestions());
 		});
 	}
 
@@ -92,6 +91,10 @@ class CurrentGameQuestions {
 				}
 			});
 		});
+	}
+
+	_countQuestions() {
+		return Object.keys(this._types).length;
 	}
 
 	_randomPlayer(selector) {

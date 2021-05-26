@@ -37,8 +37,7 @@ class MovieQuestions {
 			attribution : [
 				{ url: 'https://youtube.com', name: 'YouTube' },
 				{ url: 'https://www.themoviedb.org', name: 'TheMovieDB' }
-			],
-			count : Object.keys(this._types).map((t) => this._types[t].count()).reduce((a, b) => a + b, 0)
+			]
 		};
 	}
 
@@ -47,7 +46,7 @@ class MovieQuestions {
 			try {
 				let videos = await this._loadYoutubeVideos(progress, cache);
 				this._movies = this._parseTitles(videos);
-				resolve();
+				resolve(this._countQuestions());
 			} catch (e) {
 				reject(e);
 			}
@@ -77,6 +76,10 @@ class MovieQuestions {
 				}
 			};
 		});
+	}
+
+	_countQuestions() {
+		return Object.keys(this._types).map((t) => this._types[t].count()).reduce((a, b) => a + b, 0);
 	}
 
 	_parseTitle(input) {

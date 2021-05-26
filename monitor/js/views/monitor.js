@@ -16,7 +16,7 @@ function loadTemplate(url, component) {
 
 const sound = new SoundController();
 const playback = new Playback();
-const connection = new MonitorToServerConnection();
+const connection = new MonitorToServerConnection(new URL("..", document.location));
 
 const routes = [
   	{ 

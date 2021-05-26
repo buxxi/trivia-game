@@ -42,8 +42,7 @@ class ActorQuestions {
 			icon : 'fa-user',
 			attribution : [
 				{ url: 'https://www.themoviedb.org', name: 'TheMovieDB' }
-			],
-			count : Object.keys(this._types).map((t) => this._types[t].count()).reduce((a, b) => a + b, 0)
+			]
 		};
 	}
 
@@ -52,7 +51,7 @@ class ActorQuestions {
 			try {
 				progress(0, ACTOR_COUNT);
 				this._actors = await this._loadActors(progress, cache);
-				resolve();
+				resolve(this._countQuestions());
 			} catch (e) {
 				reject(e);
 			}
@@ -73,6 +72,10 @@ class ActorQuestions {
 				view : type.view(actor)
 			});
 		});
+	}
+
+	_countQuestions() {
+		return Object.keys(this._types).map((t) => this._types[t].count()).reduce((a, b) => a + b, 0);
 	}
 
 	_loadActors(progress, cache) {

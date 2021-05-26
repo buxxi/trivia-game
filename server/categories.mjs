@@ -85,19 +85,6 @@ class Categories {
 		}, {});
 	}
 
-	countQuestions(input) {
-		return Object.keys(input).filter((category) => input[category]).map((c) => this._categoryByType(c).describe().count).reduce((a, b) => a + b, 0);
-	}
-
-	attribution() {
-		var attribution = this._categories.reduce((result, current) => result.concat(current.describe().attribution), []);
-		var attributionMap = {};
-		for (let attr of attribution) {
-			attributionMap[attr.name] = attr;
-		}
-		return Object.values(attributionMap);
-	}
-
 	nextQuestion(session) {
 		var selector = new QuestionSelector();
 		var category = selector.fromWeightedObject(this._enabledCategories);
@@ -111,7 +98,7 @@ class Categories {
 	}
 
 	clearCache() {
-		new Cache().clearAll();
+		Cache.clearAll();
 	}
 
 	_categoryByType(type) {

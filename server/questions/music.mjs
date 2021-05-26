@@ -51,8 +51,7 @@ class MusicQuestions {
 			icon : 'fa-music',
 			attribution : [
 				{ url: 'https://spotify.com', name: 'Spotify' }
-			],
-			count : this._tracks.length * Object.keys(this._types).length
+			]
 		};
 	}
 
@@ -77,7 +76,7 @@ class MusicQuestions {
 					progress(loaded, categories.length);
 				}
 
-				resolve();
+				resolve(this._countQuestions());
 			} catch (e) {
 				reject(e);
 			}
@@ -96,6 +95,10 @@ class MusicQuestions {
 				view : type.view(track)
 			});
 		});
+	}
+
+	_countQuestions() {
+		return this._tracks.length * Object.keys(this._types).length;
 	}
 
 	_parseTitle(title) {

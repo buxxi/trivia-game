@@ -148,18 +148,26 @@ export default {
 				await this.preload(type);
 			}
 		},
-		clearCache: function() {
-			for (let type of this.availableCategories.map(c => c.type)) {
-				this.config.categories[type] = false;
+		clearCache: async function() {
+			try {
+				for (let type of this.availableCategories.map(c => c.type)) {
+					this.config.categories[type] = false;
+				}
+				await this.connection.clearCache();
+			} catch (e) {
+				this.message = "Failed to clear caches: " + e.message;
 			}
-			this.connection.clearCache();
 		},
 		startGame: async function() {
-			this.sound.config(this.config.sound);
-			this.sound.play();
-			await this.connection.startGame(this.config);
-			clearInterval(this.carouselTimeout);
-			this.$router.push('/game');
+			try {
+				this.sound.config(this.config.sound);
+				await this.connection.startGame(this.config);
+				clearInterval(this.carouselTimeout);
+				this.sound.play();
+				this.$router.push('/game');
+			} catch (e) {
+				this.message = "Failed to start game: " + e.message;
+			}
 		}
 	}
 };

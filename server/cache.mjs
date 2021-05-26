@@ -28,7 +28,7 @@ class FileSystemCache {
 		});
 	}
 
-	clearAll() {
+	static clearAll() {
 		throw new Error("Not implemented");
 	}
 }

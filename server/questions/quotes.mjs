@@ -34,8 +34,7 @@ class QuotesQuestions {
 			icon : 'fa-quote-right',
 			attribution : [
 				{ url: 'https://andruxnet-random-famous-quotes.p.rapidapi.com', name: 'Mashape - Famous Random Quotes' }
-			],
-			count : this._quotes.length
+			]
 		};
 	}
 
@@ -45,7 +44,7 @@ class QuotesQuestions {
 				progress(0, TOTAL_QUOTES);
 				this._quotes = await this._loadQuotes(cache, progress);
 				progress(TOTAL_QUOTES, TOTAL_QUOTES);
-				resolve();
+				resolve(this._countQuestions());
 			} catch (e) {
 				reject(e);
 			}
@@ -64,6 +63,10 @@ class QuotesQuestions {
 				view : type.load(quote)
 			});
 		});
+	}
+
+	_countQuestions() {
+		return this._quotes.length * Object.keys(this._types).length;
 	}
 
 	_randomQuote(selector) {

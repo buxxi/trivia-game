@@ -1,6 +1,9 @@
-const WebSocket = require('ws');
-const {PromisifiedWebSocket, Protocol} = require('../js/protocol');
+import WebSocket from 'ws';
+import {PromisifiedWebSocket, Protocol} from '../js/protocol.js';
+import Game from './game.mjs';
+import Categories from './categories.mjs';
 
+/*
 const socket = new WebSocket('ws://localhost:5555');
 
 socket.on('open', () => {
@@ -12,8 +15,8 @@ socket.on('open', () => {
 		console.log("Error #1: " + e);
 	});
 });
+*/
 
-/*
 (async function() {
 	const categories = new Categories();
 
@@ -55,4 +58,3 @@ socket.on('open', () => {
 	console.log(game.players());
 
 })();
-*/

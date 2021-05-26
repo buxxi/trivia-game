@@ -50,9 +50,6 @@ class VideoGameQuestions {
 	}
 
 	describe() {
-		let countSelector = {
-			fromArray : (arr) => { return arr.length; }
-		};
 		return {
 			type : 'videogames',
 			name : 'Video Games',
@@ -60,8 +57,7 @@ class VideoGameQuestions {
 			attribution : [
 				{ url: 'https://youtube.com', name: 'YouTube' },
 				{ url: 'https://www.igdb.com', name: 'IGDB' }
-			],
-			count : Object.keys(this._types).map((t) => this._types[t].correct(countSelector)).reduce((a, b) => { return a + b; }, 0)
+			]
 		};
 	}
 
@@ -85,7 +81,7 @@ class VideoGameQuestions {
 				let videos = await this._loadVideos(progress, cache);
 				this._matchVideosToGames(videos, this._games);
 
-				resolve();
+				resolve(this._countQuestions());
 			} catch (e) {
 				reject(e);
 			}
@@ -105,6 +101,13 @@ class VideoGameQuestions {
 				view : type.view(correct, selector)
 			});
 		});
+	}
+
+	_countQuestions() {
+		let countSelector = {
+			fromArray : (arr) => { return arr.length; }
+		};
+		return Object.keys(this._types).map((t) => this._types[t].correct(countSelector)).reduce((a, b) => { return a + b; }, 0);
 	}
 
 	_loadTwitchAccessToken() {

@@ -1,5 +1,13 @@
 const Protocol = {
-	JOIN_MONITOR: "JOIN_MONITOR"
+	JOIN_MONITOR: "JOIN_MONITOR",
+	LOAD_CATEGORIES: "LOAD_CATEGORIES",
+	LOAD_AVATARS: "LOAD_AVATARS",
+	REMOVE_PLAYER: "REMOVE_PLAYER",
+	CLEAR_CACHE: "CLEAR_CACHE",
+	START_GAME: "START_GAME",
+	PRELOAD_CATEGORY: "PRELOAD_CATEGORY",
+	PRELOAD_CATEGORY_PROGRESS: (category) => "PRELOAD_CATEGORY_PROGRESS_" + category,
+	PLAYERS_CHANGED: "PLAYERS_CHANGED"
 }
 
 class ResponseListener {
@@ -14,7 +22,7 @@ class ResponseListener {
 	}
 
 	error(message) {
-		this._reject(message);
+		this._reject(new Error(message));
 	}
 
 	isRequestListener() {
@@ -51,9 +59,15 @@ class PromisifiedWebSocket {
 		this._uuidGenerator = uuidGenerator;
         this._ws = ws;
         this._listeners = [];
-        this._ws.on('message', (message) => {
-            this._processListeners(message);
-        });
+		if ('onmessage' in this._ws) { //Browser
+			this._ws.onmessage = (message) => {
+				this._processListeners(message);
+			};
+		} else if ('on' in this._ws) { //Server
+			this._ws.on('message', (message) => {
+				this._processListeners(message);
+			});
+		}
     }
 
     send(event, requestData, timeout) {
@@ -169,6 +183,9 @@ class PromisifiedWebSocket {
 	}
 
 	_receive(message) {
+		if ('data' in message) { //Browser
+			message = message.data;
+		}
 		console.debug("RECEIVE " + message);
         let obj = JSON.parse(message);
 		return obj;

@@ -72,8 +72,7 @@ class GeographyQuestions {
 			attribution : [
 				{ url: 'https://restcountries.eu', name: 'REST Countries' },
 				{ url: 'https://developers.google.com/chart', name: 'Google Charts' }
-			],
-			count : this._countries.length * Object.keys(this._types).length
+			]
 		};
 	}
 
@@ -83,7 +82,7 @@ class GeographyQuestions {
 				progress(0, 1);
 				this._countries = await this._loadCountries(cache);
 				progress(1, 1);
-				resolve();
+				resolve(this._countQuestions());
 			} catch (e) {
 				reject(e);
 			}
@@ -115,6 +114,10 @@ class GeographyQuestions {
 				reject(e);
 			}
 		});
+	}
+
+	_countQuestions() {
+		return this._countries.length * Object.keys(this._types).length;
 	}
 
 	_loadCountries(cache) {

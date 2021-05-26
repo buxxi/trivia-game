@@ -1,4 +1,4 @@
-import avatars from '../js/avatars.js';
+import avatars from './avatars.mjs';
 import randomColor from 'randomcolor';
 import Timer from './timer.mjs';
 import Session from './session.mjs';

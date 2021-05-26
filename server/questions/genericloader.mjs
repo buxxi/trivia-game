@@ -8,7 +8,6 @@ class GenericCategoryLoader {
 		var parsed = JSON.parse(input);
 		var description = parsed.description;
 		description.type = /.*?([a-zA-Z0-9]+).json/.exec(name)[1];
-		description.count = parsed.questions.length * parsed.data.length;
 		description.static = true;
 		if (!description.attribution) {
 			description.attribution = [];
@@ -43,7 +42,9 @@ class GenericCategory {
 				sanityCheck.push(this.nextQuestion(selector));
 			}
 
-			Promise.all(sanityCheck).then(resolve).catch(reject);
+			Promise.all(sanityCheck).then(() => {
+				resolve(this._countQuestions());
+			}).catch(reject);
 		});
 	}
 
@@ -63,6 +64,10 @@ class GenericCategory {
 				reject("Failed loading question of type: '" + question.title({}) + "', reason: " + e);
 			}
 		});
+	}
+
+	_countQuestions() {
+		return Object.keys(this._questions).length * this._data.length;
 	}
 }
 
