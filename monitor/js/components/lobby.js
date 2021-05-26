@@ -20,7 +20,7 @@ export default {
 		code: undefined,
 		availableCategories: [],
 		avatars: {},
-		serverUrl: window.location.hostname + "/trivia",
+		serverUrl: new URL("..", document.location).toString(),
 		players: {},
 		poweredBy: [],
 		message : undefined
@@ -32,7 +32,7 @@ export default {
 			return `https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl=${localUrl}&choe=UTF-8`;
 		},
 		playerCount: function() { 
-			return this.players.length; 
+			return Object.keys(this.players).length; 
 		},
 		questionCount: function() { 
 			return this.availableCategories.filter(c => this.config.categories[c.type]).map(c => c.questionCount).reduce((a, b) => a + b, 0);
