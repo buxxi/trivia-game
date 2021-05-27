@@ -35,9 +35,8 @@ class ResponseListener {
 }
 
 class RequestListener {
-	constructor(event, once, resolve) {
+	constructor(event, resolve) {
 		this.event = event;
-		this.once = once;
 		this._resolve = resolve;
 	}
 
@@ -92,28 +91,35 @@ class PromisifiedWebSocket {
 
 	_on(event, timeout, once) {
 		let self = this;
-		var listener;
-		var listenerPromise;
+
+		var errorFunction = (e) => { console.log("Unhandled timeout error: " + e.message); };
+
         return {
             then: function(f) {
-				listenerPromise = new Promise((resolve, reject) => {
-					listener = new RequestListener(event, once, (data, id) => {
-						resolve([data, id]);
-					});
-					self._listeners.push(listener); 
+				var listener;
+				var requestReceived = () => {};
+				let responsePromise = new Promise((resolve, reject) => {
+					requestReceived = resolve;
 				});
-				listenerPromise.then(([data, id]) => {
+				listener = new RequestListener(event, (data, id) => {
+					requestReceived();
 					self._sendResponse(data, id, f);
 				});
+				self._listeners.push(listener); 
+
+				if (once) {
+					Promise.race([responsePromise, self._timeout(timeout)]).then(() => {
+						self.remove(event);
+					}).catch(err => {
+						self.remove(event);
+						errorFunction(err);
+					});	
+				}
+
 				return this;
             },
 			catch: function(f) {
-				if (once) {
-					Promise.race([listenerPromise, self._timeout(timeout)]).catch(err => {
-						self._listeners = self._listeners.filter(l => l !== listener);
-						f(err);
-					});	
-				}
+				errorFunction = f;
 				return this;
 			}
         }
@@ -178,7 +184,7 @@ class PromisifiedWebSocket {
 	}
 
 	_send(response) {
-		console.debug("SEND: " + JSON.stringify(response));
+		//console.debug("SEND: " + JSON.stringify(response));
 		this._ws.send(JSON.stringify(response));
 	}
 
@@ -186,7 +192,7 @@ class PromisifiedWebSocket {
 		if ('data' in message) { //Browser
 			message = message.data;
 		}
-		console.debug("RECEIVE " + message);
+		//console.debug("RECEIVE " + message);
         let obj = JSON.parse(message);
 		return obj;
 	}

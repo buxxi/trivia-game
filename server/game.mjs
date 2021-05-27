@@ -96,7 +96,9 @@ class Game {
 		delete this._players[peerid];
 	}
 
-	configure() {
+	configure(config) {
+		Object.assign(this._config, config);
+		console.log("Configuring game");
 		this._categories.configure(this._config.categories);
 		Object.values(this._players).forEach((player) => player._reset());
 		this._session = new Session(this._config.questions);
@@ -175,19 +177,22 @@ class Game {
 		var result = {};
 		Object.keys(this._players).forEach((peerid) => {
 			let player = this._players[peerid];
-			let timerScore = this._timer.score(this._guesses[peerid].time);
-			let timeLeft = this._timer.timeLeft(this._guesses[peerid].time);
 			let maxMultiplier = this._config.allowMultiplier ? this._config.maxMultiplier : 1;
 
 			let scoreBefore = player.score;
 			let multiplierBefore = player.multiplier;
 
-			if (this.hasGuessed(peerid) && this._guesses[peerid].answer == this.correctAnswer()['key']) {
-				player._updateScore(timerScore, timeLeft, maxMultiplier);
-			} else if (this.hasGuessed(peerid)) {
-				player._updateScore(-timerScore, timeLeft, 1);
+			if (this.hasGuessed(peerid)) {
+				let timerScore = this._timer.score(this._guesses[peerid].time);
+				let timeLeft = this._timer.timeLeft(this._guesses[peerid].time);
+				
+				if (this._guesses[peerid].answer == this.correctAnswer()['key']) {
+					player._updateScore(timerScore, timeLeft, maxMultiplier);
+				} else {
+					player._updateScore(-timerScore, timeLeft, 1);
+				}
 			} else {
-				player._updateScore(0, timeLeft, 1);
+				player._updateScore(0, 0, 1);
 			}
 
 			result[peerid] = { points: player.score - scoreBefore, multiplier: player.multiplier - multiplierBefore }; 
