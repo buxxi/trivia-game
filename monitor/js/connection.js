@@ -5,6 +5,10 @@ class MonitorToServerConnection {
         this._url = url;
     }
 
+    connected() {
+        return !!this._pws;
+    }
+
     connect(forceGameId) {
         return new Promise((resolve, reject) => {
             let ws = new WebSocket(`ws://${this._url.host}${this._url.pathname}`);
@@ -60,12 +64,20 @@ class MonitorToServerConnection {
         this._pws.on(Protocol.SHOW_QUESTION).then(text => callback(text));
     }
 
+    onQuestionError(callback) {
+        this._pws.on(Protocol.QUESTION_ERROR).then(message => callback(message));
+    }
+
     onQuestionStart(callback) {
         this._pws.on(Protocol.QUESTION_START).then(data => callback(data.view, data.answers));
     }
 
     onQuestionEnd(callback) {
         this._pws.on(Protocol.QUESTION_END).then(data => callback(data.pointsThisRound, data.correct));
+    }
+
+    onGameEnd(callback) {
+        this._pws.on(Protocol.GAME_END).then(() => callback());
     }
 }
 

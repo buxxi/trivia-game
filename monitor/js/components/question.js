@@ -25,6 +25,16 @@ function displayQuestion(app, text) {
 	});
 }
 
+function displayError(app, message) {
+	return new Promise((resolve, reject) => {
+		app.error = message;
+		setTimeout(() => {
+			app.error = undefined;
+			resolve();
+		}, 3000);
+	});
+}
+
 function playbackStart(app, view, answers) {
 	let player = app.playback.load(view, answers);
 	
@@ -50,7 +60,7 @@ function playbackEnd(app, pointsThisRound, correct) {
 		let player = app.currentPlayer;
 		player.stop();
 	
-		//Handle resuming music
+		//TODO: Handle resuming music
 
 		if (Object.values(pointsThisRound).some(p => p.multiplier <= -4)) {
 			app.sound.trombone();
@@ -87,12 +97,12 @@ export default {
 		showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; },
 	},
 	created: function() {
-		/*let app = this;
-
-		if (typeof(this.game.session().finished) != 'function') { //TODO: make a better check
-			app.$router.push("/");
+		if (!this.connection.connected()) {
+			this.$router.push("/");
+			return;
 		}
 
+		/*
 		app.connection.on("data-guess", (pairCode, data) => {
 			app.game.guess(pairCode, data);
 			app.players[pairCode].guessed = true;
@@ -105,9 +115,7 @@ export default {
 			}
 		});
 
-		new GameLoop(app).run().then(() => {
-			app.$router.push('/results');
-		});*/
+		*/
 
 		this.connection.onCategorySelect((categories, correct, index, total) => {
 			return showCategorySpinner(this, categories, correct, index, total);
@@ -115,6 +123,10 @@ export default {
 
 		this.connection.onQuestion(text => {
 			return displayQuestion(this, text);
+		});
+
+		this.connection.onQuestionError(message => {
+			return displayError(this, message);
 		});
 
 		this.connection.onQuestionStart((view, answers) => {
@@ -125,6 +137,11 @@ export default {
 			return playbackEnd(this, pointsThisRound, correct);
 		});
 
+		this.connection.onGameEnd(() => {
+			return new Promise((resolve, reject) => {
+				this.$router.push('/results');				
+			});
+		});
 	},
 	methods: {
 		isLeadingPlayer: function (player) {
@@ -153,58 +170,6 @@ function mapToMap(input, mapFunction) {
 	}
 	return result;
 }
-
-/* 
-class QuestionError {
-	constructor(app, err) {
-		this.app = app;
-		this.err = err;
-	}
-
-	run() {
-		return new Promise((resolve, reject) => {
-			console.log(this.err);
-
-			this.app.error = this.err.toString();
-
-			setTimeout(() => {
-
-				this.app.error = undefined;
-				resolve();
-			}, 3000);
-		});
-	}
-
-	nextState() {
-		return false;
-	}
-}
-
-class GameLoop {
-	constructor(app) {
-		this.app = app;
-	}
-
-	run() {
-		return new Promise(async (resolve, reject) => {
-			var state;
-			while (this.app.game.hasMoreQuestions()) {
-				try {
-					state = new LoadingNextQuestionState(this.app);
-					while (state) {
-						let result = await state.run();
-						state = state.nextState(result);
-					}
-				} catch (e) {
-					state = new QuestionError(this.app, e);
-					await state.run();
-				}
-			}
-			resolve();
-		});
-	}
-}
-*/
 
 class SessionData {
 	constructor() {

@@ -9,14 +9,8 @@ class ResultsState {
     }
 
 	run() {
-		return new Promise((resolve, reject) => {
-            //TODO: communicate results to monitor and wait for
-            //TODO: communicate stats to the clients
-            console.log("And the results are in!");
-
-			setTimeout(() => {
-				resolve();
-			}, 3000);
+		return new Promise(async (resolve, reject) => {
+            await this._monitorSocket.send(Protocol.GAME_END, {});                        
 		});
 	}
 

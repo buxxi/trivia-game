@@ -1,4 +1,5 @@
 import LoadingNextQuestionState from "./loadquestion.mjs";
+import {Protocol} from '../../js/protocol.mjs';
 
 class QuestionErrorState {
     constructor(game, categories, clientSockets, monitorSocket, error) {
@@ -10,14 +11,11 @@ class QuestionErrorState {
     }
 
 	run() {
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			console.log(this._error);
 
-            //TODO: communicate error to monitor
-
-			setTimeout(() => {
-				resolve();
-			}, 3000);
+            await this._monitorSocket.send(Protocol.QUESTION_ERROR, this._error.message);
+            resolve();
 		});
 	}
 

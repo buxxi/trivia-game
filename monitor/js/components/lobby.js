@@ -166,10 +166,9 @@ export default {
 				this.sound.config(this.config.sound);
 				clearInterval(this.carouselTimeout);
 				this.sound.play();
-				this.$router.push('/game');
-				setTimeout(() => {
+				this.$router.push('/game', () => {
 					this.connection.startGame(this.config);
-				}, 500);
+				});
 			} catch (e) {
 				this.message = "Failed to start game: " + e.message;
 			}
