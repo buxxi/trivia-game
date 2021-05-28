@@ -7,7 +7,8 @@ const Protocol = {
 	START_GAME: "START_GAME",
 	PRELOAD_CATEGORY: "PRELOAD_CATEGORY",
 	PRELOAD_CATEGORY_PROGRESS: (category) => "PRELOAD_CATEGORY_PROGRESS_" + category,
-	PLAYERS_CHANGED: "PLAYERS_CHANGED"
+	PLAYERS_CHANGED: "PLAYERS_CHANGED",
+	SHOW_CATEGORY_SELECT: "SHOW_CATEGORY_SELECT"
 }
 
 class ResponseListener {
@@ -148,7 +149,7 @@ class PromisifiedWebSocket {
 			if (listener) {
 				listener.listener(obj.request.data, obj.request.id);
 			} else {
-				this._errorResponse(obj.request.id, new Error("Not listening for this event"));
+				this._errorResponse(obj.request.id, new Error("Not listening for this event: " + obj.request.event));
 			}
         } else if ("response" in obj) {
 			this._resolveListener(l => l.isResponseListener(obj.response.id)).listener(obj.response.data, obj.response.id);

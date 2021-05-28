@@ -65,7 +65,8 @@ class SoundController {
 
 	speak(text, callback) {
 		if (this._config.text2Speech) {
-			responsiveVoice.speak(text, "US English Male", {rate : 1.1, pitch : 0.9, onend : callback});
+			callback();
+			//responsiveVoice.speak(text, "US English Male", {rate : 1.1, pitch : 0.9, onend : callback});
 		} else {
 			callback();
 		}

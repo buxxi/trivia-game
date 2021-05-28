@@ -1,24 +1,41 @@
 import CategorySpinner from '../spinner.js';
 
+function showCategorySpinner(app, categories, correct, index, total) {
+	//TODO: handle disabling of spinner
+	let spinner = new CategorySpinner(() => app.sound.click());
+
+	app.state = 'loading';
+	app.title = 'Selecting next question';
+	app.spinner.categories = categories;
+	app.session.update(index, total, correct);
+
+	return new Promise((resolve, reject) => {
+		spinner.start().then(() => {
+			app.sound.speak(app.session.currentCategory.fullName, resolve);
+		}).catch(reject);
+		setTimeout(() => spinner.stop().catch(reject), 2000);
+	});
+}
+
 export default {
 	data: function() { return({
 		spinner : {
 			categories: []
 		},
 		timer: new TimerData(),
-		players: mapToMap(this.game.players(), (player) => new PlayerData(player)),
+		players: {}, //mapToMap(this.game.players(), (player) => new PlayerData(player)),
 		session: new SessionData(),
 		title: '',
 		state: 'loading',
 		crownUrl: /src=\"(.*?)\"/.exec(twemoji.parse("\uD83D\uDC51"))[1],
 		error: undefined
 	})},
-	props: ['connection', 'game', 'playback', 'sound', 'avatars', 'categories'],
+	props: ['connection', 'playback', 'sound'],
 	computed: {
 		showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; },
 	},
 	created: function() {
-		let app = this;
+		/*let app = this;
 
 		if (typeof(this.game.session().finished) != 'function') { //TODO: make a better check
 			app.$router.push("/");
@@ -38,7 +55,12 @@ export default {
 
 		new GameLoop(app).run().then(() => {
 			app.$router.push('/results');
+		});*/
+
+		this.connection.onCategorySelect((categories, correct, index, total) => {
+			return showCategorySpinner(this, categories, correct, index, total);
 		});
+
 	},
 	methods: {
 		isLeadingPlayer: function (player) {
@@ -67,35 +89,7 @@ function mapToMap(input, mapFunction) {
 	}
 	return result;
 }
-
-class LoadingNextQuestionState {
-	constructor(app) {
-		this.app = app;
-	}
-
-	run() {
-		return new Promise((resolve, reject) => {
-			let app = this.app;
-			let spinner = new CategorySpinner(app.categories, app.sound.click, app.game.showCategorySpinner());
-
-			app.state = 'loading';
-			app.title = 'Selecting next question';
-			app.spinner.categories = spinner.categories;
-
-			app.game.nextQuestion().then((question) => {
-				app.session.update(app.game.session());
-				spinner.start().then(() => {
-					app.sound.speak(app.session.currentCategory.fullName, () => resolve(question));
-				}).catch(reject);
-				setTimeout(() => spinner.stop().catch(reject), 2000);
-			}).catch(reject);
-		});
-	}
-
-	nextState(question) {
-		return new PresentQuestionState(this.app, question);
-	}
-}
+/*
 
 class PresentQuestionState {
 	constructor(app, question) {
@@ -277,6 +271,7 @@ class GameLoop {
 		});
 	}
 }
+*/
 
 class SessionData {
 	constructor() {
@@ -285,10 +280,10 @@ class SessionData {
 		this.currentCategory = undefined;
 	}
 
-	update(session) {
-		this.index = session.index();
-		this.total = session.total();
-		this.currentCategory = session.category();
+	update(index, total, currentCategory) {
+		this.index = index;
+		this.total = total;
+		this.currentCategory = currentCategory;
 	}
 }
 

@@ -78,7 +78,10 @@ export default {
 		}
 
 		this.connection.onPlayersChange(players => {
-			app.players = Object.keys(players).map(pairCode => new LobbyPlayer(pairCode, players[pairCode]));	
+			return new Promise((resolve, reject) => {
+				app.players = Object.keys(players).map(pairCode => new LobbyPlayer(pairCode, players[pairCode]));	
+				resolve();
+			});
 		});
 
 		moveCarousel();
@@ -158,13 +161,15 @@ export default {
 				this.message = "Failed to clear caches: " + e.message;
 			}
 		},
-		startGame: async function() {
+		startGame: function() {
 			try {
 				this.sound.config(this.config.sound);
-				await this.connection.startGame(this.config);
 				clearInterval(this.carouselTimeout);
 				this.sound.play();
 				this.$router.push('/game');
+				setTimeout(() => {
+					this.connection.startGame(this.config);
+				}, 500);
 			} catch (e) {
 				this.message = "Failed to start game: " + e.message;
 			}

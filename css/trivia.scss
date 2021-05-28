@@ -55,7 +55,7 @@ h1 {
 }
 
 .question {
-	#content, #category-adjust-huener {
+	#content, #category-spinner {
 		bottom : 8em;
 		left : 2em;
 		position : fixed;
@@ -369,7 +369,7 @@ h1 {
 	}
 }
 
-.adjust-huener {
+.spinner {
 	position : relative;
 	height : 10em;
 	padding: 0;
@@ -644,7 +644,7 @@ ol {
 
 @mixin timer-counter-loop {
     @for $i from 10 to 0 {
-        &[data-percentage="${counter}"] {
+        &[data-percentage="${i}"] {
             color : $incorrect;
             &:before {
                 transform: scale(0.5, 0.5);
@@ -694,7 +694,7 @@ ol {
 	}
 }
 
-@mixin big-button($color, $border, $text){
+@mixin big-button($color, $border, $text) {
 	&:before {
 		background-color : $color;
 		border-color : $border;
@@ -998,7 +998,7 @@ ol {
 	height : 3em;
 }
 
-@mixin score-change($color, $border){
+@mixin score-change($color, $border) {
 	animation: splash 0.5s linear normal;
 	background-color : $color;
 	border-color : inherit;

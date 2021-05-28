@@ -49,12 +49,11 @@ class MonitorToServerConnection {
     }
 
     onPlayersChange(callback) {
-        this._pws.on(Protocol.PLAYERS_CHANGED).then(players => {
-            return new Promise((resolve, reject) => {
-                callback(players);
-                resolve();
-            });
-        });
+        this._pws.on(Protocol.PLAYERS_CHANGED).then(players => callback(players));
+    }
+
+    onCategorySelect(callback) {
+       this._pws.on(Protocol.SHOW_CATEGORY_SELECT).then(data => callback(data.categories, data.correct, data.index, data.total));
     }
 }
 

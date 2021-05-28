@@ -1,29 +1,21 @@
-export default function CategorySpinner(categories, flipCallback, show) {
-	var self = this;
+class CategorySpinner {
+	constructor(flipCallback) {
+		this._maxDuration = 2000;
+		this._duration = 50;
+		this._calcDuration = this._keepDuration;
+		this._flipCallback = flipCallback;
+	}
 
-	var jokeChance = 0.5;
-	var maxDuration = 2000;
-
-	var duration = 50;
-	var calcDuration = keepDuration;
-
-	self.categories = loadCategories(categories);
-
-	self.start = function() {
+	start() {
 		return new Promise((resolve, reject) => {
-			if (!show) {
-				resolve();
-				return;
-			}
-
-			var checkIfDone = () => {
+			let checkIfDone = () => {
 				try {
-					var done = self.flip();
+					let done = this.flip();
 					if (done) {
 						document.querySelector(".spinner").classList.add('highlight');
 						resolve();
 					} else {
-						setTimeout(checkIfDone, duration);
+						setTimeout(checkIfDone, this._duration);
 					}
 				} catch (e) {
 					reject(e);
@@ -34,18 +26,21 @@ export default function CategorySpinner(categories, flipCallback, show) {
 		});
 	}
 
-	self.flip = function() {
-		flipCallback();
+	flip() {
+		this._flipCallback();
 
-		duration = calcDuration(duration);
-		var lis = document.querySelectorAll(".spinner li");
+		this._duration = this._calcDuration(this._duration);
+		let lis = document.querySelectorAll(".spinner li");
 		for (var i = 0; i < lis.length; i++) {
-			lis[i].style.transitionDuration = duration + "ms";
+			lis[i].style.transitionDuration = this._duration + "ms";
 		}
 
-		if (duration < maxDuration) {
-			var li = lis[lis.length -1];
-			var parent = li.parentNode;
+		if (this._duration < this._maxDuration) {
+			let li = lis[lis.length -1];
+			if (!li) {
+				return false;
+			}
+			let parent = li.parentNode;
 			parent.removeChild(li);
 			parent.insertBefore(li, parent.childNodes[0]);
 			return false;
@@ -54,69 +49,55 @@ export default function CategorySpinner(categories, flipCallback, show) {
 		}
 	}
 
-	self.stop = function() {
+	stop() {
 		return new Promise((resolve, reject) => {
-			var stepsBeforeSlowingDown = calculateStepsBeforeSlowingDown();
-			calcDuration = stepsDuration(stepsBeforeSlowingDown, logDuration);
+			let stepsBeforeSlowingDown = this._calculateStepsBeforeSlowingDown();
+			this._calcDuration = this._stepsDuration(stepsBeforeSlowingDown, this._logDuration);
 			resolve();
 		});
 	}
 
-	function loadCategories(categories) {
-		if (!show) {
-			return [];
-		}
-		var result = categories.enabled();
-		var insertJoke = Math.random() >= jokeChance;
-		while (result.length < 6 || insertJoke) {
-			if (insertJoke) {
-				result.push(categories.joke());
-			}
-			result = result.concat(categories.enabled()); //TODO: shuffle this array?
-			insertJoke = Math.random() >= jokeChance;
-		}
-		return result;
-	}
-
-	function calculateStepsBeforeSlowingDown() {
+	_calculateStepsBeforeSlowingDown() {
 		var steps = 0;
-		var sum = duration;
-		while (sum < maxDuration) {
+		var sum = this._duration;
+		while (sum < this._maxDuration) {
 			steps++;
-			sum = logDuration(sum);
+			sum = this._logDuration(sum);
 		}
 
 		var indexOfChosen = -1;
-		var lis = document.querySelectorAll(".spinner li");
+		let lis = document.querySelectorAll(".spinner li");
 		for (var i = 0; i < lis.length; i++) {
 			if (lis[i].dataset.spinnerStop) {
 				indexOfChosen = i;
 			}
 		}
 
-		var mod = (n, m) => {
+		function mod (n, m) {
 			return ((n % m) + m) % m;
 		}
 
-		var steps = (3 - steps) - indexOfChosen;
+		steps = (3 - steps) - indexOfChosen;
 		return mod(steps, lis.length);
 	}
 
-	function logDuration(duration) {
+	_logDuration(duration) {
 		return Math.max(Math.log10(duration * 0.1),1.1) * duration
 	}
 
-	function keepDuration(duration) {
+	_keepDuration(duration) {
 		return duration;
 	}
 
-	function stepsDuration(steps, nextDuration) {
+	_stepsDuration(steps, nextDuration) {
 		return (duration) => {
 			if (steps == 0) {
-				calcDuration = nextDuration;
+				this._calcDuration = nextDuration;
 			}
 			steps--;
 			return duration;
 		}
 	};
 }
+
+export default CategorySpinner;
