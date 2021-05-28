@@ -8,7 +8,7 @@ export default {
 			return (this.scores.length + this.attribution.length + 1) * 5;
 		}
 	},
-	props: ['game','sound','avatars'],
+	props: ['game','sound','avatars', 'passed', 'players'],
 	methods: {
 		ordinal : function(index) {
 			if (((index / 10) % 10) == 1) {

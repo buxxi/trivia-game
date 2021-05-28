@@ -84,7 +84,6 @@ export default {
 			categories: []
 		},
 		timer: new TimerData(),
-		players: {}, //mapToMap(this.game.players(), (player) => new PlayerData(player)),
 		session: new SessionData(),
 		title: '',
 		state: 'loading',
@@ -92,7 +91,7 @@ export default {
 		error: undefined,
 		minimizeQuestion: false
 	})},
-	props: ['connection', 'playback', 'sound'],
+	props: ['connection', 'playback', 'sound', 'passed', 'avatars', 'players'],
 	computed: {
 		showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; },
 	},
@@ -163,14 +162,6 @@ export default {
 	}
 };
 
-function mapToMap(input, mapFunction) {
-	let result = {};
-	for (let i in input) {
-		result[i] = mapFunction(input[i]);
-	}
-	return result;
-}
-
 class SessionData {
 	constructor() {
 		this.index = 0;
@@ -182,26 +173,6 @@ class SessionData {
 		this.index = index;
 		this.total = total;
 		this.currentCategory = currentCategory;
-	}
-}
-
-class PlayerData {
-	constructor(player) {
-		this.name = player.name;
-		this.color = player.color;
-		this.avatar = player.avatar;
-		this.totalPoints = 0;
-		this.pointChange = 0;
-		this.multiplier = 1;
-		this.guessed = false;
-		this.connectionError = false;
-	}
-
-	updatePoints(pointChanges, totalPoints) {
-		this.pointChange = pointChanges ? pointChanges.points : 0;
-		this.multiplier = totalPoints.multiplier;
-		this.guessed = false;
-		this.totalPoints = totalPoints.score;
 	}
 }
 

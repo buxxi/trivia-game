@@ -1,4 +1,5 @@
 import ConfigureState from "./configure.mjs";
+import {Protocol} from '../../js/protocol.mjs';
 
 class ResultsState {
     constructor(game, categories, clientSockets, monitorSocket) {

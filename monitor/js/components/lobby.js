@@ -19,20 +19,15 @@ export default {
 		carouselIndex : 0,
 		code: undefined,
 		availableCategories: [],
-		avatars: {},
 		serverUrl: new URL("..", document.location).toString(),
-		players: {},
 		poweredBy: [],
 		message : undefined
 	})},
-	props: ['connection', 'sound', 'forcePairCode'],
+	props: ['connection', 'sound', 'forcePairCode', 'passed', 'avatars', 'players'],
 	computed: {
 		qrUrl: function() { 
 			let localUrl = encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?code=" + this.code); 
 			return `https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl=${localUrl}&choe=UTF-8`;
-		},
-		playerCount: function() { 
-			return Object.keys(this.players).length; 
 		},
 		questionCount: function() { 
 			return this.availableCategories.filter(c => this.config.categories[c.type]).map(c => c.questionCount).reduce((a, b) => a + b, 0);
@@ -69,7 +64,8 @@ export default {
 		try {
 			this.code = await this.connection.connect(this.forcePairCode);
 			let categories = await this.connection.loadCategories();
-			this.avatars = await this.connection.loadAvatars();
+			let avatars = await this.connection.loadAvatars();
+			Object.assign(this.avatars, avatars);
 			this.availableCategories = categories.map(c => new CategorySelector(c));
 			this.poweredBy = categories.flatMap(c => c.attribution);
 		} catch (e) {
@@ -77,19 +73,28 @@ export default {
 			this.message = "Error when loading initial setup: " + e.message;
 		}
 
-		this.connection.onPlayersChange(players => {
+		this.connection.onPlayersChange(newPlayers => {
 			return new Promise((resolve, reject) => {
-				app.players = Object.keys(players).map(pairCode => new LobbyPlayer(pairCode, players[pairCode]));	
+				try {
+				for (let id in this.players) {
+					delete this.players[id];
+				}
+
+				for (let id in newPlayers) {
+					this.players[id] = new PlayerData(newPlayers[id]);
+				}	
+
 				resolve();
+			} catch (e) { reject(e); };
 			});
 		});
 
 		moveCarousel();
 	},
 	methods: {
-		kickPlayer: async function(player) {
-			await this.connection.removePlayer(player.pairCode);
-			this.players = this.players.filter(p => p !== player);
+		kickPlayer: async function(id) {
+			await this.connection.removePlayer(id);
+			delete this.players[id];
 		},
 		toggleFullScreen: function() {
 			var fullScreenMode = () => document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen;
@@ -176,13 +181,23 @@ export default {
 	}
 };
 
-class LobbyPlayer {
-	constructor(pairCode, p) {
-		this.pairCode = pairCode;
-		this.name = p.name;
-		this.avatar = p.avatar;
-		this.color = p.color;
+class PlayerData {
+	constructor(player) {
+		this.name = player.name;
+		this.color = player.color;
+		this.avatar = player.avatar;
+		this.totalPoints = 0;
+		this.pointChange = 0;
+		this.multiplier = 1;
+		this.guessed = false;
 		this.connected = true;
+	}
+
+	updatePoints(pointChanges, totalPoints) {
+		this.pointChange = pointChanges ? pointChanges.points : 0;
+		this.multiplier = totalPoints.multiplier;
+		this.guessed = false;
+		this.totalPoints = totalPoints.score;
 	}
 }
 

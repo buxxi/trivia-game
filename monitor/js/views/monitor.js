@@ -18,6 +18,9 @@ const sound = new SoundController();
 const playback = new Playback();
 const connection = new MonitorToServerConnection(new URL("..", document.location));
 
+const avatars = {};
+const players = {};
+
 const routes = [
   	{ 
 		path: '/',
@@ -25,6 +28,8 @@ const routes = [
 		props: (route) => ({ 
 				connection: connection,
 				sound: sound,
+				avatars: avatars,
+				players: players,
 				fakePlayers: route.query.fakePlayers,
 				forcePairCode : route.query.forcePairCode
 		}) 
@@ -35,6 +40,8 @@ const routes = [
 		props: (route) => ({ 
 			connection: connection,
 			playback: playback,
+			avatars: avatars,
+			players: players,
 			sound: sound
 		})		 
 	},
@@ -42,7 +49,9 @@ const routes = [
 		path: '/results',
 		component: loadTemplate('./pages/results.html', Results),
 		props: (route) => ({ 
-			sound: sound
+			sound: sound,
+			avatars: avatars,
+			players: players
 		})		 
 	},
 ];
