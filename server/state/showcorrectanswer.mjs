@@ -1,4 +1,6 @@
 import LoadingNextQuestionState from './loadquestion.mjs';
+import QuestionErrorState from './questionerror.mjs';
+import {Protocol} from '../../js/protocol.mjs';
 
 class ShowCorrectAnswerState {
     constructor(game, categories, clientSockets, monitorSocket, pointsThisRound) {
@@ -10,10 +12,14 @@ class ShowCorrectAnswerState {
     }
 
 	run() {
-		return new Promise((resolve, reject) => {
-            //TODO: send points and correct answer to monitor
+		return new Promise(async (resolve, reject) => {
+            let correct = this._game.correctAnswer();
+            console.log(correct);
+
+            await this._monitorSocket.send(Protocol.QUESTION_END, { pointsThisRound: this._pointsThisRound, correct: correct });
+
             //TODO: send correct answer to client and their points
-            console.log(this._game.session().question().correct);
+            
 			resolve();
 		});
 	}

@@ -1,4 +1,6 @@
 import ShowCorrectAnswerState from './showcorrectanswer.mjs';
+import QuestionErrorState from './questionerror.mjs';
+import {Protocol} from '../../js/protocol.mjs';
 
 class WaitForAnswersState {
     constructor(game, categories, clientSockets, monitorSocket, question) {
@@ -12,19 +14,20 @@ class WaitForAnswersState {
 	run() {
 		return new Promise(async (resolve, reject) => {
             try {
-                //TODO: send answers to monitor and clients
-                //TODO: wait for player to load
+                await this._monitorSocket.send(Protocol.QUESTION_START, { view: this._question.view, answers: this._question.answers });
+                //TODO: send answers to clients
+                //TODO: listen for guesses
                 
                 console.log(this._question.answers);
 
 				let pointsThisRound = await this._game.startTimer((timer) => { console.log("timer tick tock..."); /*TODO: callback for each timer tick?*/ });
 
+                //TODO: stop listening for guesses
+
 				resolve(pointsThisRound);
 			} catch (e) {
 				reject(e);
-			} finally {
-                //TODO: tell player to stop
-            }
+			}
 		});
 	}
 

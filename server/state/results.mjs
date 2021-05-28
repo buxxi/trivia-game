@@ -10,7 +10,8 @@ class ResultsState {
 
 	run() {
 		return new Promise((resolve, reject) => {
-            //TODO: communicate results to monitor and wait for 
+            //TODO: communicate results to monitor and wait for
+            //TODO: communicate stats to the clients
             console.log("And the results are in!");
 
 			setTimeout(() => {

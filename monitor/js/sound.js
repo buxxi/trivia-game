@@ -63,13 +63,19 @@ class SoundController {
 		}
 	}
 
-	speak(text, callback) {
+	speak(text, minimumTime) {
+		return new Promise((resolve, reject) => {
+			setTimeout(resolve, minimumTime);	
+		});
+
+		/*
 		if (this._config.text2Speech) {
 			callback();
 			//responsiveVoice.speak(text, "US English Male", {rate : 1.1, pitch : 0.9, onend : callback});
 		} else {
 			callback();
 		}
+		*/
 	}
 }
 

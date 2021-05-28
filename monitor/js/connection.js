@@ -55,6 +55,18 @@ class MonitorToServerConnection {
     onCategorySelect(callback) {
        this._pws.on(Protocol.SHOW_CATEGORY_SELECT).then(data => callback(data.categories, data.correct, data.index, data.total));
     }
+
+    onQuestion(callback) {
+        this._pws.on(Protocol.SHOW_QUESTION).then(text => callback(text));
+    }
+
+    onQuestionStart(callback) {
+        this._pws.on(Protocol.QUESTION_START).then(data => callback(data.view, data.answers));
+    }
+
+    onQuestionEnd(callback) {
+        this._pws.on(Protocol.QUESTION_END).then(data => callback(data.pointsThisRound, data.correct));
+    }
 }
 
 export default MonitorToServerConnection;

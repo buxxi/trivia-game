@@ -1,4 +1,6 @@
 import WaitForAnswersState from './waitforanswers.mjs';
+import QuestionErrorState from './questionerror.mjs';
+import {Protocol} from '../../js/protocol.mjs';
 
 class PresentQuestionState {
     constructor(game, categories, clientSockets, monitorSocket, question) {
@@ -10,10 +12,9 @@ class PresentQuestionState {
     }
 
 	run() {
-		return new Promise((resolve, reject) => {
-			console.log(this._question.text);
-            //TODO: communicate the current question and wait for answer
-            setTimeout(resolve, 2000);
+		return new Promise(async (resolve, reject) => {
+            await this._monitorSocket.send(Protocol.SHOW_QUESTION, this._question.text);
+            resolve();
 		});
 	}
 

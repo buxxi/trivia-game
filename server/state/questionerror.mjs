@@ -11,7 +11,7 @@ class QuestionErrorState {
 
 	run() {
 		return new Promise((resolve, reject) => {
-			console.log(this.error);
+			console.log(this._error);
 
             //TODO: communicate error to monitor
 

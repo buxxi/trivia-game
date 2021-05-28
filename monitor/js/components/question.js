@@ -11,9 +11,60 @@ function showCategorySpinner(app, categories, correct, index, total) {
 
 	return new Promise((resolve, reject) => {
 		spinner.start().then(() => {
-			app.sound.speak(app.session.currentCategory.fullName, resolve);
+			app.sound.speak(app.session.currentCategory.fullName, 3000).then(resolve);
 		}).catch(reject);
 		setTimeout(() => spinner.stop().catch(reject), 2000);
+	});
+}
+
+function displayQuestion(app, text) {
+	return new Promise((resolve, reject) => {
+		app.state = 'pre-question';
+		app.title = text;
+		app.sound.speak(text, 3000).then(resolve);
+	});
+}
+
+function playbackStart(app, view, answers) {
+	let player = app.playback.load(view, answers);
+	
+	return new Promise(async (resolve, reject) => {
+		try {
+			await player.start();
+	
+			app.state = 'question';
+			app.minimizeQuestion = player.minimizeQuestion;
+			app.currentPlayer = player;
+
+			//TODO: handle pausing music
+
+			resolve();
+		} catch (e) {
+			reject(e);
+		}
+	});
+}
+
+function playbackEnd(app, pointsThisRound, correct) {
+	return new Promise((resolve, reject) => {
+		let player = app.currentPlayer;
+		player.stop();
+	
+		//Handle resuming music
+
+		if (Object.values(pointsThisRound).some(p => p.multiplier <= -4)) {
+			app.sound.trombone();
+		}
+
+		app.title = "The correct answer was";
+		app.correct = correct;
+		app.state = 'post-question';
+		//TODO: show players changed points
+
+		setTimeout(() => {
+			// TODO: remove players changed points 
+			resolve();
+		}, 3000);
 	});
 }
 
@@ -28,7 +79,8 @@ export default {
 		title: '',
 		state: 'loading',
 		crownUrl: /src=\"(.*?)\"/.exec(twemoji.parse("\uD83D\uDC51"))[1],
-		error: undefined
+		error: undefined,
+		minimizeQuestion: false
 	})},
 	props: ['connection', 'playback', 'sound'],
 	computed: {
@@ -61,6 +113,18 @@ export default {
 			return showCategorySpinner(this, categories, correct, index, total);
 		});
 
+		this.connection.onQuestion(text => {
+			return displayQuestion(this, text);
+		});
+
+		this.connection.onQuestionStart((view, answers) => {
+			return playbackStart(this, view, answers);
+		});
+
+		this.connection.onQuestionEnd((pointsThisRound, correct) => {
+			return playbackEnd(this, pointsThisRound, correct);
+		});
+
 	},
 	methods: {
 		isLeadingPlayer: function (player) {
@@ -89,139 +153,8 @@ function mapToMap(input, mapFunction) {
 	}
 	return result;
 }
-/*
 
-class PresentQuestionState {
-	constructor(app, question) {
-		this.app = app;
-		this.question = question;
-	}
-
-	run() {
-		return new Promise((resolve, reject) => {
-			let app = this.app;
-			app.state = 'pre-question';
-			app.title = this.question.text;
-
-			app.connection.send((peerid) => {
-				return { stats : app.game.stats(peerid) };
-			});
-
-			var spoken = false;
-			var timelimit = false;
-
-			app.sound.speak(this.question.text, () => {
-				spoken = true;
-				if (timelimit) {
-					resolve(this.question);
-				}
-			});
-			setTimeout(() => {
-				timelimit = true;
-				if (spoken) {
-					resolve(this.question);
-				}
-			}, 3000);
-		});
-	}
-
-	nextState(question) {
-		return new WaitForAnswersState(this.app, question);
-	}
-}
-
-class WaitForAnswersState {
-	constructor(app, question) {
-		this.app = app;
-		this.question = question;
-	}
-
-	run() {
-		return new Promise(async (resolve, reject) => {
-			let app = this.app;
-
-			console.log(this.question);
-
-			let player = app.playback.player(this.question.view, this.question.answers);
-			try {
-				await player.start();
-
-				app.state = 'question';
-				app.minimizeQuestion = player.minimizeQuestion;
-
-				await app.connection.send({
-					answers : this.question.answers
-				});
-
-				let pointsThisRound = await app.game.startTimer((timer) => app.timer.update(timer));
-				player.stop();
-				app.timer.running = false;
-
-				if (player.pauseMusic) {
-					app.sound.pause();
-				}
-
-				resolve(pointsThisRound);
-			} catch (e) {
-				player.stop();
-				reject(e);
-			}
-		});
-	}
-
-	nextState(pointsThisRound) {
-		return new ShowCorrectAnswerState(this.app, pointsThisRound);
-	}
-}
-
-class ShowCorrectAnswerState {
-	constructor(app, pointsThisRound) {
-		this.app = app;
-		this.pointsThisRound = pointsThisRound;
-	}
-
-	run() {
-		function updatePoints(app, pointChanges) {
-			for (let pairCode in app.players) {
-				let player = app.players[pairCode];
-				player.updatePoints(pointChanges[pairCode], app.game.players()[pairCode]);
-			}
-		}
-
-		return new Promise((resolve, reject) => {
-			let app = this.app;
-			app.sound.play();
-			if (Object.values(this.pointsThisRound).some(p => p.multiplier <= -4)) {
-				app.sound.trombone();
-			}
-
-			let correct = this.app.game.correctAnswer();
-			app.connection.send({
-				correct : correct.key
-			});
-
-			app.title = "The correct answer was";
-			app.correct = correct;
-			app.state = 'post-question';
-			updatePoints(app, this.pointsThisRound);
-
-			setTimeout(() => {
-				updatePoints(app, {});
-			
-				app.connection.send({
-					wait : {}
-				});
-
-				resolve();
-			}, 3000);
-		});
-	}
-
-	nextState() {
-		return false;
-	}
-}
-
+/* 
 class QuestionError {
 	constructor(app, err) {
 		this.app = app;

@@ -234,23 +234,25 @@ function clear() {
 	document.getElementById('content').innerHTML = '';
 }
 
-export default function Playback() {
-	var self = this;
-
-	var players = {
-		youtube : (view, answers) => new YoutubePlayer(view.videoId, view.player),
-		youtubeaudio : (view, answers) => new YoutubePlayer(view.videoId, view.player),
-		mp3 : (view, answers) => view.nowave ? new Mp3Player(view.mp3) : new Mp3WavePlayer(view.mp3),
-		image : (view, answers) => new ImageViewer(view.url),
-		quote : (view, answers) => new QuoteText(view.quote),
-		list : (view, answers) => new ListViewer(view.list),
-		answers : (view, answers) => new AnswersViewer(answers)
+class PlaybackFactory {
+	constructor() {
+		this._players = {
+			youtube : (view, answers) => new YoutubePlayer(view.videoId, view.player),
+			youtubeaudio : (view, answers) => new YoutubePlayer(view.videoId, view.player),
+			mp3 : (view, answers) => view.nowave ? new Mp3Player(view.mp3) : new Mp3WavePlayer(view.mp3),
+			image : (view, answers) => new ImageViewer(view.url),
+			quote : (view, answers) => new QuoteText(view.quote),
+			list : (view, answers) => new ListViewer(view.list),
+			answers : (view, answers) => new AnswersViewer(answers)
+		}
 	}
 
-	self.player = function(view, answers) {
+	load(view, answers) {
 		if (!view.player) {
 			return new BlankPlayer();
 		}
-		return players[view.player](view, answers);
+		return this._players[view.player](view, answers);
 	}
 }
+
+export default PlaybackFactory;
