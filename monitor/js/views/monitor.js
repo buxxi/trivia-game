@@ -16,9 +16,6 @@ function loadTemplate(url, component) {
 const sound = new SoundController();
 const connection = new MonitorToServerConnection(new URL("..", document.location));
 
-const avatars = {};
-const players = {};
-
 const routes = [
   	{ 
 		path: '/',
@@ -26,20 +23,18 @@ const routes = [
 		props: (route) => ({ 
 				connection: connection,
 				sound: sound,
-				avatars: avatars,
-				players: players,
-				fakePlayers: route.query.fakePlayers,
-				forcePairCode : route.query.forcePairCode
+				gameId : route.query.gameId
 		}) 
 	},
 	{
+		name: 'game',
 		path: '/game',
 		component: loadTemplate('./pages/game-server.html', Question),
 		props: (route) => ({ 
-			connection: connection,
-			avatars: avatars,
-			players: players,
-			sound: sound
+				connection: connection,
+				avatars: route.params.avatars,
+				lobbyPlayers: route.params.players,
+				sound: sound
 		})		 
 	},
 	{

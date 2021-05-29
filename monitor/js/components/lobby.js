@@ -17,16 +17,18 @@ export default {
 			categorySpinner : true
 		},
 		carouselIndex : 0,
-		code: undefined,
+		gameId: undefined,
 		availableCategories: [],
 		serverUrl: new URL("..", document.location).toString(),
 		poweredBy: [],
-		message : undefined
+		message : undefined,
+		players: {},
+		avatars: {}
 	})},
-	props: ['connection', 'sound', 'forcePairCode', 'passed', 'avatars', 'players'],
+	props: ['connection', 'sound', 'gameId'],
 	computed: {
 		qrUrl: function() { 
-			let localUrl = encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?code=" + this.code); 
+			let localUrl = encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?gameId=" + this.gameId); 
 			return `https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl=${localUrl}&choe=UTF-8`;
 		},
 		questionCount: function() { 
@@ -62,7 +64,7 @@ export default {
 		}
 		
 		try {
-			this.code = await this.connection.connect(this.forcePairCode);
+			this.gameId = await this.connection.connect(this.gameId);
 			let categories = await this.connection.loadCategories();
 			let avatars = await this.connection.loadAvatars();
 			Object.assign(this.avatars, avatars);
@@ -81,8 +83,9 @@ export default {
 				}
 
 				for (let id in newPlayers) {
-					Vue.set(this.players, id, new PlayerData(newPlayers[id]));
+					this.$set(this.players, id, new PlayerData(newPlayers[id]));
 				}	
+
 				resolve();
 			} catch (e) { reject(e); };
 			});
@@ -171,7 +174,7 @@ export default {
 				clearInterval(this.carouselTimeout);
 				this.sound.play();
 				this.connection.clearListeners();
-				this.$router.push('/game', () => {
+				this.$router.push({name: 'game', params: { players: this.players, avatars: this.avatars } }, () => {
 					this.connection.startGame(this.config);
 				});
 			} catch (e) {
@@ -186,18 +189,6 @@ class PlayerData {
 		this.name = player.name;
 		this.color = player.color;
 		this.avatar = player.avatar;
-		this.totalPoints = 0;
-		this.pointChange = 0;
-		this.multiplier = 1;
-		this.guessed = false;
-		this.connected = true;
-	}
-
-	updatePoints(pointChanges, totalPoints) {
-		this.pointChange = pointChanges ? pointChanges.points : 0;
-		this.multiplier = totalPoints.multiplier;
-		this.guessed = false;
-		this.totalPoints = totalPoints.score;
 	}
 }
 

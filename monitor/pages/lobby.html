@@ -3,11 +3,11 @@
 		<h1>WebRTC Trivia</h1>
 		<div>
 			<div class="qr">
-				<img v-if="code != null" v-bind:src="qrUrl"/>
-				<i v-if="code == null" class="fa fa-cog fa-spin fa-fw"></i>
+				<img v-if="gameId != null" v-bind:src="qrUrl"/>
+				<i v-if="gameId == null" class="fa fa-cog fa-spin fa-fw"></i>
 			</div>
-			<div class="code" v-if="code != null">{{ code }}</div>
-			<div class="code" v-if="code == null">Loading...</div>
+			<div class="code" v-if="gameId != null">{{ gameId }}</div>
+			<div class="code" v-if="gameId == null">Loading...</div>
 		</div>
 		<div class="instructions" v.bind:data-url="serverUrl">
 			<div>
@@ -21,8 +21,8 @@
 		<h1><i class="fa fa-fw fa-users"></i>Players</h1>
 		<ul class="playerlist">
 			<li v-if="Object.entries(players).length == 0">No players has joined yet, be the first!</li>
-			<li v-for="(player, pairCode) in players" v-bind:class="{'disconnected' : !player.connected}">
-				<a v-on:click="kickPlayer(pairCode)" class="kick" title="Kick player">
+			<li v-for="(player, id) in players">
+				<a v-on:click="kickPlayer(id)" class="kick" title="Kick player">
 					<div class="avatar" v-bind:data-score="player.name" v-bind:style="{'background-color': player.color, 'border-color': player.color}"><img v-bind:src="avatars[player.avatar].url"/></div>
 				</a>
 			</li>

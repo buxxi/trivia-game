@@ -86,16 +86,16 @@ function playbackEnd(app, pointsThisRound, correct) {
 
 function playerGuessed(app, id) {
 	return new Promise((resolve, reject) => {
-		console.log(id + " has guessed");
 		app.players[id].guessed = true;
+		app.sound.beep(Object.values(app.players).filter((p) => p.guessed).length);
 		resolve();
 	});
 }
 
-function playerConnected(newPlayer) {
+function playerConnected(app, newPlayers) {
 	return new Promise((resolve, reject) => {
-		for (let id in this.players) {
-			this.players[id].connected = (id in newPlayers);
+		for (let id in app.players) {
+			app.players[id].connected = (id in newPlayers);
 		}
 		resolve();
 	});
@@ -113,9 +113,10 @@ export default {
 		crownUrl: /src=\"(.*?)\"/.exec(twemoji.parse("\uD83D\uDC51"))[1],
 		error: undefined,
 		minimizeQuestion: false,
-		playback: new PlaybackFactory()
+		playback: new PlaybackFactory(),
+		players : {}
 	})},
-	props: ['connection', 'sound', 'passed', 'avatars', 'players'],
+	props: ['connection', 'sound', 'passed', 'avatars', 'lobbyPlayers'],
 	computed: {
 		showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; },
 	},
@@ -126,7 +127,7 @@ export default {
 		}
 
 		this.connection.onPlayersChange(newPlayers => {
-			return playerConnected(newPlayers);
+			return playerConnected(this, newPlayers);
 		});
 
 		this.connection.onCategorySelect((categories, correct, index, total) => {
@@ -156,9 +157,14 @@ export default {
 		this.connection.onGameEnd(() => {
 			return new Promise((resolve, reject) => {
 				this.connection.clearListeners();
+				//TODO: send results as params
 				this.$router.push('/results');				
 			});
 		});
+
+		for (let id in this.lobbyPlayers) {
+			this.$set(this.players, id, new PlayerData(this.lobbyPlayers[id]));
+		}
 	},
 	methods: {
 		isLeadingPlayer: function (player) {
@@ -179,6 +185,26 @@ export default {
 		}
 	}
 };
+
+class PlayerData {
+	constructor(player) {
+		this.name = player.name;
+		this.color = player.color;
+		this.avatar = player.avatar;
+		this.totalPoints = 0;
+		this.pointChange = 0;
+		this.multiplier = 1;
+		this.guessed = false;
+		this.connected = true;
+	}
+
+	updatePoints(pointChanges, totalPoints) {
+		this.pointChange = pointChanges ? pointChanges.points : 0;
+		this.multiplier = totalPoints.multiplier;
+		this.guessed = false;
+		this.totalPoints = totalPoints.score;
+	}
+}
 
 class SessionData {
 	constructor() {
