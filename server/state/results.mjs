@@ -11,12 +11,12 @@ class ResultsState {
 
 	run() {
 		return new Promise(async (resolve, reject) => {
-            await this._monitorSocket.send(Protocol.GAME_END, {});                        
+            await this._monitorSocket.send(Protocol.GAME_END, { history: this._game.session().history(), players: this._game.players() });                        
 		});
 	}
 
 	nextState() {
-        return new ConfigureState(this._game, this._categories, this._clientSockets, this._monitorSocket);
+        return this;
 	}
 
     errorState(error) {

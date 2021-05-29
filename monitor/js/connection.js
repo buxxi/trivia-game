@@ -84,7 +84,7 @@ class MonitorToServerConnection {
     }
 
     onGameEnd(callback) {
-        this._pws.on(Protocol.GAME_END).then(() => callback());
+        this._pws.on(Protocol.GAME_END).then((data) => callback(data.history, data.players));
     }
 
     clearListeners() {

@@ -75,10 +75,13 @@ function playbackEnd(app, pointsThisRound, correct) {
 		app.title = "The correct answer was";
 		app.correct = correct;
 		app.state = 'post-question';
-		//TODO: show players changed points
+		
+		for (let playerId in pointsThisRound) {
+			app.players[playerId].updatePoints(pointsThisRound[playerId]);
+		}	
 
 		setTimeout(() => {
-			// TODO: remove players changed points 
+			Object.values(app.players).forEach((player) => player.clearChanges());
 			resolve();
 		}, 3000);
 	});
@@ -116,7 +119,7 @@ export default {
 		playback: new PlaybackFactory(),
 		players : {}
 	})},
-	props: ['connection', 'sound', 'passed', 'avatars', 'lobbyPlayers'],
+	props: ['gameId', 'connection', 'sound', 'passed', 'avatars', 'lobbyPlayers'],
 	computed: {
 		showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; },
 	},
@@ -154,11 +157,10 @@ export default {
 			return playerGuessed(this, id);
 		});
 
-		this.connection.onGameEnd(() => {
+		this.connection.onGameEnd((history, results) => {
 			return new Promise((resolve, reject) => {
 				this.connection.clearListeners();
-				//TODO: send results as params
-				this.$router.push('/results');				
+				this.$router.push({ name: 'results', params: { gameId: this.gameId, results: results, avatars: this.avatars, history: history } });				
 			});
 		});
 
@@ -198,11 +200,15 @@ class PlayerData {
 		this.connected = true;
 	}
 
-	updatePoints(pointChanges, totalPoints) {
-		this.pointChange = pointChanges ? pointChanges.points : 0;
-		this.multiplier = totalPoints.multiplier;
+	updatePoints(pointChanges) {
+		this.pointChange = pointChanges.points;
+		this.multiplier += pointChanges.multiplier;
 		this.guessed = false;
-		this.totalPoints = totalPoints.score;
+		this.totalPoints += pointChanges.points;
+	}
+
+	clearChanges() {
+		this.pointChange = 0;
 	}
 }
 

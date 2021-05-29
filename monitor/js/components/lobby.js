@@ -25,7 +25,7 @@ export default {
 		players: {},
 		avatars: {}
 	})},
-	props: ['connection', 'sound', 'gameId'],
+	props: ['connection', 'sound', 'preferredGameId'],
 	computed: {
 		qrUrl: function() { 
 			let localUrl = encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?gameId=" + this.gameId); 
@@ -63,8 +63,10 @@ export default {
 			}, 5000);
 		}
 		
+		this.sound.pause();
+
 		try {
-			this.gameId = await this.connection.connect(this.gameId);
+			this.gameId = await this.connection.connect(this.preferredGameId);
 			let categories = await this.connection.loadCategories();
 			let avatars = await this.connection.loadAvatars();
 			Object.assign(this.avatars, avatars);
@@ -174,7 +176,7 @@ export default {
 				clearInterval(this.carouselTimeout);
 				this.sound.play();
 				this.connection.clearListeners();
-				this.$router.push({name: 'game', params: { players: this.players, avatars: this.avatars } }, () => {
+				this.$router.push({name: 'game', params: { gameId: this.gameId, players: this.players, avatars: this.avatars } }, () => {
 					this.connection.startGame(this.config);
 				});
 			} catch (e) {

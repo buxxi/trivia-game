@@ -23,7 +23,7 @@ const routes = [
 		props: (route) => ({ 
 				connection: connection,
 				sound: sound,
-				gameId : route.query.gameId
+				preferredGameId : route.query.gameId
 		}) 
 	},
 	{
@@ -32,18 +32,21 @@ const routes = [
 		component: loadTemplate('./pages/game-server.html', Question),
 		props: (route) => ({ 
 				connection: connection,
+				gameId: route.params.gameId,
 				avatars: route.params.avatars,
 				lobbyPlayers: route.params.players,
 				sound: sound
 		})		 
 	},
 	{
+		name: 'results',
 		path: '/results',
 		component: loadTemplate('./pages/results.html', Results),
 		props: (route) => ({ 
-			sound: sound,
-			avatars: avatars,
-			players: players
+			gameId: route.params.gameId,
+			avatars: route.params.avatars,
+			results: route.params.results,
+			history: route.params.history
 		})		 
 	},
 ];

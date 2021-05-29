@@ -1,14 +1,18 @@
 export default {
-	data: function() { return({
-		scores: Object.values(this.game.players()).sort((a, b) => b.score - a.score),
-		attribution: this.game.session().history().map((question) => question.view.attribution)
-	})},	
 	computed: {
 		duration: function() {
-			return (this.scores.length + this.attribution.length + 1) * 5;
+			return (this.scores.length + this.history.length + 1) * 5;
+		},
+
+		scores: function() {
+			return Object.values(this.results).sort((a, b) => b.score - a.score);
+		},
+
+		attribution: function() {
+			return this.history.map((question) => question.view.attribution);
 		}
 	},
-	props: ['game','sound','avatars', 'passed', 'players'],
+	props: ['gameId', 'avatars', 'results', 'history'],
 	methods: {
 		ordinal : function(index) {
 			if (((index / 10) % 10) == 1) {
@@ -29,8 +33,7 @@ export default {
 			return new URL(link).hostname;
 		},
 		restart : function() {
-			this.sound.pause();
-			this.$router.push("/");
+			this.$router.push({ path: "/", query : { gameId: this.gameId } });
 		}
 	}
 };
