@@ -35,5 +35,11 @@ export default {
 		restart : function() {
 			this.$router.push({ path: "/", query : { gameId: this.gameId } });
 		}
+	},
+	created: function() {
+		if (!this.results) {
+			this.$router.push("/");
+			return;
+		}
 	}
 };

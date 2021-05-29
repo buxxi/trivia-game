@@ -104,6 +104,14 @@ function playerConnected(app, newPlayers) {
 	});
 }
 
+function gameEnded(app, history, results) {
+	return new Promise((resolve, reject) => {
+		app.connection.clearListeners();
+		app.$router.push({ name: 'results', params: { gameId: app.gameId, results: results, avatars: app.avatars, history: history } });	
+		resolve();			
+	});
+}
+
 export default {
 	data: function() { return({
 		spinner : {
@@ -158,10 +166,7 @@ export default {
 		});
 
 		this.connection.onGameEnd((history, results) => {
-			return new Promise((resolve, reject) => {
-				this.connection.clearListeners();
-				this.$router.push({ name: 'results', params: { gameId: this.gameId, results: results, avatars: this.avatars, history: history } });				
-			});
+			return gameEnded(this, history, results);
 		});
 
 		for (let id in this.lobbyPlayers) {

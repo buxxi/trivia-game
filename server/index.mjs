@@ -24,8 +24,11 @@ async function init() {
 					psocket.send(Protocol.PLAYERS_CHANGED, game.players());
 				}, 3000);
 
-				let loop = new GameLoop(game, categories, psocket);
-				loop.run();
+				console.log("Game " + gameId + " started");
+				let loop = new GameLoop(game, gameId, categories, psocket);
+				loop.run().then(() => {
+					console.log("Game " + gameId + " ended");
+				});
 
 				resolve(gameId);
 			});

@@ -98,7 +98,6 @@ class Game {
 
 	configure(config) {
 		Object.assign(this._config, config);
-		console.log("Configuring game");
 		this._categories.configure(this._config.categories);
 		Object.values(this._players).forEach((player) => player._reset());
 		this._session = new Session(this._config.questions);
