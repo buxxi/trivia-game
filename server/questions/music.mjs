@@ -1,12 +1,14 @@
 import fetch from 'node-fetch';
+import FormData from 'form-data';
 
 const TRACKS_BY_CATEGORY = 100;
 
 class MusicQuestions {
-	constructor(spotifyApiKey, spotifyWhiteListGenres) {
+	constructor(spotifyClientId, spotifyClientSecret, spotifyWhiteListGenres) {
 		this._tracks = [];
 		this._spotifyWhiteListGenres = spotifyWhiteListGenres;
-		this._spotifyApiKey = spotifyApiKey;
+		this._spotifyClientId = spotifyClientId;
+		this._spotifyClientSecret = spotifyClientSecret;
 
 		this._types = {
 			title : {
@@ -194,37 +196,24 @@ class MusicQuestions {
 	}
 
 	_loadSpotifyAccessToken() {
-		return new Promise((resolve, reject) => {
-			/*
-			var path = window.location.href.substr(0, window.location.href.lastIndexOf('/trivia'));
-			var redirect_uri = path + '/trivia/spotifyauth.html';
-			var url = 'https://accounts.spotify.com/authorize?client_id=' + spotifyApiKey + '&response_type=token&redirect_uri=' + encodeURIComponent(redirect_uri);
+		return new Promise(async(resolve, reject) => {
+			let auth = Buffer.from(this._spotifyClientId + ":" + this._spotifyClientSecret).toString('base64');
 
-			function accessTokenListener(event) {
-				//TODO: verify origin
-				var accessToken = /access_token=([^&]+)/.exec(event.data);
-				clearInterval(closeListener);
-				popup.close();
-				window.removeEventListener('message', accessTokenListener, false);
-				if (accessToken) {
-					resolve(accessToken[1]);
-				} else {
-					reject();
-				}
+			try {
+				let url = "https://accounts.spotify.com/api/token";
+				let response = await fetch(url, {
+					method: 'POST',
+					body: 'grant_type=client_credentials',
+					headers : {
+						'Content-Type': 'application/x-www-form-urlencoded',
+						'Authorization': `Basic ${auth}`
+					}
+				});
+				let data = await this._toJSON(response);
+				resolve(data.access_token);
+			} catch (e) {
+				reject(e);
 			}
-
-			window.addEventListener('message', accessTokenListener, false);
-
-			var popup = window.open(url, 'spotify', 'width=600,height=600');
-			
-			var closeListener = setInterval(() => {
-				if (popup.closed) {
-					reject("Popup was closed");
-					clearInterval(closeListener);
-				}
-			}, 100);
-			*/
-			reject("TODO: need to fix this somehow...");
 		});
 	}
 

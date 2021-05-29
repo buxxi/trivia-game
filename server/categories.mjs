@@ -35,9 +35,9 @@ class Categories {
 					new GeographyQuestions(),
 					new CurrentGameQuestions(),
 					new MovieQuestions(this._apikeys.youtube, this._apikeys.tmdb),
-					new MusicQuestions(this._apikeys.spotify, this._apikeys.spotifyWhiteList),
+					new MusicQuestions(this._apikeys.spotify.clientId, this._apikeys.spotify.clientSecret, this._apikeys.spotify.whiteList),
 					new QuotesQuestions(this._apikeys.mashape),
-					new VideoGameQuestions(this._apikeys.youtube, this._apikeys.igdb_client_id, this._apikeys.igdb_client_secret)
+					new VideoGameQuestions(this._apikeys.youtube, this._apikeys.igdb.clientId, this._apikeys.igdb.clientSecret)
 				]
 
 				for (let path of this._apikeys.other) {
