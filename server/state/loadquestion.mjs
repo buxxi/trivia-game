@@ -22,7 +22,8 @@ class LoadingNextQuestionState {
             try {
                 let question = await this._game.nextQuestion();
                 
-                let spinnerCategories = this._insertJokes(this._categories.enabled().map(this._toSpinnerCategory));
+                let showCategorySpinner = this._game.showCategorySpinner();
+                let spinnerCategories = showCategorySpinner ? this._insertJokes(this._categories.enabled().map(this._toSpinnerCategory)) : [];
                 let correct = this._game.session().category();
                 let index = this._game.session().index();
                 let total = this._game.session().total();
@@ -31,7 +32,7 @@ class LoadingNextQuestionState {
                     categories: spinnerCategories,
                     correct: correct,
                     index: index,
-                    total: total  
+                    total: total
                 });
 
                 resolve(question);

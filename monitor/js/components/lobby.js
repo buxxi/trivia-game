@@ -81,7 +81,7 @@ export default {
 				}
 
 				for (let id in newPlayers) {
-					this.players[id] = new PlayerData(newPlayers[id]);
+					Vue.set(this.players, id, new PlayerData(newPlayers[id]));
 				}	
 
 				resolve();

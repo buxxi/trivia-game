@@ -20,6 +20,7 @@ async function init() {
 			return new Promise((resolve, reject) => {
 				setTimeout(() => {
 					game.addPlayer(uuid(), "Test player", "horse");
+					game.addPlayer(uuid(), "Another tester", "mouse");
 					psocket.send(Protocol.PLAYERS_CHANGED, game.players());
 				}, 3000);
 

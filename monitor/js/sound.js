@@ -29,14 +29,14 @@ class SoundController {
 	}
 
 	play() {
-		if (!this._config.backgroundMusic) {
+		if (!this._config.backgroundMusic || this._backgroundMusic.playing) {
 			return;
 		}
 		this._backgroundMusic.play();
 	}
 
 	pause() {
-		if (!this._config.backgroundMusic) {
+		if (!this._config.backgroundMusic || this._backgroundMusic.paused) {
 			return;
 		}
 		this._backgroundMusic.pause();
@@ -69,6 +69,7 @@ class SoundController {
 		});
 
 		/*
+		TODO: fix this
 		if (this._config.text2Speech) {
 			callback();
 			//responsiveVoice.speak(text, "US English Male", {rate : 1.1, pitch : 0.9, onend : callback});

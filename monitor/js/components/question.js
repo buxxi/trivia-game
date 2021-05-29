@@ -1,14 +1,17 @@
 import CategorySpinner from '../spinner.js';
 
 function showCategorySpinner(app, categories, correct, index, total) {
-	//TODO: handle disabling of spinner
-	let spinner = new CategorySpinner(() => app.sound.click());
-
 	app.state = 'loading';
 	app.title = 'Selecting next question';
-	app.spinner.categories = categories;
 	app.session.update(index, total, correct);
 
+	if (categories.length == 0) {
+		return app.sound.speak(app.session.currentCategory.fullName, 3000);
+	}
+
+	let spinner = new CategorySpinner(() => app.sound.click());
+	app.spinner.categories = categories;
+	
 	return new Promise((resolve, reject) => {
 		spinner.start().then(() => {
 			app.sound.speak(app.session.currentCategory.fullName, 3000).then(resolve);
@@ -46,7 +49,9 @@ function playbackStart(app, view, answers) {
 			app.minimizeQuestion = player.minimizeQuestion;
 			app.currentPlayer = player;
 
-			//TODO: handle pausing music
+			if (player.pauseMusic) {
+				app.sound.pause();
+			}
 
 			resolve();
 		} catch (e) {
@@ -60,7 +65,7 @@ function playbackEnd(app, pointsThisRound, correct) {
 		let player = app.currentPlayer;
 		player.stop();
 	
-		//TODO: Handle resuming music
+		app.sound.play();
 
 		if (Object.values(pointsThisRound).some(p => p.multiplier <= -4)) {
 			app.sound.trombone();
@@ -75,6 +80,14 @@ function playbackEnd(app, pointsThisRound, correct) {
 			// TODO: remove players changed points 
 			resolve();
 		}, 3000);
+	});
+}
+
+function playerGuessed(app, id) {
+	return new Promise((resolve, reject) => {
+		console.log(id + " has guessed");
+		app.players[id].guessed = true;
+		resolve();
 	});
 }
 
@@ -101,13 +114,7 @@ export default {
 			return;
 		}
 
-		/*
-		app.connection.on("data-guess", (pairCode, data) => {
-			app.game.guess(pairCode, data);
-			app.players[pairCode].guessed = true;
-			app.sound.beep(Object.values(app.players).filter((p) => p.guessed).length);
-		});
-	
+		/*	
 		app.connection.on("connection-closed", (pairCode, data) => {
 			for (pairCode in app.players) {
 				app.players[pairCode].connectionError = connection.connectionErrors(pairCode);
@@ -134,6 +141,10 @@ export default {
 
 		this.connection.onQuestionEnd((pointsThisRound, correct) => {
 			return playbackEnd(this, pointsThisRound, correct);
+		});
+
+		this.connection.onPlayerGuessed(id => {
+			return playerGuessed(this, id);
 		});
 
 		this.connection.onGameEnd(() => {

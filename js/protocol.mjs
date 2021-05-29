@@ -10,12 +10,12 @@ const Protocol = {
 	PLAYERS_CHANGED: "PLAYERS_CHANGED",
 
 	QUESTION_ERROR: "QUESTION_ERROR",
-
-	GAME_ENDED: "GAME_ENDED",
+	GAME_END: "GAME_END",
 	SHOW_CATEGORY_SELECT: "SHOW_CATEGORY_SELECT",
 	SHOW_QUESTION: "SHOW_QUESTION",
 	QUESTION_START: "QUESTION_START",
-	QUESTION_END: "QUESTION_END"
+	QUESTION_END: "QUESTION_END",
+	PLAYER_GUESSED: "PLAYER_GUESSED"
 }
 
 class ResponseListener {
@@ -98,6 +98,9 @@ class PromisifiedWebSocket {
 	}
 
 	_on(event, timeout, once) {
+		if (!event) {
+			throw new Error("An event must be provided");
+		}
 		let self = this;
 
 		var errorFunction = (e) => { console.log("Unhandled timeout error: " + e.message); };

@@ -60,6 +60,10 @@ class MonitorToServerConnection {
        this._pws.on(Protocol.SHOW_CATEGORY_SELECT).then(data => callback(data.categories, data.correct, data.index, data.total));
     }
 
+    onPlayerGuessed(callback) {
+        this._pws.on(Protocol.PLAYER_GUESSED).then(id => callback(id));
+    }
+
     onQuestion(callback) {
         this._pws.on(Protocol.SHOW_QUESTION).then(text => callback(text));
     }
