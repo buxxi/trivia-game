@@ -20,11 +20,17 @@ class WaitForAnswersState {
                 
                 console.log(this._question.answers);
 
+                //Example guess and disconnect for verify monitor
                 let id = Object.keys(this._game.players())[0];
                 setTimeout(() => {
                     this._game.guess(id, 'A');
                     this._monitorSocket.send(Protocol.PLAYER_GUESSED, id);
                 }, 1000);
+                setTimeout(() => {
+                    let newPlayers = {};
+                    newPlayers[id] = this._game.players()[id];
+                    this._monitorSocket.send(Protocol.PLAYERS_CHANGED, newPlayers);
+                }, 1500);
 
 				let pointsThisRound = await this._game.startTimer((timer) => { console.log("timer tick tock..."); /*TODO: callback for each timer tick?*/ });
 

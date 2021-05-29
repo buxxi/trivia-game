@@ -2,7 +2,6 @@ import Lobby from '../components/lobby.js';
 import Question from '../components/question.js';
 import Results from '../components/results.js';
 import SoundController from '../sound.js';
-import Playback from '../playback.js';
 import MonitorToServerConnection from '../connection.js';
 
 function loadTemplate(url, component) {
@@ -15,7 +14,6 @@ function loadTemplate(url, component) {
 }
 
 const sound = new SoundController();
-const playback = new Playback();
 const connection = new MonitorToServerConnection(new URL("..", document.location));
 
 const avatars = {};
@@ -39,7 +37,6 @@ const routes = [
 		component: loadTemplate('./pages/game-server.html', Question),
 		props: (route) => ({ 
 			connection: connection,
-			playback: playback,
 			avatars: avatars,
 			players: players,
 			sound: sound

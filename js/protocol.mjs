@@ -97,6 +97,10 @@ class PromisifiedWebSocket {
 		this._listeners = this._listeners.filter(l => !l.isRequestListener(event));
 	}
 
+	removeAll() {
+		this._listeners = [];
+	}
+
 	_on(event, timeout, once) {
 		if (!event) {
 			throw new Error("An event must be provided");

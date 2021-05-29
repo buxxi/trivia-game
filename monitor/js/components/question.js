@@ -1,4 +1,5 @@
 import CategorySpinner from '../spinner.js';
+import PlaybackFactory from '../playback.js';
 
 function showCategorySpinner(app, categories, correct, index, total) {
 	app.state = 'loading';
@@ -91,6 +92,15 @@ function playerGuessed(app, id) {
 	});
 }
 
+function playerConnected(newPlayer) {
+	return new Promise((resolve, reject) => {
+		for (let id in this.players) {
+			this.players[id].connected = (id in newPlayers);
+		}
+		resolve();
+	});
+}
+
 export default {
 	data: function() { return({
 		spinner : {
@@ -102,9 +112,10 @@ export default {
 		state: 'loading',
 		crownUrl: /src=\"(.*?)\"/.exec(twemoji.parse("\uD83D\uDC51"))[1],
 		error: undefined,
-		minimizeQuestion: false
+		minimizeQuestion: false,
+		playback: new PlaybackFactory()
 	})},
-	props: ['connection', 'playback', 'sound', 'passed', 'avatars', 'players'],
+	props: ['connection', 'sound', 'passed', 'avatars', 'players'],
 	computed: {
 		showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; },
 	},
@@ -114,14 +125,9 @@ export default {
 			return;
 		}
 
-		/*	
-		app.connection.on("connection-closed", (pairCode, data) => {
-			for (pairCode in app.players) {
-				app.players[pairCode].connectionError = connection.connectionErrors(pairCode);
-			}
+		this.connection.onPlayersChange(newPlayers => {
+			return playerConnected(newPlayers);
 		});
-
-		*/
 
 		this.connection.onCategorySelect((categories, correct, index, total) => {
 			return showCategorySpinner(this, categories, correct, index, total);
@@ -149,6 +155,7 @@ export default {
 
 		this.connection.onGameEnd(() => {
 			return new Promise((resolve, reject) => {
+				this.connection.clearListeners();
 				this.$router.push('/results');				
 			});
 		});

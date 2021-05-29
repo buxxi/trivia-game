@@ -83,7 +83,6 @@ export default {
 				for (let id in newPlayers) {
 					Vue.set(this.players, id, new PlayerData(newPlayers[id]));
 				}	
-
 				resolve();
 			} catch (e) { reject(e); };
 			});
@@ -171,6 +170,7 @@ export default {
 				this.sound.config(this.config.sound);
 				clearInterval(this.carouselTimeout);
 				this.sound.play();
+				this.connection.clearListeners();
 				this.$router.push('/game', () => {
 					this.connection.startGame(this.config);
 				});

@@ -49,7 +49,10 @@ class MonitorToServerConnection {
                 resolve(true);
             });
         });
-        return this._pws.send(Protocol.PRELOAD_CATEGORY, type);
+        return this._pws.send(Protocol.PRELOAD_CATEGORY, type).then(count => {
+            this._pws.remove(Protocol.PRELOAD_CATEGORY_PROGRESS(type));
+            return count;
+        });
     }
 
     onPlayersChange(callback) {
@@ -82,6 +85,10 @@ class MonitorToServerConnection {
 
     onGameEnd(callback) {
         this._pws.on(Protocol.GAME_END).then(() => callback());
+    }
+
+    clearListeners() {
+        this._pws.removeAll();
     }
 }
 
