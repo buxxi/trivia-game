@@ -10,8 +10,7 @@ class TriviaServer {
 
 	start() {
 		const app = express();
-		const port = 5555;
-		
+
 		let clientStyle = sass.renderSync({ file: 'client/css/client.scss' }).css.toString();
 		let monitorStyle = sass.renderSync({ file: 'monitor/css/monitor.scss' }).css.toString();
 		
@@ -24,6 +23,8 @@ class TriviaServer {
 		app.use('/client/js', express.static('js'));
 		app.use('/client/fonts', express.static('fonts'));
 		app.use('/client/img/simple_dashed.png', express.static('img/simple_dashed.png'));
+		app.use('/client/img/avatars', express.static('img/avatars'));
+		app.use('/client/avatars.json', (req, res) => { res.type("js").send(JSON.stringify(this._avatars)); });
 		
 		//Serve files for monitor
 		app.use('/monitor', express.static('monitor'));

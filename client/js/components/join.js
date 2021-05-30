@@ -16,26 +16,27 @@ function resolveBackCamera() {
 export default {
 	data: function() { return({
 		config: {
-			code : this.code,
+			gameId : this.gameId,
 			name : "",
 			avatar : ""
 		},
 		supportsCamera: QCodeDecoder().hasGetUserMedia(),
-		avatars: {},
+		avatars: [],
 		message : undefined
 	})},
 	computed: {
 		validated: function() {
-			return this.config.code && this.config.name;
+			return this.config.gameId && this.config.name;
 		}
 	},
-	props: ['code', 'connection'],
+	props: ['gameId', 'connection'],
 	methods: {
 		join: function() {
-			this.connection.join(this.config.code, this.config.name, this.config.avatar).then(() => {
-				this.$router.push('game');
+			this.connection.connect(this.config.gameId, this.config.name, this.config.avatar).then((clientId) => {
+				console.log(clientId);
+				this.$router.push({ path: "/game", query : { gameId: this.config.gameId, clientId: clientId } });
 			}).catch((err) => {
-				this.message = "Error when joining: " + err;
+				this.message = "Error when joining: " + err.message;
 			});
 		},
 		
@@ -61,7 +62,7 @@ export default {
 
 				decoder.decodeFromVideo(video, (err, res) => {
 					if (res) {
-						config.code = /.*\?code=(.*)/.exec(res)[1];
+						config.gameId = /.*\?gameId=(.*)/.exec(res)[1];
 
 						if (!!config.name) {
 							this.join();
@@ -72,5 +73,11 @@ export default {
 				}, true);
 			});
 		}
+	},
+	created: async function() {
+		console.log(this.gameId);
+		let request = await fetch("avatars.json");
+		let avatars = await request.json();
+		avatars.forEach((avatar) => this.avatars.push(avatar));
 	}
 };

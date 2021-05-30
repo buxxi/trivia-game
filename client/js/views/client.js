@@ -18,7 +18,7 @@ const routes = [
 		path: '/',
 		component: loadTemplate('./pages/join.html', Join),
 		props: (route) => ({
-			code: route.query.code,
+			gameId: route.query.gameId,
 			connection: connection
 		})
 	},
@@ -26,6 +26,8 @@ const routes = [
 		path: '/game',
 		component: loadTemplate('./pages/game-client.html', Answer),
 		props: (route) => ({
+			gameId: route.query.gameId,
+			clientId: route.query.clientId,
 			connection: connection
 		})
 	}

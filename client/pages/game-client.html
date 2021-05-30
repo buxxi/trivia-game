@@ -16,7 +16,7 @@
 	</div>
 	<div v-if="!waiting">
 		<div class="stats" v-bind:style="{'background-color': stats.color}">
-			<img v-bind:src="avatars[stats.avatar].url"/>
+			<img v-bind:src="'img/avatars/' + stats.avatar + '.png'"/>
 			<div><i class="fa fa-fw fa-star"></i>{{stats.score}}</div>
 			<div><i class="fa fa-fw fa-times"></i>{{stats.multiplier}}</div>
 		</div>

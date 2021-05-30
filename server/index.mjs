@@ -42,6 +42,10 @@ async function init() {
 				resolve(gameId);
 			});
 		});
+
+		psocket.once(Protocol.JOIN_CLIENT, 5000).then(data => {
+			return Promise.resolve();
+		});
 	});
 }
 

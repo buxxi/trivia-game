@@ -8,18 +8,18 @@
 				</div>
 			</div>
 			<div>
-				<label for="code">Code</label>
+				<label for="gameId">Code</label>
 				<div>
-					<input type="text" id="code" style="text-transform : uppercase" v-model="config.code">
+					<input type="text" id="gameId" style="text-transform : uppercase" v-model="config.gameId">
 				</div>
 				<video id="camera" autoplay="true"></video>
 			</div>
 			<div>
 				<label for="avatar-selector">Preferred avatar</label>
 				<div class="avatar-selector">
-					<label v-for="(avatar, key) in avatars">
-						<input type="radio" name="avatar" v-model="config.avatar" v-bind:value="key"/>
-						<div class="avatar"><img v-bind:src="avatar.url"/></div>
+					<label v-for="avatar in avatars">
+						<input type="radio" name="avatar" v-model="config.avatar" v-bind:value="avatar"/>
+						<div class="avatar"><img v-bind:src="'img/avatars/' + avatar + '.png'"/></div>
 					</label>
 				</div>
 			</div>
