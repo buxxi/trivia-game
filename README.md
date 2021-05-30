@@ -13,7 +13,6 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 - pizzicato: https://alemangui.github.io/pizzicato
 - wavesurfer: https://wavesurfer-js.org/
 - randomColor: https://github.com/davidmerfield/randomColor
-- Twemoji: https://github.com/twitter/twemoji
 - Compromise: https://github.com/nlp-compromise/compromise
 
 ### API's used:
@@ -38,3 +37,6 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 - http://subtlepatterns.com/
 
  [screenshot]: https://github.com/buxxi/webrtc-trivia/blob/master/trivia_screenshot.gif
+
+### Avatars from:
+- Twemoji: https://github.com/twitter/twemoji

@@ -1,5 +1,3 @@
-import avatars from '../avatars.mjs';
-
 class CurrentGameQuestions {
 	constructor() {
 		this._types = {
@@ -128,8 +126,7 @@ class CurrentGameQuestions {
 	}
 
 	_otherAvatars(player, selector) {
-		console.log(Object.keys(avatars));
-		return Object.keys(avatars).map((a) => ({ avatar : a }));
+		return this._current_game.avatars().map((a) => ({ avatar : a }));
 	}
 
 	_resolveName(player) {

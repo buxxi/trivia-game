@@ -26,10 +26,6 @@ class MonitorToServerConnection {
         return this._pws.send(Protocol.LOAD_CATEGORIES, {});
     }
 
-    loadAvatars() {
-        return this._pws.send(Protocol.LOAD_AVATARS, {});
-    }
-
     removePlayer(playerId) {
         return this._pws.send(Protocol.REMOVE_PLAYER, playerId);
     }

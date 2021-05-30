@@ -12,41 +12,34 @@ import Cache from './cache.mjs';
 import QuestionSelector from './selector.mjs';
 
 class Categories {
-	constructor() {
+	constructor(config) {
 		this._categories =  [];
 		this._enabledCategories = [];
-		this._apikeys = {};
+		this._config = config;
 		this._jokes = [];
 		this._genericloader = new GenericCategoryLoader();
 	}
 
 	init() {
 		return new Promise(async (resolve, reject) => {
-			if (Object.keys(this._apikeys).length != 0) {
-				return resolve();
-			}
 			try {
-				let apiKeysData = await fs.readFile('conf/api-keys.json');
-				Object.assign(this._apikeys, JSON.parse(apiKeysData));
-
 				this._categories = [
-					new ActorQuestions(this._apikeys.tmdb),
+					new ActorQuestions(this._config.tmdb.clientId),
 					new DrinksQuestions(),
 					new GeographyQuestions(),
 					new CurrentGameQuestions(),
-					new MovieQuestions(this._apikeys.youtube, this._apikeys.tmdb),
-					new MusicQuestions(this._apikeys.spotify.clientId, this._apikeys.spotify.clientSecret, this._apikeys.spotify.whiteList),
-					new QuotesQuestions(this._apikeys.mashape),
-					new VideoGameQuestions(this._apikeys.youtube, this._apikeys.igdb.clientId, this._apikeys.igdb.clientSecret)
+					new MovieQuestions(this._config.youtube.clientId, this._config.tmdb.clientId),
+					new MusicQuestions(this._config.spotify.clientId, this._config.spotify.clientSecret, this._config.spotify.whiteList),
+					new QuotesQuestions(this._config.mashape.clientId),
+					new VideoGameQuestions(this._config.youtube.clientId, this._config.igdb.clientId, this._config.igdb.clientSecret)
 				]
 
-				for (let path of this._apikeys.other) {
+				for (let path of this._config.staticCategories) {
 					let categoryData = await fs.readFile(path);
 					var newCategory = this._genericloader.create(path, categoryData);
 					this._categories.push(newCategory);
 				}
-				let jokesData = await fs.readFile('conf/jokes.json');
-				this._jokes = JSON.parse(jokesData);
+				this._jokes = this._config.jokes;
 
 				resolve();
 			} catch (e) {

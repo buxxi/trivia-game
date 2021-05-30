@@ -112,7 +112,7 @@ function playerConnected(app, newPlayers) {
 function gameEnded(app, history, results) {
 	return new Promise((resolve, reject) => {
 		app.connection.clearListeners();
-		app.$router.push({ name: 'results', params: { gameId: app.gameId, results: results, avatars: app.avatars, history: history } });	
+		app.$router.push({ name: 'results', params: { gameId: app.gameId, results: results, history: history } });	
 		resolve();			
 	});
 }
@@ -126,13 +126,12 @@ export default {
 		session: new SessionData(),
 		title: '',
 		state: 'loading',
-		crownUrl: /src=\"(.*?)\"/.exec(twemoji.parse("\uD83D\uDC51"))[1],
 		error: undefined,
 		minimizeQuestion: false,
 		playback: new PlaybackFactory(),
 		players : {}
 	})},
-	props: ['gameId', 'connection', 'sound', 'passed', 'avatars', 'lobbyPlayers'],
+	props: ['gameId', 'connection', 'sound', 'passed', 'lobbyPlayers'],
 	computed: {
 		showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; },
 	},

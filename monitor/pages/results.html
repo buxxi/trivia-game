@@ -4,7 +4,7 @@
 			<h1 v-if="index == 0"><i class="fa fa-fw fa-trophy"></i> Winner</h1>
 			<h1 v-if="index != 0">{{index + 1}}<sup>{{ ordinal(index + 1) }}</sup> place</h1>
 			<div class="avatar" v-bind:data-score="score.score" v-bind:style="{'background-color': score.color, 'border-color': score.color}">
-				<img v-bind:src="avatars[score.avatar].url"/>
+				<img v-bind:src="'img/avatars/' + player.avatar + '.png'"/>
 			</div>
 			<div class="summary">
 				<h2>{{ score.name }}</h2>

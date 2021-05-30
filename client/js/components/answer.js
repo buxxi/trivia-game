@@ -1,5 +1,3 @@
-import avatars from '../avatars.js';
-
 export default {
 	data: function() { return({
 		connected: this.connection.connected(),

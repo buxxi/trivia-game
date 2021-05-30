@@ -1,6 +1,6 @@
 import Join from '../components/join.js';
 import Answer from '../components/answer.js';
-import {ClientConnection} from '../connection.js';
+import ClientToServerConnection from '../connection.js';
 
 function loadTemplate(url, component) {
 	return (resolve, reject) => {
@@ -11,17 +11,30 @@ function loadTemplate(url, component) {
 	};
 }
 
-const connection = new ClientConnection(new Fingerprint2());
+const connection = new ClientToServerConnection(new URL("..", document.location));
 
 const routes = [
-  { path: '/', component: loadTemplate('./pages/join.html', Join), props: (route) => ({ code: route.query.code, connection: connection }) },
-  { path: '/game', component: loadTemplate('./pages/game-client.html', Answer), props: { connection: connection }}
+	{
+		path: '/',
+		component: loadTemplate('./pages/join.html', Join),
+		props: (route) => ({
+			code: route.query.code,
+			connection: connection
+		})
+	},
+	{
+		path: '/game',
+		component: loadTemplate('./pages/game-client.html', Answer),
+		props: (route) => ({
+			connection: connection
+		})
+	}
 ];
 
 const router = new VueRouter({
-  routes
+	routes
 });
 
 const app = new Vue({
-  router
+	router
 }).$mount('#main');

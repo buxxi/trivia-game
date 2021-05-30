@@ -1,5 +1,3 @@
-import avatars from '../avatars.js';
-
 function resolveBackCamera() {
 	return new Promise((resolve, reject) => {
 		navigator.mediaDevices.enumerateDevices().then((sources) => {
@@ -23,7 +21,7 @@ export default {
 			avatar : ""
 		},
 		supportsCamera: QCodeDecoder().hasGetUserMedia(),
-		avatars: avatars,
+		avatars: {},
 		message : undefined
 	})},
 	computed: {

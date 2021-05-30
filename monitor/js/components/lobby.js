@@ -22,8 +22,7 @@ export default {
 		serverUrl: new URL("..", document.location).toString(),
 		poweredBy: [],
 		message : undefined,
-		players: {},
-		avatars: {}
+		players: {}
 	})},
 	props: ['connection', 'sound', 'preferredGameId'],
 	computed: {
@@ -68,8 +67,6 @@ export default {
 		try {
 			this.gameId = await this.connection.connect(this.preferredGameId);
 			let categories = await this.connection.loadCategories();
-			let avatars = await this.connection.loadAvatars();
-			Object.assign(this.avatars, avatars);
 			this.availableCategories = categories.map(c => new CategorySelector(c));
 			this.poweredBy = categories.flatMap(c => c.attribution);
 		} catch (e) {
@@ -176,7 +173,7 @@ export default {
 				clearInterval(this.carouselTimeout);
 				this.sound.play();
 				this.connection.clearListeners();
-				this.$router.push({name: 'game', params: { gameId: this.gameId, players: this.players, avatars: this.avatars } }, () => {
+				this.$router.push({name: 'game', params: { gameId: this.gameId, players: this.players } }, () => {
 					this.connection.startGame(this.config);
 				});
 			} catch (e) {

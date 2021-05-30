@@ -1,4 +1,3 @@
-import avatars from './avatars.mjs';
 import randomColor from 'randomcolor';
 import Timer from './timer.mjs';
 import Session from './session.mjs';
@@ -50,8 +49,9 @@ class PlayerStats {
 }
 
 class Game {
-	constructor(categories) {
+	constructor(categories, avatars) {
 		this._categories = categories;
+		this._avatars = avatars;
 		this._players = {};
 		this._guesses = {};
 		this._session = { history : () => [] };
@@ -172,6 +172,10 @@ class Game {
 		});
 	}
 
+	avatars() {
+		return this._avatars;
+	}
+
 	_calculatePoints() {
 		var result = {};
 		Object.keys(this._players).forEach((peerid) => {
@@ -200,7 +204,7 @@ class Game {
 	}
 
 	_selectAvatar(preferred) {
-		let unusedAvatars = Object.keys(avatars).filter((avatar) => {
+		let unusedAvatars = this._avatars.filter((avatar) => {
 			return Object.values(this._players).map((player) => {
 				return player.avatar;
 			}).indexOf(avatar) == -1;

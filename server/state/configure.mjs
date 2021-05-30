@@ -1,4 +1,3 @@
-import avatars from '../avatars.mjs';
 import {Protocol} from '../../js/protocol.mjs';
 import LoadingNextQuestionState from './loadquestion.mjs';
 
@@ -15,12 +14,6 @@ class ConfigureState {
             this._monitorSocket.on(Protocol.LOAD_CATEGORIES).then(() => {
                 return new Promise((resolve, reject) => {
                     resolve(this._categories.available());
-                });		
-            });
-    
-            this._monitorSocket.on(Protocol.LOAD_AVATARS).then(() => {
-                return new Promise((resolve, reject) => {
-                    resolve(avatars);
                 });		
             });
     

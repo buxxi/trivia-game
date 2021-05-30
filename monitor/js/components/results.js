@@ -12,7 +12,7 @@ export default {
 			return this.history.map((question) => question.view.attribution);
 		}
 	},
-	props: ['gameId', 'avatars', 'results', 'history'],
+	props: ['gameId', 'results', 'history'],
 	methods: {
 		ordinal : function(index) {
 			if (((index / 10) % 10) == 1) {
