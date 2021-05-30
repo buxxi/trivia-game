@@ -644,7 +644,7 @@ ol {
 
 @mixin timer-counter-loop {
     @for $i from 10 to 0 {
-        &[data-percentage="${i}"] {
+        &[data-percentage="#{$i}"] {
             color : $incorrect;
             &:before {
                 transform: scale(0.5, 0.5);

@@ -66,6 +66,7 @@ function playbackEnd(app, pointsThisRound, correct) {
 		let player = app.currentPlayer;
 		player.stop();
 	
+		app.timer.stop();
 		app.sound.play();
 
 		if (Object.values(pointsThisRound).some(p => p.multiplier <= -4)) {
@@ -85,6 +86,10 @@ function playbackEnd(app, pointsThisRound, correct) {
 			resolve();
 		}, 3000);
 	});
+}
+
+async function timerTicked(app, timeLeft, percentageLeft, currentScore) {
+	app.timer.update(timeLeft, percentageLeft, currentScore);
 }
 
 function playerGuessed(app, id) {
@@ -165,6 +170,10 @@ export default {
 			return playerGuessed(this, id);
 		});
 
+		this.connection.onTimerTick((timeLeft, percentageLeft, currentScore) => {
+			return timerTicked(this, timeLeft, percentageLeft, currentScore);
+		});
+
 		this.connection.onGameEnd((history, results) => {
 			return gameEnded(this, history, results);
 		});
@@ -239,10 +248,14 @@ class TimerData {
 		this.percentageLeft = 0;
 	}
 	
-	update(timer) {
-		this.running = timer.running();
-		this.score = timer.score();
-		this.timeLeft = timer.timeLeft();
-		this.percentageLeft = timer.percentageLeft();
+	update(timeLeft, percentageLeft, currentScore) {
+		this.running = true;
+		this.score = currentScore;
+		this.timeLeft = timeLeft;
+		this.percentageLeft = percentageLeft;
+	}
+
+	stop() {
+		this.running = false;
 	}
 }

@@ -15,10 +15,6 @@ class Timer {
 		return Math.ceil((this._end - time) / 1000);
 	}
 
-	percentageLeft() {
-		return Math.ceil((this._end - new Date().getTime()) / (this._end - this._start) * 100);
-	}
-
 	score(time) {
 		if (time == undefined) {
 			time = new Date().getTime();
@@ -31,19 +27,17 @@ class Timer {
 		this._end = this._start + (1000 * this._timePerQuestion);
 		this._running = true;
 
-		let self = this;
 
-		callback(self);
+		callback(this.timeLeft(), this._percentageLeft(), this.score());
 		let cancel = setInterval(() => {
-			callback(self);
-			if (new Date().getTime() > self._end) {
-				console.log("interval stopping");
-				self._stop();
+			callback(this.timeLeft(), this._percentageLeft(), this.score());
+			if (new Date().getTime() > this._end) {
+				this._stop();
 			}
 		}, 100);
 
-		self._stop = () => {
-			self._running = false;
+		this._stop = () => {
+			this._running = false;
 			clearInterval(cancel);
 			onStop();
 		}
@@ -55,6 +49,10 @@ class Timer {
 
 	running() {
 		return this._running;
+	}
+
+	_percentageLeft() {
+		return Math.ceil((this._end - new Date().getTime()) / (this._end - this._start) * 100);
 	}
 }
 

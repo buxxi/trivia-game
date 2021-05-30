@@ -32,7 +32,13 @@ class WaitForAnswersState {
                     this._monitorSocket.send(Protocol.PLAYERS_CHANGED, newPlayers);
                 }, 1500);
 
-				let pointsThisRound = await this._game.startTimer((timer) => { console.log("timer tick tock..."); /*TODO: callback for each timer tick?*/ });
+				let pointsThisRound = await this._game.startTimer((timeLeft, percentageLeft, currentScore) => { 
+                    this._monitorSocket.send(Protocol.TIMER_TICK, {
+                        timeLeft: timeLeft,
+                        percentageLeft: percentageLeft,
+                        currentScore: currentScore
+                    });
+                });
 
                 //TODO: stop listening for guesses
 

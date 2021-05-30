@@ -83,6 +83,10 @@ class MonitorToServerConnection {
         this._pws.on(Protocol.QUESTION_END).then(data => callback(data.pointsThisRound, data.correct));
     }
 
+    onTimerTick(callback) {
+        this._pws.on(Protocol.TIMER_TICK).then(data => callback(data.timeLeft, data.percentageLeft, data.currentScore));        
+    }
+
     onGameEnd(callback) {
         this._pws.on(Protocol.GAME_END).then((data) => callback(data.history, data.players));
     }
