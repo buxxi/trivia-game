@@ -1,16 +1,13 @@
-function resolveBackCamera() {
-	return new Promise((resolve, reject) => {
-		navigator.mediaDevices.enumerateDevices().then((sources) => {
-			var backCamera = sources.find((source) => {
-				return source.kind == "videoinput" && source.label.toLowerCase().indexOf('back') != -1;
-			});
-			if (backCamera) {
-				resolve(navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: backCamera.deviceId } } }));
-			} else {
-				resolve(navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } } }));
-			}
-		});
+async function resolveBackCamera() {
+	let sources = await navigator.mediaDevices.enumerateDevices();
+	let backCamera = sources.find((source) => {
+		return source.kind == "videoinput" && source.label.toLowerCase().indexOf('back') != -1;
 	});
+	if (backCamera) {
+		return navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: backCamera.deviceId } } });
+	} else {
+		return navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } } });
+	}
 }
 
 export default {

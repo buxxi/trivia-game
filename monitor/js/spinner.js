@@ -49,12 +49,9 @@ class CategorySpinner {
 		}
 	}
 
-	stop() {
-		return new Promise((resolve, reject) => {
-			let stepsBeforeSlowingDown = this._calculateStepsBeforeSlowingDown();
-			this._calcDuration = this._stepsDuration(stepsBeforeSlowingDown, this._logDuration);
-			resolve();
-		});
+	async stop() {
+		let stepsBeforeSlowingDown = this._calculateStepsBeforeSlowingDown();
+		this._calcDuration = this._stepsDuration(stepsBeforeSlowingDown, this._logDuration);
 	}
 
 	_calculateStepsBeforeSlowingDown() {

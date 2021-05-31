@@ -75,8 +75,7 @@ export default {
 		}
 
 		this.connection.onPlayersChange(newPlayers => {
-			return new Promise((resolve, reject) => {
-				try {
+			return async () => {
 				for (let id in this.players) {
 					delete this.players[id];
 				}
@@ -84,10 +83,7 @@ export default {
 				for (let id in newPlayers) {
 					this.$set(this.players, id, new PlayerData(newPlayers[id]));
 				}	
-
-				resolve();
-			} catch (e) { reject(e); };
-			});
+			};
 		});
 
 		moveCarousel();

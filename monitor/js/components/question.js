@@ -21,12 +21,10 @@ function showCategorySpinner(app, categories, correct, index, total) {
 	});
 }
 
-function displayQuestion(app, text) {
-	return new Promise((resolve, reject) => {
-		app.state = 'pre-question';
-		app.title = text;
-		app.sound.speak(text, 3000).then(resolve);
-	});
+async function displayQuestion(app, text) {
+	app.state = 'pre-question';
+	app.title = text;
+	await app.sound.speak(text, 3000);
 }
 
 function displayError(app, message) {
@@ -39,26 +37,18 @@ function displayError(app, message) {
 	});
 }
 
-function playbackStart(app, view, answers) {
+async function playbackStart(app, view, answers) {
 	let player = app.playback.load(view, answers);
-	
-	return new Promise(async (resolve, reject) => {
-		try {
-			await player.start();
-	
-			app.state = 'question';
-			app.minimizeQuestion = player.minimizeQuestion;
-			app.currentPlayer = player;
 
-			if (player.pauseMusic) {
-				app.sound.pause();
-			}
+	await player.start();
 
-			resolve();
-		} catch (e) {
-			reject(e);
-		}
-	});
+	app.state = 'question';
+	app.minimizeQuestion = player.minimizeQuestion;
+	app.currentPlayer = player;
+
+	if (player.pauseMusic) {
+		app.sound.pause();
+	}
 }
 
 function playbackEnd(app, pointsThisRound, correct) {
@@ -92,29 +82,20 @@ async function timerTicked(app, timeLeft, percentageLeft, currentScore) {
 	app.timer.update(timeLeft, percentageLeft, currentScore);
 }
 
-function playerGuessed(app, id) {
-	return new Promise((resolve, reject) => {
-		app.players[id].guessed = true;
-		app.sound.beep(Object.values(app.players).filter((p) => p.guessed).length);
-		resolve();
-	});
+async function playerGuessed(app, id) {
+	app.players[id].guessed = true;
+	app.sound.beep(Object.values(app.players).filter((p) => p.guessed).length);
 }
 
-function playerConnected(app, newPlayers) {
-	return new Promise((resolve, reject) => {
-		for (let id in app.players) {
-			app.players[id].connected = (id in newPlayers);
-		}
-		resolve();
-	});
+async function playerConnected(app, newPlayers) {
+	for (let id in app.players) {
+		app.players[id].connected = (id in newPlayers);
+	}
 }
 
-function gameEnded(app, history, results) {
-	return new Promise((resolve, reject) => {
-		app.connection.clearListeners();
-		app.$router.push({ name: 'results', params: { gameId: app.gameId, results: results, history: history } });	
-		resolve();			
-	});
+async function gameEnded(app, history, results) {
+	app.connection.clearListeners();
+	app.$router.push({ name: 'results', params: { gameId: app.gameId, results: results, history: history } });	
 }
 
 export default {
