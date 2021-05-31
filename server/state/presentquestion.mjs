@@ -11,11 +11,8 @@ class PresentQuestionState {
         this._question = question;
     }
 
-	run() {
-		return new Promise(async (resolve, reject) => {
-            await this._monitorSocket.send(Protocol.SHOW_QUESTION, this._question.text);
-            resolve();
-		});
+	async run() {
+        await this._monitorSocket.send(Protocol.SHOW_QUESTION, this._question.text);
 	}
 
 	nextState() {

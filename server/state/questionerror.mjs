@@ -10,13 +10,10 @@ class QuestionErrorState {
         this._error = error;
     }
 
-	run() {
-		return new Promise(async (resolve, reject) => {
-			console.log(this._error);
+	async run() {
+        console.log(this._error);
 
-            await this._monitorSocket.send(Protocol.QUESTION_ERROR, this._error.message);
-            resolve();
-		});
+        await this._monitorSocket.send(Protocol.QUESTION_ERROR, this._error.message);
 	}
 
 	nextState() {

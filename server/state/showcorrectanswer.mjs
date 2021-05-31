@@ -11,17 +11,13 @@ class ShowCorrectAnswerState {
         this._pointsThisRound = pointsThisRound;
     }
 
-	run() {
-		return new Promise(async (resolve, reject) => {
-            let correct = this._game.correctAnswer();
-            console.log(correct);
+	async run() {
+        let correct = this._game.correctAnswer();
+        console.log(correct);
 
-            await this._monitorSocket.send(Protocol.QUESTION_END, { pointsThisRound: this._pointsThisRound, correct: correct });
+        await this._monitorSocket.send(Protocol.QUESTION_END, { pointsThisRound: this._pointsThisRound, correct: correct });
 
-            //TODO: send correct answer to client and their points
-            
-			resolve();
-		});
+        //TODO: send correct answer to client and their points 
 	}
 
 	nextState() {

@@ -14,32 +14,26 @@ class LoadingNextQuestionState {
         this._clientSockets = clientSockets;
     }
 
-	run() {
-		return new Promise(async (resolve, reject) => {
-            if (!this._game.hasMoreQuestions()) {
-                return resolve();
-            }
-            try {
-                let question = await this._game.nextQuestion();
-                
-                let showCategorySpinner = this._game.showCategorySpinner();
-                let spinnerCategories = showCategorySpinner ? this._insertJokes(this._categories.enabled().map(this._toSpinnerCategory)) : [];
-                let correct = this._game.session().category();
-                let index = this._game.session().index();
-                let total = this._game.session().total();
+	async run() {
+        if (!this._game.hasMoreQuestions()) {
+            return;
+        }
+        let question = await this._game.nextQuestion();
+        
+        let showCategorySpinner = this._game.showCategorySpinner();
+        let spinnerCategories = showCategorySpinner ? this._insertJokes(this._categories.enabled().map(this._toSpinnerCategory)) : [];
+        let correct = this._game.session().category();
+        let index = this._game.session().index();
+        let total = this._game.session().total();
 
-                await this._monitorSocket.send(Protocol.SHOW_CATEGORY_SELECT, {
-                    categories: spinnerCategories,
-                    correct: correct,
-                    index: index,
-                    total: total
-                });
+        await this._monitorSocket.send(Protocol.SHOW_CATEGORY_SELECT, {
+            categories: spinnerCategories,
+            correct: correct,
+            index: index,
+            total: total
+        });
 
-                resolve(question);
-            } catch (e) {
-                reject(e);
-            }
-		});
+        return question;
 	}
 
 	nextState(question) {

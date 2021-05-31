@@ -69,15 +69,16 @@ class PromisifiedWebSocket {
 		this._uuidGenerator = uuidGenerator;
         this._ws = ws;
         this._listeners = [];
-		this._closeListener = (err) => {};
 
 		this._ws.onmessage = (message) => {
 			this._processListeners(message);
 		};
-		this._ws.onclose = () => {
-			this._clearUpOnClose();
-			this._closeListener(new Error("Socket was closed"));
-		}
+		this.onClose = new Promise((resolve, reject) => {
+			this._ws.onclose = () => {
+				this._clearUpOnClose();
+				reject(new Error("Socket disconnected"));
+			}
+		});
     }
 
     send(event, requestData, timeout) {
@@ -203,13 +204,13 @@ class PromisifiedWebSocket {
 
 	_timeout(timeout) {
 		if (!timeout) {
-			return new Promise((resolve, reject) => {});
+			return this.onClose;
 		}
-		return new Promise((resolve, reject) => {
+		return Promise.race([this.onClose, new Promise((resolve, reject) => {
 			setTimeout(() => {
 				reject(new Error("Timeout reached"));
 			}, timeout);
-		});
+		})]);
 	}
 
 	_send(response) {

@@ -9,11 +9,8 @@ class ResultsState {
         this._clientSockets = clientSockets;
     }
 
-	run() {
-		return new Promise(async (resolve, reject) => {
-            await this._monitorSocket.send(Protocol.GAME_END, { history: this._game.session().history(), players: this._game.players() }); 
-            resolve();                     
-		});
+	async run() {
+        await this._monitorSocket.send(Protocol.GAME_END, { history: this._game.session().history(), players: this._game.players() }); 
 	}
 
 	nextState() {
