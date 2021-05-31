@@ -8,79 +8,61 @@ class YoutubeLoader {
 		this._apiKey = apiKey;
 	}
 
-	loadChannel(progress) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				let response = await fetch(`https://www.googleapis.com/youtube/v3/channels?id=${this._channelId}&key=${this._apiKey}&part=contentDetails`);
-				let data = await this._toJSON(response);
-				var result = [];
-				let playListId = data.items[0].contentDetails.relatedPlaylists.uploads;
-				result = await this._loadPage(result, progress, playListId);
-				resolve(result);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	async loadChannel(progress) {
+		let response = await fetch(`https://www.googleapis.com/youtube/v3/channels?id=${this._channelId}&key=${this._apiKey}&part=contentDetails`);
+		let data = await this._toJSON(response);
+		var result = [];
+		let playListId = data.items[0].contentDetails.relatedPlaylists.uploads;
+		result = await this._loadPage(result, progress, playListId);
+		return result;
 	}
 
-	checkEmbedStatus(videoId) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				let response = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${this._apiKey}&id=${videoId}&part=status,contentDetails`);
-				let data = await this._toJSON(response);
-				if (data.items.length == 0) {
-					return reject("Video not found");
-				}
-				let item = data.items[0];
-				if (!item.status.embeddable) {
-					return reject("Video not embeddable");
-				}
-				let regionRestriction = item.contentDetails.regionRestriction;
-				if (regionRestriction) {
-					if (regionRestriction.blocked && regionRestriction.blocked.indexOf(YOUTUBE_REGION) != -1) {
-						return reject("Video is not available in " + YOUTUBE_REGION);
-					}
-					if (regionRestriction.allowed && regionRestriction.allowed.indexOf(YOUTUBE_REGION) == -1) {
-						return reject("Video is not available in " + YOUTUBE_REGION);
-					}
-				}
-				resolve();
-			} catch (e) {
-				reject(e);
+	async checkEmbedStatus(videoId) {
+		let response = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${this._apiKey}&id=${videoId}&part=status,contentDetails`);
+		let data = await this._toJSON(response);
+		if (data.items.length == 0) {
+			throw new Error("Video not found");
+		}
+		let item = data.items[0];
+		if (!item.status.embeddable) {
+			throw new Error("Video not embeddable");
+		}
+		let regionRestriction = item.contentDetails.regionRestriction;
+		if (regionRestriction) {
+			if (regionRestriction.blocked && regionRestriction.blocked.indexOf(YOUTUBE_REGION) != -1) {
+				throw new Error("Video is not available in " + YOUTUBE_REGION);
 			}
-		});
+			if (regionRestriction.allowed && regionRestriction.allowed.indexOf(YOUTUBE_REGION) == -1) {
+				throw new Error("Video is not available in " + YOUTUBE_REGION);
+			}
+		}
 	}
 
-	_loadPage(result, progress, playListId, pageToken) {
-		return new Promise(async (resolve, reject) => {
-			var url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${this._apiKey}&playlistId=${playListId}&part=id,snippet,contentDetails&maxResults=50`;
-			if (pageToken) {
-				url = url = `${url}&pageToken=${pageToken}`;
-			}
-			try {
-				let response = await fetch(url);
-				let data = await this._toJSON(response);
-				var current = result.length;
-				var total = data.pageInfo.totalResults;
-				progress(current, total);
-				var nextPage = data.nextPageToken;
+	async _loadPage(result, progress, playListId, pageToken) {
+		let url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${this._apiKey}&playlistId=${playListId}&part=id,snippet,contentDetails&maxResults=50`;
+		if (pageToken) {
+			url = url = `${url}&pageToken=${pageToken}`;
+		}
+		
+		let response = await fetch(url);
+		let data = await this._toJSON(response);
+		let current = result.length;
+		let total = data.pageInfo.totalResults;
+		progress(current, total);
+		let nextPage = data.nextPageToken;
 
-				result = result.concat(data.items.map((item) => {
-					return {
-						id : item.contentDetails.videoId,
-						title : item.snippet.title
-					}
-				}));
-				if (nextPage) {
-					result = await this._loadPage(result, progress, playListId, nextPage);
-					resolve(result);
-				} else {
-					resolve(result);
-				}
-			} catch(e) {
-				reject(e);
-			};
-		});
+		result = result.concat(data.items.map((item) => {
+			return {
+				id : item.contentDetails.videoId,
+				title : item.snippet.title
+			}
+		}));
+		if (nextPage) {
+			result = await this._loadPage(result, progress, playListId, nextPage);
+			return result;
+		} else {
+			return result;
+		}
 	}
 
 	_toJSON(response) { //TODO: copy pasted

@@ -46,31 +46,23 @@ class ActorQuestions {
 		};
 	}
 
-	preload(progress, cache, game) {
-        return new Promise(async (resolve, reject) => {
-			try {
-				progress(0, ACTOR_COUNT);
-				this._actors = await this._loadActors(progress, cache);
-				resolve(this._countQuestions());
-			} catch (e) {
-				reject(e);
-			}
-        });
+	async preload(progress, cache, game) {
+		progress(0, ACTOR_COUNT);
+		this._actors = await this._loadActors(progress, cache);
+		return this._countQuestions();
     }
 
-	nextQuestion(selector) {
-		return new Promise((resolve, reject) => {
-			let type = selector.fromWeightedObject(this._types);
+	async nextQuestion(selector) {	
+		let type = selector.fromWeightedObject(this._types);
 
-			let actor = type.correct(selector);
-			let similar = type.similar(actor);
+		let actor = type.correct(selector);
+		let similar = type.similar(actor);
 
-			resolve({
-				text : type.title(actor),
-				answers : selector.alternatives(similar, actor, type.format, (arr) => selector.splice(arr)),
-				correct : type.format(actor),
-				view : type.view(actor)
-			});
+		return ({
+			text : type.title(actor),
+			answers : selector.alternatives(similar, actor, type.format, (arr) => selector.splice(arr)),
+			correct : type.format(actor),
+			view : type.view(actor)
 		});
 	}
 
@@ -106,7 +98,7 @@ class ActorQuestions {
 		return response.json();
 	}
 
-	_loadActorsChunk(page) {
+	async _loadActorsChunk(page) {
 		return new Promise(async (resolve, reject) => {
 			try {
 				let response = await fetch(`https://api.themoviedb.org/3/person/popular?api_key=${this._tmdbApiKey}&page=${page}`);

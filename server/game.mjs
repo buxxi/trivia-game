@@ -167,9 +167,7 @@ class Game {
 	}
 
 	nextQuestion() {
-		return new Promise((resolve, reject) => {
-			this._categories.nextQuestion(this._session).then(resolve).catch(reject);
-		});
+		return this._categories.nextQuestion(this._session);
 	}
 
 	avatars() {

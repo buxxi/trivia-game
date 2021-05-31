@@ -64,30 +64,26 @@ class CurrentGameQuestions {
 		};
 	}
 
-	preload(progress, cache, game) {
-		return new Promise((resolve, reject) => {
-			this._current_game = game; //This would make it have circular dependencies if put in constructor 
-			resolve(this._countQuestions());
-		});
+	async preload(progress, cache, game) {
+		this._current_game = game; //This would make it have circular dependencies if put in constructor 
+		return this._countQuestions();
 	}
 
-	nextQuestion(selector) {
-		return new Promise((resolve, reject) => {
-			let type = selector.fromWeightedObject(this._types);
-			let correct = type.correct(selector);
+	async nextQuestion(selector) {
+		let type = selector.fromWeightedObject(this._types);
+		let correct = type.correct(selector);
 
-			resolve({
-				text : type.title(correct),
-				answers : selector.alternatives(type.similar(correct, selector), correct, type.format, (arr) => selector.splice(arr)),
-				correct : type.format(correct),
-				view : {
-					attribution : {
-						title : type.attribution + " (at that time)",
-						name : type.format(correct),
-						links : []
-					}
+		return ({
+			text : type.title(correct),
+			answers : selector.alternatives(type.similar(correct, selector), correct, type.format, (arr) => selector.splice(arr)),
+			correct : type.format(correct),
+			view : {
+				attribution : {
+					title : type.attribution + " (at that time)",
+					name : type.format(correct),
+					links : []
 				}
-			});
+			}
 		});
 	}
 

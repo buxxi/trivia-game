@@ -57,45 +57,32 @@ class MusicQuestions {
 		};
 	}
 
-	preload(progress, cache, game) {
-		return new Promise(async (resolve, reject) => {
-			if (this._tracks.length != 0) {
-				resolve();
-				return;
-			}
-			
-			try {
-				let accessToken = await this._loadSpotifyAccessToken();
-				let categories = await this._loadSpotifyCategories(accessToken, cache);
+	async preload(progress, cache, game) {	
+		let accessToken = await this._loadSpotifyAccessToken();
+		let categories = await this._loadSpotifyCategories(accessToken, cache);
 
-				progress(0, categories.length);
-				var loaded = 0;
+		progress(0, categories.length);
+		var loaded = 0;
 
-				for (let category of categories) {
-					let categoryData = await this._loadCategory(accessToken, category, cache);
-					loaded++;
-					this._tracks = this._tracks.concat(categoryData);
-					progress(loaded, categories.length);
-				}
+		for (let category of categories) {
+			let categoryData = await this._loadCategory(accessToken, category, cache);
+			loaded++;
+			this._tracks = this._tracks.concat(categoryData);
+			progress(loaded, categories.length);
+		}
 
-				resolve(this._countQuestions());
-			} catch (e) {
-				reject(e);
-			}
-		});
+		return this._countQuestions();
 	}
 
-	nextQuestion(selector) {
-		return new Promise((resolve, reject) => {
-			var type = selector.fromWeightedObject(this._types);
-			var track = type.correct(selector);
+	async nextQuestion(selector) {
+		let type = selector.fromWeightedObject(this._types);
+		let track = type.correct(selector);
 
-			resolve({
-				text : type.title(track),
-				answers : selector.alternatives(type.similar(track, selector), track, type.format, (arr) => selector.splice(arr)),
-				correct : type.format(track),
-				view : type.view(track)
-			});
+		return ({
+			text : type.title(track),
+			answers : selector.alternatives(type.similar(track, selector), track, type.format, (arr) => selector.splice(arr)),
+			correct : type.format(track),
+			view : type.view(track)
 		});
 	}
 
@@ -195,46 +182,34 @@ class MusicQuestions {
 		});
 	}
 
-	_loadSpotifyAccessToken() {
-		return new Promise(async(resolve, reject) => {
-			let auth = Buffer.from(this._spotifyClientId + ":" + this._spotifyClientSecret).toString('base64');
+	async _loadSpotifyAccessToken() {
+		let auth = Buffer.from(this._spotifyClientId + ":" + this._spotifyClientSecret).toString('base64');
 
-			try {
-				let url = "https://accounts.spotify.com/api/token";
-				let response = await fetch(url, {
-					method: 'POST',
-					body: 'grant_type=client_credentials',
-					headers : {
-						'Content-Type': 'application/x-www-form-urlencoded',
-						'Authorization': `Basic ${auth}`
-					}
-				});
-				let data = await this._toJSON(response);
-				resolve(data.access_token);
-			} catch (e) {
-				reject(e);
+		let url = "https://accounts.spotify.com/api/token";
+		let response = await fetch(url, {
+			method: 'POST',
+			body: 'grant_type=client_credentials',
+			headers : {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Authorization': `Basic ${auth}`
 			}
 		});
+		let data = await this._toJSON(response);
+		return data.access_token;
 	}
 
-	_loadArtists(artistIds, category, accessToken) {
-		return new Promise(async (resolve, reject) => {
-			var artists = [];
+	async _loadArtists(artistIds, category, accessToken) {
+		var artists = [];
 
-			try {
-				while (artistIds.length > 0) {
-					let chunkResult = await this._loadArtistsChunk(accessToken, category, artistIds.splice(0, 50));
-					artists = artists.concat(chunkResult);
-				}
-			} catch (e) {
-				reject(e);
-			}
+		while (artistIds.length > 0) {
+			let chunkResult = await this._loadArtistsChunk(accessToken, category, artistIds.splice(0, 50));
+			artists = artists.concat(chunkResult);
+		}
 
-			resolve(artists.reduce((map, obj) => {
-				map[obj.id] = obj;
-				return map;
-			}, {}));
-		})
+		return (artists.reduce((map, obj) => {
+			map[obj.id] = obj;
+			return map;
+		}, {}));
 	}
 
 	_loadArtistsChunk(accessToken, category, chunkedIds) {

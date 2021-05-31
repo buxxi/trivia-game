@@ -20,32 +20,24 @@ class Categories {
 		this._genericloader = new GenericCategoryLoader();
 	}
 
-	init() {
-		return new Promise(async (resolve, reject) => {
-			try {
-				this._categories = [
-					new ActorQuestions(this._config.tmdb.clientId),
-					new DrinksQuestions(),
-					new GeographyQuestions(),
-					new CurrentGameQuestions(),
-					new MovieQuestions(this._config.youtube.clientId, this._config.tmdb.clientId),
-					new MusicQuestions(this._config.spotify.clientId, this._config.spotify.clientSecret, this._config.spotify.whiteList),
-					new QuotesQuestions(this._config.mashape.clientId),
-					new VideoGameQuestions(this._config.youtube.clientId, this._config.igdb.clientId, this._config.igdb.clientSecret)
-				]
+	async init() {
+		this._categories = [
+			new ActorQuestions(this._config.tmdb.clientId),
+			new DrinksQuestions(),
+			new GeographyQuestions(),
+			new CurrentGameQuestions(),
+			new MovieQuestions(this._config.youtube.clientId, this._config.tmdb.clientId),
+			new MusicQuestions(this._config.spotify.clientId, this._config.spotify.clientSecret, this._config.spotify.whiteList),
+			new QuotesQuestions(this._config.mashape.clientId),
+			new VideoGameQuestions(this._config.youtube.clientId, this._config.igdb.clientId, this._config.igdb.clientSecret)
+		]
 
-				for (let path of this._config.staticCategories) {
-					let categoryData = await fs.readFile(path);
-					var newCategory = this._genericloader.create(path, categoryData);
-					this._categories.push(newCategory);
-				}
-				this._jokes = this._config.jokes;
-
-				resolve();
-			} catch (e) {
-				reject(e);
-			}
-		});
+		for (let path of this._config.staticCategories) {
+			let categoryData = await fs.readFile(path);
+			var newCategory = this._genericloader.create(path, categoryData);
+			this._categories.push(newCategory);
+		}
+		this._jokes = this._config.jokes;
 	}
 
 	available() {
@@ -79,8 +71,8 @@ class Categories {
 	}
 
 	nextQuestion(session) {
-		var selector = new QuestionSelector();
-		var category = selector.fromWeightedObject(this._enabledCategories);
+		let selector = new QuestionSelector();
+		let category = selector.fromWeightedObject(this._enabledCategories);
 
 		Object.keys(this._enabledCategories).forEach((key) => {
 			this._enabledCategories[key].weight = this._enabledCategories[key].weight * 2;
@@ -103,28 +95,24 @@ class Categories {
 		throw new Error("No such category: " + type);
 	}
 
-	_shuffleAnswers(question) {
-		return new Promise((resolve, reject) => {
-			var selector = new QuestionSelector();
+	async _shuffleAnswers(question) {
+		let selector = new QuestionSelector();
 
-			var answers = {
-				A : selector.splice(question.answers),
-				B : selector.splice(question.answers),
-				C : selector.splice(question.answers),
-				D : selector.splice(question.answers),
-			};
+		let answers = {
+			A : selector.splice(question.answers),
+			B : selector.splice(question.answers),
+			C : selector.splice(question.answers),
+			D : selector.splice(question.answers),
+		};
 
-			question.answers = answers;
-			resolve(question);
-		});
+		question.answers = answers;
+		return question;
 	}
 
 	_updateSession(category, session) {
-		return function(question) {
-			return new Promise((resolve, reject) => {
-				session.newQuestion(category, question);
-				resolve(question);
-			});
+		return async function(question) {
+			session.newQuestion(category, question);
+			return question;
 		};
 	}
 }

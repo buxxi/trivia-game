@@ -61,45 +61,37 @@ class VideoGameQuestions {
 		};
 	}
 
-	preload(progress, cache, game) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				let token = await this._loadTwitchAccessToken();
-				this._platforms = await this._loadPlatforms(cache, token);
-				
-				let toLoadPlatforms = Object.keys(this._platforms);
-				let total = toLoadPlatforms.length * GAMES_PER_PLATFORM;
+	async preload(progress, cache, game) {
+		let token = await this._loadTwitchAccessToken();
+		this._platforms = await this._loadPlatforms(cache, token);
+		
+		let toLoadPlatforms = Object.keys(this._platforms);
+		let total = toLoadPlatforms.length * GAMES_PER_PLATFORM;
 
-				progress(this._games.length, total);
+		progress(this._games.length, total);
 
-				for (let platform of toLoadPlatforms) {
-					let gamesChunk = await this._loadGames(platform, this._platforms, cache, token);
-					this._games = this._games.concat(gamesChunk);
-					progress(this._games.length, total);
-				}
+		for (let platform of toLoadPlatforms) {
+			let gamesChunk = await this._loadGames(platform, this._platforms, cache, token);
+			this._games = this._games.concat(gamesChunk);
+			progress(this._games.length, total);
+		}
 
-				let videos = await this._loadVideos(progress, cache);
-				this._matchVideosToGames(videos, this._games);
+		let videos = await this._loadVideos(progress, cache);
+		this._matchVideosToGames(videos, this._games);
 
-				resolve(this._countQuestions());
-			} catch (e) {
-				reject(e);
-			}
-		});
+		return this._countQuestions();
 	}
 
-	nextQuestion(selector) {
-		return new Promise((resolve, reject) => {
-			let type = selector.fromWeightedObject(this._types);
-			let correct = type.correct(selector);
-			let similar = type.similar(correct, selector);
+	async nextQuestion(selector) {
+		let type = selector.fromWeightedObject(this._types);
+		let correct = type.correct(selector);
+		let similar = type.similar(correct, selector);
 
-			resolve({
-				text : type.title(correct),
-				answers : selector.alternatives(similar, correct, type.format, (arr) => selector.first(arr)),
-				correct : type.format(correct),
-				view : type.view(correct, selector)
-			});
+		return ({
+			text : type.title(correct),
+			answers : selector.alternatives(similar, correct, type.format, (arr) => selector.first(arr)),
+			correct : type.format(correct),
+			view : type.view(correct, selector)
 		});
 	}
 
@@ -110,19 +102,13 @@ class VideoGameQuestions {
 		return Object.keys(this._types).map((t) => this._types[t].correct(countSelector)).reduce((a, b) => { return a + b; }, 0);
 	}
 
-	_loadTwitchAccessToken() {
-		return new Promise(async (resolve, reject) => {
-			try {
-				let url = `https://id.twitch.tv/oauth2/token?client_id=${this._igdbClientId}&client_secret=${this._igdbClientSecret}&grant_type=client_credentials`;
-				let response = await fetch(url, {
-					method: 'POST'
-				});
-				let data = await this._toJSON(response);
-				resolve(data.access_token);
-			} catch (e) {
-				reject(e);
-			}
+	async _loadTwitchAccessToken() {
+		let url = `https://id.twitch.tv/oauth2/token?client_id=${this._igdbClientId}&client_secret=${this._igdbClientSecret}&grant_type=client_credentials`;
+		let response = await fetch(url, {
+			method: 'POST'
 		});
+		let data = await this._toJSON(response);
+		return data.access_token;
 	}
 
 	_loadVideos(progress, cache) {
@@ -173,47 +159,35 @@ class VideoGameQuestions {
 		});
 	}
 
-	_loadScreenshots(games, token) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				let screenshotIds = games.flatMap(g => g.screenshots);
-				var result = {};
-				while (screenshotIds.length > 0) {
-					var chunkResult = await this._loadScreenshotChunk(screenshotIds.splice(0, 10), token);
-					Object.assign(result, chunkResult);
-				}
-				for (var game of games) {
-					game.screenshots = game.screenshots.map(id => result[id]).filter(id => !!id);
-				}
-				resolve(games);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	async _loadScreenshots(games, token) {
+		let screenshotIds = games.flatMap(g => g.screenshots);
+		var result = {};
+		while (screenshotIds.length > 0) {
+			var chunkResult = await this._loadScreenshotChunk(screenshotIds.splice(0, 10), token);
+			Object.assign(result, chunkResult);
+		}
+		for (var game of games) {
+			game.screenshots = game.screenshots.map(id => result[id]).filter(id => !!id);
+		}
+		return games;
 	}
 
-	_loadScreenshotChunk(ids, token) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				let inputData = `fields id,image_id; where id = (${ids.join(',')}); limit 10;`;
-				let response = await fetch(this._igdbBaseURL + 'screenshots/', {
-					method : 'POST',
-					headers : {
-						'Client-ID' : this._igdbClientId,
-						'Authorization': `Bearer ${token}`
-					},
-					body : inputData
-				});
-				let data = await this._toJSON(response);
-				let result = {};
-				for (var screenshot of data) {
-					result[screenshot.id] = screenshot.image_id;
-				}
-				resolve(result);
-			} catch(e) {
-				reject(e);
-			};
+	async _loadScreenshotChunk(ids, token) {
+		let inputData = `fields id,image_id; where id = (${ids.join(',')}); limit 10;`;
+		let response = await fetch(this._igdbBaseURL + 'screenshots/', {
+			method : 'POST',
+			headers : {
+				'Client-ID' : this._igdbClientId,
+				'Authorization': `Bearer ${token}`
+			},
+			body : inputData
 		});
+		let data = await this._toJSON(response);
+		let result = {};
+		for (var screenshot of data) {
+			result[screenshot.id] = screenshot.image_id;
+		}
+		return result;
 	}
 
 	_loadPlatforms(cache, token) {
@@ -232,30 +206,24 @@ class VideoGameQuestions {
 		});
 	}
 
-	_loadPlatformChunk(offset, token) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				let inputData = `fields id,name; where category = (1,5); limit 50; offset ${offset};`
-				let response = await fetch(this._igdbBaseURL + 'platforms/', {
-					method : 'POST',
-					headers : {
-						'Client-ID' : this._igdbClientId,
-						'Authorization': `Bearer ${token}`
-					},
-					body : inputData
-				});
-				let data = await this._toJSON(response);
-				let result = {};
-				data.forEach((platform) => {
-					result[platform.id] = {
-						name : platform.name
-					}
-				});
-				resolve(result);
-			} catch(e) {
-				reject(e);
+	async _loadPlatformChunk(offset, token) {
+		let inputData = `fields id,name; where category = (1,5); limit 50; offset ${offset};`
+		let response = await fetch(this._igdbBaseURL + 'platforms/', {
+			method : 'POST',
+			headers : {
+				'Client-ID' : this._igdbClientId,
+				'Authorization': `Bearer ${token}`
+			},
+			body : inputData
+		});
+		let data = await this._toJSON(response);
+		let result = {};
+		data.forEach((platform) => {
+			result[platform.id] = {
+				name : platform.name
 			}
 		});
+		return result;
 	};
 
 	_matchVideosToGames(videos, games) {

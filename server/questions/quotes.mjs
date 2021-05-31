@@ -38,30 +38,22 @@ class QuotesQuestions {
 		};
 	}
 
-	preload(progress, cache, game) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				progress(0, TOTAL_QUOTES);
-				this._quotes = await this._loadQuotes(cache, progress);
-				progress(TOTAL_QUOTES, TOTAL_QUOTES);
-				resolve(this._countQuestions());
-			} catch (e) {
-				reject(e);
-			}
-		});
+	async preload(progress, cache, game) {
+		progress(0, TOTAL_QUOTES);
+		this._quotes = await this._loadQuotes(cache, progress);
+		progress(TOTAL_QUOTES, TOTAL_QUOTES);
+		return this._countQuestions();
 	}
 
-	nextQuestion(selector) {
-		return new Promise((resolve, reject) => {
-			let type = selector.fromWeightedObject(this._types);
-			let quote = type.correct(selector);
+	async nextQuestion(selector) {
+		let type = selector.fromWeightedObject(this._types);
+		let quote = type.correct(selector);
 
-			resolve({
-				text : type.title(quote),
-				answers : selector.alternatives(type.similar(quote, selector), quote, type.format, (arr) => selector.splice(arr)),
-				correct : type.format(quote),
-				view : type.load(quote)
-			});
+		return ({
+			text : type.title(quote),
+			answers : selector.alternatives(type.similar(quote, selector), quote, type.format, (arr) => selector.splice(arr)),
+			correct : type.format(quote),
+			view : type.load(quote)
 		});
 	}
 
@@ -157,24 +149,24 @@ class QuotesQuestions {
 		});	
 	}
 
-	_loadRandomQuote() {
-		function toJSON(response) { //TODO: copy pasted
-			if (!response.ok) {
-				throw response;
+	async _loadRandomQuote() {
+		let response = await fetch('https://andruxnet-random-famous-quotes.p.rapidapi.com/?cat=famous', {
+			method : 'POST',
+			headers : {
+				"x-rapidapi-key": this._mashapeApiKey,
+				"x-rapidapi-host": "andruxnet-random-famous-quotes.p.rapidapi.com",
+				"useQueryString": true
 			}
-			return response.json();
-		}
-
-		return new Promise((resolve, reject) => {
-			fetch('https://andruxnet-random-famous-quotes.p.rapidapi.com/?cat=famous',{
-				method : 'POST',
-				headers : {
-					"x-rapidapi-key": this._mashapeApiKey,
-					"x-rapidapi-host": "andruxnet-random-famous-quotes.p.rapidapi.com",
-					"useQueryString": true
-				}
-			}).then(toJSON).then((data) => resolve(data[0])).catch(reject);
 		});
+		let responseData = await this._toJSON(response);
+		return responseData[0];
+	}
+
+	_toJSON(response) {
+		if (!response.ok) {
+			throw response;
+		}
+		return response.json();
 	}
 }
 

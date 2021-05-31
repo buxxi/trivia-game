@@ -48,30 +48,22 @@ class DrinksQuestions {
 		};
 	}
 
-	preload(progress, cache, game) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				progress(0, TOTAL_DRINKS);
-				this._drinks = await this._loadDrinks(cache, progress);
-				progress(TOTAL_DRINKS, TOTAL_DRINKS);
-				resolve(this._countQuestions());
-			} catch (e) {
-				reject(e);
-			}
-		});
+	async preload(progress, cache, game) {
+		progress(0, TOTAL_DRINKS);
+		this._drinks = await this._loadDrinks(cache, progress);
+		progress(TOTAL_DRINKS, TOTAL_DRINKS);
+		return this._countQuestions();
 	}
 
-	nextQuestion(selector) {
-		return new Promise((resolve, reject) => {
-			let type = selector.fromWeightedObject(this._types);
-			let correct = type.correct(selector);
+	async nextQuestion(selector) {
+		let type = selector.fromWeightedObject(this._types);
+		let correct = type.correct(selector);
 
-			resolve({
-				text : type.title(correct),
-				answers : selector.alternatives(type.similar(correct, selector), correct, type.format, type.randomAnswer ? arr => selector.splice(arr) : arr => selector.first(arr)),
-				correct : type.format(correct),
-				view : type.load(correct)
-			});
+		return ({
+			text : type.title(correct),
+			answers : selector.alternatives(type.similar(correct, selector), correct, type.format, type.randomAnswer ? arr => selector.splice(arr) : arr => selector.first(arr)),
+			correct : type.format(correct),
+			view : type.load(correct)
 		});
 	}
 
@@ -99,26 +91,25 @@ class DrinksQuestions {
 		});
 	}
 
-	_loadRandomDrink() {
-		function toJSON(response) { //TODO: copy pasted
-			if (!response.ok) {
-				throw response;
-			}
-			return response.json();
+	async _loadRandomDrink() {
+		let response = await fetch('https://www.thecocktaildb.com/api/json/v1/1/random.php');
+		let responseData = await this._toJSON(response);
+		
+		let data = responseData.drinks[0];
+		let drink = {
+			name : data['strDrink'],
+			ingredients : Object.keys(data).filter((k) => k.indexOf("strIngredient") > -1).map((k) => data[k]).filter((v) => !!v),
+			glass : data['strGlass'],
+			url : 'https://www.thecocktaildb.com/drink.php?c=' + data['idDrink']
 		}
+		return drink;
+	}
 
-		return new Promise((resolve, reject) => {
-			fetch('https://www.thecocktaildb.com/api/json/v1/1/random.php').then(toJSON).then((responseData) => {
-				let data = responseData.drinks[0];
-				let drink = {
-					name : data['strDrink'],
-					ingredients : Object.keys(data).filter((k) => k.indexOf("strIngredient") > -1).map((k) => data[k]).filter((v) => !!v),
-					glass : data['strGlass'],
-					url : 'https://www.thecocktaildb.com/drink.php?c=' + data['idDrink']
-				}
-				resolve(drink);
-			}).catch(reject);
-		});
+	_toJSON(response) {
+		if (!response.ok) {
+			throw response;
+		}
+		return response.json();
 	}
 
 	_randomIngredient(selector) {

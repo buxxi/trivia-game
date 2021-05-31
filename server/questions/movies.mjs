@@ -41,41 +41,33 @@ class MovieQuestions {
 		};
 	}
 
-	preload(progress, cache, game) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				let videos = await this._loadYoutubeVideos(progress, cache);
-				this._movies = this._parseTitles(videos);
-				resolve(this._countQuestions());
-			} catch (e) {
-				reject(e);
-			}
-		});
+	async preload(progress, cache, game) {
+		let videos = await this._loadYoutubeVideos(progress, cache);
+		this._movies = this._parseTitles(videos);
+		return this._countQuestions();
 	}
 
-	nextQuestion(selector) {
-		return new Promise(async (resolve, reject) => {
-			var type = selector.fromWeightedObject(this._types);
-			var attribution = [];
+	async nextQuestion(selector) {
+		var type = selector.fromWeightedObject(this._types);
+		var attribution = [];
 
-			try {
-				var correct = await type.correct(selector, attribution);
-				var similar = await type.similar(correct, attribution, selector);
-				
-				resolve({
-					text : type.title(correct),
-					answers : selector.alternatives(similar, correct, type.format, selector.first),
-					correct : type.format(correct),
-					view : type.view(correct, attribution)
-				});
-			} catch(err) {
-				if (typeof(err) == 'string') {
-					return this.nextQuestion(selector).then(resolve).catch(reject);
-				} else {
-					reject(err);
-				}
-			};
-		});
+		try {
+			var correct = await type.correct(selector, attribution);
+			var similar = await type.similar(correct, attribution, selector);
+			
+			return ({
+				text : type.title(correct),
+				answers : selector.alternatives(similar, correct, type.format, selector.first),
+				correct : type.format(correct),
+				view : type.view(correct, attribution)
+			});
+		} catch(err) {
+			if (typeof(err) == 'string') {
+				return this.nextQuestion(selector);
+			} else {
+				throw err;
+			}
+		};
 	}
 
 	_countQuestions() {
@@ -151,57 +143,52 @@ class MovieQuestions {
 		});
 	}
 
-	_loadSimilarMovies(movie, attribution, selector) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				let movieResponse = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${this._tmdbApiKey}&query=${movie.title}&year=${movie.year}`);
-				let movieData = await this._toJSON(movieResponse);
-				if (movieData.results.length != 1) {
-					return reject("Didn't find an exact match for the movie metadata");
-				}
-				let id = movieData.results[0].id;
-
-				let similarResponse = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=${this._tmdbApiKey}`);
-				let similarData = await this._toJSON(similarResponse);
-				if (similarData.results.length < 3) {
-					return reject("Got less than 3 similar movies");
-				}
-
-				let similar = similarData.results.map((item) => {
-					return {
-						title : item.title,
-						year : new Date(item.release_date).getFullYear()
-					};
-				});
-
-				attribution.push("http://www.themoviedb.org/movie/" + id);
-				resolve(similar);
-			} catch (e) {
-				reject(e);
+	async _loadSimilarMovies(movie, attribution, selector) {
+		try {
+			let movieResponse = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${this._tmdbApiKey}&query=${movie.title}&year=${movie.year}`);
+			let movieData = await this._toJSON(movieResponse);
+			if (movieData.results.length != 1) {
+				throw "Didn't find an exact match for the movie metadata";
 			}
-		});
-	}
+			let id = movieData.results[0].id;
 
-	_loadSimilarYears(movie, attribute, selector) {
-		return new Promise((resolve, reject) => {
-			resolve(selector.yearAlternatives(movie.year, 5).map((year) => { return { year : year }; }));
-		});
-	}
+			let similarResponse = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=${this._tmdbApiKey}`);
+			let similarData = await this._toJSON(similarResponse);
+			if (similarData.results.length < 3) {
+				throw "Got less than 3 similar movies";
+			}
 
-	_randomMovieClip(selector, attribution) {
-		return new Promise((resolve, reject) => {
-			let movie = selector.fromArray(this._movies);
-			let videoId = selector.fromArray(movie.videos);
-			this._youtube.checkEmbedStatus(videoId).then(() => {
-				attribution.push('http://www.youtube.com/watch?v=' + videoId);
-				let copy = Object.assign({}, movie); //Copy the movie object so we don't modify the original and replace the array of videos with a single video
-				copy.videos = [videoId];
-				resolve(copy);
-			}).catch((err) => {
-				console.log(movie.title + " can't be embedded " + err + ", trying another one");
-				reject(err);
+			let similar = similarData.results.map((item) => {
+				return {
+					title : item.title,
+					year : new Date(item.release_date).getFullYear()
+				};
 			});
-		});
+
+			attribution.push("http://www.themoviedb.org/movie/" + id);
+			return similar;
+		} catch (e) {
+			throw e;
+		}
+	}
+
+	async _loadSimilarYears(movie, attribute, selector) {
+		return selector.yearAlternatives(movie.year, 5).map((year) => { return { year : year }; });
+	}
+
+	async _randomMovieClip(selector, attribution) {
+		let movie = selector.fromArray(this._movies);
+		let videoId = selector.fromArray(movie.videos);
+		try {
+			await this._youtube.checkEmbedStatus(videoId);
+			attribution.push('http://www.youtube.com/watch?v=' + videoId);
+			let copy = Object.assign({}, movie); //Copy the movie object so we don't modify the original and replace the array of videos with a single video
+			copy.videos = [videoId];
+			return copy;
+		} catch (err) {
+			console.log(movie.title + " can't be embedded " + err + ", trying another one");
+			throw err;
+		}
 	}
 
 	_movieTitle(movie) {

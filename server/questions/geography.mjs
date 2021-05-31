@@ -76,43 +76,31 @@ class GeographyQuestions {
 		};
 	}
 
-	preload(progress, cache, game) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				progress(0, 1);
-				this._countries = await this._loadCountries(cache);
-				progress(1, 1);
-				resolve(this._countQuestions());
-			} catch (e) {
-				reject(e);
-			}
-		});
+	async preload(progress, cache, game) {
+		progress(0, 1);
+		this._countries = await this._loadCountries(cache);
+		progress(1, 1);
+		return this._countQuestions();
 	}
 
-	nextQuestion(selector) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				var type = selector.fromWeightedObject(this._types);
+	async nextQuestion(selector) {
+		var type = selector.fromWeightedObject(this._types);
 
-				var correct = type.correct(selector);
-				var similar = type.similar(correct);
-				var title = type.title(correct);
-				var view = await type.load(correct);
-				view.attribution = {
-					title : "Featured country",
-					name : correct.name,
-					links : ['https://restcountries.eu', 'https://flagpedia.net?q=' + correct.code]
-				}
+		var correct = type.correct(selector);
+		var similar = type.similar(correct);
+		var title = type.title(correct);
+		var view = type.load(correct);
+		view.attribution = {
+			title : "Featured country",
+			name : correct.name,
+			links : ['https://restcountries.eu', 'https://flagpedia.net?q=' + correct.code]
+		}
 
-				resolve({
-					text : title,
-					answers : selector.alternatives(similar, correct, type.format, this._types['region'] == type ? arr => selector.splice(arr) : arr => selector.first(arr)),
-					correct : type.format(correct),
-					view : view
-				});
-			} catch (e) {
-				reject(e);
-			}
+		return ({
+			text : title,
+			answers : selector.alternatives(similar, correct, type.format, this._types['region'] == type ? arr => selector.splice(arr) : arr => selector.first(arr)),
+			correct : type.format(correct),
+			view : view
 		});
 	}
 
@@ -189,18 +177,14 @@ class GeographyQuestions {
 	}
 
 	_loadImage(url) {
-		return new Promise((resolve, reject) => {
-			resolve({
-				player : 'image',
-				url : url
-			});
-		});
+		return {
+			player : 'image',
+			url : url
+		};
 	}
 
 	_loadBlank() {
-		return new Promise((resolve, reject) => {
-			resolve({});
-		});
+		return {};
 	}
 
 	_toJSON(response) { //TODO: copy pasted

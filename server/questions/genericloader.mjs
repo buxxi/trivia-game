@@ -34,36 +34,32 @@ class GenericCategory {
 		return this._description;
 	}
 
-	preload(progress) {
-		return new Promise((resolve, reject) => {
+	async preload(progress) {
 			var selector = new QuestionSelector();
 			var sanityCheck = [];
 			for (var i = 0; i < 100; i++) {
 				sanityCheck.push(this.nextQuestion(selector));
 			}
 
-			Promise.all(sanityCheck).then(() => {
-				resolve(this._countQuestions());
-			}).catch(reject);
-		});
+			await Promise.all(sanityCheck);
+			
+			return this._countQuestions();
 	}
 
-	nextQuestion(selector) {
+	async nextQuestion(selector) {
 		let question = new GenericQuestion(selector.fromWeightedObject(this._questions));
 		let correct = question.correct(this._data, selector);
 
-		return new Promise((resolve, reject) => {
-			try {
-				resolve({
-					text : question.title(correct),
-					answers : question.similar(correct, this._data, selector),
-					correct : question.format(correct),
-					view : question.attribution(correct)
-				});
-			} catch (e) {
-				reject("Failed loading question of type: '" + question.title({}) + "', reason: " + e);
-			}
-		});
+		try {
+			return ({
+				text : question.title(correct),
+				answers : question.similar(correct, this._data, selector),
+				correct : question.format(correct),
+				view : question.attribution(correct)
+			});
+		} catch (e) {
+			throw new Error("Failed loading question of type: '" + question.title({}) + "', reason: " + e);
+		}
 	}
 
 	_countQuestions() {
