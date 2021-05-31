@@ -6,45 +6,78 @@ import GameLoop from './loop.mjs';
 import {PromisifiedWebSocket, Protocol} from '../js/protocol.mjs';
 import {v4 as uuid} from 'uuid';
 
-function loadConfig() {
-	return fs.readFile('conf/config.json');
+class GameRepository {
+	constructor(categories, avatars) {
+		this._categories = categories;
+		this._avatars = avatars;
+		this._currentGames = {};
+	}
+
+	getGame(gameId) {
+		if (!(gameId in this._currentGames)) {
+			throw new Error("No game with id: " + gameId);
+		}
+		return this._currentGames[gameId];
+	}
+
+	startGame(gameId, psocket) {
+		let game = new Game(this._categories, this._avatars);
+		let loop = new GameLoop(game, gameId, this._categories, psocket);
+		
+		if (gameId in this._currentGames) {
+			throw new Error("Game " + gameId + " is already running");
+		}
+		this._currentGames[gameId] = loop;
+		loop.run().finally(() => {
+			delete this._currentGames[gameId];
+		})
+
+		return gameId;
+	}
+}
+
+async function loadConfig() {
+	console.log("Loading config");
+	return JSON.parse(await fs.readFile('conf/config.json'));
+}
+
+async function loadCategories(config) {
+	console.log("Loading categories");
+	let categories = new Categories(config);
+	await categories.init();
+	return categories;
+}
+
+function startServer(config) {
+	console.log("Starting server");
+	let server = new TriviaServer(5555, config.avatars);
+	server.start();
+	return server;
 }
 
 async function init() {
-	let config = JSON.parse(await loadConfig());
-	let categories = new Categories(config);
-	await categories.init();
-
-	let server = new TriviaServer(5555, config.avatars);
-	server.start();
+	let config = await loadConfig();
+	let categories = await loadCategories(config);
+	let repository = new GameRepository(categories, config.avatars);
+	let server = startServer(config);
 
 	server.addWebSocketConnectionListener(socket => {
 		const psocket = new PromisifiedWebSocket(socket, uuid);
 
-		psocket.once(Protocol.JOIN_MONITOR, 5000).then(gameId => {
-			let game = new Game(categories, config.avatars);
+		let monitorJoin = psocket.once(Protocol.JOIN_MONITOR, 5000).then(async (gameId) => {
 			if (!gameId) {
 				gameId = uuid();
 			}
-			return new Promise((resolve, reject) => {
-				setTimeout(() => {
-					game.addPlayer(uuid(), "Test player", "horse");
-					//game.addPlayer(uuid(), "Another tester", "mouse");
-					psocket.send(Protocol.PLAYERS_CHANGED, game.players());
-				}, 3000);
-
-				console.log("Game " + gameId + " started");
-				let loop = new GameLoop(game, gameId, categories, psocket);
-				loop.run().then(() => {
-					console.log("Game " + gameId + " ended");
-				});
-
-				resolve(gameId);
-			});
+			repository.startGame(gameId, psocket);
 		});
 
-		psocket.once(Protocol.JOIN_CLIENT, 5000).then(data => {
-			return Promise.resolve();
+		let clientJoin = psocket.once(Protocol.JOIN_CLIENT, 5000).then(async (data) => {
+			let game = repository.getGame(data.gameId);
+
+		});
+
+		Promise.race([monitorJoin, clientJoin]).catch(e => {
+			socket.close();
 		});
 	});
 }

@@ -54,6 +54,8 @@ class ConfigureState {
                     stateResolve();
                 });
             });
+
+            this._monitorSocket.onClose(reject);
         });
     }
 
@@ -62,7 +64,6 @@ class ConfigureState {
     }
 
     errorState(err) {
-        console.log(err);
         return this;
     }
 }

@@ -23,7 +23,7 @@ const Protocol = {
 
 class ResponseListener {
 	constructor(id, resolve, reject) {
-		this.id = id;
+		this._id = id;
 		this._resolve = resolve;
 		this._reject = reject;
 	}
@@ -41,7 +41,7 @@ class ResponseListener {
 	}
 
 	isResponseListener(id) {
-		return this.id === id;
+		return this._id === id;
 	}
 }
 
@@ -69,18 +69,22 @@ class PromisifiedWebSocket {
 		this._uuidGenerator = uuidGenerator;
         this._ws = ws;
         this._listeners = [];
-		if ('onmessage' in this._ws) { //Browser
-			this._ws.onmessage = (message) => {
-				this._processListeners(message);
-			};
-		} else if ('on' in this._ws) { //Server
-			this._ws.on('message', (message) => {
-				this._processListeners(message);
-			});
+		this._closeListener = (err) => {};
+
+		this._ws.onmessage = (message) => {
+			this._processListeners(message);
+		};
+		this._ws.onclose = () => {
+			this._clearUpOnClose();
+			this._closeListener(new Error("Socket was closed"));
 		}
     }
 
     send(event, requestData, timeout) {
+		if (!this.connected()) {
+			throw new Error("Can only send data while connected");
+		}
+
         return Promise.race([new Promise((resolve, reject) => {
 			let id = this._uuidGenerator();
             this._listeners.push(new ResponseListener(id, resolve, reject));  
@@ -89,12 +93,23 @@ class PromisifiedWebSocket {
     }
 
 	once(event, timeout) {
-		return this._on(event, timeout, true);
+		let self = this;
+		return {
+			then: function(f) {
+				return Promise.race([self.on(event, true).then(f), self._timeout(timeout)]).finally(() => {
+					self.remove(event);
+				});
+			}
+		}
 	}
 
     on(event) {
-		return this._on(event, undefined, false);
+		return this._on(event, false);
     }
+
+	onClose(func) {
+		this._closeListener = func;
+	}
 
 	remove(event) {
 		this._listeners = this._listeners.filter(l => !l.isRequestListener(event));
@@ -104,59 +119,55 @@ class PromisifiedWebSocket {
 		this._listeners = [];
 	}
 
-	_on(event, timeout, once) {
+	connected() {
+		return this._ws.readyState === 1;
+	}
+
+    _on(event, propagateError) {
 		if (!event) {
 			throw new Error("An event must be provided");
 		}
 		let self = this;
 
-		var errorFunction = (e) => { console.log("Unhandled timeout error: " + e.message); };
-
         return {
             then: function(f) {
-				var listener;
-				var requestReceived = () => {};
-				let responsePromise = new Promise((resolve, reject) => {
-					requestReceived = resolve;
+				let response = new Promise((resolve, reject) => {
+					let listener = new RequestListener(event, (requestData, id) => {
+						self._sendResponse(requestData, id, f).then(resolve).catch((e) => {
+							if (propagateError) {
+								reject(e);
+							} else {
+								console.log("Event " + event + " got: " + e.message);
+							}
+						});
+					});
+					self._listeners.push(listener); 
 				});
-				listener = new RequestListener(event, (data, id) => {
-					requestReceived();
-					self._sendResponse(data, id, f);
-				});
-				self._listeners.push(listener); 
-
-				if (once) {
-					Promise.race([responsePromise, self._timeout(timeout)]).then(() => {
-						self.remove(event);
-					}).catch(err => {
-						self.remove(event);
-						errorFunction(err);
-					});	
-				}
-
-				return this;
-            },
-			catch: function(f) {
-				errorFunction = f;
-				return this;
+				return response;
 			}
         }
-	}
+    }
 
-	async _sendResponse(data, id, f) {
-		var p = f(data);
+	async _sendResponse(requestData, id, f) {
+		var p = f(requestData);
 		if (!(p instanceof Promise)) {
 			p = new Promise((resolve, reject) => {
 				reject(new Error("Returned data from listener function is not a Promise"));
 			});
 		}
 		try {
-			let data = await p;
-			this._response(id, data);
+			let responseData = await p;
+			this._response(id, responseData);
 		} catch (e) {
 			this._errorResponse(id, e);
+			throw e;
 		}
 	} 
+
+	_clearUpOnClose() {
+		this._listeners.filter(l => l.isResponseListener(l._id)).forEach(l => l.error("Connection was closed"));
+		this._listeners = [];
+	}
 
     _processListeners(message) {
 		let obj = this._receive(message);

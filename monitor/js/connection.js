@@ -6,7 +6,7 @@ class MonitorToServerConnection {
     }
 
     connected() {
-        return !!this._pws;
+        return !!this._pws && this._pws.connected();
     }
 
     connect(forceGameId) {

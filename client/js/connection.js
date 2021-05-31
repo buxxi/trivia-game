@@ -6,7 +6,7 @@ class ClientToServerConnection {
     }
 
     connected() {
-        return !!this._pws;
+        return !!this._pws && this._pws.connected();
     }
 
     connect(gameId, userName, preferredAvatar) {
