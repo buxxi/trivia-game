@@ -99,53 +99,58 @@ class ActorQuestions {
 	}
 
 	async _loadActorsChunk(page) {
-		return new Promise(async (resolve, reject) => {
+		try {
+			let response = await fetch(`https://api.themoviedb.org/3/person/popular?api_key=${this._tmdbApiKey}&page=${page}`);
+			let data = await this._toJSON(response);
+			let result = data.results.filter((actor) => !actor.adult).map((actor) => {
+				return {
+					id : actor.id
+				};
+			});
+			return result;
+		} catch(e) {
 			try {
-				let response = await fetch(`https://api.themoviedb.org/3/person/popular?api_key=${this._tmdbApiKey}&page=${page}`);
-				let data = await this._toJSON(response);
-				let result = data.results.filter((actor) => !actor.adult).map((actor) => {
-					return {
-						id : actor.id
-					};
-				});
-				resolve(result);
-			} catch(e) {
-				this._retryAfterHandler(() => this._loadActorsChunk(page), resolve, reject);
+				await this._retryAfterHandler(e);
+				return await this._loadActorsChunk(page);
+			} catch (ex) {
+				reject(ex);
 			}
-		});
+		}
 	}
 
-	_loadActorDetails(actor) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				let response = await fetch(`https://api.themoviedb.org/3/person/${actor.id}?api_key=${this._tmdbApiKey}`);
-				let data = await this._toJSON(response);
-				Object.assign(actor, {
-					name : data.name,
-					photo : data.profile_path,
-					birthday : data.birthday,
-					place_of_birth : data.place_of_birth,
-					male : data.gender == 2
-				});
+	async _loadActorDetails(actor) {
+		try {
+			let response = await fetch(`https://api.themoviedb.org/3/person/${actor.id}?api_key=${this._tmdbApiKey}`);
+			let data = await this._toJSON(response);
+			Object.assign(actor, {
+				name : data.name,
+				photo : data.profile_path,
+				birthday : data.birthday,
+				place_of_birth : data.place_of_birth,
+				male : data.gender == 2
+			});
 
-				resolve(actor);
-			} catch(e) {
-				this._retryAfterHandler(() => this._loadActorDetails(actor), resolve, reject);
+			return actor;
+		} catch(e) {
+			try {
+				await this._retryAfterHandler(e);
+				return await this._loadActorDetails(actor);
+			} catch (ex) {
+				reject(ex);
 			}
-		});
+		}
 	};
 
-	_retryAfterHandler(promise, resolve, reject) {
-		return (err) => {
-			if (err.status == 429) {
-				var time = (parseInt(err.headers.get('retry-after')) + 1) * 1000;
+	_retryAfterHandler(err) {
+		if (err.status == 429) {
+			let time = (parseInt(err.headers.get('retry-after')) + 1) * 1000;
+			return new Promise((resolve, reject) => {
 				setTimeout(() => {
-					promise().then(resolve).catch(reject);
+					resolve();
 				}, time);
-				return;
-			}
-			reject();
-		};
+			});
+		}
+		throw err;
 	}
 
 	_similarActors(actor) {

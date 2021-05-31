@@ -69,6 +69,7 @@ async function init() {
 				gameId = uuid();
 			}
 			repository.startGame(gameId, psocket);
+			return gameId;
 		});
 
 		let clientJoin = psocket.once(Protocol.JOIN_CLIENT, 5000).then(async (data) => {

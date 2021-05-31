@@ -126,37 +126,40 @@ class MusicQuestions {
 		return response.json();
 	}
 
-	_loadCategoryChunk(accessToken, category, popularity) {
-		return new Promise(async (resolve, reject) => {
-			try {
-				let url = `https://api.spotify.com/v1/recommendations?seed_genres=${category}&min_popularity=${popularity}&max_popularity=${popularity + 9}&limit=${TRACKS_BY_CATEGORY}`;
-				let response = await fetch(url, {
-					headers : {
-						Authorization : 'Bearer ' + accessToken
-					}
-				});
-				let data = await this._toJSON(response);
-				let parseTitle = this._parseTitle;
+	async _loadCategoryChunk(accessToken, category, popularity) {
+		try {
+			let url = `https://api.spotify.com/v1/recommendations?seed_genres=${category}&min_popularity=${popularity}&max_popularity=${popularity + 9}&limit=${TRACKS_BY_CATEGORY}`;
+			let response = await fetch(url, {
+				headers : {
+					Authorization : 'Bearer ' + accessToken
+				}
+			});
+			let data = await this._toJSON(response);
+			let parseTitle = this._parseTitle;
 
-				var result = data.tracks.filter((track) => !!track.preview_url).map((track) => {
-					return {
-						title : parseTitle(track.name),
-						artist : {
-							id : track.artists[0].id,
-							name : track.artists[0].name}
-						,
-						album : track.album.name,
-						attribution : track.external_urls.spotify,
-						audio : track.preview_url,
-						popularity : (popularity / 10) + 1,
-						category : category
-					};
-				});
-				resolve(result);
-			} catch(e) {
-				this._retryAfterHandler(() => this._loadCategoryChunk(accessToken, category, popularity), resolve, reject);	
+			var result = data.tracks.filter((track) => !!track.preview_url).map((track) => {
+				return {
+					title : parseTitle(track.name),
+					artist : {
+						id : track.artists[0].id,
+						name : track.artists[0].name}
+					,
+					album : track.album.name,
+					attribution : track.external_urls.spotify,
+					audio : track.preview_url,
+					popularity : (popularity / 10) + 1,
+					category : category
+				};
+			});
+			return result;
+		} catch(e) {
+			try {
+				await this._retryAfterHandler(e);
+				return await this._loadCategoryChunk(accessToken, category, popularity)
+			} catch (ex) {
+				reject(ex);
 			}
-		});
+		}
 	}
 
 	_loadSpotifyCategories(accessToken, cache) {
@@ -176,8 +179,12 @@ class MusicQuestions {
 				}
 				resolve(genres);
 			} catch(e) {
-				console.log(e);
-				this._retryAfterHandler(() => this._loadSpotifyCategories(accessToken, cache), resolve, reject);
+				try {
+					await this._retryAfterHandler(e);
+					this._loadSpotifyCategories(accessToken, cache).then(resolve).catch(reject);
+				} catch (ex) {
+					reject(ex);
+				}			
 			}
 		});
 	}
@@ -212,37 +219,39 @@ class MusicQuestions {
 		}, {}));
 	}
 
-	_loadArtistsChunk(accessToken, category, chunkedIds) {
-		return new Promise(async (resolve, reject) => {
+	async _loadArtistsChunk(accessToken, category, chunkedIds) {
+		try {
+			let response = await fetch(`https://api.spotify.com/v1/artists?ids=${chunkedIds.join(',')}`, {
+				headers : {
+					Authorization : 'Bearer ' + accessToken
+				}
+			});
+			let data = await this._toJSON(response);
+			var artists = data.artists.filter(artist => {
+				var genres = artist.genres.map(genre => genre.toLowerCase().replace(' ', '-'));
+				return genres.indexOf(category) > -1;
+			});
+			return artists;
+		} catch(e) {
 			try {
-				let response = await fetch(`https://api.spotify.com/v1/artists?ids=${chunkedIds.join(',')}`, {
-					headers : {
-						Authorization : 'Bearer ' + accessToken
-					}
-				});
-				let data = await this._toJSON(response);
-				var artists = data.artists.filter(artist => {
-					var genres = artist.genres.map(genre => genre.toLowerCase().replace(' ', '-'));
-					return genres.indexOf(category) > -1;
-				});
-				resolve(artists);
-			} catch(e) {
-				this._retryAfterHandler(() => this._loadArtistsChunk(accessToken, category, chunkedIds), resolve, reject);
-			}
-		});
+				await this._retryAfterHandler(e);
+				return await this._loadArtistsChunk(accessToken, category, chunkedIds);
+			} catch (ex) {
+				reject(ex);
+			}			
+		}
 	}
 
-	_retryAfterHandler(promise, resolve, reject) {
-		return (err) => {
-			if (err.status == 429) {
-				let time = (parseInt(err.headers.get('retry-after')) + 1) * 1000;
+	_retryAfterHandler(err) {
+		if (err.status == 429) {
+			let time = (parseInt(err.headers.get('retry-after')) + 1) * 1000;
+			return new Promise((resolve, reject) => {
 				setTimeout(() => {
-					promise().then(resolve).catch(reject);
+					resolve();
 				}, time);
-				return;
-			}
-			reject();
-		};
+			});
+		}
+		throw err;
 	}
 
 	_mergeTracksAndArtists(tracks, artists) {
