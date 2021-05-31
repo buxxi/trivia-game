@@ -4,11 +4,7 @@ class BlankPlayer {
 		this.minimizeQuestion = false;
 	}
 	
-	start() {
-		return new Promise((resolve, reject) => {
-			resolve();
-		});
-	}
+	async start() {}
 
 	stop() {}
 }
@@ -173,12 +169,9 @@ class QuoteText {
 		this.minimizeQuestion = true;
 	}
 
-	start() {
+	async start() {
 		let quote = this.quote;
-		return new Promise((resolve, reject) => {
-			document.getElementById('content').innerHTML = '<div class="quote" id="player"><i class="fa fa-fw fa-quote-left"></i><p>' + quote + '</p><i class="fa fa-fw fa-quote-right"></i></div>';
-			resolve();
-		});
+		document.getElementById('content').innerHTML = '<div class="quote" id="player"><i class="fa fa-fw fa-quote-left"></i><p>' + quote + '</p><i class="fa fa-fw fa-quote-right"></i></div>';
 	}
 
 	stop() {
@@ -192,12 +185,10 @@ class ListViewer {
 		this.pauseMusic = false;
 		this.minimizeQuestion = true;
 	}
-	start() {
+
+	async start() {
 		let list = this.list;
-		return new Promise((resolve, reject) => {
-			document.getElementById('content').innerHTML = '<div class="list" id="player"><ol><li>' + list.join("</li><li>") + '</li></ol></i></div>';
-			resolve();
-		});
+		document.getElementById('content').innerHTML = '<div class="list" id="player"><ol><li>' + list.join("</li><li>") + '</li></ol></i></div>';
 	}
 
 	stop() {
@@ -212,17 +203,14 @@ class AnswersViewer {
 		this.minimizeQuestion = true;
 	}
 
-	start() {
-		return new Promise((resolve, reject) => {
-			let answers = this.answers;
-			document.getElementById('content').innerHTML = '<div class="list-answers" id="player"><ol>' +
-				'<li class="btn-A">' + answers.A + '</li>' +
-				'<li class="btn-B">' + answers.B + '</li>' +
-				'<li class="btn-C">' + answers.C + '</li>' +
-				'<li class="btn-D">' + answers.D + '</li>' +
-				'</ol></i></div>';
-			resolve();
-		});
+	async start() {
+		let answers = this.answers;
+		document.getElementById('content').innerHTML = '<div class="list-answers" id="player"><ol>' +
+			'<li class="btn-A">' + answers.A + '</li>' +
+			'<li class="btn-B">' + answers.B + '</li>' +
+			'<li class="btn-C">' + answers.C + '</li>' +
+			'<li class="btn-D">' + answers.D + '</li>' +
+			'</ol></i></div>';
 	}
 
 	stop() {
