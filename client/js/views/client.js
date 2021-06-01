@@ -23,12 +23,14 @@ const routes = [
 		})
 	},
 	{
+		name: 'game',
 		path: '/game',
 		component: loadTemplate('./pages/game-client.html', Answer),
 		props: (route) => ({
 			gameId: route.query.gameId,
 			clientId: route.query.clientId,
-			connection: connection
+			connection: connection,
+			stats: route.params.stats
 		})
 	}
 ];

@@ -5,13 +5,15 @@ export default {
 		hasGuessed: false,
 		message: this.connection.connected() ? 'Waiting for the game to start' : 'Not connected',
 		answers: {},
-		stats: {},
 		correct: undefined,
 		guess: undefined
 	})},
-	props: ['connection', 'gameId', 'clientId'],
+	props: ['connection', 'gameId', 'clientId', 'stats'],
 	created: function() {
-		this.connection.onQuestionStart(answers => {
+		if (!this.connection.connected()) {
+			return;
+		}
+		this.connection.onQuestionStart(async answers => {
 			this.answers = answers;
 			this.waiting = false;
 			this.correct = null;
@@ -19,7 +21,7 @@ export default {
 			this.hasGuessed = false;
 		});
 
-		this.connection.onQuestionEnd((pointsThisRound, correct) => {
+		this.connection.onQuestionEnd(async (pointsThisRound, correct) => {
 			this.correct = correct;
 			//TODO: update stats
 			setTimeout(() => {
@@ -36,15 +38,15 @@ export default {
 			this.connected = false;
 		});
 
-		this.connection.onGameEnd(() => {
+		this.connection.onGameEnd(async () => {
 			//TODO: redirect to join with same gameid, name and avatar
 		});
 	},
 	methods: {
 		reconnect: async function() {
 			try {
-				let stats = await this.connection.reconnect(this.gameId, this.clientId);
-				//TODO: set stats
+				this.stats = await this.connection.reconnect(this.gameId, this.clientId);
+				//TODO: set stats and setup listeners
 				this.connected = true;
 				this.message = 'Waiting for next question';
 			} catch (e) {
@@ -53,6 +55,7 @@ export default {
 		},
 		makeGuess: async function(answer) {
 			try {
+				console.log("Trying to guess " + answer);
 				this.hasGuessed = true;
 				await this.connection.guess(answer);
 				this.guess = answer;

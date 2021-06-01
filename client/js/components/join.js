@@ -29,9 +29,8 @@ export default {
 	props: ['gameId', 'connection'],
 	methods: {
 		join: function() {
-			this.connection.connect(this.config.gameId, this.config.name, this.config.avatar).then((clientId) => {
-				console.log(clientId);
-				this.$router.push({ path: "/game", query : { gameId: this.config.gameId, clientId: clientId } });
+			this.connection.connect(this.config.gameId, this.config.name, this.config.avatar).then((data) => {
+				this.$router.push({ name: "game", query : { gameId: this.config.gameId, clientId: data.clientId }, params: { stats: data.stats } });
 			}).catch((err) => {
 				this.message = "Error when joining: " + err.message;
 			});
@@ -72,7 +71,6 @@ export default {
 		}
 	},
 	created: async function() {
-		console.log(this.gameId);
 		let request = await fetch("avatars.json");
 		let avatars = await request.json();
 		avatars.forEach((avatar) => this.avatars.push(avatar));

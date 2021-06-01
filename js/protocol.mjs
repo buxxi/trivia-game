@@ -83,7 +83,7 @@ class PromisifiedWebSocket {
 
     send(event, requestData, timeout) {
 		if (!this.connected()) {
-			throw new Error("Can only send data while connected");
+			return Promise.reject(new Error("Can only send data while connected"));
 		}
 
         return Promise.race([new Promise((resolve, reject) => {
@@ -120,6 +120,10 @@ class PromisifiedWebSocket {
 		this._listeners = [];
 	}
 
+	close() {
+		this._ws.close();
+	}
+
 	connected() {
 		return this._ws.readyState === 1;
 	}
@@ -134,7 +138,7 @@ class PromisifiedWebSocket {
             then: function(f) {
 				let response = new Promise((resolve, reject) => {
 					let listener = new RequestListener(event, (requestData, id) => {
-						self._sendResponse(requestData, id, f).then(resolve).catch((e) => {
+						self._sendResponse(event, requestData, id, f).then(resolve).catch((e) => {
 							if (propagateError) {
 								reject(e);
 							} else {
@@ -149,11 +153,11 @@ class PromisifiedWebSocket {
         }
     }
 
-	async _sendResponse(requestData, id, f) {
+	async _sendResponse(event, requestData, id, f) {
 		var p = f(requestData);
 		if (!(p instanceof Promise)) {
 			p = new Promise((resolve, reject) => {
-				reject(new Error("Returned data from listener function is not a Promise for"));
+				reject(new Error(`Returned data from listener function is not a Promise for ${event}`));
 			});
 		}
 		try {

@@ -12,8 +12,11 @@ class WaitForAnswersState {
     }
 
 	async run() {
+        await Promise.all(Object.values(this._clientSockets).map(socket => socket.send(Protocol.QUESTION_START, this._question.answers, 5000)));
         await this._monitorSocket.send(Protocol.QUESTION_START, { view: this._question.view, answers: this._question.answers });
-        //TODO: send answers to clients
+       
+        
+
         //TODO: listen for guesses
         
         console.log(this._question.answers);

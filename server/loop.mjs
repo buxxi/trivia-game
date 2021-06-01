@@ -12,6 +12,7 @@ class GameLoop {
     
     async run() {
         console.log(`Game ${this._id} started`);
+        this._monitorSocket.onClose.catch(() => this._disconnectClients());
         while (this._state && this._monitorSocket.connected()) {
             try {
                 console.log(`Game ${this._id} - Starting state: ${this._state.constructor.name}`);
@@ -33,7 +34,7 @@ class GameLoop {
             console.log(`Game ${this._id} - ${clientId} has reconnected`);
         } else {
             this._game.addPlayer(clientId, userName, preferredAvatar);
-            console.log(`Game ${this._id} - ${userName} has joined`);
+            console.log(`Game ${this._id} - ${clientId} has joined`);
         }
 
         this._clientSockets[clientId] = socket;
@@ -42,9 +43,20 @@ class GameLoop {
             this._sendPlayerChanges()
         });
         this._sendPlayerChanges();
+        return this._game.stats(clientId);
+    }
+    
+    _disconnectClients() {
+        for (let clientId in this._clientSockets) {
+            this._clientSockets[clientId].close();
+            delete this._clientSockets[clientId];
+        }
     }
 
     _sendPlayerChanges() {
+        if (!this._monitorSocket.connected()) {
+            return;
+        }
         let players = this._game.players();
         let result = {};
         for (let clientId in players) {
@@ -52,7 +64,7 @@ class GameLoop {
                 result[clientId] = players[clientId];
             }
         } 
-        console.log(result);
+
         this._monitorSocket.send(Protocol.PLAYERS_CHANGED, result);   
     }
 }

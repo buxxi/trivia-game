@@ -14,22 +14,22 @@ class ClientToServerConnection {
             let ws = new WebSocket(`ws://${this._url.host}${this._url.pathname}`);
             ws.onopen = () => {
                 let pws = new PromisifiedWebSocket(ws, uuidv4);
-                pws.send(Protocol.JOIN_CLIENT, { gameId: gameId, userName: userName, preferredAvatar: preferredAvatar }).then((clientId) => {
+                pws.send(Protocol.JOIN_CLIENT, { gameId: gameId, userName: userName, preferredAvatar: preferredAvatar }).then((data) => {
                     this._pws = pws;
-                    resolve(clientId);
+                    resolve(data);
                 }).catch(reject);
             };
         });
     }
 
-    async reconnect(gameId, clientId) {
+    reconnect(gameId, clientId) {
         return new Promise((resolve, reject) => {
             let ws = new WebSocket(`ws://${this._url.host}${this._url.pathname}`);
             ws.onopen = () => {
                 let pws = new PromisifiedWebSocket(ws, uuidv4);
-                pws.send(Protocol.JOIN_CLIENT, { gameId: gameId, clientId: clientId }).then((clientId) => {
+                pws.send(Protocol.JOIN_CLIENT, { gameId: gameId, clientId: clientId }).then((data) => {
                     this._pws = pws;
-                    resolve(clientId);
+                    resolve(data);
                 }).catch(reject);
             };
         });
@@ -52,7 +52,7 @@ class ClientToServerConnection {
     }
 
     onDisconnect(callback) {
-        return this._pws.onClose.then(callback);
+        return this._pws.onClose.catch(callback);
     }
 }
 
