@@ -74,7 +74,9 @@ async function init() {
 
 		let clientJoin = psocket.once(Protocol.JOIN_CLIENT, 5000).then(async (data) => {
 			let game = repository.getGame(data.gameId);
-
+			let clientId = data.clientId ? data.clientId : uuid();
+			game.addClient(psocket, clientId, data.userName, data.preferredAvatar);
+			return clientId;
 		});
 
 		Promise.race([monitorJoin, clientJoin]).catch(e => {

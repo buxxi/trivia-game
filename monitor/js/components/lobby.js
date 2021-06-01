@@ -74,16 +74,14 @@ export default {
 			this.message = "Error when loading initial setup: " + e.message;
 		}
 
-		this.connection.onPlayersChange(newPlayers => {
-			return async () => {
-				for (let id in this.players) {
-					delete this.players[id];
-				}
+		this.connection.onPlayersChange(async newPlayers => {
+			for (let id in this.players) {
+				this.$delete(this.players, id);
+			}
 
-				for (let id in newPlayers) {
-					this.$set(this.players, id, new PlayerData(newPlayers[id]));
-				}	
-			};
+			for (let id in newPlayers) {
+				this.$set(this.players, id, new PlayerData(newPlayers[id]));
+			}	
 		});
 
 		moveCarousel();

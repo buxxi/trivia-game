@@ -23,27 +23,36 @@ class ClientToServerConnection {
     }
 
     async reconnect(gameId, clientId) {
-
+        return new Promise((resolve, reject) => {
+            let ws = new WebSocket(`ws://${this._url.host}${this._url.pathname}`);
+            ws.onopen = () => {
+                let pws = new PromisifiedWebSocket(ws, uuidv4);
+                pws.send(Protocol.JOIN_CLIENT, { gameId: gameId, clientId: clientId }).then((clientId) => {
+                    this._pws = pws;
+                    resolve(clientId);
+                }).catch(reject);
+            };
+        });
     }
 
     async guess(answer) {
-        
+        return this._pws.send(Protocol.GUESS, answer);
     }
 
     onQuestionStart(callback) {
-        //callback(answers)
+        this._pws.on(Protocol.QUESTION_START).then(answers => callback(answers));
     }
 
     onQuestionEnd(callback) {
-        //callback(pointsThisRound, correct)
+        this._pws.on(Protocol.QUESTION_END).then(data => callback(data.pointsThisRound, data.correct));
     }
 
     onGameEnd(callback) {
-        //callback();
+        this._pws.on(Protocol.GAME_END).then(() => callback());
     }
 
     onDisconnect(callback) {
-        //callback();
+        return this._pws.onClose.then(callback);
     }
 }
 

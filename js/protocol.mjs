@@ -153,7 +153,7 @@ class PromisifiedWebSocket {
 		var p = f(requestData);
 		if (!(p instanceof Promise)) {
 			p = new Promise((resolve, reject) => {
-				reject(new Error("Returned data from listener function is not a Promise"));
+				reject(new Error("Returned data from listener function is not a Promise for"));
 			});
 		}
 		try {

@@ -1,10 +1,13 @@
 import ConfigureState from './state/configure.mjs';
+import {Protocol} from '../js/protocol.mjs';
 
 class GameLoop {
     constructor(game, id, categories, monitorSocket) {
         this._id = id;
+        this._game = game;
         this._monitorSocket = monitorSocket;
-        this._state = new ConfigureState(game, categories, [], monitorSocket);
+        this._clientSockets = {};
+        this._state = new ConfigureState(game, categories, this._clientSockets, monitorSocket);
     }
     
     async run() {
@@ -20,6 +23,37 @@ class GameLoop {
             }
         }
         console.log(`Game ${this._id} ended`);
+    }
+
+    addClient(socket, clientId, userName, preferredAvatar) {
+        if (clientId in this._clientSockets) {
+            throw new Error(`${clientId} is already connected`);
+        }
+        if (clientId in this._game.players()) {
+            console.log(`Game ${this._id} - ${clientId} has reconnected`);
+        } else {
+            this._game.addPlayer(clientId, userName, preferredAvatar);
+            console.log(`Game ${this._id} - ${userName} has joined`);
+        }
+
+        this._clientSockets[clientId] = socket;
+        socket.onClose.catch(() => {
+            delete this._clientSockets[clientId];
+            this._sendPlayerChanges()
+        });
+        this._sendPlayerChanges();
+    }
+
+    _sendPlayerChanges() {
+        let players = this._game.players();
+        let result = {};
+        for (let clientId in players) {
+            if (clientId in this._clientSockets) {
+                result[clientId] = players[clientId];
+            }
+        } 
+        console.log(result);
+        this._monitorSocket.send(Protocol.PLAYERS_CHANGED, result);   
     }
 }
 

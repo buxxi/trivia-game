@@ -50,6 +50,7 @@ class PlayerStats {
 
 class Game {
 	constructor(categories, avatars) {
+		this._started = false;
 		this._categories = categories;
 		this._avatars = avatars;
 		this._players = {};
@@ -83,6 +84,9 @@ class Game {
 	}
 
 	addPlayer(peerid, name, avatar) {
+		if (this._started) {
+			throw new Error("Game has already started");
+		}
 		let uniqueName = Object.values(this._players).map((player) => player.name).indexOf(name) == -1;
 		if (!uniqueName) {
 			throw new Error("The name " + name + " is already in use");
@@ -96,12 +100,13 @@ class Game {
 		delete this._players[peerid];
 	}
 
-	configure(config) {
+	start(config) {
 		Object.assign(this._config, config);
 		this._categories.configure(this._config.categories);
 		Object.values(this._players).forEach((player) => player._reset());
 		this._session = new Session(this._config.questions);
 		this._timer = new Timer(this._config.time, this._config.pointsPerRound);
+		this._started = true;
 	}
 
 	hasGuessed(peerid) {

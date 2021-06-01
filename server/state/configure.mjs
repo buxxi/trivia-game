@@ -36,7 +36,7 @@ class ConfigureState {
                 this._monitorSocket.remove(Protocol.PRELOAD_CATEGORY);
                 this._monitorSocket.remove(Protocol.REMOVE_PLAYER);
                 this._monitorSocket.remove(Protocol.CLEAR_CACHE);
-                this._game.configure(config);
+                this._game.start(config);
             }).then(stateResolve).catch(stateReject);
         });
     }
