@@ -19,6 +19,7 @@ class WaitForAnswersState {
             let socket = this._clientSockets[clientId];
             socket.on(Protocol.GUESS).then(async guess => {
                 this._game.guess(clientId, guess);
+                this._monitorSocket.send(Protocol.PLAYER_GUESSED, clientId);
             });
         };
         
