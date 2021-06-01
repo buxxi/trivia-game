@@ -1,3 +1,34 @@
+function showAnswers(app, answers) {
+	app.answers = answers;
+	app.waiting = false;
+	app.correct = null;
+	app.guess = null;
+	app.hasGuessed = false;	
+}
+
+function showCorrect(app, pointsThisRound, correct) {
+	app.correct = correct.key;
+	app.stats.score += pointsThisRound.points;
+	app.stats.multiplier += pointsThisRound.multiplier;
+
+	setTimeout(() => {
+		app.answers = {};
+		app.waiting = true;
+		app.message = 'Waiting for next question';
+	}, 2000);
+}
+
+function showDisconnected(app) {
+	app.answers = {};
+	app.waiting = true;
+	app.message = 'The host closed the connection';
+	app.connected = false;
+}
+
+function redirectToJoin(app) {
+	//TODO: redirect to join with same gameid, name and avatar
+}
+
 export default {
 	data: function() { return({
 		connected: this.connection.connected(),
@@ -13,49 +44,27 @@ export default {
 		if (!this.connection.connected()) {
 			return;
 		}
-		this.connection.onQuestionStart(async answers => {
-			this.answers = answers;
-			this.waiting = false;
-			this.correct = null;
-			this.guess = null;
-			this.hasGuessed = false;
-		});
 
-		this.connection.onQuestionEnd(async (pointsThisRound, correct) => {
-			this.correct = correct;
-			//TODO: update stats
-			setTimeout(() => {
-				this.answers = {};
-				this.waiting = true;
-				this.message = 'Waiting for next question';
-			}, 2000);
-		});
-
-		this.connection.onDisconnect(() => {
-			this.answers = {};
-			this.waiting = true;
-			this.message = 'The host closed the connection';
-			this.connected = false;
-		});
-
-		this.connection.onGameEnd(async () => {
-			//TODO: redirect to join with same gameid, name and avatar
-		});
+		this.connection.onQuestionStart(async answers => showAnswers(this, answers));
+		this.connection.onQuestionEnd(async (pointsThisRound, correct) => showCorrect(this, pointsThisRound, correct));
+		this.connection.onDisconnect(() => showDisconnected(this));
+		this.connection.onGameEnd(async () => { redirectToJoin(this)});
 	},
 	methods: {
 		reconnect: async function() {
 			try {
-				this.stats = await this.connection.reconnect(this.gameId, this.clientId);
-				//TODO: set stats and setup listeners
+				let data = await this.connection.reconnect(this.gameId, this.clientId);
+				for (let key in data.stats) {
+					this.$set(this.stats, key, data.stats[key]);
+				}
 				this.connected = true;
-				this.message = 'Waiting for next question';
+				this.message = 'Waiting for the game to start';
 			} catch (e) {
 				this.message = "Error when reconnecting: " + e;				
 			}
 		},
 		makeGuess: async function(answer) {
 			try {
-				console.log("Trying to guess " + answer);
 				this.hasGuessed = true;
 				await this.connection.guess(answer);
 				this.guess = answer;

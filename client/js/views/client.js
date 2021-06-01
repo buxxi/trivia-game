@@ -30,7 +30,7 @@ const routes = [
 			gameId: route.query.gameId,
 			clientId: route.query.clientId,
 			connection: connection,
-			stats: route.params.stats
+			stats: route.params.stats ? route.params.stats : {}
 		})
 	}
 ];

@@ -6,7 +6,7 @@
 - [x] Serve game monitor from the NodeJS server
 - [x] Move question loading to the server side
 - [x] Move game logic to the server side
-- [ ] Make the client communicate with the server
+- [x] Make the client communicate with the server
 - [x] Make the monitor communicate with the server
 - [ ] Replace ResponsiveVoice with dependency on self-hosted Text2Speech
 - [x] Use LESS (or migrate to SASS) by build time instead of runtime

@@ -15,9 +15,10 @@ class ShowCorrectAnswerState {
         let correct = this._game.correctAnswer();
         console.log(correct);
 
+        await Promise.all(Object.keys(this._clientSockets).map(clientId => {
+            this._clientSockets[clientId].send(Protocol.QUESTION_END, { pointsThisRound: this._pointsThisRound[clientId], correct: correct }, 5000);
+        }));
         await this._monitorSocket.send(Protocol.QUESTION_END, { pointsThisRound: this._pointsThisRound, correct: correct });
-
-        //TODO: send correct answer to client and their points 
 	}
 
 	nextState() {

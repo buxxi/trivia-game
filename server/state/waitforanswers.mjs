@@ -15,9 +15,12 @@ class WaitForAnswersState {
         await Promise.all(Object.values(this._clientSockets).map(socket => socket.send(Protocol.QUESTION_START, this._question.answers, 5000)));
         await this._monitorSocket.send(Protocol.QUESTION_START, { view: this._question.view, answers: this._question.answers });
        
-        
-
-        //TODO: listen for guesses
+        for (let clientId in this._clientSockets) {
+            let socket = this._clientSockets[clientId];
+            socket.on(Protocol.GUESS).then(async guess => {
+                this._game.guess(clientId, guess);
+            });
+        };
         
         console.log(this._question.answers);
 
@@ -27,9 +30,9 @@ class WaitForAnswersState {
                 percentageLeft: percentageLeft,
                 currentScore: currentScore
             });
-        });
+        });  
 
-        //TODO: stop listening for guesses
+        Object.values(this._clientSockets).forEach(socket => socket.remove(Protocol.GUESS));
 
         return pointsThisRound;
 	}
