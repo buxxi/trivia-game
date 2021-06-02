@@ -1,16 +1,13 @@
-import ConfigureState from "./configure.mjs";
-import {Protocol} from '../../js/protocol.mjs';
-
 class ResultsState {
-    constructor(game, categories, clientSockets, monitorSocket) {
+    constructor(game, categories, clientConnections, monitorConnection) {
         this._game = game;
         this._categories = categories;
-        this._monitorSocket = monitorSocket;
-        this._clientSockets = clientSockets;
+        this._monitorConnection = monitorConnection;
+        this._clientConnections = clientConnections;
     }
 
 	async run() {
-        await this._monitorSocket.send(Protocol.GAME_END, { history: this._game.session().history(), players: this._game.players() }); 
+        await this._monitorConnection.results(this._game.session().history(), this._game.players()); 
 	}
 
 	nextState() {

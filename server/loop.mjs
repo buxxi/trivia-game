@@ -2,18 +2,18 @@ import ConfigureState from './state/configure.mjs';
 import {Protocol} from '../js/protocol.mjs';
 
 class GameLoop {
-    constructor(game, id, categories, monitorSocket) {
+    constructor(game, id, categories, monitorConnection) {
         this._id = id;
         this._game = game;
-        this._monitorSocket = monitorSocket;
-        this._clientSockets = {};
-        this._state = new ConfigureState(game, categories, this._clientSockets, monitorSocket);
+        this._monitorConnection = monitorConnection;
+        this._clientConnections = {};
+        this._state = new ConfigureState(game, categories, this._clientConnections, monitorConnection);
     }
     
     async run() {
         console.log(`Game ${this._id} started`);
-        this._monitorSocket.onClose.catch(() => this._disconnectClients());
-        while (this._state && this._monitorSocket.connected()) {
+        this._monitorConnection.onClose().catch(() => this._disconnectClients());
+        while (this._state && this._monitorConnection.connected()) {
             try {
                 console.log(`Game ${this._id} - Starting state: ${this._state.constructor.name}`);
                 let result = await this._state.run();
@@ -26,8 +26,8 @@ class GameLoop {
         console.log(`Game ${this._id} ended`);
     }
 
-    addClient(socket, clientId, userName, preferredAvatar) {
-        if (clientId in this._clientSockets) {
+    addClient(connection, clientId, userName, preferredAvatar) {
+        if (clientId in this._clientConnections) {
             throw new Error(`${clientId} is already connected`);
         }
         if (clientId in this._game.players()) {
@@ -37,9 +37,9 @@ class GameLoop {
             console.log(`Game ${this._id} - ${clientId} has joined`);
         }
 
-        this._clientSockets[clientId] = socket;
-        socket.onClose.catch(() => {
-            delete this._clientSockets[clientId];
+        this._clientConnections[clientId] = connection;
+        connection.onClose().catch(() => {
+            delete this._clientConnections[clientId];
             this._sendPlayerChanges()
         });
         this._sendPlayerChanges();
@@ -47,25 +47,25 @@ class GameLoop {
     }
     
     _disconnectClients() {
-        for (let clientId in this._clientSockets) {
-            this._clientSockets[clientId].close();
-            delete this._clientSockets[clientId];
+        for (let clientId in this._clientConnections) {
+            this._clientConnections[clientId].close();
+            delete this._clientConnections[clientId];
         }
     }
 
     _sendPlayerChanges() {
-        if (!this._monitorSocket.connected()) {
+        if (!this._monitorConnection.connected()) {
             return;
         }
         let players = this._game.players();
         let result = {};
         for (let clientId in players) {
-            if (clientId in this._clientSockets) {
+            if (clientId in this._clientConnections) {
                 result[clientId] = players[clientId];
             }
         } 
 
-        this._monitorSocket.send(Protocol.PLAYERS_CHANGED, result);   
+        this._monitorConnection.playersChanged(result);
     }
 }
 

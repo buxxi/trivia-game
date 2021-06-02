@@ -1,17 +1,16 @@
 import PresentQuestionState from './presentquestion.mjs'
 import QuestionErrorState from './questionerror.mjs';
 import ResultsState from './results.mjs';
-import {Protocol} from '../../js/protocol.mjs';
 
 const JOKE_CHANCE = 0.5;
 const MINIMUM_CATEGORIES_COUNT = 6;
 
 class LoadingNextQuestionState {
-    constructor(game, categories, clientSockets, monitorSocket) {
+    constructor(game, categories, clientConnections, monitorConnection) {
         this._game = game;
         this._categories = categories;
-        this._monitorSocket = monitorSocket;
-        this._clientSockets = clientSockets;
+        this._monitorConnection = monitorConnection;
+        this._clientConnections = clientConnections;
     }
 
 	async run() {
@@ -26,25 +25,20 @@ class LoadingNextQuestionState {
         let index = this._game.session().index();
         let total = this._game.session().total();
 
-        await this._monitorSocket.send(Protocol.SHOW_CATEGORY_SELECT, {
-            categories: spinnerCategories,
-            correct: correct,
-            index: index,
-            total: total
-        });
+        await this._monitorConnection.categorySelected(spinnerCategories, correct, index, total);
 
         return question;
 	}
 
 	nextState(question) {
         if (!question) {
-            return new ResultsState(this._game, this._categories, this._clientSockets, this._monitorSocket);
+            return new ResultsState(this._game, this._categories, this._clientConnections, this._monitorConnection);
         }
-		return new PresentQuestionState(this._game, this._categories, this._clientSockets, this._monitorSocket, question);
+		return new PresentQuestionState(this._game, this._categories, this._clientConnections, this._monitorConnection, question);
 	}
 
     errorState(error) {
-        return new QuestionErrorState(this._game, this._categories, this._clientSockets, this._monitorSocket, error);
+        return new QuestionErrorState(this._game, this._categories, this._clientConnections, this._monitorConnection, error);
     }
 
     _insertJokes(categories) {

@@ -1,23 +1,22 @@
 import LoadingNextQuestionState from "./loadquestion.mjs";
-import {Protocol} from '../../js/protocol.mjs';
 
 class QuestionErrorState {
-    constructor(game, categories, clientSockets, monitorSocket, error) {
+    constructor(game, categories, clientConnections, monitorConnection, error) {
         this._game = game;
         this._categories = categories;
-        this._monitorSocket = monitorSocket;
-        this._clientSockets = clientSockets;
+        this._monitorConnection = monitorConnection;
+        this._clientConnections = clientConnections;
         this._error = error;
     }
 
 	async run() {
         console.log(this._error);
 
-        await this._monitorSocket.send(Protocol.QUESTION_ERROR, this._error.message);
+        await this._monitorConnection.questionError(this._error.message);
 	}
 
 	nextState() {
-        return new LoadingNextQuestionState(this._game, this._categories, this._clientSockets, this._monitorSocket);
+        return new LoadingNextQuestionState(this._game, this._categories, this._clientConnections, this._monitorConnection);
 	}
 
     errorState(error) {

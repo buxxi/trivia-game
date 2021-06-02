@@ -3,8 +3,8 @@ import TriviaServer from './server.mjs';
 import Game from './game.mjs';
 import Categories from './categories.mjs';
 import GameLoop from './loop.mjs';
-import {PromisifiedWebSocket, Protocol} from '../js/protocol.mjs';
 import {v4 as uuid} from 'uuid';
+import ServerConnection from './connection.mjs';
 
 class GameRepository {
 	constructor(categories, avatars) {
@@ -20,9 +20,9 @@ class GameRepository {
 		return this._currentGames[gameId];
 	}
 
-	startGame(gameId, psocket) {
+	startGame(gameId, monitorConnection) {
 		let game = new Game(this._categories, this._avatars);
-		let loop = new GameLoop(game, gameId, this._categories, psocket);
+		let loop = new GameLoop(game, gameId, this._categories, monitorConnection);
 		
 		if (gameId in this._currentGames) {
 			throw new Error("Game " + gameId + " is already running");
@@ -62,20 +62,20 @@ async function init() {
 	let server = startServer(config);
 
 	server.addWebSocketConnectionListener(socket => {
-		const psocket = new PromisifiedWebSocket(socket, uuid);
+		let connection = new ServerConnection(socket);
 
-		let monitorJoin = psocket.once(Protocol.JOIN_MONITOR, 5000).then(async (gameId) => {
+		let monitorJoin = connection.onMonitorJoin().then(async (gameId) => {
 			if (!gameId) {
 				gameId = uuid();
 			}
-			repository.startGame(gameId, psocket);
+			repository.startGame(gameId, connection.toMonitor());
 			return gameId;
 		});
 
-		let clientJoin = psocket.once(Protocol.JOIN_CLIENT, 5000).then(async (data) => {
+		let clientJoin = connection.onClientJoin().then(async (data) => {
 			let game = repository.getGame(data.gameId);
 			let clientId = data.clientId ? data.clientId : uuid();
-			let stats = game.addClient(psocket, clientId, data.userName, data.preferredAvatar);
+			let stats = game.addClient(connection.toClient(), clientId, data.userName, data.preferredAvatar);
 			return { clientId: clientId, stats: stats };
 		});
 

@@ -3,47 +3,43 @@ import QuestionErrorState from './questionerror.mjs';
 import {Protocol} from '../../js/protocol.mjs';
 
 class WaitForAnswersState {
-    constructor(game, categories, clientSockets, monitorSocket, question) {
+    constructor(game, categories, clientConnections, monitorConnection, question) {
         this._game = game;
         this._categories = categories;
-        this._monitorSocket = monitorSocket;
-        this._clientSockets = clientSockets;
+        this._monitorConnection = monitorConnection;
+        this._clientConnections = clientConnections;
         this._question = question;
     }
 
 	async run() {
-        await Promise.all(Object.values(this._clientSockets).map(socket => socket.send(Protocol.QUESTION_START, this._question.answers, 5000)));
-        await this._monitorSocket.send(Protocol.QUESTION_START, { view: this._question.view, answers: this._question.answers });
+        await Promise.all(Object.values(this._clientConnections).map(client => client.questionStart(this._question.answers)));
+        await this._monitorConnection.questionStart(this._question.view, this._question.answers);
        
-        for (let clientId in this._clientSockets) {
-            let socket = this._clientSockets[clientId];
-            socket.on(Protocol.GUESS).then(async guess => {
+        for (let clientId in this._clientConnections) {
+            let client = this._clientConnections[clientId];
+            client.onGuess().then(async guess => {
                 this._game.guess(clientId, guess);
-                this._monitorSocket.send(Protocol.PLAYER_GUESSED, clientId);
+                this._monitorConnection.playerGuessed(clientId);
             });
         };
         
         console.log(this._question.answers);
 
         let pointsThisRound = await this._game.startTimer((timeLeft, percentageLeft, currentScore) => { 
-            this._monitorSocket.send(Protocol.TIMER_TICK, {
-                timeLeft: timeLeft,
-                percentageLeft: percentageLeft,
-                currentScore: currentScore
-            });
+            this._monitorConnection.timerTick(timeLeft, percentageLeft, currentScore);
         });  
 
-        Object.values(this._clientSockets).forEach(socket => socket.remove(Protocol.GUESS));
+        Object.values(this._clientConnections).forEach(client => client.removeGuessListener());
 
         return pointsThisRound;
 	}
 
 	nextState(pointsThisRound) {
-		return new ShowCorrectAnswerState(this._game, this._categories, this._clientSockets, this._monitorSocket, pointsThisRound);
+		return new ShowCorrectAnswerState(this._game, this._categories, this._clientConnections, this._monitorConnection, pointsThisRound);
 	}
 
     errorState(error) {
-        return new QuestionErrorState(this._game, this._categories, this._clientSockets, this._monitorSocket, error);
+        return new QuestionErrorState(this._game, this._categories, this._clientConnections, this._monitorConnection, error);
     }
 }
 
