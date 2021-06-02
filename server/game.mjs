@@ -132,6 +132,7 @@ class Game {
 	stats(peerid) {
 		let player = this._players[peerid];
 		return {
+			name : player.name,
 			avatar : player.avatar,
 			color : player.color,
 			score : player.score,

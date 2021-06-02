@@ -39,20 +39,24 @@ class ClientToServerConnection {
         return this._pws.send(Protocol.GUESS, answer);
     }
 
-    onQuestionStart(callback) {
-        this._pws.on(Protocol.QUESTION_START).then(answers => callback(answers));
+    onQuestionStart() {
+        return this._pws.on(Protocol.QUESTION_START);
     }
 
-    onQuestionEnd(callback) {
-        this._pws.on(Protocol.QUESTION_END).then(data => callback(data.pointsThisRound, data.correct));
+    onQuestionEnd() {
+        return this._pws.on(Protocol.QUESTION_END);
     }
 
-    onGameEnd(callback) {
-        this._pws.on(Protocol.GAME_END).then(() => callback());
+    onGameEnd() {
+        return this._pws.on(Protocol.GAME_END);
     }
 
-    onDisconnect(callback) {
-        return this._pws.onClose.catch(callback);
+    onClose() {
+        return this._pws.onClose;
+    }
+
+    close() {
+        this._pws.close();
     }
 }
 

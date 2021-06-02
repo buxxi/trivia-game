@@ -18,7 +18,7 @@ function showCorrect(app, pointsThisRound, correct) {
 	}, 2000);
 }
 
-function showDisconnected(app) {
+function showClosed(app) {
 	app.answers = {};
 	app.waiting = true;
 	app.message = 'The host closed the connection';
@@ -26,7 +26,8 @@ function showDisconnected(app) {
 }
 
 function redirectToJoin(app) {
-	//TODO: redirect to join with same gameid, name and avatar
+	app.connection.close();
+	app.$router.push({ name: "join", query : { gameId: app.gameId }, params: { preferredAvatar: app.stats.avatar, name: app.stats.name } });
 }
 
 export default {
@@ -45,10 +46,10 @@ export default {
 			return;
 		}
 
-		this.connection.onQuestionStart(async answers => showAnswers(this, answers));
-		this.connection.onQuestionEnd(async (pointsThisRound, correct) => showCorrect(this, pointsThisRound, correct));
-		this.connection.onDisconnect(() => showDisconnected(this));
-		this.connection.onGameEnd(async () => { redirectToJoin(this)});
+		this.connection.onQuestionStart().then(async answers => showAnswers(this, answers));
+		this.connection.onQuestionEnd().then(async (data) => showCorrect(this, data.pointsThisRound, data.correct));
+		this.connection.onClose().catch(() => showClosed(this));
+		this.connection.onGameEnd().then(async () => { redirectToJoin(this)});
 	},
 	methods: {
 		reconnect: async function() {

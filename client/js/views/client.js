@@ -16,10 +16,13 @@ const connection = new ClientToServerConnection(new URL("..", document.location)
 const routes = [
 	{
 		path: '/',
+		name: 'join',
 		component: loadTemplate('./pages/join.html', Join),
 		props: (route) => ({
 			gameId: route.query.gameId,
-			connection: connection
+			connection: connection,
+			name: route.params.name,
+			preferredAvatar: route.params.preferredAvatar
 		})
 	},
 	{

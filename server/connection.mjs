@@ -104,6 +104,10 @@ class ServerToClientConnection {
     questionEnd(pointsThisRound, correct) {
         return this._pws.send(Protocol.QUESTION_END, { pointsThisRound: pointsThisRound, correct: correct }, 5000);
     }
+    
+    gameEnd() {
+        return this._pws.send(Protocol.GAME_END);
+    }
 
     onGuess() {
         return this._pws.on(Protocol.GUESS);

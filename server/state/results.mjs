@@ -8,6 +8,11 @@ class ResultsState {
 
 	async run() {
         await this._monitorConnection.results(this._game.session().history(), this._game.players()); 
+
+        Object.values(this._clientConnections).forEach(async (client) => {
+            await client.gameEnd();
+            client.close();
+        });
 	}
 
 	nextState() {

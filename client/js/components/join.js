@@ -14,8 +14,8 @@ export default {
 	data: function() { return({
 		config: {
 			gameId : this.gameId,
-			name : "",
-			avatar : ""
+			name : this.name,
+			avatar : this.preferredAvatar
 		},
 		supportsCamera: QCodeDecoder().hasGetUserMedia(),
 		avatars: [],
@@ -26,7 +26,7 @@ export default {
 			return this.config.gameId && this.config.name;
 		}
 	},
-	props: ['gameId', 'connection'],
+	props: ['gameId', 'connection', 'name', 'preferredAvatar'],
 	methods: {
 		join: function() {
 			this.connection.connect(this.config.gameId, this.config.name, this.config.avatar).then((data) => {
