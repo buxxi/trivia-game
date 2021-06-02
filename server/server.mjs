@@ -40,6 +40,7 @@ class TriviaServer {
 		app.use('/monitor/js/ext/Pizzicato.min.js', express.static('node_modules/pizzicato/distr/Pizzicato.min.js'));
 		app.use('/monitor/js/ext/wavesurfer.min.js', express.static('node_modules/wavesurfer/dist/wavesurfer.min.js'));
 		app.use('/monitor/js/ext/uuidv4.min.js', express.static('node_modules/uuid/dist/umd/uuidv4.min.js'));
+		app.use('/monitor/js/ext/qrcode.min.js', express.static('node_modules/qrcode/build/qrcode.min.js'));
 		app.use('/monitor/fonts', express.static('fonts'));
 		app.use('/monitor/img/simple_dashed.png', express.static('img/simple_dashed.png'));
 		app.use('/monitor/img/avatars', express.static('img/avatars'));

@@ -22,14 +22,11 @@ export default {
 		serverUrl: new URL("..", document.location).toString(),
 		poweredBy: [],
 		message : undefined,
-		players: {}
+		players: {},
+		qrUrl: undefined
 	})},
 	props: ['connection', 'sound', 'preferredGameId'],
 	computed: {
-		qrUrl: function() { 
-			let localUrl = encodeURIComponent(window.location.href.replace('server.html', 'client.html') + "?gameId=" + this.gameId); 
-			return `https://chart.googleapis.com/chart?chs=400x400&cht=qr&chl=${localUrl}&choe=UTF-8`;
-		},
 		questionCount: function() { 
 			return this.availableCategories.filter(c => this.config.categories[c.type]).map(c => c.questionCount).reduce((a, b) => a + b, 0);
 		},
@@ -66,6 +63,8 @@ export default {
 
 		try {
 			this.gameId = await this.connection.connect(this.preferredGameId);
+			let clientUrl = new URL("../client#", document.location) + "?gameId=" + this.gameId; 
+			this.qrUrl = await QRCode.toDataURL(clientUrl, {width: 400, height: 400});
 			let categories = await this.connection.loadCategories();
 			this.availableCategories = categories.map(c => new CategorySelector(c));
 			this.poweredBy = categories.flatMap(c => c.attribution);
