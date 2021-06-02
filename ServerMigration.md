@@ -10,6 +10,7 @@
 - [x] Make the monitor communicate with the server
 - [ ] Replace ResponsiveVoice with dependency on self-hosted Text2Speech
 - [x] Use LESS (or migrate to SASS) by build time instead of runtime
-- [ ] Use NPM-modules for client/monitor
+- [x] Use NPM-modules for client/monitor
+- [ ] Make a dumb AI that random guesses and disconnects
 - [ ] Dockerify that process
 - [ ] Merge to master and rename project
