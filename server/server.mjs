@@ -1,11 +1,13 @@
 import express from 'express';
 import sass from 'node-sass';
 import ws from 'ws';
+import fetch from 'node-fetch';
 
 class TriviaServer {
-	constructor(port, avatars) {
+	constructor(port, avatars, ttsUrl) {
 		this._port = port;
 		this._avatars = avatars;
+		this._ttsUrl = ttsUrl;
 	}
 
 	start() {
@@ -45,6 +47,22 @@ class TriviaServer {
 		app.use('/monitor/img/simple_dashed.png', express.static('img/simple_dashed.png'));
 		app.use('/monitor/img/avatars', express.static('img/avatars'));
 		
+		app.get('/tts', (req, res) => {
+			if (!this._ttsUrl) {
+				res.sendStatus(403);
+				return;
+			}
+			if (!req.query.text) {
+				res.sendStatus(400);
+				return;
+			}
+			
+			let text = encodeURIComponent(req.query.text);
+			let url = this._ttsUrl.replace('{text}', text);
+
+			fetch(url).then(response => response.buffer()).then(buffer => res.send(buffer));
+		});
+
 		//Init regular web server
 		const server = app.listen(this._port, () => {
 			console.log(`Listening on ${this._port}!`)
