@@ -51,40 +51,40 @@ class MonitorToServerConnection {
         });
     }
 
-    onPlayersChange(callback) {
-        this._pws.on(Protocol.PLAYERS_CHANGED).then(players => callback(players));
+    onPlayersChange() {
+        return this._pws.on(Protocol.PLAYERS_CHANGED);
     }
 
-    onCategorySelect(callback) {
-       this._pws.on(Protocol.SHOW_CATEGORY_SELECT).then(data => callback(data.categories, data.correct, data.index, data.total));
+    onCategorySelect() {
+       return this._pws.on(Protocol.SHOW_CATEGORY_SELECT);
     }
 
-    onPlayerGuessed(callback) {
-        this._pws.on(Protocol.PLAYER_GUESSED).then(id => callback(id));
+    onPlayerGuessed() {
+        return this._pws.on(Protocol.PLAYER_GUESSED);
     }
 
-    onQuestion(callback) {
-        this._pws.on(Protocol.SHOW_QUESTION).then(text => callback(text));
+    onQuestion() {
+        return this._pws.on(Protocol.SHOW_QUESTION);
     }
 
-    onQuestionError(callback) {
-        this._pws.on(Protocol.QUESTION_ERROR).then(message => callback(message));
+    onQuestionError() {
+        return this._pws.on(Protocol.QUESTION_ERROR);
     }
 
-    onQuestionStart(callback) {
-        this._pws.on(Protocol.QUESTION_START).then(data => callback(data.view, data.answers));
+    onQuestionStart() {
+        return this._pws.on(Protocol.QUESTION_START);
     }
 
-    onQuestionEnd(callback) {
-        this._pws.on(Protocol.QUESTION_END).then(data => callback(data.pointsThisRound, data.correct));
+    onQuestionEnd() {
+        return this._pws.on(Protocol.QUESTION_END);
     }
 
-    onTimerTick(callback) {
-        this._pws.on(Protocol.TIMER_TICK).then(data => callback(data.timeLeft, data.percentageLeft, data.currentScore));        
+    onTimerTick() {
+        return this._pws.on(Protocol.TIMER_TICK);        
     }
 
-    onGameEnd(callback) {
-        this._pws.on(Protocol.GAME_END).then((data) => callback(data.history, data.players));
+    onGameEnd() {
+        return this._pws.on(Protocol.GAME_END);
     }
 
     clearListeners() {

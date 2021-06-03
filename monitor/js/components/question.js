@@ -122,40 +122,40 @@ export default {
 			return;
 		}
 
-		this.connection.onPlayersChange(newPlayers => {
+		this.connection.onPlayersChange().then(newPlayers => {
 			return playerConnected(this, newPlayers);
 		});
 
-		this.connection.onCategorySelect((categories, correct, index, total) => {
-			return showCategorySpinner(this, categories, correct, index, total);
+		this.connection.onCategorySelect().then(data => {
+			return showCategorySpinner(this, data.categories, data.correct, data.index, data.total);
 		});
 
-		this.connection.onQuestion(text => {
+		this.connection.onQuestion().then(text => {
 			return displayQuestion(this, text);
 		});
 
-		this.connection.onQuestionError(message => {
+		this.connection.onQuestionError().then(message => {
 			return displayError(this, message);
 		});
 
-		this.connection.onQuestionStart((view, answers) => {
-			return playbackStart(this, view, answers);
+		this.connection.onQuestionStart().then(data => {
+			return playbackStart(this, data.view, data.answers);
 		});
 
-		this.connection.onQuestionEnd((pointsThisRound, correct) => {
-			return playbackEnd(this, pointsThisRound, correct);
+		this.connection.onQuestionEnd().then(data => {
+			return playbackEnd(this, data.pointsThisRound, data.correct);
 		});
 
-		this.connection.onPlayerGuessed(id => {
+		this.connection.onPlayerGuessed().then(id => {
 			return playerGuessed(this, id);
 		});
 
-		this.connection.onTimerTick((timeLeft, percentageLeft, currentScore) => {
-			return timerTicked(this, timeLeft, percentageLeft, currentScore);
+		this.connection.onTimerTick().then(data => {
+			return timerTicked(this, data.timeLeft, data.percentageLeft, data.currentScore);
 		});
 
-		this.connection.onGameEnd((history, results) => {
-			return gameEnded(this, history, results);
+		this.connection.onGameEnd().then(data => {
+			return gameEnded(this, data.history, data.results);
 		});
 
 		for (let id in this.lobbyPlayers) {

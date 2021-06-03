@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import YoutubeLoader from '../youtubeloader.mjs';
+import {YoutubeLoader, YoutubeError} from '../youtubeloader.mjs';
 
 class MovieQuestions {
 	constructor(youtubeApiKey, tmdbApiKey) {
@@ -62,7 +62,7 @@ class MovieQuestions {
 				view : type.view(correct, attribution)
 			});
 		} catch(err) {
-			if (typeof(err) == 'string') {
+			if (err instanceof YoutubeError) {
 				return this.nextQuestion(selector);
 			} else {
 				throw err;

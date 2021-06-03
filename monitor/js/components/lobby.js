@@ -73,7 +73,7 @@ export default {
 			this.message = "Error when loading initial setup: " + e.message;
 		}
 
-		this.connection.onPlayersChange(async newPlayers => {
+		this.connection.onPlayersChange().then(async newPlayers => {
 			for (let id in this.players) {
 				this.$delete(this.players, id);
 			}

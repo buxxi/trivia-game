@@ -21,19 +21,19 @@ class YoutubeLoader {
 		let response = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${this._apiKey}&id=${videoId}&part=status,contentDetails`);
 		let data = await this._toJSON(response);
 		if (data.items.length == 0) {
-			throw new Error("Video not found");
+			throw new YoutubeError("Video not found");
 		}
 		let item = data.items[0];
 		if (!item.status.embeddable) {
-			throw new Error("Video not embeddable");
+			throw new YoutubeError("Video not embeddable");
 		}
 		let regionRestriction = item.contentDetails.regionRestriction;
 		if (regionRestriction) {
 			if (regionRestriction.blocked && regionRestriction.blocked.indexOf(YOUTUBE_REGION) != -1) {
-				throw new Error("Video is not available in " + YOUTUBE_REGION);
+				throw new YoutubeError("Video is not available in " + YOUTUBE_REGION);
 			}
 			if (regionRestriction.allowed && regionRestriction.allowed.indexOf(YOUTUBE_REGION) == -1) {
-				throw new Error("Video is not available in " + YOUTUBE_REGION);
+				throw new YoutubeError("Video is not available in " + YOUTUBE_REGION);
 			}
 		}
 	}
@@ -73,4 +73,12 @@ class YoutubeLoader {
 	}
 }
 
+class YoutubeError extends Error {
+	constructor(message) {
+		super(message);
+	}
+}
+
 export default YoutubeLoader;
+
+export {YoutubeLoader, YoutubeError};
