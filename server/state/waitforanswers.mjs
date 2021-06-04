@@ -1,6 +1,5 @@
 import ShowCorrectAnswerState from './showcorrectanswer.mjs';
 import QuestionErrorState from './questionerror.mjs';
-import {Protocol} from '../../js/protocol.mjs';
 
 class WaitForAnswersState {
     constructor(game, categories, clientConnections, monitorConnection, question) {

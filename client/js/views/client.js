@@ -1,6 +1,6 @@
 import Join from '../components/join.js';
 import Answer from '../components/answer.js';
-import ClientToServerConnection from '../connection.js';
+import ClientToServerConnection from '../connection.mjs';
 
 function loadTemplate(url, component) {
 	return (resolve, reject) => {

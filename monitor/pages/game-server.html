@@ -36,7 +36,7 @@
 				<img src="img/crown.png" class="leader" v-if="isLeadingPlayer(player)"/>
 				<span v-if="achievedPoints(player) || lostPoints(player)" v-bind:style="{'border-color': player.color}">{{ player.pointChange }}</span>
 				<div class="avatar" v-bind:data-score="showPlayerName ? player.name : player.totalPoints" v-bind:data-multiplier="player.multiplier" v-bind:class="{'guessed' : player.guessed}" v-bind:style="{'background-color': player.color, 'border-color': player.color}">
-					<img v-bind:src="'img/avatars/' + player.avatar + '.png'"/>
+					<img v-bind:src="'../common/img/avatars/' + player.avatar + '.png'"/>
 				</div>
 			</li>
 		</ul>

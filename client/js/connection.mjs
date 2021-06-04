@@ -1,4 +1,4 @@
-import {Protocol, PromisifiedWebSocket} from '../js/protocol.mjs';
+import {Protocol, PromisifiedWebSocket} from '../../common/js/protocol.mjs';
 
 class ClientToServerConnection {
     constructor(url) {

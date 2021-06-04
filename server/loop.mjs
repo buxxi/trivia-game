@@ -1,5 +1,4 @@
 import ConfigureState from './state/configure.mjs';
-import {Protocol} from '../js/protocol.mjs';
 
 class GameLoop {
     constructor(game, id, categories, monitorConnection) {

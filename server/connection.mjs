@@ -1,4 +1,4 @@
-import {Protocol, PromisifiedWebSocket} from '../js/protocol.mjs';
+import {Protocol, PromisifiedWebSocket} from '../common/js/protocol.mjs';
 import {v4 as uuid} from 'uuid';
 
 class ServerToMonitorConnection {
