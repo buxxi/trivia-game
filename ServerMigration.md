@@ -11,6 +11,7 @@
 - [x] Replace ResponsiveVoice with dependency on self-hosted Text2Speech
 - [x] Use LESS (or migrate to SASS) by build time instead of runtime
 - [x] Use NPM-modules for client/monitor
-- [ ] Make a dumb AI that random guesses and disconnects and make the game stable
+- [x] Make a dumb AI that random guesses and disconnects
+- [ ] Make the game stable on disconnects and reconnects
 - [ ] Dockerify that process
 - [ ] Merge to master, rename project and update how to deploy

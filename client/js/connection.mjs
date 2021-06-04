@@ -2,7 +2,11 @@ import {Protocol, PromisifiedWebSocket} from '../../common/js/protocol.mjs';
 
 class ClientToServerConnection {
     constructor(url) {
-        this._url = url;
+        if (url instanceof URL) {
+            this._url = `ws://${url.host}${url.pathname}`;
+        } else {
+            this._url = url;
+        }
     }
 
     connected() {
@@ -11,7 +15,7 @@ class ClientToServerConnection {
 
     connect(gameId, userName, preferredAvatar) {
         return new Promise((resolve, reject) => {
-            let ws = new WebSocket(`ws://${this._url.host}${this._url.pathname}`);
+            let ws = new WebSocket(this._url);
             ws.onopen = () => {
                 let pws = new PromisifiedWebSocket(ws, uuidv4);
                 pws.send(Protocol.JOIN_CLIENT, { gameId: gameId, userName: userName, preferredAvatar: preferredAvatar }).then((data) => {
@@ -24,7 +28,7 @@ class ClientToServerConnection {
 
     reconnect(gameId, clientId) {
         return new Promise((resolve, reject) => {
-            let ws = new WebSocket(`ws://${this._url.host}${this._url.pathname}`);
+            let ws = new WebSocket(this._url);
             ws.onopen = () => {
                 let pws = new PromisifiedWebSocket(ws, uuidv4);
                 pws.send(Protocol.JOIN_CLIENT, { gameId: gameId, clientId: clientId }).then((data) => {
