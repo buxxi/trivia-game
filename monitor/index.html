@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="../common/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="css/monitor.css"/>
+		<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+
+		<script src="https://www.youtube.com/iframe_api"></script>
+
+		<script src="js/ext/vue.min.js"></script>
+		<script src="js/ext/vue-router.min.js"></script>
+		<script src="js/ext/Pizzicato.min.js"></script>
+		<script src="js/ext/wavesurfer.min.js"></script>
+		<script src="js/ext/uuidv4.min.js"></script>
+		<script src="js/ext/qrcode.min.js"></script>
+
+		<title>Trivia Server</title>
+
+		<meta content='width=device-width, target-densitydpi=device-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=1' name='viewport' />
+	</head>
+	<body id="server">
+		<div id="main">
+			<router-view></router-view>
+		</div>
+		<script type="module" src="js/views/monitor.js"></script>
+	</body>
+</html>

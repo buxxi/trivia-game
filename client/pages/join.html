@@ -1,0 +1,37 @@
+<div class="join">
+	<div>
+		<form>
+			<div>
+				<label for="name">Name</label>
+				<div>
+					<input type="text" id="name" maxlength="10" v-model="config.name">
+				</div>
+			</div>
+			<div>
+				<label for="gameId">Code</label>
+				<div>
+					<input type="text" id="gameId" style="text-transform : uppercase" v-model="config.gameId">
+				</div>
+				<video id="camera" autoplay="true"></video>
+			</div>
+			<div>
+				<label for="avatar-selector">Preferred avatar</label>
+				<div class="avatar-selector">
+					<label v-for="avatar in avatars">
+						<input type="radio" name="avatar" v-model="config.avatar" v-bind:value="avatar"/>
+						<div class="avatar"><img v-bind:src="'../common/img/avatars/' + avatar + '.png'"/></div>
+					</label>
+				</div>
+			</div>
+
+			<div class="message" v-if="message">
+				<div>{{ message }}</div>
+			</div>
+
+			<div class="buttons">
+				<a class="btn" v-on:click="qrscan" v-if="supportsCamera"><i class="fa fa-qrcode"></i> Scan</a>
+				<a class="btn" v-on:click="join" v-bind:disabled="!validated"><i class="fa fa-fw fa-sign-in"></i>Join</a>
+			</div>
+		</form>
+	</div>
+</div>

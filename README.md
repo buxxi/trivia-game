@@ -1,22 +1,34 @@
-# WebRTC Trivia
-A trivia game where it shows you a movie clip on your computer and then you use your phone as a controller to answer what movie it was.
-Using SocketPeer to establish a P2P connection between the phone and computer and then has all the logic on the client.
+# Trivia Game
+A couch trivia game with multiple possible categories where the players use their smart phone as a controller and a browser in fullscreen for the game.
+Accompanying the question a movie clip, music or an image could be played with 4 possible answers.
+This project previously used WebRTC and tried to use do everything in the browser which made a nightmare to support.
+
+### Build instructions:
+with node (tested on node16):
+```
+git clone https://github.com/buxxi/webrtc-trivia.git
+npm install
+npm run start
+```
+or with Docker:
+```
+git clone https://github.com/buxxi/webrtc-trivia.git
+sudo docker build -t buxxi/trivia .
+sudo docker run -d -p 8080:8080 --name trivia buxxi/trivia
+```
 
 ### Sample screenshot:
-![WebRTC Trivia Screenshot][screenshot]
+(a bit outdated)
+![Trivia Screenshot][screenshot]
 
-### Libraries used:
+### Notable libraries used:
 - Vue.js: https://vuejs.org/
-- LessCSS: http://lesscss.org/
+- SASS: https://sass-lang.com/
 - FontAwesome: http://fontawesome.io/
-- SocketPeer: https://github.com/cvan/socketpeer
 - qcode-decode: https://github.com/cirocosta/qcode-decoder
 - pizzicato: https://alemangui.github.io/pizzicato
 - wavesurfer: https://wavesurfer-js.org/
 - randomColor: https://github.com/davidmerfield/randomColor
-- Fingerprint2: https://github.com/Valve/fingerprintjs2
-- Twemoji: https://github.com/twitter/twemoji
-- IDB: https://github.com/jakearchibald/idb
 - Compromise: https://github.com/nlp-compromise/compromise
 
 ### API's used:
@@ -41,3 +53,6 @@ Using SocketPeer to establish a P2P connection between the phone and computer an
 - http://subtlepatterns.com/
 
  [screenshot]: https://github.com/buxxi/webrtc-trivia/blob/master/trivia_screenshot.gif
+
+### Avatars from:
+- Twemoji: https://github.com/twitter/twemoji

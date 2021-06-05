@@ -1,0 +1,131 @@
+<div class="lobby">
+	<div class="connect">
+		<h1>Trivia Game</h1>
+		<div>
+			<div class="qr">
+				<img v-if="gameId != null" v-bind:src="qrUrl"/>
+				<i v-if="gameId == null" class="fa fa-cog fa-spin fa-fw"></i>
+			</div>
+			<div class="code" v-if="gameId != null">{{ gameId }}</div>
+			<div class="code" v-if="gameId == null">Loading...</div>
+		</div>
+		<div class="instructions" v.bind:data-url="serverUrl">
+			<div>
+				<h3>Join on your Smartphone!</h3>
+				By QR Code or go to:<br/>
+				<b>{{serverUrl}}</b>
+			</div>
+		</div>
+	</div>
+	<div class="players">
+		<h1><i class="fa fa-fw fa-users"></i>Players</h1>
+		<ul class="playerlist">
+			<li v-if="Object.entries(players).length == 0">No players has joined yet, be the first!</li>
+			<li v-for="(player, id) in players">
+				<a v-on:click="kickPlayer(id)" class="kick" title="Kick player">
+					<div class="avatar" v-bind:data-score="player.name" v-bind:style="{'background-color': player.color, 'border-color': player.color}"><img v-bind:src="'../common/img/avatars/' + player.avatar + '.png'"/></div>
+				</a>
+			</li>
+		</ul>
+		<div class="settings">
+			<h1><i class="fa fa-fw fa-cogs"></i>Settings</h1>
+			<div>
+				<form>
+					<div class="general">
+						<div class="numeric-input">
+							<label for="questions" title="Number of questions"><i class="fa fa-fw fa-question"></i></label>
+							<input type="number" id="questions" step="5" min="1" v-model="config.questions">
+						</div>
+
+						<div class="numeric-input">
+							<label for="time" title="Seconds to answer"><i class="fa fa-fw fa-hourglass"></i></label>
+							<input type="number" id="time" step="5" min="1" v-model="config.time">
+						</div>
+
+						<div class="numeric-input">
+							<label for="points" title="Points per round"><i class="fa fa-fw fa-star"></i></label>
+							<input type="number" id="points" step="100" min="1" v-model="config.pointsPerRound">
+						</div>
+
+						<div class="numeric-input" v-if="config.allowMultiplier">
+							<label for="maxMultiplier" title="Max multiplier"><i class="fa fa-fw fa-times"></i></label>
+							<input type="number" id="maxMultiplier" step="1" min="1" v-model="config.maxMultiplier">
+						</div>
+
+						<ul class="circle-checkboxes">
+							<li v-bind:class="{'selected' : config.stopOnAnswers}">
+								<label for="stop" title="Stop after all answered"><input type="checkbox" id="stop" v-model="config.stopOnAnswers"><i class="fa fa-stop"></i></label>
+							</li>
+							<li v-bind:class="{'selected' : config.allowMultiplier}">
+								<label for="multiplier" title="Use multipliers"><input type="checkbox" id="multiplier" v-model="config.allowMultiplier"><i class="fa fa-times"></i></label>
+							</li>
+							<li v-bind:class="{'selected' : config.sound.backgroundMusic}">
+								<label for="backgroundMusic" title="Background music"><input type="checkbox" id="backgroundMusic" v-model="config.sound.backgroundMusic"><i class="fa fa-music"></i></label>
+							</li>
+							<li v-bind:class="{'selected' : config.sound.text2Speech}">
+								<label for="text2Speech" title="Text-2-speech of questions"><input type="checkbox" id="text2Speech" v-model="config.sound.text2Speech"><i class="fa fa-commenting-o"></i></label>
+							</li>
+							<li v-bind:class="{'selected' : config.sound.soundEffects}">
+								<label for="soundEffects" title="Sound effects"><input type="checkbox" id="soundEffects" v-model="config.sound.soundEffects"><i class="fa fa-exclamation"></i></label>
+							</li>
+							<li v-bind:class="{'selected' : config.categorySpinner}">
+								<label for="spinner" title="Category spinner"><input type="checkbox" id="spinner" v-model="config.categorySpinner"><i class="fa fa-spinner"></i></label>
+							</li>
+							<li v-bind:class="{'selected' : config.fullscreen}">
+								<label for="fullscreen" title="Toggle fullscreen"><input type="checkbox" id="fullscreen" v-model="config.fullscreen" v-on:change="toggleFullScreen()"><i class="fa fa-window-maximize"></i></label>
+							</li>
+						</ul>
+					</div>
+
+					<div id="categories">
+						<h1><i class="fa fa-fw fa-list-ul"></i>Categories</h1>
+						<ul class="circle-checkboxes">
+							<li v-bind:class="{'selected' : config.categories[category.type] && category.preload.done, 'loaded' : !config.categories[category.type] && category.preload.done, 'failed' : category.preload.failed, 'static' : category.static}" v-for="category in availableCategories">
+								<label v-bind:title="category.name">
+									<input type="checkbox" v-bind:id="category.type" v-model="config.categories[category.type]" v-on:change="preload(category.type)">
+									<i v-if="category.icon.indexOf('url:') == -1" v-bind:class="['fa',category.icon]"></i>
+									<img v-if="category.icon.indexOf('url:') == 0" v-bind:src="category.icon.substr(4)"/>
+								</label>
+								<div class="progress" v-if="config.categories[category.type] && !category.preload.done && !category.preload.failed">{{ category.preloadPercentage() }}%</div>
+							</li>
+						</ul>
+						<ul class="category-actions">
+							<li>
+								<label title="Select all categories"><a v-on:click="loadAll()"><i class="fa fa-spinner"></i></a></label>
+							</li>
+							<li>
+								<label title="Clear caches"><a v-on:click="clearCache()"><i class="fa fa-refresh"></i></a></label>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="rules">
+		<h1><i class="fa fa-fw fa-gavel"></i>Rules</h1>
+		<ol>
+			<li>Use your phone to select the answer you think is correct</li>
+			<li>A correct answer gives you points</li>
+			<li>An incorrect answer removes points</li>
+			<li>You can't go below 0, so make wild guesses if you're that low on score </li>
+			<li>You are awarded more points for answering quicker</li>
+			<li v-if="config.allowMultiplier">A correct answer will increase the point-multiplier for the next question</li>
+			<li v-if="config.allowMultiplier">An invalid answer will reset the point-multiplier to 1x</li>
+			<li v-if="config.allowMultiplier">Not answering will reset the point-multiplier to 1x</li>
+			<li>You have <b>{{config.time}}</b> seconds to answer each question</li>
+			<li>There is <b>{{questionCount}}</b> possible questions in the selected categories</li>
+		</ol>
+
+		<h1><i class="fa fa-fw fa-heart" style="color : #aa0000"></i>Powered by</h1>
+		<ul class="carousel">
+			<li v-for="(site, index) in poweredBy" v-bind:class="{show : index == carouselIndex}"><a v-bind:href="site.url">{{ site.name }}</a></li>
+		</ul>
+	</div>
+	<div v-if="message">
+		<div class="message">{{ message }}</div>
+	</div>
+	<div id="start">
+		<a v-on:click="startGame()" v-bind:disabled="startMessage != undefined" v-bind:title="startMessage != undefined ? startMessage : 'Game is ready to start'"><i class="fa fa-fw fa-play"></i></a>
+	</div>
+</div>

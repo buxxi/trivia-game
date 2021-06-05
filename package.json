@@ -1,0 +1,36 @@
+{
+  "name": "trivia-game-server",
+  "version": "1.0.0",
+  "description": "A trivia game which uses smart phones as controllers",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/index.mjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buxxi/webrtc-trivia.git"
+  },
+  "author": "BuXXi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/buxxi/webrtc-trivia/issues"
+  },
+  "homepage": "https://github.com/buxxi/webrtc-trivia#readme",
+  "dependencies": {
+    "commander": "^7.2.0",
+    "compromise": "^13.11.2",
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.1",
+    "node-sass": "^6.0.0",
+    "pizzicato": "^0.6.4",
+    "qcode-decoder": "^0.1.0",
+    "qrcode": "^1.4.4",
+    "randomcolor": "^0.6.2",
+    "uuid": "^8.3.2",
+    "vue": "^2.6.13",
+    "vue-router": "^3.5.1",
+    "wavesurfer": "^1.3.4",
+    "ws": "^7.4.6"
+  }
+}

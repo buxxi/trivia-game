@@ -1,0 +1,28 @@
+<div class="answer">
+	<div v-if="waiting">
+		<div class="fa-stack fa-lg fa-5x">
+			<i class="fa fa-television fa-stack-2x"></i>
+			<i class="fa fa-stack-1x" v-bind:class="{'fa-eye' : connected, 'fa-bolt' : !connected}"></i>
+		</div>
+		<h3>{{ message }}</h3>
+		<ul v-if="!connected">
+			<li>
+				<a class="btn" v-on:click="reconnect()"><i class="fa fa-fw fa-refresh"></i> Reconnect</a>
+			</li>
+			<li>
+				<a class="btn" href="#/"><i class="fa fa-fw fa-sign-out"></i> To lobby</a>
+			</li>
+		</ul>
+	</div>
+	<div v-if="!waiting">
+		<div class="stats" v-bind:style="{'background-color': stats.color}">
+			<img v-bind:src="'../common/img/avatars/' + stats.avatar + '.png'"/>
+			<div><i class="fa fa-fw fa-star"></i>{{stats.score}}</div>
+			<div><i class="fa fa-fw fa-times"></i>{{stats.multiplier}}</div>
+		</div>
+		<button type="button" class="btn-A" v-if="answers.A" v-on:click="makeGuess('A')" v-bind:class="buttonClass('A')" v-bind:disabled="hasGuessed">{{ answers.A }}</button>
+		<button type="button" class="btn-B" v-if="answers.B" v-on:click="makeGuess('B')" v-bind:class="buttonClass('B')" v-bind:disabled="hasGuessed">{{ answers.B }}</button>
+		<button type="button" class="btn-C" v-if="answers.C" v-on:click="makeGuess('C')" v-bind:class="buttonClass('C')" v-bind:disabled="hasGuessed">{{ answers.C }}</button>
+		<button type="button" class="btn-D" v-if="answers.D" v-on:click="makeGuess('D')" v-bind:class="buttonClass('D')" v-bind:disabled="hasGuessed">{{ answers.D }}</button>
+	</div>
+</div>

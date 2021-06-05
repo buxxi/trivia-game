@@ -2,6 +2,9 @@
 # https://help.github.com/articles/ignoring-files
 # Example .gitignore files: https://github.com/github/gitignore
 /.htaccess
+/node_modules
+/.cache
 /conf/*.json
+/css/trivia.css
 .idea/*
 .vscode/*
