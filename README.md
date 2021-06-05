@@ -1,9 +1,25 @@
-# WebRTC Trivia
-A trivia game where it shows you a movie clip on your computer and then you use your phone as a controller to answer what movie it was.
-Using SocketPeer to establish a P2P connection between the phone and computer and then has all the logic on the client.
+# Trivia Game
+A couch trivia game with multiple possible categories where the players use their smart phone as a controller and a browser in fullscreen for the game.
+Accompanying the question a movie clip, music or an image could be played with 4 possible answers.
+This project previously used WebRTC and tried to use do everything in the browser which made a nightmare to support.
+
+### Build instructions:
+with node (tested on node16):
+```
+git clone https://github.com/buxxi/webrtc-trivia.git
+npm install
+npm run start
+```
+or with Docker:
+```
+git clone https://github.com/buxxi/webrtc-trivia.git
+sudo docker build -t buxxi/trivia .
+sudo docker run -d -p 8080:8080 --name trivia buxxi/trivia
+```
 
 ### Sample screenshot:
-![WebRTC Trivia Screenshot][screenshot]
+(a bit outdated)
+![Trivia Screenshot][screenshot]
 
 ### Notable libraries used:
 - Vue.js: https://vuejs.org/
