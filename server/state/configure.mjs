@@ -16,7 +16,7 @@ class ConfigureState {
     
             this._monitorConnection.onPreloadCategory().then(async (category) => {
                 let count = await this._categories.preload(category, (current, total) => {
-                    this._monitorConnection.preloadProgress(category, current, total);
+                    this._monitorConnection.preloadProgress(category, current, total).catch(e => { console.log("Preload progress failed")}); //TODO: better error handling somehow
                 }, this._game);
                 return count;
             });

@@ -28,11 +28,11 @@ class Timer {
 			this._end = this._start + (1000 * this._timePerQuestion);
 			this._running = true;
 
-			callback(this.timeLeft(), this._percentageLeft(), this.score()).catch(reject);
 			let cancel = setInterval(() => {
-				callback(this.timeLeft(), this._percentageLeft(), this.score()).catch(() => {
-					this._stop();
-					reject();
+				callback(this.timeLeft(), this._percentageLeft(), this.score()).catch((e) => {
+					this._running = false;
+					clearInterval(cancel);
+					reject(e);
 				});
 				if (new Date().getTime() > this._end) {
 					this._stop();

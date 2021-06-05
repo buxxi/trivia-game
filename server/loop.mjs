@@ -19,6 +19,9 @@ class GameLoop {
                 console.log(`Game ${this._id} - Finished state: ${this._state.constructor.name}`);
                 this._state = this._state.nextState(result);
             } catch (e) {
+                if (e) {
+                    console.log(`Game ${this._id} - Error in state: ${this._state.constructor.name}: ${e.message}`);
+                }
                 this._state = this._state.errorState(e);
             }
         }
@@ -66,7 +69,9 @@ class GameLoop {
             }
         } 
 
-        this._monitorConnection.playersChanged(result);
+        this._monitorConnection.playersChanged(result).catch(e => {
+            console.log(`Game ${this._id} - error sending playersChanged: ${e.message}`);
+        });
     }
 }
 

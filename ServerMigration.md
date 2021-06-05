@@ -12,6 +12,6 @@
 - [x] Use LESS (or migrate to SASS) by build time instead of runtime
 - [x] Use NPM-modules for client/monitor
 - [x] Make a dumb AI that random guesses and disconnects
-- [ ] Make the game stable on disconnects and reconnects
+- [x] Make the game stable on disconnects and reconnects
 - [ ] Dockerify that process
 - [ ] Merge to master, rename project and update how to deploy

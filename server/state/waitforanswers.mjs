@@ -18,7 +18,7 @@ class WaitForAnswersState {
             let client = this._clientConnections[clientId];
             client.onGuess().then(async guess => {
                 this._game.guess(clientId, guess);
-                this._monitorConnection.playerGuessed(clientId);
+                return this._monitorConnection.playerGuessed(clientId);
             });
         };
         
