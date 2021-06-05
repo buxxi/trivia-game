@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/buxxi/webrtc-trivia.git"
+    "url": "git+https://github.com/buxxi/trivia-game.git"
   },
   "author": "BuXXi",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/buxxi/webrtc-trivia/issues"
+    "url": "https://github.com/buxxi/trivia-game/issues"
   },
-  "homepage": "https://github.com/buxxi/webrtc-trivia#readme",
+  "homepage": "https://github.com/buxxi/trivia-game#readme",
   "dependencies": {
     "commander": "^7.2.0",
     "compromise": "^13.11.2",

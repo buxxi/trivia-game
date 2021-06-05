@@ -59,7 +59,7 @@ class CurrentGameQuestions {
 			name : 'Current Game',
 			icon : 'fa-history',
 			attribution : [
-				{ url: 'https://github.com/buxxi/webrtc-trivia', name: 'GitHub' }
+				{ url: 'https://github.com/buxxi/trivia-game', name: 'GitHub' }
 			]
 		};
 	}

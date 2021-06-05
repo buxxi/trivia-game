@@ -6,13 +6,13 @@ This project previously used WebRTC and tried to use do everything in the browse
 ### Build instructions:
 with node (tested on node16):
 ```
-git clone https://github.com/buxxi/webrtc-trivia.git
+git clone https://github.com/buxxi/trivia-game.git
 npm install
 npm run start
 ```
 or with Docker:
 ```
-git clone https://github.com/buxxi/webrtc-trivia.git
+git clone https://github.com/buxxi/trivia-game.git
 sudo docker build -t buxxi/trivia .
 sudo docker run -d -p 8080:8080 --name trivia buxxi/trivia
 ```
@@ -52,7 +52,7 @@ sudo docker run -d -p 8080:8080 --name trivia buxxi/trivia
 ### Background pattern from:
 - http://subtlepatterns.com/
 
- [screenshot]: https://github.com/buxxi/webrtc-trivia/blob/master/trivia_screenshot.gif
+ [screenshot]: https://github.com/buxxi/trivia-game/blob/master/trivia_screenshot.gif
 
 ### Avatars from:
 - Twemoji: https://github.com/twitter/twemoji
