@@ -95,7 +95,7 @@ async function playerConnected(app, newPlayers) {
 
 async function gameEnded(app, history, results) {
 	app.connection.clearListeners();
-	app.$router.push({ name: 'results', params: { gameId: app.gameId, results: results, history: history } });	
+	app.$router.push({ name: 'results', query: { gameId: app.gameId }, params: { results: results, history: history } });	
 }
 
 export default {
@@ -118,7 +118,8 @@ export default {
 	},
 	created: function() {
 		if (!this.connection.connected()) {
-			this.$router.push("/");
+			console.log(this.gameId);
+			this.$router.push({ path: "/", query: { gameId: this.gameId } });
 			return;
 		}
 

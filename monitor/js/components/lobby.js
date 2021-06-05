@@ -166,7 +166,7 @@ export default {
 				clearInterval(this.carouselTimeout);
 				this.sound.play();
 				this.connection.clearListeners();
-				this.$router.push({name: 'game', params: { gameId: this.gameId, players: this.players } }, () => {
+				this.$router.push({name: 'game', query: { gameId: this.gameId }, params: { players: this.players } }, () => {
 					this.connection.startGame(this.config);
 				});
 			} catch (e) {

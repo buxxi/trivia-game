@@ -32,7 +32,7 @@ const routes = [
 		component: loadTemplate('./pages/game-server.html', Question),
 		props: (route) => ({ 
 				connection: connection,
-				gameId: route.params.gameId,
+				gameId: route.query.gameId,
 				lobbyPlayers: route.params.players,
 				sound: sound
 		})		 
@@ -42,7 +42,7 @@ const routes = [
 		path: '/results',
 		component: loadTemplate('./pages/results.html', Results),
 		props: (route) => ({ 
-			gameId: route.params.gameId,
+			gameId: route.query.gameId,
 			results: route.params.results,
 			history: route.params.history
 		})		 

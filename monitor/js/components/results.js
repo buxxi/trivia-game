@@ -5,6 +5,9 @@ export default {
 		},
 
 		scores: function() {
+			if (!this.results) {
+				return [];
+			}
 			return Object.values(this.results).sort((a, b) => b.score - a.score);
 		},
 
@@ -37,8 +40,8 @@ export default {
 		}
 	},
 	created: function() {
-		if (!this.results) {
-			this.$router.push("/");
+		if (!this.results && ! this.history) {
+			this.$router.push({ path: "/", query : { gameId: this.gameId } });
 			return;
 		}
 	}
