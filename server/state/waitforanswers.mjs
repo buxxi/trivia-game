@@ -25,7 +25,7 @@ class WaitForAnswersState {
         console.log(this._question.answers);
 
         let pointsThisRound = await this._game.startTimer((timeLeft, percentageLeft, currentScore) => { 
-            this._monitorConnection.timerTick(timeLeft, percentageLeft, currentScore);
+            return this._monitorConnection.timerTick(timeLeft, percentageLeft, currentScore);
         });  
 
         Object.values(this._clientConnections).forEach(client => client.removeGuessListener());

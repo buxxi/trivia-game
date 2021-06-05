@@ -22,25 +22,29 @@ class Timer {
 		return Math.ceil((this._end - time) / (this._end - this._start) * this._pointsPerRound);
 	}
 
-	run(callback, onStop) {
-		this._start = new Date().getTime();
-		this._end = this._start + (1000 * this._timePerQuestion);
-		this._running = true;
+	run(callback) {
+		return new Promise((resolve, reject) => {
+			this._start = new Date().getTime();
+			this._end = this._start + (1000 * this._timePerQuestion);
+			this._running = true;
 
+			callback(this.timeLeft(), this._percentageLeft(), this.score()).catch(reject);
+			let cancel = setInterval(() => {
+				callback(this.timeLeft(), this._percentageLeft(), this.score()).catch(() => {
+					this._stop();
+					reject();
+				});
+				if (new Date().getTime() > this._end) {
+					this._stop();
+				}
+			}, 100);
 
-		callback(this.timeLeft(), this._percentageLeft(), this.score());
-		let cancel = setInterval(() => {
-			callback(this.timeLeft(), this._percentageLeft(), this.score());
-			if (new Date().getTime() > this._end) {
-				this._stop();
+			this._stop = () => {
+				this._running = false;
+				clearInterval(cancel);
+				resolve();
 			}
-		}, 100);
-
-		this._stop = () => {
-			this._running = false;
-			clearInterval(cancel);
-			onStop();
-		}
+		});
 	}
 
 	stop() {

@@ -84,6 +84,9 @@ class Game {
 	}
 
 	addPlayer(peerid, name, avatar) {
+		if (!name) {
+			throw new Error("Invalid name " + name);
+		}
 		if (this._started) {
 			throw new Error("Game has already started");
 		}
@@ -157,13 +160,11 @@ class Game {
 	}
 
 	startTimer(callback) {
-		return new Promise((resolve, reject) => {
-			this._timer.run(callback, () => {
-				let pointsThisRound = this._calculatePoints();
-				this._guesses = {};
-				this._session.endQuestion();
-				resolve(pointsThisRound);
-			});
+		return this._timer.run(callback).then(() => {
+			let pointsThisRound = this._calculatePoints();
+			this._guesses = {};
+			this._session.endQuestion();
+			return pointsThisRound;
 		});
 	}
 
