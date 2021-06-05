@@ -97,6 +97,9 @@ class Game {
 	}
 
 	removePlayer(peerid) {
+		if (this._started) {
+			throw new Error("Can't remove players once the game has started");
+		}
 		delete this._players[peerid];
 	}
 

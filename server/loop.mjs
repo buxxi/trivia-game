@@ -38,8 +38,10 @@ class GameLoop {
 
         this._clientConnections[clientId] = connection;
         connection.onClose().catch(() => {
+            console.log(`Game ${this._id} - ${clientId} has disconnected`);
             delete this._clientConnections[clientId];
-            this._sendPlayerChanges()
+            this._sendPlayerChanges();
+            try { this._game.removePlayer(clientId) } catch (e) {};
         });
         this._sendPlayerChanges();
         return this._game.stats(clientId);
