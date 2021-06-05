@@ -21,6 +21,7 @@ class Bot {
         this._connection = connection;
         this._gameId = gameId;
         this._behaviours = behaviours;
+        this._gameStarted = false;
     }
 
     async init() {
@@ -33,17 +34,31 @@ class Bot {
     }
 
     _listen() {
-        this._connection.onQuestionStart().then(async () => this._guess());
+        this._connection.onQuestionStart().then(async () => {
+            this._gameStarted = true;
+            this._guess();
+        });
         this._connection.onQuestionEnd().then(async () => {});
         this._connection.onGameEnd().then(async () => {});
     }
 
     async _reconnect() {
-        if (this._connection.connected()) {
-            this._connection.close();
-        } else {
-            await this._connection.reconnect(this._gameId, this._clientId).catch((e) => {});
-            this._listen();   
+        try {
+            if (this._connection.connected()) {
+                this._connection.close();
+                console.log(`${this._name} disconnected`);
+            } else {
+                if (this._gameStarted) {
+                    await this._connection.reconnect(this._gameId, this._clientId);
+                } else {
+                    let result = await this._connection.connect(this._gameId, this._name);
+                    this._clientId = result.clientId;
+                }
+                console.log(`${this._name} connected`);
+                this._listen();   
+            }
+        } catch (e) {
+            console.log(`${this._name} failed to reconnect: ${e.message}`);
         }
         setTimeout(() => this._reconnect(), this._randomDelay() * 2);
     }
