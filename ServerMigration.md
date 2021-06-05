@@ -13,5 +13,5 @@
 - [x] Use NPM-modules for client/monitor
 - [x] Make a dumb AI that random guesses and disconnects
 - [x] Make the game stable on disconnects and reconnects
-- [ ] Dockerify that process
+- [x] Dockerify that process
 - [ ] Merge to master, rename project and update how to deploy
