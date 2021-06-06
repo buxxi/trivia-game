@@ -16,33 +16,33 @@ class TriviaServer {
 		let clientStyle = sass.renderSync({ file: 'client/css/client.scss' }).css.toString();
 		let monitorStyle = sass.renderSync({ file: 'monitor/css/monitor.scss' }).css.toString();
 		
-		app.get('', (req, res) => {
+		app.get('/trivia', (req, res) => {
 			let isClient = !!req.headers['user-agent'].match(/Mobi/);
-			res.redirect(isClient ? './client' : './monitor');
+			res.redirect(isClient ? '/trivia/client' : '/trivia/monitor');
 		});
 		
-		app.use('/common', express.static('common'));
+		app.use('/trivia/common', express.static('common'));
 
 		//Serve files for client
-		app.use('/client', express.static('client'));
-		app.get('/client/css/client.css', (req, res) => { res.type("css").send(clientStyle); });
-		app.use('/client/js/ext/vue.min.js', express.static('node_modules/vue/dist/vue.min.js'));
-		app.use('/client/js/ext/vue-router.min.js', express.static('node_modules/vue-router/dist/vue-router.min.js'));
-		app.use('/client/js/ext/qcode-decoder.min.js', express.static('node_modules/qcode-decoder/build/qcode-decoder.min.js'));
-		app.use('/client/js/ext/uuidv4.min.js', express.static('node_modules/uuid/dist/umd/uuidv4.min.js'));
-		app.use('/client/avatars.json', (req, res) => { res.type("js").send(JSON.stringify(this._avatars)); });
+		app.use('/trivia/client', express.static('client'));
+		app.get('/trivia/client/css/client.css', (req, res) => { res.type("css").send(clientStyle); });
+		app.use('/trivia/client/js/ext/vue.min.js', express.static('node_modules/vue/dist/vue.min.js'));
+		app.use('/trivia/client/js/ext/vue-router.min.js', express.static('node_modules/vue-router/dist/vue-router.min.js'));
+		app.use('/trivia/client/js/ext/qcode-decoder.min.js', express.static('node_modules/qcode-decoder/build/qcode-decoder.min.js'));
+		app.use('/trivia/client/js/ext/uuidv4.min.js', express.static('node_modules/uuid/dist/umd/uuidv4.min.js'));
+		app.use('/trivia/client/avatars.json', (req, res) => { res.type("js").send(JSON.stringify(this._avatars)); });
 		
 		//Serve files for monitor
-		app.use('/monitor', express.static('monitor'));
-		app.get('/monitor/css/monitor.css', (req, res) => { res.type("css").send(monitorStyle); });
-		app.use('/monitor/js/ext/vue.min.js', express.static('node_modules/vue/dist/vue.min.js'));
-		app.use('/monitor/js/ext/vue-router.min.js', express.static('node_modules/vue-router/dist/vue-router.min.js'));
-		app.use('/monitor/js/ext/Pizzicato.min.js', express.static('node_modules/pizzicato/distr/Pizzicato.min.js'));
-		app.use('/monitor/js/ext/wavesurfer.min.js', express.static('node_modules/wavesurfer/dist/wavesurfer.min.js'));
-		app.use('/monitor/js/ext/uuidv4.min.js', express.static('node_modules/uuid/dist/umd/uuidv4.min.js'));
-		app.use('/monitor/js/ext/qrcode.min.js', express.static('node_modules/qrcode/build/qrcode.min.js'));
+		app.use('/trivia/monitor', express.static('monitor'));
+		app.get('/trivia/monitor/css/monitor.css', (req, res) => { res.type("css").send(monitorStyle); });
+		app.use('/trivia/monitor/js/ext/vue.min.js', express.static('node_modules/vue/dist/vue.min.js'));
+		app.use('/trivia/monitor/js/ext/vue-router.min.js', express.static('node_modules/vue-router/dist/vue-router.min.js'));
+		app.use('/trivia/monitor/js/ext/Pizzicato.min.js', express.static('node_modules/pizzicato/distr/Pizzicato.min.js'));
+		app.use('/trivia/monitor/js/ext/wavesurfer.min.js', express.static('node_modules/wavesurfer/dist/wavesurfer.min.js'));
+		app.use('/trivia/monitor/js/ext/uuidv4.min.js', express.static('node_modules/uuid/dist/umd/uuidv4.min.js'));
+		app.use('/trivia/monitor/js/ext/qrcode.min.js', express.static('node_modules/qrcode/build/qrcode.min.js'));
 		
-		app.get('/tts', (req, res) => {
+		app.get('/trivia/tts', (req, res) => {
 			if (!this._ttsUrl) {
 				res.sendStatus(403);
 				return;
