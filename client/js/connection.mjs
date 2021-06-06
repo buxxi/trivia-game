@@ -3,7 +3,7 @@ import {Protocol, PromisifiedWebSocket} from '../../common/js/protocol.mjs';
 class ClientToServerConnection {
     constructor(url) {
         if (url instanceof URL) {
-            if (url.protocol === 'https') {
+            if (url.protocol === 'https:') {
                 this._url = `wss://${url.host}${url.pathname}`;
             } else {
                 this._url = `ws://${url.host}${url.pathname}`;

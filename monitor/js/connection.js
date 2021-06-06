@@ -2,7 +2,7 @@ import {Protocol, PromisifiedWebSocket} from '../../common/js/protocol.mjs';
 
 class MonitorToServerConnection {
     constructor(url) {
-        if (url.protocol === 'https') {
+        if (url.protocol === 'https:') {
             this._url = `wss://${url.host}${url.pathname}`;
         } else {
             this._url = `ws://${url.host}${url.pathname}`;
