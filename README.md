@@ -7,14 +7,16 @@ This project previously used WebRTC and tried to use do everything in the browse
 with node (tested on node16):
 ```
 git clone https://github.com/buxxi/trivia-game.git
+cd trivia-game
 npm install
 npm run start
 ```
 or with Docker:
 ```
 git clone https://github.com/buxxi/trivia-game.git
+cd trivia-game
 sudo docker build -t buxxi/trivia .
-sudo docker run -d -p 8080:8080 --name trivia buxxi/trivia
+sudo docker run -d -p 8080:8080 --volume ~/.trivia-game/conf:/opt/trivia/conf --restart always --name trivia buxxi/trivia
 ```
 
 ### Sample screenshot:

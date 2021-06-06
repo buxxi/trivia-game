@@ -16,7 +16,10 @@ class TriviaServer {
 		let clientStyle = sass.renderSync({ file: 'client/css/client.scss' }).css.toString();
 		let monitorStyle = sass.renderSync({ file: 'monitor/css/monitor.scss' }).css.toString();
 		
-		app.use('/index.html', express.static('index.html'));
+		app.get('', (req, res) => {
+			let isClient = !!req.headers['user-agent'].match(/Mobi/);
+			res.redirect(isClient ? './client' : './monitor');
+		});
 		
 		app.use('/common', express.static('common'));
 
@@ -52,7 +55,13 @@ class TriviaServer {
 			let text = encodeURIComponent(req.query.text);
 			let url = this._ttsUrl.replace('{text}', text);
 
-			fetch(url).then(response => response.buffer()).then(buffer => res.send(buffer));
+			fetch(url)
+				.then(response => response.buffer())
+				.then(buffer => res.send(buffer))
+				.catch((e) => {
+					console.log(e);
+					res.sendStatus(500);
+				});
 		});
 
 		//Init regular web server
