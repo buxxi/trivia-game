@@ -1,13 +1,15 @@
 import QuestionSelector from '../selector.mjs';
+import { promises as fs } from 'fs';
+import { dirname, join } from 'path';
 
 class GenericCategoryLoader {
 	constructor() {
 	}
 
-	create(name, input) {
+	create(path, input) {
 		var parsed = JSON.parse(input);
 		var description = parsed.description;
-		description.type = /.*?([a-zA-Z0-9]+).json/.exec(name)[1];
+		description.type = /.*?([a-zA-Z0-9]+).json/.exec(path)[1];
 		description.static = true;
 		if (!description.attribution) {
 			description.attribution = [];
@@ -19,12 +21,13 @@ class GenericCategoryLoader {
 			}
 			return map;
 		}, {});
-		return new GenericCategory(description, questions, parsed.data);
+		return new GenericCategory(path, description, questions, parsed.data);
 	}
 }
 
 class GenericCategory {
-	constructor(description, questions, data) {
+	constructor(path, description, questions, data) {
+		this._path = path;
 		this._description = description;
 		this._questions = questions;
 		this._data = data;
@@ -35,15 +38,26 @@ class GenericCategory {
 	}
 
 	async preload(progress) {
-			var selector = new QuestionSelector();
-			var sanityCheck = [];
-			for (var i = 0; i < 100; i++) {
-				sanityCheck.push(this.nextQuestion(selector));
-			}
+		progress(0, 2);
 
-			await Promise.all(sanityCheck);
-			
-			return this._countQuestions();
+		if (typeof(this._data) == 'string') {
+			let questionData = await fs.readFile(join(dirname(this._path), this._data));
+			this._data = JSON.parse(questionData);
+		}
+
+		progress(1, 2);
+
+		var selector = new QuestionSelector();
+		var sanityCheck = [];
+		for (var i = 0; i < 100; i++) {
+			sanityCheck.push(this.nextQuestion(selector));
+		}
+
+		await Promise.all(sanityCheck);
+		
+		progress(2, 2);
+
+		return this._countQuestions();
 	}
 
 	async nextQuestion(selector) {
