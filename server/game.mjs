@@ -108,9 +108,8 @@ class Game {
 
 	start(config) {
 		Object.assign(this._config, config);
-		this._categories.configure(this._config.categories);
 		Object.values(this._players).forEach((player) => player._reset());
-		this._session = new Session(this._config.questions);
+		this._session = new Session(this._config.questions, this._config.categories);
 		this._timer = new Timer(this._config.time, this._config.pointsPerRound);
 		this._started = true;
 	}

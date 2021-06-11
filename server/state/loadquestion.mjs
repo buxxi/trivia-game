@@ -18,12 +18,13 @@ class LoadingNextQuestionState {
             return;
         }
         let question = await this._game.nextQuestion();
-        
+        let session = this._game.session();
+
         let showCategorySpinner = this._game.showCategorySpinner();
-        let spinnerCategories = showCategorySpinner ? this._insertJokes(this._categories.enabled().map(this._toSpinnerCategory)) : [];
-        let correct = this._game.session().category();
-        let index = this._game.session().index();
-        let total = this._game.session().total();
+        let spinnerCategories = showCategorySpinner ? this._insertJokes(this._categories.enabled(session).map(this._toSpinnerCategory)) : [];
+        let correct = session.category();
+        let index = session.index();
+        let total = session.total();
 
         await this._monitorConnection.categorySelected(spinnerCategories, correct, index, total);
 

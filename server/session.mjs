@@ -1,11 +1,21 @@
 class Session {
-	constructor(totalQuestions) {
+	constructor(totalQuestions, enabledCategories) {
 		this._currentQuestion = {
 			answers : {}
 		};
 		this._previousQuestions = [];
 		this._currentCategory = undefined;
 		this._totalQuestions = totalQuestions;
+
+		this._enabledCategories = Object.entries(enabledCategories).filter(([category, enabled]) => enabled).reduce((obj, [category, enabled]) => {
+			obj[category] = {
+				weight : 2
+			};
+
+			return obj;
+		}, {});	
+
+		console.log(this._enabledCategories);
 	}
 
 	index() {
@@ -16,6 +26,18 @@ class Session {
 		return this._totalQuestions;
 	}
 
+	categoryEnabled(category) {
+		return category in this._enabledCategories;
+	}
+
+	nextCategory(selector) {
+		let selected = selector.fromWeightedObject(this._enabledCategories);
+
+		let category = Object.entries(this._enabledCategories).find(([key, value]) => value == selected)[0];
+
+		return category;
+	}
+
 	newQuestion(category, question) {
 		this._previousQuestions.forEach((q) => {
 			if (q.text == question.text && q.correct == question.correct) {
@@ -24,6 +46,9 @@ class Session {
 		});
 		this._currentQuestion = question;
 		this._currentCategory = category;
+
+		Object.values(this._enabledCategories).forEach((value) => { value.weight *= 2; });
+		this._enabledCategories[this._currentCategory.type].weight = 2;
 	}
 
 	endQuestion() {

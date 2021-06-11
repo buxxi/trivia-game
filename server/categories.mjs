@@ -14,7 +14,6 @@ import QuestionSelector from './selector.mjs';
 class Categories {
 	constructor(config) {
 		this._categories =  [];
-		this._enabledCategories = [];
 		this._config = config;
 		this._jokes = [];
 		this._genericloader = new GenericCategoryLoader();
@@ -44,8 +43,8 @@ class Categories {
 		return this._categories.map((category) => category.describe());
 	}
 
-	enabled() {
-		return this.available().filter((category) => !!this._enabledCategories[category.type]);
+	enabled(session) {
+		return this.available().filter((category) => session.categoryEnabled(category.type));
 	}
 
 	joke() {
@@ -57,29 +56,14 @@ class Categories {
 		return this._categoryByType(category).preload(progress, new Cache(category), game);
 	}
 
-	configure(input) {
-		this._enabledCategories = Object.keys(input).filter((category) => input[category]).reduce((obj, value) => {
-			var c = this._categoryByType(value);
-			obj[value] = {
-				weight : 2,
-				nextQuestion : (selector) => c.nextQuestion(selector),
-				name : c.describe().name
-			};
-
-			return obj;
-		}, {});
-	}
-
-	nextQuestion(session) {
+	async nextQuestion(session) {
 		let selector = new QuestionSelector();
-		let category = selector.fromWeightedObject(this._enabledCategories);
+		let category = this._categoryByType(session.nextCategory(selector));
 
-		Object.keys(this._enabledCategories).forEach((key) => {
-			this._enabledCategories[key].weight = this._enabledCategories[key].weight * 2;
-		});
-		category.weight = 2;
-
-		return category.nextQuestion(selector).then(this._shuffleAnswers).then(this._updateSession(category, session));
+		let question = await category.nextQuestion(selector);
+		this._shuffleAnswers(question);
+		session.newQuestion(category.describe(), question);
+		return question;
 	}
 
 	clearCache() {
@@ -95,7 +79,7 @@ class Categories {
 		throw new Error("No such category: " + type);
 	}
 
-	async _shuffleAnswers(question) {
+	_shuffleAnswers(question) {
 		let selector = new QuestionSelector();
 
 		let answers = {
@@ -107,13 +91,6 @@ class Categories {
 
 		question.answers = answers;
 		return question;
-	}
-
-	_updateSession(category, session) {
-		return async function(question) {
-			session.newQuestion(category, question);
-			return question;
-		};
 	}
 }
 
