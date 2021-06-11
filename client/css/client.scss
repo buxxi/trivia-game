@@ -47,10 +47,66 @@
 	}
 	.buttons {
 		text-align: center;
-		.btn {
+		button {
 			float : none;
 			font-size: 2.5em;
 		}
+	}
+}
+
+button {
+	background-color: $primary;
+	border : 0.2em solid $primary_border;
+	border-radius: 0.5em;
+	cursor : pointer;
+	display : block;
+	float : right;
+	font-size: 1.5em;
+	font-weight: bold;
+	width: calc(100% - 1em);
+	line-height: 1em;
+	margin : 0.5em;
+	padding : 0.5em;
+	color : white;
+	text-decoration: none;
+
+	&:active {
+		border-color : $secondary_border;
+	}
+
+	&[disabled="disabled"] {
+		cursor : not-allowed;
+	}
+}
+
+@mixin guess-button($color) {
+	background-color: darken($color, 20%);
+	border-color: $color;
+	&.selected {
+		background-color: $color;
+		border-color: darken($color, 20%);		
+	}
+
+	&.correct {
+		background-color: $correct;
+		border-color: $correct_border;
+	}
+
+	&.incorrect {
+		background-color: $incorrect;
+		border-color: $incorrect_border;	
+	}
+
+	&.unused {
+		background-color: #AAA;
+		border-color: darken(#AAAA, 20%);
+	}
+
+	&.selected:before {
+		content: "\f023";
+		font-family: FontAwesome;
+		background-color: darken($color, 20%);	
+		margin-left: 0.5em;	
 	}
 }
 
@@ -76,35 +132,30 @@
 	}
 
 	button {
-		background-color : transparent;
-		border : none;
-		border-bottom : 2px solid $primary;
-		border-radius : 0 !important;
-		color : $font;
 		display : block;
 		font-size: 1.5em;
-		height : 20%;
-		margin-top : 0 !important;
+		height : calc(20% - 1em);
 		outline : none;
 		text-align: left;
 		white-space : normal;
-		width : 100%;
-		&:last-of-type {
-			border-bottom : none;
-		}
 	}
-	button.correct {
-		background-color: $correct;
-		text-shadow: 2px 2px 4px $correct_border;
+
+	button.button-icon-A {
+		@include guess-button($A_color);
 	}
-	button.incorrect {
-		background-color: $incorrect;
-		text-shadow: 2px 2px 4px $incorrect_border;
+
+	button.button-icon-B {
+		@include guess-button($B_color);
 	}
-	button.selected {
-		background-color : $primary;
-		text-shadow : 2px 2px 4px $primary_border;
+
+	button.button-icon-C {
+		@include guess-button($C_color);
 	}
+
+	button.button-icon-D {
+		@include guess-button($D_color);
+	}
+
 	.fa-stack {
 		margin-top : 25%;
 		width : 2.15em;

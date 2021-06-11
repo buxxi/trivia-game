@@ -206,10 +206,10 @@ class AnswersViewer {
 	async start() {
 		let answers = this.answers;
 		document.getElementById('content').innerHTML = '<div class="list-answers" id="player"><ol>' +
-			'<li class="btn-A">' + answers.A + '</li>' +
-			'<li class="btn-B">' + answers.B + '</li>' +
-			'<li class="btn-C">' + answers.C + '</li>' +
-			'<li class="btn-D">' + answers.D + '</li>' +
+			'<li class="button-icon-A">' + answers.A + '</li>' +
+			'<li class="button-icon-B">' + answers.B + '</li>' +
+			'<li class="button-icon-C">' + answers.C + '</li>' +
+			'<li class="button-icon-D">' + answers.D + '</li>' +
 			'</ol></i></div>';
 	}
 

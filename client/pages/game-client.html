@@ -7,10 +7,10 @@
 		<h3>{{ message }}</h3>
 		<ul v-if="!connected">
 			<li>
-				<a class="btn" v-on:click="reconnect()"><i class="fa fa-fw fa-refresh"></i> Reconnect</a>
+				<button v-on:click.prevent="reconnect"><i class="fa fa-fw fa-refresh"></i> Reconnect</button>
 			</li>
 			<li>
-				<a class="btn" href="#/"><i class="fa fa-fw fa-sign-out"></i> To lobby</a>
+				<button v-on:click.prevent="returnToLobby"><i class="fa fa-fw fa-sign-out"></i> To lobby</button>
 			</li>
 		</ul>
 	</div>
@@ -20,9 +20,9 @@
 			<div><i class="fa fa-fw fa-star"></i>{{stats.score}}</div>
 			<div><i class="fa fa-fw fa-times"></i>{{stats.multiplier}}</div>
 		</div>
-		<button type="button" class="btn-A" v-if="answers.A" v-on:click="makeGuess('A')" v-bind:class="buttonClass('A')" v-bind:disabled="hasGuessed">{{ answers.A }}</button>
-		<button type="button" class="btn-B" v-if="answers.B" v-on:click="makeGuess('B')" v-bind:class="buttonClass('B')" v-bind:disabled="hasGuessed">{{ answers.B }}</button>
-		<button type="button" class="btn-C" v-if="answers.C" v-on:click="makeGuess('C')" v-bind:class="buttonClass('C')" v-bind:disabled="hasGuessed">{{ answers.C }}</button>
-		<button type="button" class="btn-D" v-if="answers.D" v-on:click="makeGuess('D')" v-bind:class="buttonClass('D')" v-bind:disabled="hasGuessed">{{ answers.D }}</button>
+		<button class="button-icon-A" v-if="answers.A" v-on:click.prevent="makeGuess('A')" v-bind:class="buttonClass('A')" v-bind:disabled="hasGuessed">{{ answers.A }}</button>
+		<button class="button-icon-B" v-if="answers.B" v-on:click.prevent="makeGuess('B')" v-bind:class="buttonClass('B')" v-bind:disabled="hasGuessed">{{ answers.B }}</button>
+		<button class="button-icon-C" v-if="answers.C" v-on:click.prevent="makeGuess('C')" v-bind:class="buttonClass('C')" v-bind:disabled="hasGuessed">{{ answers.C }}</button>
+		<button class="button-icon-D" v-if="answers.D" v-on:click.prevent="makeGuess('D')" v-bind:class="buttonClass('D')" v-bind:disabled="hasGuessed">{{ answers.D }}</button>
 	</div>
 </div>

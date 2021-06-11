@@ -20,7 +20,7 @@
 			</div>
 	</div>
 	<div id="content" v-bind:class="state"></div>
-	<div id="correct" v-if="state == 'post-question'" v-bind:class="'btn-' + correct['key']">{{ correct['answer'] }}</div>
+	<div id="correct" v-if="state == 'post-question'" v-bind:class="'button-icon-' + correct['key']">{{ correct['answer'] }}</div>
 	<div id="category-spinner" v-if="state == 'loading'">
 		<ul class="spinner" v-if="spinner.categories.length != 0">
 			<li v-for="cat in spinner.categories" v-bind:data-spinner-stop="isCurrentCategory(cat)">

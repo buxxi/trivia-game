@@ -3,11 +3,15 @@ $primary_border : #133451;
 $secondary : #ffffff;
 $secondary_border : #aaaaaa;
 $incorrect : #880000;
-$incorrect_border : #440000;
+$incorrect_border : darken($incorrect, 20%);
 $correct : #008800;
-$correct_border : #004400;
+$correct_border : darken($correct, 20%);
 $font : #ffffff;
 $background : #000000;
+$A_color: #ff2600ee;
+$B_color: #228b22;
+$C_color: #1e90ff;
+$D_color: #ccb805;
 
 html {
    background: linear-gradient(290deg, transparentize($primary, 0.6), transparentize($primary_border, 0.7)), url('../../common/img/simple_dashed.png');
@@ -30,64 +34,41 @@ button {
 	font-family: FontAwesome, Ubuntu !important;
 }
 
-@mixin big-button($color, $border, $text) {
+@mixin button-icon($color, $text) {
+	$border: darken($color, 10%);
 	&:before {
 		background-color : $color;
 		border-color : $border;
 		border-radius: 2em;
 		border-style : solid;
-		border-width: 1px;
+		border-width: 4px;
 		color : $font;
 		content : $text;
 		display : inline-block;
 		font-weight: bold;
-		margin-right : 1em;
-		padding : 0.7em 1em;
+		margin-right : 0.2em;
+		padding : 0.2em;
+		font-size: 2em;
+		line-height: 1em;
+		width: 1em;
+		text-align: center;
 	}
 }
 
-.btn-A {
-	@include big-button(#ff0000, #8b0000, "A");
+.button-icon-A {
+	@include button-icon($A_color, "A");
 }
 
-.btn-B {
-	@include big-button(#228b22, #006400, "B");
+.button-icon-B {
+	@include button-icon($B_color, "B");
 }
 
-.btn-C {
-	@include big-button(#1e90ff, #4169e1, "C");
+.button-icon-C {
+	@include button-icon($C_color, "C");
 }
 
-.btn-D {
-	@include big-button(#d9a700, #8b6b02, "D");
-}
-
-.btn {
-	background-color: $primary;
-	border : 0.2em solid $primary_border;
-	border-radius: 0.5em;
-	cursor : pointer;
-	display : block;
-	float : right;
-	font-size: 1.5em;
-	font-weight: bold;
-	height : 1em;
-	line-height: 1em;
-	margin : 0.5em;
-	padding : 0.5em;
-	color : white;
-	text-decoration: none;
-
-	&:active {
-		border-color : $secondary_border;
-	}
-
-	&[disabled="disabled"] {
-		background-color : $incorrect;
-		border-color : $incorrect_border;
-		cursor : not-allowed;
-		opacity : 0.5;
-	}
+.button-icon-D {
+	@include button-icon($D_color, "D");
 }
 
 .message {

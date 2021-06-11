@@ -64,6 +64,11 @@ export default {
 				this.message = "Error when reconnecting: " + e;				
 			}
 		},
+
+		returnToLobby: function() {
+			this.$router.push({ name: "join" });
+		},
+
 		makeGuess: async function(answer) {
 			try {
 				this.hasGuessed = true;
@@ -79,6 +84,8 @@ export default {
 				return "correct";
 			} else if (this.correct && answer == this.guess && this.correct != this.guess) {
 				return "incorrect";
+			} else if (this.correct && this.correct != answer) {
+				return "unused"
 			} else if (!this.correct && answer == this.guess) {
 				return "selected";
 			} else {

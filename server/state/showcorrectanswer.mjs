@@ -15,7 +15,7 @@ class ShowCorrectAnswerState {
         console.log(correct);
 
         await Promise.all(Object.keys(this._clientConnections).map(clientId => {
-            this._clientConnections[clientId].questionEnd(this._pointsThisRound[clientId], correct);
+            return this._clientConnections[clientId].questionEnd(this._pointsThisRound[clientId], correct);
         }));
         await this._monitorConnection.questionEnd(this._pointsThisRound, correct);
 	}
