@@ -1,0 +1,155 @@
+@import "./input.scss";
+
+.lobby {
+	color : $font;
+	.rules {
+		float : left;
+		text-align: center;
+		width : 30%;
+	}
+	.players {
+		float : left;
+		text-align: center;
+		width : 40%;
+		.playerlist {
+			min-height: 9em;
+		}
+	}
+	.carousel {
+		li {
+			list-style: none;
+			font-size: 2em;
+			animation: splash 0.5s linear normal;
+			display : none;
+			&.show {
+				display : block;
+			}
+
+			a {
+				color : white;
+				text-decoration: none;
+			}
+		}
+	}
+	.message {
+		position : absolute;
+		bottom : 2em;
+		left : 30%;
+		right : 30%;
+		white-space: nowrap;
+		text-align: center;
+	}
+}
+
+.instructions {
+	width : 397px;
+	height : 800px;
+
+	font-family: Arial;
+	background-image : url('../img/phone.png');
+	background-size: contain;
+	padding-top : 133px;
+	padding-left : 20px;
+	padding-right : 24px;
+	box-sizing: border-box;
+	transform: rotate3d(1, 2.0, 3.0, 10deg) scale(0.8);
+
+	&:before {
+		content : attr(data-url);
+		position : absolute;
+		color : black;
+		margin-top : -26px;
+		margin-left : -130px;
+		font-size: 1.1em;
+	}
+
+	div {
+		background-color : white;
+		color : black;
+		height : 570px;
+		padding : 5px;
+		line-height: 1.2em;
+		font-size: 1.7em;
+	}
+}
+
+ol {
+	counter-reset: help;
+	display: inline-block;
+	list-style: none;
+	padding-left : 1em;
+	li {
+		height : 2em;
+		margin-bottom : 0.5em;
+		text-align: left;
+		&:before {
+			background-color : $primary_border;
+			border-radius: 1em;
+			border: 0.1em solid $primary;
+			content : counter(help);
+			counter-increment: help;
+			display : inline-block;
+			font-weight: bold;
+			height : 1em;
+			line-height: 1em;
+			margin-left : -2em;
+			margin-right : 0.5em;
+			margin-top : -0.25em;
+			padding : 0.25em;
+			position : absolute;
+			text-align: center;
+			width : 1em;
+		}
+	}
+}
+
+.connect {
+    float : left;
+    text-align: center;
+    width : 30%;
+    
+	.qr {
+		display: inline-block;
+		background-color: $secondary;
+		border-radius: 1em 1em 0 0;
+		margin-bottom: -5px;
+		border: 5px solid $primary;
+		width: 20vw;
+		height: 20vw;
+		overflow: hidden;
+		i {
+			line-height: 20vw;
+			color: $primary;
+			font-size: 10vw;
+		}
+		img {
+			max-width: 100%;
+			max-height: 100%;
+		}
+	}
+	.code {
+		background-color : $primary;
+		border-radius : 0 0 1em 1em;
+		display : inline-block;
+		font-size: 1.1em;
+		font-weight: bold;
+		margin : 0;
+		padding : 1em 0;
+		text-transform: uppercase;
+		width : 20vw;
+		border : 5px solid $primary;
+	}
+	ol {
+		font-size: 1.5em;
+		width : 20vw;
+	}
+}
+
+.infobox {
+	background-color: $secondary;
+	border-radius: 10px;
+	border: 5px solid $secondary_border;
+	color: $primary;
+	font-weight: bold;
+	padding: 0.5em 1em;
+}

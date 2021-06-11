@@ -1,0 +1,86 @@
+.credits {
+	animation : 1s scroll linear infinite;
+	color : $font;
+	position : relative;
+	text-align: center;
+	width : 100%;
+	&:hover {
+		animation-play-state: paused;
+	}
+	.winner {
+		h1 {
+			font-size: 6em;
+			i {
+				animation: gold 4s linear infinite;
+			}
+		}
+	}
+	.loser {
+		h1 {
+			font-size: 4em;
+		}
+	}
+	.attribution {
+		h1 {
+			font-size: 4em;
+		}
+		a {
+			color : $primary;
+			font-weight: bold;
+			text-decoration: none;
+		}
+		&:hover {
+			ul {
+				visibility: visible;
+			}
+		}
+		ul {
+			list-style: none;
+			visibility: hidden;
+		}
+		span {
+			font-size: 6em;
+		}
+	}
+	.avatar {
+		font-size: 2em;
+		margin : 1em;
+	}
+	.summary {
+		display : inline-block;
+		font-size: 2em;
+		padding-bottom: 1em;
+		position: relative;
+		top : -2em;
+		.correct {
+			color : $correct;
+			text-shadow : 1px 1px 2px $correct_border;
+		}
+		.failed {
+			color : $incorrect;
+			text-shadow : 1px 1px 2px $incorrect_border;
+		}
+		.fastest {
+			color : $primary;
+			text-shadow: 1px 1px 2px $primary_border;
+		}
+	}
+	h2 {
+		font-size: 2em;
+	}
+
+	& > div {
+		height : 50vh;
+	}
+}
+ 
+@keyframes gold {
+    0% { text-shadow: 1px 1px 1px white; color : #907900; }
+   50% { text-shadow : 1px 1px 10px #FFD700; color : #FFD700; }
+   100% { text-shadow: 1px 1px 1px white; color : #907900; }
+ }
+
+@keyframes scroll {
+    0% { top : 100vh; transform : translateY(0) }
+    100% { top : 0; transform : translateY(-100%) }
+}

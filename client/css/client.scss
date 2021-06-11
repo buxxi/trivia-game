@@ -1,1 +1,138 @@
 @import "../../common/css/trivia.scss";
+
+.join {
+	video {
+		bottom : 0;
+		display : none;
+		left : 0;
+		position : fixed;
+		right : 0;
+		top : 0;
+		z-index : 2;
+	}
+	label {
+		display : inline-block;
+		margin : 0.2em 0;
+		width : 100%;
+		font-size: 2em;
+	}
+	input {
+		background-color : $secondary;
+		border : 2px solid $primary;
+		border-radius: 0.5em;
+		box-sizing: border-box;
+		color : $primary;
+		font-weight: bold;
+		height : 2em;
+		padding : 2px 0.5em;
+		width : 100%;
+		font-size : 2em;
+		margin-bottom: 0.5em;
+	}
+	.avatar-selector {
+		font-size: 0.35em;
+		clear : both;
+		overflow : hidden;
+
+		label {
+			width : auto;
+			float : left;
+		}
+		input {
+			display : none;
+		}
+		input:checked + .avatar {
+			background-color : $primary;
+		}
+	}
+	.buttons {
+		text-align: center;
+		.btn {
+			float : none;
+			font-size: 2.5em;
+		}
+	}
+}
+
+.answer {
+	height : 100%;
+	left : 0;
+	margin : 0;
+	padding : 0;
+	position: absolute;
+	text-align: center;
+	top : 0;
+	width : 100%;
+
+	.stats {
+		height: 20%;
+	    font-weight: bold;
+	    font-size: 3em;
+	    display: flex;
+	    justify-content: space-around;
+	    align-items: center;
+		border-bottom : 2px solid $primary;
+		text-shadow : 2px 2px 0 $primary;
+	}
+
+	button {
+		background-color : transparent;
+		border : none;
+		border-bottom : 2px solid $primary;
+		border-radius : 0 !important;
+		color : $font;
+		display : block;
+		font-size: 1.5em;
+		height : 20%;
+		margin-top : 0 !important;
+		outline : none;
+		text-align: left;
+		white-space : normal;
+		width : 100%;
+		&:last-of-type {
+			border-bottom : none;
+		}
+	}
+	button.correct {
+		background-color: $correct;
+		text-shadow: 2px 2px 4px $correct_border;
+	}
+	button.incorrect {
+		background-color: $incorrect;
+		text-shadow: 2px 2px 4px $incorrect_border;
+	}
+	button.selected {
+		background-color : $primary;
+		text-shadow : 2px 2px 4px $primary_border;
+	}
+	.fa-stack {
+		margin-top : 25%;
+		width : 2.15em;
+	}
+	.fa-stack-2x {
+		color: $primary;
+	}
+	.fa-stack-1x {
+		animation: splash 0.5s linear normal;
+		line-height: 1.75em;
+	}
+	h3 {
+		font-size: 2em;
+	}
+	& > div {
+		height : 100%;
+		margin : 0;
+		padding : 0;
+		width : 100%;
+	}
+	ul {
+		text-align: center;
+		padding : 0;
+		li {
+			display: block;
+			a {
+				float : none;
+			}
+		}
+	}
+}

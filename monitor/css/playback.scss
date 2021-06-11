@@ -1,0 +1,81 @@
+#player {
+    display : flex;
+    align-items : center;
+    justify-content: center;
+    height : 100%;
+    width : 100%;
+    
+    &.wavesurfer {
+        display : block !important;
+        position : absolute;
+        top : 70%;
+        transform : scaleY(1.5);
+    }
+
+    &.image {
+        img {
+            max-height: 100%;
+            min-height: 500px;
+        }
+    }
+
+    &.youtubeaudio {
+        visibility : hidden;
+    }
+
+    &.youtube {
+        &.playing:before {
+            content: "";
+            display: block;
+            width: 100%;
+            position: absolute;
+            background-color: black;
+            height: 60px;
+            top: 0;
+        }
+        &.playing:after {
+            content: "";
+            display: block;
+            width: 100%;
+            position: absolute;
+            background-color: black;
+            height: 60px;
+            bottom: 0;
+        }
+    }
+
+    &.list ol {
+        font-size: 2em;
+    }
+
+    &.list-answers ol {
+        font-size: 2em;
+        li {
+            margin-bottom : 2em;
+            &:before {
+                margin-left : -4em;
+                padding : 1em;
+            }
+        }
+    }
+
+    &.quote {
+        color : $font;
+        .fa-quote-left {
+            float : left;
+            font-size : 4em;
+            left : -1em;
+            position : relative;
+        }
+        p {
+            clear : both;
+            font-size : 3em;
+        }
+        .fa-quote-right {
+            float : right;
+            font-size : 4em;
+            position : relative;
+            right : -1em;
+        }
+    }
+}

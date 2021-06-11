@@ -1,0 +1,117 @@
+.numeric-input {
+	color : $primary;
+	font-size: 1.5em;
+	display : inline-block;
+	border: 3px solid $primary;
+	border-radius: 1em;
+	overflow: hidden;
+	margin: 0.25em;
+
+	label {
+		background-color: $primary_border;
+		display : inline-block;
+		color: $font;
+		padding: 0.25em;
+		border-right : 1px solid $primary;
+	}
+
+	input {
+		-moz-appearance : textfield;
+		-webkit-appearance : textfield;
+		appearance : textfield;
+		background-color: transparent;
+		border : 0;
+		color : $font;
+		font-size: 1em;
+		font-weight: bold;
+		width : 2.75em;
+		text-align: center;
+
+		&:invalid {
+			box-shadow : none;
+		}
+	}
+}
+
+@mixin circle-checkboxes {
+	padding : 0;
+	li {
+		display : inline;
+		font-size: 1.75em;
+		list-style : none;
+		vertical-align : top;
+	}
+	:not(.static) + .static:before {
+		display : block;
+		content : "\A";
+	}
+	.static:not(.selected) label {
+		border-style : dotted;
+	}
+	.selected {
+		label {
+			background : radial-gradient(circle at center, $primary_border 0%, $primary 100%);
+		}
+	}
+	.failed {
+		label {
+			background : radial-gradient(circle at center, $incorrect_border 0%, $incorrect 100%);
+			border-color : $incorrect_border;
+		}
+	}
+	.progress {
+		font-size: 0.4em;
+		text-align: center;
+		display: inline;
+		position: absolute;
+		margin-top: -0.6em;
+		margin-left: -3em;
+		background-color: $primary;
+		width: 2.5em;
+		height: 2.5em;
+		line-height: 2.5em;
+		border-radius: 2em;
+		font-weight: bold;
+	}
+	label {
+		border : 3px solid $primary;
+		border-radius: 10em;
+		cursor : pointer;
+		display : inline-block;
+		height : 1em;
+		line-height: 1em;
+		margin : 0.25em 0.10em;
+		padding : 0.35em;
+		width : 1em;
+	}
+
+	img {
+		height: 100%;
+		width: 100%;
+		filter: grayscale(100%) contrast(1000%) invert(100%);
+		mix-blend-mode: screen;
+	}
+
+	input[type='checkbox'] {
+		height : 0;
+		position : absolute;
+		visibility: hidden;
+		width : 0;
+	}
+}
+
+.circle-checkboxes {
+    @include circle-checkboxes();
+}
+
+.category-actions {
+	@include circle-checkboxes();
+
+	label {
+		font-size: 0.5em;
+		margin-top : 1.25em;
+	}
+	input[type="file"] {
+		display : none;
+	}
+}

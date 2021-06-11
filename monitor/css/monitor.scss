@@ -1,1 +1,393 @@
 @import "../../common/css/trivia.scss";
+@import "./playback.scss";
+@import "./lobby.scss";
+
+.question {
+	#content, #category-spinner {
+		bottom : 8em;
+		left : 2em;
+		position : fixed;
+		right : 2em;
+		text-align : center;
+		top : 5em;
+	}
+	#content.pre-question {
+		iframe {
+			opacity : 0;
+		}
+	}
+	h3 {
+		color: grey;
+		font-size: 2em;
+		font-weight: 100;
+	}
+	.title {
+		color : $font;
+		font-size: 3em;
+		font-size: 6em;
+		font-weight: bold;
+		text-align: center;
+		text-shadow: 2px 2px 2px grey;
+		transform : scale(0.5) translateY(-50%);
+
+		&.full-animation {
+			animation : resize-title 3s linear normal forwards;
+			display : block;
+			opacity : 1;
+			position : fixed;
+			top : 50%;
+			transform : scale(2) translateY(-50%);
+			width : 100%;
+		}
+		
+		&.full-static {
+			display : block;
+			opacity : 1;
+			position : fixed;
+			top : 50%;
+			transform : translateY(-50%);
+			width : 100%;
+		}
+	}
+	#correct {
+		visibility: hidden;
+		animation : resize-correct 3s linear normal;
+		color : $font;
+		font-size: 3em;
+		font-size: 6em;
+		font-weight: bold;
+		position : fixed;
+		text-align: center;
+		text-align: center;
+		text-shadow: 2px 2px 2px grey;
+		top : 50%;
+		transform: translateY(-50%);
+		width : 100%;
+		z-index: 3;
+	}
+	.index {
+		left: 0.5em;
+		position: fixed;
+		top: 1em;
+	}
+	.timer {
+		position : fixed;
+		right : 0.5em;
+		top : 0.5em;
+	}
+	.top {
+		position : fixed;
+		width : 100%;
+		z-index: 2;
+	}
+}
+
+.spinner {
+	position : relative;
+	height : 10em;
+	padding: 0;
+	display: block;
+	text-align: center;
+	margin: 2em 4em;
+	font-size: 3em;
+
+	&:before {
+		content : "\f0da";
+		font-family : FontAwesome;
+		font-size : 4em;
+		display : block;
+		position : absolute;
+		top : 50%;
+		margin-top : -0.2em;
+		margin-left : -0.15em;
+		z-index : 2;
+	}
+
+	li {
+		list-style : none;
+		height : 3em;
+		position : absolute;
+		line-height : 3em;
+		transition-duration: 0.5s;
+		transition-timing-function: linear;
+		transition-property: background, transform, top;
+		width : 100%;
+		white-space: nowrap;
+		overflow: hidden;
+
+		img {
+			height: 1em;
+			width : 1em;
+			filter: grayscale(100%) contrast(1000%) invert(100%);
+			mix-blend-mode: screen;
+			vertical-align: sub;
+		}
+	}
+	li:nth-child(1) {
+		transform : rotateX(-90deg);
+		background : $primary_border;
+		top : 0;
+	}
+
+	li:nth-child(2) {
+		transform : rotateX(-70deg);
+		background : mix($primary, $primary_border, 25%);
+		top : 0.5em;
+	}
+	li:nth-child(3) {
+		transform : rotateX(-40deg);
+		background : mix($primary, $primary_border, 50%);
+		top : 2.1em;
+	}
+	li:nth-child(4) {
+		background-color : $primary;
+		transform : rotateX(0deg);
+		top : 4.7em;
+	}
+	li:nth-child(5) {
+		transform : rotateX(40deg);
+		background : mix($primary, $primary_border, 50%);
+		top : 7.3em;
+	}
+	li:nth-child(6) {
+		transform : rotateX(70deg);
+		background : mix($primary, $primary_border, 25%);
+		top : 8.9em;
+	}
+	li:nth-child(n+7) {
+		transform : rotateX(90deg);
+		background : $primary_border;
+		top : 9.4em;
+	}
+
+	&.highlight li:nth-child(4) {
+		background-color :$correct !important;
+		transition-duration: 0.1s !important;
+		* {
+			transition: font-size 0.5s linear;
+			font-size : 1.75em;
+		}
+	}
+}
+
+#start a {
+	background-color : $primary;
+	border-radius: 1em;
+	border: 3px solid $primary_border;
+	color : $font;
+	cursor : pointer;
+	font-size: 2em;
+	margin : 1em;
+	padding : 1em;
+	position : fixed;
+	right : 0;
+	bottom : 0;
+
+	&[disabled='disabled'] {
+		background-color : $incorrect;
+		border : 3px solid $incorrect_border;
+		cursor : not-allowed;
+		opacity : 0.5;
+	}
+}
+
+.playerlist {
+	margin-bottom : 0;
+	li {
+		display: inline-block;
+		list-style : none;
+		margin: 0 1em 1em 0;
+	}
+	.kick {
+		&:hover {
+			opacity : 0.5;
+		}
+	}
+}
+
+.index {
+	.infobox {
+		float : left;
+	}
+	.current {
+		&:after {
+			content : " /";
+		}
+	}
+}
+
+.category {
+	position: relative;
+	left: -10px;
+	z-index: -1;
+	border-radius: 0 10px 10px 0;
+}
+
+.timer-score {
+	float: left;
+	left: 2em;
+	padding: 0.5em 2.5em 0.5em 1em;
+	position: relative;
+	top: 0.7em;
+}
+
+@mixin timer-counter-loop {
+    @for $i from 10 to 0 {
+        &[data-percentage="#{$i}"] {
+            color : $incorrect;
+            &:before {
+                transform: scale(0.5, 0.5);
+                animation: splash 1s linear infinite;
+            }
+            svg #bar {
+                stroke : $incorrect;
+            }
+        }
+    }
+}
+
+.timer-counter {
+	font-size: 2.1em;
+	position : relative;
+	width : 2em;
+	height : 2em;
+	float : right;
+	color : $primary;
+	@include timer-counter-loop;
+
+	svg {
+		transform : rotate(90deg) scaleX(-1);
+		width : 100%;
+		height : 100%;
+		circle {
+			transition: stroke-dashoffset 0.1s linear;
+			stroke: $secondary_border;
+			stroke-width: 5px;
+			fill: $secondary;
+		}
+		#bar {
+			stroke: $primary;
+			fill: transparent;
+		}
+	}
+
+	&:before {
+		content : attr(data-seconds);
+		position : absolute;
+		z-index : 2;
+		width : 2em;
+		line-height: 2em;
+		text-align: center;
+		display: block;
+		transform : scale(0.75);
+	}
+}
+
+h1 {
+	color : $secondary_border;
+
+	i {
+		color : $primary;
+	}
+
+	&::after {
+		border: 2px solid $primary;
+		content: "";
+		display: block;
+		margin-left: 20%;
+		margin-top: 0.1em;
+		width: 60%;
+	}
+}
+
+.bottom {
+	bottom : 0;
+	position : fixed;
+	text-align: center;
+	width : 100%;
+}
+
+@mixin score-change($color, $border) {
+	animation: splash 0.5s linear normal;
+	background-color : $color;
+	border-color : inherit;
+	border-style : solid;
+	border-width : 0.25em;
+	color : $font;
+	margin-left: 0.4em;
+	margin-top: 4.6em;
+	position: absolute;
+	text-shadow: 0px 1px 1px $border;
+	width: 4.5em;
+	z-index: 2;
+}
+
+.score-change-positive .avatar {
+	animation : glow-positive 1s linear normal;
+	box-shadow : 0 0 50px $correct, 0 0 25px $correct;
+}
+
+.score-change-positive span {
+	@include score-change($correct, $correct_border);
+	&:before {
+		content : "+";
+	}
+}
+
+.score-change-negative .avatar {
+	animation : glow-negative 1s linear normal;
+	box-shadow : 0 0 50px $incorrect, 0 0 25px $incorrect;
+}
+
+.score-change-negative span {
+	@include score-change($incorrect, $incorrect_border);
+}
+
+.score-change-negative~.score {
+	color : $font;
+}
+
+.score-change-positive~.score {
+	color : $font;
+}
+
+.leader {
+	position : absolute;
+	margin-left : 1.35em;
+	margin-top : -1em;
+	width : 3em;
+	height : 3em;
+}
+
+@keyframes resize-title {
+    0% { transform : scale(0.5) translateY(-50%); }
+   10% { transform : scale(2) translateY(-50%); }
+   20% { transform : scale(1) translateY(-50%); }
+   90% { transform : scale(1) translateY(-50%); }
+   100% { transform : scale(1) translateY(-50%); }
+ }
+ 
+ @keyframes resize-correct {
+     0% { visibility: visible; transform : scaleX(10) scaleY(0) translateY(-50%); }
+     20% { visibility: visible; transform : scaleX(1) scaleY(1) translateY(-50%); }
+     80% { visibility: visible; transform : scaleX(1) scaleY(1) translateY(-50%); }
+     100% { visibility: visible; transform : scaleX(0) scaleY(3) translateY(100%); }
+ }
+ 
+ @keyframes splash {
+    0% { transform : scale(0.5); }
+   50% { transform : scale(2); }
+   100% { transform : scale(1); }
+ }
+ 
+ @keyframes glow-negative {
+     0% { box-shadow : 0 0 0px $incorrect, 0 0 0px $incorrect }
+     50% { box-shadow : 0 0 100px $incorrect, 0 0 50px $incorrect }
+     100% { box-shadow : 0 0 50px $incorrect, 0 0 25px $incorrect }
+ }
+ 
+ @keyframes glow-positive {
+     0% { box-shadow : 0 0 0px $correct, 0 0 0px $correct }
+     50% { box-shadow : 0 0 100px $correct, 0 0 50px $correct }
+     100% { box-shadow : 0 0 50px $correct, 0 0 25px $correct }
+ }
