@@ -67,12 +67,14 @@ function playbackEnd(app, pointsThisRound, correct) {
 		app.correct = correct;
 		app.state = 'post-question';
 		
-		for (let playerId in pointsThisRound) {
-			app.players[playerId].updatePoints(pointsThisRound[playerId]);
-		}	
+		app.players.forEach(player => {
+			player.updatePoints(pointsThisRound[player.id]);
+		});
 
 		setTimeout(() => {
-			Object.values(app.players).forEach((player) => player.clearChanges());
+			app.players.forEach((player) => player.clearChanges());
+			app.players.sort((a, b) => b.totalPoints - a.totalPoints);
+
 			resolve();
 		}, 3000);
 	});
@@ -83,14 +85,14 @@ async function timerTicked(app, timeLeft, percentageLeft, currentScore) {
 }
 
 async function playerGuessed(app, id) {
-	app.players[id].guessed = true;
-	app.sound.beep(Object.values(app.players).filter((p) => p.guessed).length);
+	app.players.find(p => p.id == id).guessed = true;
+	app.sound.beep(app.players.filter((p) => p.guessed).length);
 }
 
 async function playerConnected(app, newPlayers) {
-	for (let id in app.players) {
-		app.players[id].connected = (id in newPlayers);
-	}
+	app.players.forEach(player => {
+		player.connected = player.id in newPlayers;
+	});
 }
 
 async function gameEnded(app, history, results) {
@@ -110,11 +112,11 @@ export default {
 		error: undefined,
 		minimizeQuestion: false,
 		playback: new PlaybackFactory(),
-		players : {}
+		players : []
 	})},
 	props: ['gameId', 'connection', 'sound', 'passed', 'lobbyPlayers'],
 	computed: {
-		showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; },
+		showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; }
 	},
 	created: function() {
 		if (!this.connection.connected()) {
@@ -160,12 +162,13 @@ export default {
 		});
 
 		for (let id in this.lobbyPlayers) {
-			this.$set(this.players, id, new PlayerData(this.lobbyPlayers[id]));
+			let player = new PlayerData(id, this.lobbyPlayers[id]);
+			this.players.push(player);
 		}
 	},
 	methods: {
 		isLeadingPlayer: function (player) {
-			let playerScoreCount = Object.values(this.players).filter((p) => p.totalPoints >= player.totalPoints).length;
+			let playerScoreCount = this.players.filter((p) => p.totalPoints >= player.totalPoints).length;
 			return playerScoreCount == 1;
 		},
 		achievedPoints: function (player) {
@@ -184,7 +187,8 @@ export default {
 };
 
 class PlayerData {
-	constructor(player) {
+	constructor(id, player) {
+		this.id = id;
 		this.name = player.name;
 		this.color = player.color;
 		this.avatar = player.avatar;

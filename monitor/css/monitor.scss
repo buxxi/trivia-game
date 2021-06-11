@@ -197,6 +197,9 @@
 		display: inline-block;
 		list-style : none;
 		margin: 0 1em 1em 0;
+		&.playerposition-move {
+			transition: transform 1s ease;
+		}
 	}
 	.kick {
 		&:hover {
