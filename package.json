@@ -26,6 +26,7 @@
     "pizzicato": "^0.6.4",
     "qcode-decoder": "^0.1.0",
     "qrcode": "^1.4.4",
+    "quotesy": "^1.0.5",
     "randomcolor": "^0.6.2",
     "uuid": "^8.3.2",
     "vue": "^2.6.13",

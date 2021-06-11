@@ -1,12 +1,12 @@
 import fetch from 'node-fetch';
 import nlp from 'compromise';
+import quotesy from 'quotesy';
 
 const TOTAL_QUOTES = 50;
 
 class QuotesQuestions {
-	constructor(mashapeApiKey) {
-		this._quotes = [];	
-		this._mashapeApiKey = mashapeApiKey;
+	constructor() {
+		this._quotes = [];
 		this._types = {
 			author : {
 				title : (correct) => "Who said this famous quote?",
@@ -33,7 +33,7 @@ class QuotesQuestions {
 			name : 'Famous Quotes',
 			icon : 'fa-quote-right',
 			attribution : [
-				{ url: 'https://andruxnet-random-famous-quotes.p.rapidapi.com', name: 'Mashape - Famous Random Quotes' }
+				{ url: 'https://github.com/dwyl/quotes', name: 'Quotesy' }
 			]
 		};
 	}
@@ -71,12 +71,12 @@ class QuotesQuestions {
 		var word;
 
 		do {
-			word = nlps.shift()(nlp(quote.quote)).random(1).trim().out('text');
+			word = nlps.shift()(nlp(quote.text)).random(1).trim().out('text');
 		}
 		while (!word);
 
 		return {
-			quote : quote.quote.replace(this._formatWord({ word : word }), "_____"),
+			text : quote.text.replace(this._formatWord({ word : word }), "_____"),
 			author : quote.author,
 			word : word
 		}
@@ -100,11 +100,11 @@ class QuotesQuestions {
 			return aValues.every((i) => a[i] == b[i]);
 		}
 
-		var words = this._quotes.map((q) => nlp(q.quote).terms().trim().out('array')); //Extract words
+		var words = this._quotes.map((q) => nlp(q.text).terms().trim().out('array')); //Extract words
 		words = [].concat.apply([], words); //Flatten array of arrays
 		words = words.filter((word, index) => word != '' && words.indexOf(word) == index); //Remove duplicates
 		words = words.filter((word) => sameTags(word, quote.word)); //Find the same type of word
-		return words.map((w) => ({ word : w}));
+		return words.map((w) => ({ word : w }));
 	}
 
 	_formatWord(q) {
@@ -121,7 +121,7 @@ class QuotesQuestions {
 	_loadQuote(quote) {
 		return {
 			player : 'quote',
-			quote : quote.quote,
+			quote : quote.text,
 			attribution : {
 				title : "Quoted",
 				name : quote.author,
@@ -130,43 +130,11 @@ class QuotesQuestions {
 		};
 	}
 
-	_loadQuotes(cache, progress) {
-		return cache.get('quotes', async (resolve, reject) => {
-			try {
-				var quotes = [];
-				for (var i = 0; i < TOTAL_QUOTES; i++) {
-					let quote = await this._loadRandomQuote();
-					if (!quotes.some(q => q.quote == quote.quote)) {
-						quotes.push(quote);
-					}
-					
-					progress(quotes.length, TOTAL_QUOTES);
-				}
-				resolve(quotes);
-			} catch (e) {
-				reject(e);
-			}
-		});	
-	}
-
-	async _loadRandomQuote() {
-		let response = await fetch('https://andruxnet-random-famous-quotes.p.rapidapi.com/?cat=famous', {
-			method : 'POST',
-			headers : {
-				"x-rapidapi-key": this._mashapeApiKey,
-				"x-rapidapi-host": "andruxnet-random-famous-quotes.p.rapidapi.com",
-				"useQueryString": true
-			}
-		});
-		let responseData = await this._toJSON(response);
-		return responseData[0];
-	}
-
-	_toJSON(response) {
-		if (!response.ok) {
-			throw response;
-		}
-		return response.json();
+	async _loadQuotes(cache, progress) {
+		progress(0, 1);
+		let result = quotesy.parse_json();
+		progress(1, 1);
+		return result;
 	}
 }
 
