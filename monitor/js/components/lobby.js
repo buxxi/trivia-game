@@ -91,33 +91,15 @@ export default {
 			delete this.players[id];
 		},
 		toggleFullScreen: function() {
-			var fullScreenMode = () => document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen;
-			var notify = () => {
+			let fullScreenMode = () => !!document.fullscreenElement;
+			let notify = () => {
 				this.config.fullscreen = fullScreenMode();
-				document.removeEventListener("fullscreenchange", notify);
-				document.removeEventListener("webkitfullscreenchange", notify);
-				document.removeEventListener("mozfullscreenchange", notify);
 			}
 			document.addEventListener("fullscreenchange", notify);
-			document.addEventListener("webkitfullscreenchange", notify);
-			document.addEventListener("mozfullscreenchange", notify);
 			if (fullScreenMode()) {
-				if (document.exitFullscreen) {
-					document.exitFullscreen();
-				} else if (document.mozCancelFullScreen) {
-					document.mozCancelFullScreen();
-				} else if (document.webkitCancelFullScreen) {
-					document.webkitCancelFullScreen();
-				}
+				document.exitFullscreen();
 			} else {
-				var e = document.documentElement;
-				if (e.requestFullscreen) {
-					e.requestFullscreen();
-				} else if (e.mozRequestFullScreen) {
-					e.mozRequestFullScreen();
-				} else if (e.webkitRequestFullScreen) {
-					e.webkitRequestFullScreen();
-				}
+				document.documentElement.requestFullscreen();
 			}
 		},
 		preload: async function(type) {
