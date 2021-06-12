@@ -50,8 +50,7 @@
 		}
 	}
 	#correct {
-		visibility: hidden;
-		animation : resize-correct 3s linear normal;
+		animation : resize-correct 1s linear normal;
 		color : $font;
 		font-size: 3em;
 		font-size: 6em;
@@ -240,7 +239,7 @@
             color : $incorrect;
             &:before {
                 transform: scale(0.5, 0.5);
-                animation: splash 1s linear infinite;
+                animation: timer-pulse 1s linear infinite;
             }
             svg #bar {
                 stroke : $incorrect;
@@ -311,7 +310,7 @@ h1 {
 }
 
 @mixin score-change($color, $border) {
-	animation: splash 0.5s linear normal;
+	animation: score-change 0.5s linear normal;
 	background-color : $color;
 	border-color : inherit;
 	border-style : solid;
@@ -371,13 +370,18 @@ h1 {
  }
  
  @keyframes resize-correct {
-     0% { visibility: visible; transform : scaleX(10) scaleY(0) translateY(-50%); }
-     20% { visibility: visible; transform : scaleX(1) scaleY(1) translateY(-50%); }
-     80% { visibility: visible; transform : scaleX(1) scaleY(1) translateY(-50%); }
-     100% { visibility: visible; transform : scaleX(0) scaleY(3) translateY(100%); }
+	0% { transform: translateY(-50%) translateX(250%) skew(-45deg, 0deg); }
+	75% { transform: translateY(-50%) translateX(0) skew(-20deg, 0deg); }
+	100% { transform: translateY(-50%) translateX(0) skew(0); } 
  }
  
- @keyframes splash {
+ @keyframes timer-pulse {
+    0% { transform : scale(0.5); }
+   50% { transform : scale(2); }
+   100% { transform : scale(1); }
+ }
+
+ @keyframes score-change {
     0% { transform : scale(0.5); }
    50% { transform : scale(2); }
    100% { transform : scale(1); }
