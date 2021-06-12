@@ -49,7 +49,7 @@ sudo docker run -d -p 8080:8080 --volume ~/.trivia-game/conf:/opt/trivia/conf --
 
 ### Music & sound from:
 - http://soundbible.com/tags-beep.html
-- http://www.purple-planet.com/
+- Last Haze - https://open.spotify.com/track/4fMVIYFWlSXxXQowcB8csH?si=9562dc0736ce4a9f
 
 ### Background pattern from:
 - http://subtlepatterns.com/
