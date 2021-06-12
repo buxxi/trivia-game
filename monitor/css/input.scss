@@ -6,9 +6,9 @@
 	border-radius: 1em;
 	overflow: hidden;
 	margin: 0.25em;
+	background-color: $primary_border;
 
 	label {
-		background-color: $primary_border;
 		display : inline-block;
 		color: $font;
 		padding: 0.25em;
@@ -49,17 +49,6 @@
 	.static:not(.selected) label {
 		border-style : dotted;
 	}
-	.selected {
-		label {
-			background : radial-gradient(circle at center, $primary_border 0%, $primary 100%);
-		}
-	}
-	.failed {
-		label {
-			background : radial-gradient(circle at center, $incorrect_border 0%, $incorrect 100%);
-			border-color : $incorrect_border;
-		}
-	}
 	.progress {
 		font-size: 0.4em;
 		text-align: center;
@@ -75,6 +64,7 @@
 		font-weight: bold;
 	}
 	label {
+		background: $primary_border;
 		border : 3px solid $primary;
 		border-radius: 10em;
 		cursor : pointer;
@@ -84,6 +74,17 @@
 		margin : 0.25em 0.10em;
 		padding : 0.35em;
 		width : 1em;
+	}
+	.selected {
+		label {
+			background : radial-gradient(circle at center, $primary_border 0%, $primary 100%);
+		}
+	}
+	.failed {
+		label {
+			background : radial-gradient(circle at center, $incorrect_border 0%, $incorrect 100%);
+			border-color : $incorrect_border;
+		}
 	}
 
 	img {

@@ -7,14 +7,14 @@ $incorrect_border : darken($incorrect, 20%);
 $correct : #008800;
 $correct_border : darken($correct, 20%);
 $font : #ffffff;
-$background : #000000;
+$background : transparentize($primary, 0.7);
 $A_color: #ff2600ee;
 $B_color: #228b22;
 $C_color: #1e90ff;
 $D_color: #ccb805;
 
 html {
-   background: linear-gradient(290deg, transparentize($primary, 0.6), transparentize($primary_border, 0.7)), url('../../common/img/simple_dashed.png');
+   background: linear-gradient(290deg, $background, adjust-hue($background, -20deg)), url('../../common/img/simple_dashed.png');
    background-size: cover, 2em;
    background-blend-mode: screen;
    height : 100%;
