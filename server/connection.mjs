@@ -51,8 +51,8 @@ class ServerToMonitorConnection {
         });
     }
 
-    results(history, players) {
-        return this._pws.send(Protocol.GAME_END, { history: history, players: players }); 
+    results(history, results) {
+        return this._pws.send(Protocol.GAME_END, { history: history, results: results }); 
     }
 
     onLoadCategories() {

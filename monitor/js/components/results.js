@@ -1,6 +1,9 @@
 export default {
 	computed: {
 		duration: function() {
+			if (!this.history || !this.history) {
+				return 0;
+			}
 			return (this.scores.length + this.history.length + 1) * 5;
 		},
 
@@ -12,6 +15,9 @@ export default {
 		},
 
 		attribution: function() {
+			if (!this.history) {
+				return [];
+			}
 			return this.history.map((question) => question.view.attribution);
 		}
 	},
@@ -40,7 +46,7 @@ export default {
 		}
 	},
 	created: function() {
-		if (!this.results && ! this.history) {
+		if (!this.results && !this.history) {
 			this.$router.push({ path: "/", query : { gameId: this.gameId } });
 			return;
 		}
