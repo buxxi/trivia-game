@@ -14,8 +14,6 @@ class Session {
 
 			return obj;
 		}, {});	
-
-		console.log(this._enabledCategories);
 	}
 
 	index() {
