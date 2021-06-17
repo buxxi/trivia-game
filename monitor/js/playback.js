@@ -84,38 +84,6 @@ class YoutubePlayer {
 	}
 }
 
-class Mp3Player {
-	constructor(mp3) {
-		this.mp3 = mp3;
-		this.player = {};
-		this.pauseMusic = true;
-		this.minimizeQuestion = true;
-	}
-
-	start() {
-		let self = this;
-
-		return new Promise((resolve, reject) => {
-			document.getElementById('content').innerHTML = '<div id="player"></div>';
-			self.player = new Audio();
-			self.player.addEventListener('canplaythrough', () => {
-				self.player.play();
-				resolve();
-			});
-			self.player.addEventListener('error', (err) => {
-				reject(err);
-			});
-			self.player.src = self.mp3;
-		});
-	}
-
-	stop() {
-		clear();
-		this.player.pause();
-		this.player = null;
-	}
-}
-
 class Mp3WavePlayer {
 	constructor(mp3) {
 		this.mp3 = mp3;
@@ -144,11 +112,7 @@ class Mp3WavePlayer {
 			});
 
 			self.player.on('error', (err) => {
-				if (err.trim() == "XHR error:") {
-					self.loadFallback(resolve, reject); //TODO: this is not defined?
-				} else {
-					reject(err);
-				}
+				reject(new Error(err + ": " + self.mp3));
 			});
 
 			self.player.load(self.mp3);
@@ -227,7 +191,7 @@ class PlaybackFactory {
 		this._players = {
 			youtube : (view, answers) => new YoutubePlayer(view.videoId, view.player),
 			youtubeaudio : (view, answers) => new YoutubePlayer(view.videoId, view.player),
-			mp3 : (view, answers) => view.nowave ? new Mp3Player(view.mp3) : new Mp3WavePlayer(view.mp3),
+			mp3 : (view, answers) => new Mp3WavePlayer(view.mp3),
 			image : (view, answers) => new ImageViewer(view.url),
 			quote : (view, answers) => new QuoteText(view.quote),
 			list : (view, answers) => new ListViewer(view.list),
