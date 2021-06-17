@@ -1,5 +1,4 @@
 import CategorySpinner from '../spinner.js';
-import PlaybackFactory from '../playback.js';
 
 function showCategorySpinner(app, categories, correct, index, total) {
 	app.state = 'loading';
@@ -29,6 +28,7 @@ async function displayQuestion(app, text) {
 
 function displayError(app, message) {
 	return new Promise((resolve, reject) => {
+		app.playback.view = {};
 		app.error = message;
 		setTimeout(() => {
 			app.error = undefined;
@@ -38,23 +38,29 @@ function displayError(app, message) {
 }
 
 async function playbackStart(app, view, answers) {
-	let player = app.playback.load(view, answers);
+	if (!view.player) {
+		view.player = 'blank';
+	}
+	view.answers = answers;
+	app.playback.view = view;
 
-	await player.start();
+	let playback = app.$refs[view.player];
+
+	await playback.start();
 
 	app.state = 'question';
-	app.minimizeQuestion = player.minimizeQuestion;
-	app.currentPlayer = player;
+	app.minimizeQuestion = playback.minimizeQuestion;
 
-	if (player.pauseMusic) {
+	if (playback.pauseMusic) {
 		app.sound.pause();
 	}
 }
 
 function playbackEnd(app, pointsThisRound, correct) {
 	return new Promise((resolve, reject) => {
-		let player = app.currentPlayer;
-		player.stop();
+		let playback = app.$refs[app.playback.view.player];
+		app.playback.view = {};
+		playback.stop();
 	
 		app.timer.stop();
 		app.sound.play();
@@ -105,13 +111,15 @@ export default {
 		spinner : {
 			categories: []
 		},
+		playback : {
+			view : {}
+		},
 		timer: new TimerData(),
 		session: new SessionData(),
 		title: '',
 		state: 'loading',
 		error: undefined,
 		minimizeQuestion: false,
-		playback: new PlaybackFactory(),
 		players : []
 	})},
 	props: ['gameId', 'connection', 'sound', 'passed', 'lobbyPlayers'],
@@ -167,6 +175,12 @@ export default {
 		}
 	},
 	methods: {
+		isCurrentPlayback: function(expected) {
+			if (!this.playback || !this.playback.view) {
+				return false;
+			}
+			return this.playback.view.player === expected;
+		},
 		isLeadingPlayer: function (player) {
 			let playerScoreCount = this.players.filter((p) => p.totalPoints >= player.totalPoints).length;
 			return playerScoreCount == 1;

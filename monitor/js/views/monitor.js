@@ -3,6 +3,13 @@ import Question from '../components/question.js';
 import Results from '../components/results.js';
 import SoundController from '../sound.js';
 import MonitorToServerConnection from '../connection.js';
+import BlankPlayer from '../components/playback/blank.js';
+import ImagePlayer from '../components/playback/image.js';
+import QuotePlayer from '../components/playback/quote.js';
+import ListPlayer from '../components/playback/list.js';
+import AnswersPlayer from '../components/playback/answers.js';
+import Mp3WavePlayer from '../components/playback/mp3.js';
+import YoutubePlayer from '../components/playback/youtube.js';
 
 function loadTemplate(url, component) {
 	return (resolve, reject) => {
@@ -15,6 +22,14 @@ function loadTemplate(url, component) {
 
 const sound = new SoundController();
 const connection = new MonitorToServerConnection(new URL("..", document.location));
+
+Vue.component('blank-player', loadTemplate('./pages/playback/blank.html', BlankPlayer));
+Vue.component('image-player', loadTemplate('./pages/playback/image.html', ImagePlayer));
+Vue.component('quote-player', loadTemplate('./pages/playback/quote.html', QuotePlayer));
+Vue.component('list-player', loadTemplate('./pages/playback/list.html', ListPlayer));
+Vue.component('answers-player', loadTemplate('./pages/playback/answers.html', AnswersPlayer));
+Vue.component('mp3-player', loadTemplate('./pages/playback/mp3.html', Mp3WavePlayer));
+Vue.component('youtube-player', loadTemplate('./pages/playback/youtube.html', YoutubePlayer));
 
 const routes = [
   	{ 

@@ -19,7 +19,16 @@
 				</div>
 			</div>
 	</div>
-	<div id="content" v-bind:class="state"></div>
+	<div id="content" v-bind:class="state">
+		<blank-player ref="blank"></blank-player>
+		<image-player v-bind:src="playback.view.url" ref="image"></image-player>
+		<quote-player v-bind:quote="playback.view.quote" ref="quote"></quote-player>
+		<list-player v-bind:list="playback.view.list" ref="list"></list-player>
+		<answers-player v-bind:answers="playback.view.answers" ref="answers"></answers-player>
+		<mp3-player v-bind:mp3="playback.view.mp3" ref="mp3"></mp3-player>
+		<youtube-player v-bind:videoId="playback.view.videoId" playerClass="youtube" ref="youtube"></youtube-player>	
+		<youtube-player v-bind:videoId="playback.view.videoId" playerClass="youtubeaudio" ref="youtubeaudio"></youtube-player>
+	</div>
 	<div id="correct" v-if="state == 'post-question'" v-bind:class="'button-icon-' + correct['key']">{{ correct['answer'] }}</div>
 	<div id="category-spinner" v-if="state == 'loading'">
 		<ul class="spinner" v-if="spinner.categories.length != 0">
