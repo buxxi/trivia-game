@@ -2,9 +2,7 @@ export default {
     data: function() { return {
         player: {},
         pauseMusic: true,
-        minimizeQuestion: true,
-        playing: false,
-        started: false
+        minimizeQuestion: true
     }},
     props: ['view'],
     computed: {
@@ -15,9 +13,6 @@ export default {
     methods: {
         start: async function() {
             let self = this;
-            
-            this.started = true;
-            await this.$nextTick();
         
             return new Promise((resolve, reject) => {
                 self.player = WaveSurfer.create({
@@ -32,7 +27,6 @@ export default {
                 self.player.on('ready', () => {
                     self.player.setVolume(0.3);
                     self.player.play();
-                    self.playing = true;
                     resolve();
                 });
     
@@ -47,8 +41,6 @@ export default {
         stop: async function() {
             this.player.stop();
             this.player.destroy();
-            this.playing = false;
-            this.started = true;
         }
     }
 }

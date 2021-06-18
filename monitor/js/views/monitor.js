@@ -30,6 +30,7 @@ Vue.component('list-player', loadTemplate('./pages/playback/list.html', ListPlay
 Vue.component('answers-player', loadTemplate('./pages/playback/answers.html', AnswersPlayer));
 Vue.component('mp3-player', loadTemplate('./pages/playback/mp3.html', Mp3WavePlayer));
 Vue.component('youtube-player', loadTemplate('./pages/playback/youtube.html', YoutubePlayer));
+Vue.component('youtubeaudio-player', loadTemplate('./pages/playback/youtube.html', YoutubePlayer));
 
 const routes = [
   	{ 

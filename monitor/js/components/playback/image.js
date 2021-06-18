@@ -14,7 +14,6 @@ export default {
     methods: {
         start: async function() {
             let self = this;
-            await this.$nextTick();
             
             return new Promise((resolve, reject) => {
                 let img = new Image();

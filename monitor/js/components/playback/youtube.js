@@ -3,8 +3,7 @@ export default {
         player: {},
         pauseMusic: true,
         minimizeQuestion: true,
-        playing : false,
-        started: false
+        playing : false
     }},
     props: ['view'],
     computed: {
@@ -18,9 +17,6 @@ export default {
     methods: {
         start: async function() {
             let self = this;
-            this.started = true;
-            
-            await this.$nextTick();
 
             return new Promise((resolve, reject) => {
                 let startTimeout = setTimeout(() => {
@@ -52,7 +48,6 @@ export default {
 
         stop: async function() {
             this.playing = false;
-            this.started = false;
             this.player.stopVideo();
         }
     }

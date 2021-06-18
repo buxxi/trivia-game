@@ -1,5 +1,16 @@
 import CategorySpinner from '../spinner.js';
 
+function resolvePlayback(app) {
+	return new Promise((resolve, reject) => {
+		let i = setInterval(() => {
+			if (app.$refs.playback) {
+				clearInterval(i);
+				resolve(app.$refs.playback);
+			}
+		}, 1);
+	});
+}
+
 function showCategorySpinner(app, categories, correct, index, total) {
 	app.state = 'loading';
 	app.title = 'Selecting next question';
@@ -44,7 +55,7 @@ async function playbackStart(app, view, answers) {
 	view.answers = answers;
 	app.playback.view = view;
 
-	let playback = app.$refs[view.player];
+	let playback = await resolvePlayback(app);
 
 	await playback.start();
 
@@ -57,8 +68,8 @@ async function playbackStart(app, view, answers) {
 }
 
 function playbackEnd(app, pointsThisRound, correct) {
-	return new Promise((resolve, reject) => {
-		let playback = app.$refs[app.playback.view.player];
+	return new Promise(async (resolve, reject) => {
+		let playback = await resolvePlayback(app);
 		app.playback.view = {};
 		playback.stop();
 	
@@ -124,7 +135,13 @@ export default {
 	})},
 	props: ['gameId', 'connection', 'sound', 'passed', 'lobbyPlayers'],
 	computed: {
-		showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; }
+		showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; },
+		playbackPlayer: function() {
+			if (!this.playback.view.player) {
+				return undefined;
+			}
+			return this.playback.view.player + "-player";
+		}
 	},
 	created: function() {
 		if (!this.connection.connected()) {
@@ -175,12 +192,6 @@ export default {
 		}
 	},
 	methods: {
-		isCurrentPlayback: function(expected) {
-			if (!this.playback || !this.playback.view) {
-				return false;
-			}
-			return this.playback.view.player === expected;
-		},
 		isLeadingPlayer: function (player) {
 			let playerScoreCount = this.players.filter((p) => p.totalPoints >= player.totalPoints).length;
 			return playerScoreCount == 1;

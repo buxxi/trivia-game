@@ -20,14 +20,7 @@
 			</div>
 	</div>
 	<div id="content" v-bind:class="state">
-		<blank-player v-bind:view="playback.view" ref="blank"></blank-player>
-		<image-player v-bind:view="playback.view" ref="image"></image-player>
-		<quote-player v-bind:view="playback.view" ref="quote"></quote-player>
-		<list-player v-bind:view="playback.view" ref="list"></list-player>
-		<answers-player v-bind:view="playback.view" ref="answers"></answers-player>
-		<mp3-player v-bind:view="playback.view" ref="mp3"></mp3-player>
-		<youtube-player v-bind:view="playback.view" ref="youtube"></youtube-player>	
-		<youtube-player v-bind:view="playback.view" ref="youtubeaudio"></youtube-player>
+		<component v-bind:is="playbackPlayer" v-bind:view="playback.view" ref="playback"></component>
 	</div>
 	<div id="correct" v-if="state == 'post-question'" v-bind:class="'button-icon-' + correct['key']">{{ correct['answer'] }}</div>
 	<div id="category-spinner" v-if="state == 'loading'">

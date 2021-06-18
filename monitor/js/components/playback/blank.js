@@ -1,17 +1,12 @@
 export default {
     data: function() { return {
 		pauseMusic: false,
-		minimizeQuestion: false,
-        playing: false
+		minimizeQuestion: false
     }},
     props: ['view'],
     methods: {
-        start: async function() {
-            this.playing = true;
-        },
+        start: async function() {},
         
-        stop: async function() {
-            this.playing = false;
-        }
+        stop: async function() {}
     }
 }
