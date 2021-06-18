@@ -38,11 +38,11 @@ class GeographyQuestions {
 				weight : 15
 			},
 			borders : {
-				title : (correct) => "Which country has borders to all these countries: " + correct.neighbours + "?",
+				title : (correct) => "Which country has borders to all these countries?",
 				format : (correct) => this._formatName(correct),
 				correct : (selector) => this._randomCountryWith2Neighbours(selector),
 				similar : (correct) => this._similarNeighbouringCountries(correct),
-				load : (correct) => this._loadBlank(),
+				load : (correct) => this._loadNeighbours(correct),
 				weight : 10
 			},
 			region : {
@@ -180,6 +180,13 @@ class GeographyQuestions {
 		return {
 			player : 'image',
 			url : url
+		};
+	}
+
+	_loadNeighbours(correct) {
+		return {
+			player : 'list',
+			list : correct.neighbours
 		};
 	}
 
