@@ -41,7 +41,7 @@ class DrinksQuestions {
 		return {
 			type : 'drinks',
 			name : 'Drinks',
-			icon : 'fa-glass',
+			icon : 'fa-glass-martini-alt',
 			attribution : [
 				{ url: 'https://www.thecocktaildb.com', name: 'TheCocktailDB' }
 			]

@@ -3,6 +3,10 @@
 @import "./lobby.scss";
 @import "./credits.scss";
 
+$fa-font-path: "../../common/fonts/fontawesome";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+
 .question {
 	#content, #category-spinner {
 		bottom : 8em;
@@ -92,9 +96,9 @@
 	font-size: 3em;
 
 	&:before {
-		content : "\f0da";
-		font-family : FontAwesome;
-		font-size : 4em;
+		content : "\f04b";
+		font-family : 'Font Awesome 5 Free';
+		font-size : 3em;
 		display : block;
 		position : absolute;
 		top : 50%;

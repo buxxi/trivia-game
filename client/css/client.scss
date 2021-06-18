@@ -1,5 +1,9 @@
 @import "../../common/css/trivia.scss";
 
+$fa-font-path: "../../common/fonts/fontawesome";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+
 .join {
 	video {
 		bottom : 0;
@@ -158,7 +162,6 @@ button {
 
 	.fa-stack {
 		margin-top : 25%;
-		width : 2.15em;
 	}
 	.fa-stack-2x {
 		color: $primary;

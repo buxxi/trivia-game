@@ -68,7 +68,7 @@ class GeographyQuestions {
 		return {
 			type : 'geography',
 			name : 'Geography',
-			icon : 'fa-globe',
+			icon : 'fa-globe-europe',
 			attribution : [
 				{ url: 'https://restcountries.eu', name: 'REST Countries' },
 				{ url: 'https://developers.google.com/chart', name: 'Google Charts' }

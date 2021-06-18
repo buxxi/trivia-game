@@ -22,6 +22,7 @@ class TriviaServer {
 		});
 		
 		app.use('/trivia/common', express.static('common'));
+		app.use('/trivia/common/fonts/fontawesome', express.static('node_modules/@fortawesome/fontawesome-free/webfonts'));
 
 		//Serve files for client
 		app.use('/trivia/client', express.static('client'));

@@ -50,7 +50,7 @@ class MusicQuestions {
 		return {
 			type : 'music',
 			name : 'Music',
-			icon : 'fa-music',
+			icon : 'fa-guitar',
 			attribution : [
 				{ url: 'https://spotify.com', name: 'Spotify' }
 			]

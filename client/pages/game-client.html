@@ -1,24 +1,24 @@
 <div class="answer">
 	<div v-if="waiting">
-		<div class="fa-stack fa-lg fa-5x">
-			<i class="fa fa-television fa-stack-2x"></i>
-			<i class="fa fa-stack-1x" v-bind:class="{'fa-eye' : connected, 'fa-bolt' : !connected}"></i>
+		<div class="fa-stack fa-5x">
+			<i class="fas fa-tv fa-stack-2x"></i>
+			<i class="fas fa-stack-1x" v-bind:class="{'fa-eye' : connected, 'fa-bolt' : !connected}"></i>
 		</div>
 		<h3>{{ message }}</h3>
 		<ul v-if="!connected">
 			<li>
-				<button v-on:click.prevent="reconnect"><i class="fa fa-fw fa-refresh"></i> Reconnect</button>
+				<button v-on:click.prevent="reconnect"><i class="fas fa-fw fa-sync"></i> Reconnect</button>
 			</li>
 			<li>
-				<button v-on:click.prevent="returnToLobby"><i class="fa fa-fw fa-sign-out"></i> To lobby</button>
+				<button v-on:click.prevent="returnToLobby"><i class="fas fa-fw fa-sign-out-alt"></i> To lobby</button>
 			</li>
 		</ul>
 	</div>
 	<div v-if="!waiting">
 		<div class="stats" v-bind:style="{'background-color': stats.color}">
 			<img v-bind:src="'../common/img/avatars/' + stats.avatar + '.png'"/>
-			<div><i class="fa fa-fw fa-star"></i>{{stats.score}}</div>
-			<div><i class="fa fa-fw fa-times"></i>{{stats.multiplier}}</div>
+			<div><i class="fas fa-fw fa-star"></i>{{stats.score}}</div>
+			<div><i class="fas fa-fw fa-times"></i>{{stats.multiplier}}</div>
 		</div>
 		<button class="button-icon-A" v-if="answers.A" v-on:click.prevent="makeGuess('A')" v-bind:class="buttonClass('A')" v-bind:disabled="hasGuessed">{{ answers.A }}</button>
 		<button class="button-icon-B" v-if="answers.B" v-on:click.prevent="makeGuess('B')" v-bind:class="buttonClass('B')" v-bind:disabled="hasGuessed">{{ answers.B }}</button>

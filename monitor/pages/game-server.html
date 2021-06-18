@@ -10,7 +10,7 @@
 			<div class="message" v-if="error">{{ error }}</div>
 			<div class="title" v-bind:class="{'full-animation' : state == 'pre-question', 'full-static' : (state == 'question' && !minimizeQuestion)}">{{ title }}</div>
 			<div class="timer" v-if="timer.running">
-				<div class="timer-score infobox"><i class="fa fa-fw fa-star"></i>{{ timer.score }}</div>
+				<div class="timer-score infobox"><i class="fas fa-fw fa-star"></i>{{ timer.score }}</div>
 				<div class="timer-counter" v-bind:data-seconds="timer.timeLeft" v-bind:data-percentage="timer.percentageLeft">
 					<svg viewBox="0 0 38 38">
 					  <circle id="border" r="15.9155" cx="19" cy="19"></circle>
