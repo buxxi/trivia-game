@@ -45,11 +45,7 @@ export default {
 		if (!this.connection.connected()) {
 			return;
 		}
-
-		this.connection.onQuestionStart().then(async answers => showAnswers(this, answers));
-		this.connection.onQuestionEnd().then(async (data) => showCorrect(this, data.pointsThisRound, data.correct));
-		this.connection.onClose().catch(() => showClosed(this));
-		this.connection.onGameEnd().then(async () => { redirectToJoin(this)});
+		this._registerListeners();
 	},
 	methods: {
 		reconnect: async function() {
@@ -58,8 +54,9 @@ export default {
 				for (let key in data.stats) {
 					this.$set(this.stats, key, data.stats[key]);
 				}
+				this._registerListeners();
 				this.connected = true;
-				this.message = 'Waiting for the game to start';
+				this.message = 'Waiting for the game to continue';
 			} catch (e) {
 				this.message = "Error when reconnecting: " + e;				
 			}
@@ -91,6 +88,13 @@ export default {
 			} else {
 				return "";
 			}
+		},
+
+		_registerListeners: function() {
+			this.connection.onQuestionStart().then(async answers => showAnswers(this, answers));
+			this.connection.onQuestionEnd().then(async (data) => showCorrect(this, data.pointsThisRound, data.correct));
+			this.connection.onClose().catch(() => showClosed(this));
+			this.connection.onGameEnd().then(async () => { redirectToJoin(this)});
 		}
 	}
 };
