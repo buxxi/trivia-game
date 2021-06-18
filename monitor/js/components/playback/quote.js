@@ -4,7 +4,12 @@ export default {
         minimizeQuestion: true,
         playing: false
     }},
-    props: ['quote'],
+    props: ['view'],
+    computed: {
+        quote: function() {
+            return this.view.quote;
+        }
+    },
     methods: {
         start: async function() {
             this.playing = true;

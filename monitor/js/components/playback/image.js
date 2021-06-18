@@ -5,7 +5,12 @@ export default {
         minimizeQuestion: true,
         playing: false
     }},
-    props: ['src'],
+    props: ['view'],
+    computed: {
+        src: function() {
+            return this.view.url;
+        }
+    },
     methods: {
         start: async function() {
             let self = this;
@@ -20,7 +25,6 @@ export default {
                 img.onerror = () => {
                     reject(new Error("Could not load image " + self.src));
                 };
-                console.log(self.src);
                 img.src = self.src;
             });
         },

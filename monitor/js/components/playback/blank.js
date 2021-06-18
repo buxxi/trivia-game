@@ -4,6 +4,7 @@ export default {
 		minimizeQuestion: false,
         playing: false
     }},
+    props: ['view'],
     methods: {
         start: async function() {
             this.playing = true;

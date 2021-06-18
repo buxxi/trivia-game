@@ -6,7 +6,12 @@ export default {
         playing: false,
         started: false
     }},
-    props: ['mp3'],
+    props: ['view'],
+    computed: {
+        src: function() {
+            return this.view.mp3;
+        }
+    },
     methods: {
         start: async function() {
             let self = this;
@@ -32,10 +37,10 @@ export default {
                 });
     
                 self.player.on('error', (err) => {
-                    reject(new Error(err + ": " + self.mp3));
+                    reject(new Error(err + ": " + self.src));
                 });
     
-                self.player.load(self.mp3);
+                self.player.load(self.src);
             });
         },
         

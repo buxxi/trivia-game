@@ -6,7 +6,15 @@ export default {
         playing : false,
         started: false
     }},
-    props: ['videoId', 'playerClass'],
+    props: ['view'],
+    computed: {
+        videoId: function() {
+            return this.view.videoId;
+        },
+        playerClass: function() {
+            return this.view.player == 'youtube' ? 'youtube' : 'youtubeaudio';
+        }
+    },
     methods: {
         start: async function() {
             let self = this;
