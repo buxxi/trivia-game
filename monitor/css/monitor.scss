@@ -3,10 +3,6 @@
 @import "./lobby.scss";
 @import "./credits.scss";
 
-$fa-font-path: "../../common/fonts/fontawesome";
-@import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
-@import "../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
-
 .question {
 	#content, #category-spinner {
 		bottom : 8em;
@@ -20,11 +16,6 @@ $fa-font-path: "../../common/fonts/fontawesome";
 		iframe {
 			opacity : 0;
 		}
-	}
-	h3 {
-		color: grey;
-		font-size: 2em;
-		font-weight: 100;
 	}
 	.title {
 		color : $font;

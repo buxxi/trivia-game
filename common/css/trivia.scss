@@ -1,3 +1,19 @@
+$fa-font-path: "../../common/fonts/fontawesome";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+@import "../../node_modules/@fontsource/ubuntu/scss/mixins.scss";
+
+@include fontFaceCustom(
+  	$weight: 400,
+  	$woff2Path: "../../common/fonts/ubuntu/ubuntu-latin-400-normal.woff2",
+	$woffPath: "../../common/fonts/ubuntu/ubuntu-latin-400-normal.woff"
+);
+@include fontFaceCustom(
+  	$weight: 700,
+  	$woff2Path: "../../common/fonts/ubuntu/ubuntu-latin-700-normal.woff2",
+	$woffPath: "../../common/fonts/ubuntu/ubuntu-latin-700-normal.woff"
+);
+
 $primary : #307bbb;
 $primary_border : #133451;
 $secondary : #ffffff;
@@ -22,7 +38,7 @@ html {
 
 body {
 	color : $font;
-	font-family: FontAwesome, Ubuntu !important;
+	font-family: 'FontAwesome Free', 'Ubuntu' !important;
 	overflow : hidden;
 
 	@media (max-width: 1600px), (max-height : 800px) {
@@ -31,7 +47,7 @@ body {
 }
 
 button {
-	font-family: FontAwesome, Ubuntu !important;
+	font-family: 'FontAwesome Free', 'Ubuntu' !important;
 }
 
 @mixin button-icon($color, $text) {

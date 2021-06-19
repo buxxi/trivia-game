@@ -23,6 +23,7 @@ class TriviaServer {
 		
 		app.use('/trivia/common', express.static('common'));
 		app.use('/trivia/common/fonts/fontawesome', express.static('node_modules/@fortawesome/fontawesome-free/webfonts'));
+		app.use('/trivia/common/fonts/ubuntu', express.static('node_modules/@fontsource/ubuntu/files'));
 
 		//Serve files for client
 		app.use('/trivia/client', express.static('client'));
