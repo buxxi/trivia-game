@@ -128,14 +128,14 @@ export default {
 		},
 		loadAll: async function() {
 			for (let type of this.availableCategories.map(c => c.type)) {
-				this.config.categories[type] = true;
+				this.$set(this.config.categories, type, true);
 				await this.preload(type);
 			}
 		},
 		clearCache: async function() {
 			try {
 				for (let type of this.availableCategories.map(c => c.type)) {
-					this.config.categories[type] = false;
+					this.$set(this.config.categories, type, false);
 				}
 				await this.connection.clearCache();
 			} catch (e) {
