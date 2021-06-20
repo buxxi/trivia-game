@@ -29,7 +29,7 @@ class FileSystemCache {
 	}
 
 	static clearAll() {
-		throw new Error("Not implemented");
+		fs.rm(CACHE_PATH, { force: true, recursive: true })
 	}
 }
 
