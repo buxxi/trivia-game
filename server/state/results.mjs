@@ -9,8 +9,13 @@ class ResultsState {
 	async run() {
         await this._monitorConnection.results(this._game.session().history(), this._game.players()); 
 
-        Object.values(this._clientConnections).forEach(async (client) => {
-            await client.gameEnd();
+        await Promise.all(Object.values(this._clientConnections).map((client) => {
+            return client.gameEnd();
+        }));
+
+        this._monitorConnection.close();
+        
+        Object.values(this._clientConnections).forEach((client) => {
             client.close();
         });
 	}

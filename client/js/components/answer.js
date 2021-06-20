@@ -26,7 +26,6 @@ function showClosed(app) {
 }
 
 function redirectToJoin(app) {
-	app.connection.close();
 	app.$router.push({ name: "join", query : { gameId: app.gameId }, params: { preferredAvatar: app.stats.avatar, name: app.stats.name } });
 }
 

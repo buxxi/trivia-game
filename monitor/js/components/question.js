@@ -145,7 +145,6 @@ export default {
 	},
 	created: function() {
 		if (!this.connection.connected()) {
-			console.log(this.gameId);
 			this.$router.push({ path: "/", query: { gameId: this.gameId } });
 			return;
 		}

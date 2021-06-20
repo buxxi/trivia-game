@@ -83,6 +83,10 @@ class ServerToMonitorConnection {
         return this._pws.connected();
     }
 
+    close() {
+        this._pws.close();
+    }
+
     clearSetupListeners() {
         this._pws.remove(Protocol.LOAD_CATEGORIES);
         this._pws.remove(Protocol.LOAD_AVATARS);

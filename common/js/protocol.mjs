@@ -69,6 +69,7 @@ class PromisifiedWebSocket {
 		this._uuidGenerator = uuidGenerator;
         this._ws = ws;
         this._listeners = [];
+		this._isClosing = false;
 
 		this._ws.onmessage = (message) => {
 			this._processListeners(message);
@@ -121,11 +122,12 @@ class PromisifiedWebSocket {
 	}
 
 	close() {
+		this._isClosing = true;
 		this._ws.close();
 	}
 
 	connected() {
-		return this._ws.readyState === 1;
+		return !this._isClosing && this._ws.readyState === 1;
 	}
 
     _on(event, propagateError) {
