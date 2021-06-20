@@ -2,10 +2,10 @@ import fetch from 'node-fetch';
 import {YoutubeLoader, YoutubeError} from '../youtubeloader.mjs';
 
 class MovieQuestions {
-	constructor(youtubeApiKey, tmdbApiKey) {
+	constructor(youtubeApiKey, youtubeRegion, tmdbApiKey) {
 		this._movies = [];
 		this._tmdbApiKey = tmdbApiKey;
-		this._youtube = new YoutubeLoader('UC3gNmTGu-TTbFPpfSs5kNkg', youtubeApiKey);
+		this._youtube = new YoutubeLoader('UC3gNmTGu-TTbFPpfSs5kNkg', youtubeApiKey, youtubeRegion);
 
 		this._types = {
 			title : {

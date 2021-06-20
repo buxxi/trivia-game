@@ -39,7 +39,6 @@ sudo docker run -d -p 8080:8080 --volume ~/.trivia-game/conf:/opt/trivia/conf --
 - Spotify: https://developer.spotify.com/web-api/
 - REST Countries: https://restcountries.eu
 - IGDB: https://www.igdb.com/api
-- Random Famous Quotes: https://market.mashape.com/andruxnet/random-famous-quotes
 - Reponsive Voice: http://responsivevoice.org/api/
 - The Cocktail DB: http://www.thecocktaildb.com/api/json/v1/1/random.php
 

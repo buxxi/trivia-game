@@ -1,11 +1,10 @@
 import fetch from 'node-fetch';
 
-const YOUTUBE_REGION = 'SE';
-
 class YoutubeLoader {
-	constructor(channelId, apiKey) {
+	constructor(channelId, apiKey, region) {
 		this._channelId = channelId;
 		this._apiKey = apiKey;
+		this._region = region;
 	}
 
 	async loadChannel(progress) {
@@ -29,11 +28,11 @@ class YoutubeLoader {
 		}
 		let regionRestriction = item.contentDetails.regionRestriction;
 		if (regionRestriction) {
-			if (regionRestriction.blocked && regionRestriction.blocked.indexOf(YOUTUBE_REGION) != -1) {
-				throw new YoutubeError("Video is not available in " + YOUTUBE_REGION);
+			if (regionRestriction.blocked && regionRestriction.blocked.indexOf(this._region) != -1) {
+				throw new YoutubeError("Video is not available in " + this._region);
 			}
-			if (regionRestriction.allowed && regionRestriction.allowed.indexOf(YOUTUBE_REGION) == -1) {
-				throw new YoutubeError("Video is not available in " + YOUTUBE_REGION);
+			if (regionRestriction.allowed && regionRestriction.allowed.indexOf(this._region) == -1) {
+				throw new YoutubeError("Video is not available in " + this._region);
 			}
 		}
 	}

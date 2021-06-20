@@ -26,10 +26,10 @@ class Categories {
 			new DrinksQuestions(),
 			new GeographyQuestions(),
 			new CurrentGameQuestions(),
-			new MovieQuestions(this._config.youtube.clientId, this._config.tmdb.clientId),
+			new MovieQuestions(this._config.youtube.clientId, this._config.youtube.region, this._config.tmdb.clientId),
 			new MusicQuestions(this._config.spotify.clientId, this._config.spotify.clientSecret, this._config.spotify.whiteList),
 			new QuotesQuestions(),
-			new VideoGameQuestions(this._config.youtube.clientId, this._config.igdb.clientId, this._config.igdb.clientSecret),
+			new VideoGameQuestions(this._config.youtube.clientId, this._config.youtube.region, this._config.igdb.clientId, this._config.igdb.clientSecret),
 			new MathQuestions()
 		]
 

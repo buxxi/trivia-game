@@ -4,14 +4,14 @@ import YoutubeLoader from '../youtubeloader.mjs';
 const GAMES_PER_PLATFORM = 50;
 
 class VideoGameQuestions {
-	constructor(youtubeApiKey, igdbClientId, igdbClientSecret) {
+	constructor(youtubeApiKey, youtubeRegion, igdbClientId, igdbClientSecret) {
 		this._games = [];
 		this._platforms = [];
 
 		this._igdbClientId = igdbClientId;
 		this._igdbClientSecret = igdbClientSecret;
 		this._igdbBaseURL = 'https://api.igdb.com/v4/';
-		this._youtube = new YoutubeLoader('UCzRj15rxSdLAbANoZsbyWjg', youtubeApiKey);
+		this._youtube = new YoutubeLoader('UCzRj15rxSdLAbANoZsbyWjg', youtubeApiKey, youtubeRegion);
 
 		this._types = {
 			screenshot : {

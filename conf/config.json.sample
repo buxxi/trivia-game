@@ -1,0 +1,26 @@
+{
+	"avatars": ["monkey","dog","wolf","cat","lion","tiger","horse","cow","dragon","pig","mouse","hamster","rabbit","bear","panda","frog","octopus","turtle","bee","snail","penguin"],
+	"youtube": {
+		"clientId": "<clientId from YouTube>",
+        "region": "SE"
+	},
+	"tmdb": {
+		"clientId": "<clientId from The Movie Database>"
+	},
+	"spotify": {
+		"clientId": "<clientId from Spotify>",
+		"clientSecret": "<clientSecret from Spotify>",
+		"whiteList" : ["classical","death-metal"]
+	},
+	"igdb": {
+		"clientId": "<clientId from Internet Game Database>",
+		"clientSecret" : "<clientSecret from Internet Game Database>"
+	},
+	"staticCategories": [
+		"conf/custom.json"
+	],
+	"jokes": [
+		{ "icon" : "fa-comments", "name" : "Internal Jokes" }
+	],
+	"ttsUrl": "http://local.tts.service:9999/?text={text}"
+}
