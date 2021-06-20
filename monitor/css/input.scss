@@ -69,11 +69,10 @@
 		border-radius: 10em;
 		cursor : pointer;
 		display : inline-block;
-		height : 1em;
-		line-height: 1em;
+		height : 2em;
+		line-height: 2em;
 		margin : 0.25em 0.10em;
-		padding : 0.35em;
-		width : 1em;
+		width : 2em;
 	}
 	.selected {
 		label {
@@ -88,8 +87,9 @@
 	}
 
 	img {
-		height: 100%;
-		width: 100%;
+		height: 50%;
+		width: 50%;
+		padding: 0.5em;
 		filter: grayscale(100%) contrast(1000%) invert(100%);
 		mix-blend-mode: screen;
 	}
