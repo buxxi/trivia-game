@@ -21,7 +21,10 @@ export default {
                     progressColor: '#337ab7',
                     cursorColor : '#133451',
                     cursorWidth : 3,
-                    barWidth : 3
+                    barWidth : 6,
+                    barRadius : 3,
+                    barGap: 3,
+                    height: 256
                 });
     
                 self.player.on('ready', () => {
