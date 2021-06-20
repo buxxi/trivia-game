@@ -40,7 +40,7 @@ class TriviaServer {
 		app.use('/trivia/monitor/js/ext/vue.min.js', express.static('node_modules/vue/dist/vue.min.js'));
 		app.use('/trivia/monitor/js/ext/vue-router.min.js', express.static('node_modules/vue-router/dist/vue-router.min.js'));
 		app.use('/trivia/monitor/js/ext/Pizzicato.min.js', express.static('node_modules/pizzicato/distr/Pizzicato.min.js'));
-		app.use('/trivia/monitor/js/ext/wavesurfer.min.js', express.static('node_modules/wavesurfer/dist/wavesurfer.min.js'));
+		app.use('/trivia/monitor/js/ext/wavesurfer.min.js', express.static('node_modules/wavesurfer.js/dist/wavesurfer.min.js'));
 		app.use('/trivia/monitor/js/ext/uuidv4.min.js', express.static('node_modules/uuid/dist/umd/uuidv4.min.js'));
 		app.use('/trivia/monitor/js/ext/qrcode.min.js', express.static('node_modules/qrcode/build/qrcode.min.js'));
 		
