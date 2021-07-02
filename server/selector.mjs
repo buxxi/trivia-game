@@ -163,7 +163,6 @@ class QuestionSelector {
 
 	yearAlternatives(correct) {
 		let maxJump = Math.floor((new Date().getFullYear() - correct) / 5) + 5;
-		console.log(maxJump);
 		return this.numericAlternatives(correct, maxJump, new Date().getFullYear());
 	}
 
