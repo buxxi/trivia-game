@@ -145,7 +145,6 @@ class PromisifiedWebSocket {
 								reject(e);
 							} else {
 								console.log("Event " + event + " got: " + e.message);
-								console.log(e);
 							}
 						});
 					});
