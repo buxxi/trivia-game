@@ -1,9 +1,9 @@
-function resolvePlayback(app) {
+function resolveRef(app, ref) {
 	return new Promise((resolve, reject) => {
 		let i = setInterval(() => {
-			if (app.$refs.playback) {
+			if (app.$refs[ref]) {
 				clearInterval(i);
-				resolve(app.$refs.playback);
+				resolve(app.$refs[ref]);
 			}
 		}, 1);
 	});
@@ -16,7 +16,8 @@ async function showCategorySpinner(app, categories, correct, index, total) {
 
 	if (categories.length > 0) {
 		app.spinner.categories = categories;
-		await app.$refs.spinner.start();
+		let spinner = await resolveRef(app, 'spinner');
+		await spinner.start();
 	}
 
 	return app.sound.speak(app.session.currentCategory.fullName, 3000);
@@ -46,7 +47,7 @@ async function playbackStart(app, view, answers) {
 	view.answers = answers;
 	app.playback.view = view;
 
-	let playback = await resolvePlayback(app);
+	let playback = await resolveRef(app, 'playback');
 
 	await playback.start();
 
@@ -60,7 +61,7 @@ async function playbackStart(app, view, answers) {
 
 function playbackEnd(app, pointsThisRound, correct) {
 	return new Promise(async (resolve, reject) => {
-		let playback = await resolvePlayback(app);
+		let playback = await resolveRef(app, 'playback');
 		app.playback.view = {};
 		playback.stop();
 	
