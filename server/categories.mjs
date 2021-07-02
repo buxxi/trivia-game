@@ -82,6 +82,10 @@ class Categories {
 	}
 
 	_shuffleAnswers(question) {
+		if (question.answers.length < 4) {
+			throw new Error("Got to few answers for " + question.text + " (" + question.answers + ")");
+		}
+
 		let selector = new QuestionSelector();
 
 		let answers = {
