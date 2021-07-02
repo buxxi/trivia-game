@@ -1,5 +1,3 @@
-import CategorySpinner from '../spinner.js';
-
 function resolvePlayback(app) {
 	return new Promise((resolve, reject) => {
 		let i = setInterval(() => {
@@ -11,24 +9,17 @@ function resolvePlayback(app) {
 	});
 }
 
-function showCategorySpinner(app, categories, correct, index, total) {
+async function showCategorySpinner(app, categories, correct, index, total) {
 	app.state = 'loading';
 	app.title = 'Selecting next question';
 	app.session.update(index, total, correct);
 
-	if (categories.length == 0) {
-		return app.sound.speak(app.session.currentCategory.fullName, 3000);
+	if (categories.length > 0) {
+		app.spinner.categories = categories;
+		await app.$refs.spinner.start();
 	}
 
-	let spinner = new CategorySpinner(() => app.sound.click());
-	app.spinner.categories = categories;
-	
-	return new Promise((resolve, reject) => {
-		spinner.start().then(() => {
-			app.sound.speak(app.session.currentCategory.fullName, 3000).then(resolve);
-		}).catch(reject);
-		setTimeout(() => spinner.stop().catch(reject), 2000);
-	});
+	return app.sound.speak(app.session.currentCategory.fullName, 3000);
 }
 
 async function displayQuestion(app, text) {
@@ -201,12 +192,6 @@ export default {
 		lostPoints: function(player) {
 			return player.pointChange < 0;
 		},
-		isCurrentCategory: function(category) {
-			if (this.session.currentCategory) {
-				return category.name == this.session.currentCategory.name;
-			}
-			return false;
-		},
 		playerNameOrPoints: function(player) {
 			if (this.achievedPoints(player) || this.lostPoints(player)) {
 				return player.pointChange;
@@ -248,7 +233,9 @@ class SessionData {
 	constructor() {
 		this.index = 0;
 		this.total = 0;
-		this.currentCategory = undefined;
+		this.currentCategory = {
+			name : undefined
+		};
 	}
 
 	update(index, total, currentCategory) {

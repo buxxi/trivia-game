@@ -24,13 +24,7 @@
 	</div>
 	<div id="correct" v-if="state == 'post-question'" v-bind:class="'button-icon-' + correct['key']">{{ correct['answer'] }}</div>
 	<div id="category-spinner" v-if="state == 'loading'">
-		<ul class="spinner" v-if="spinner.categories.length != 0">
-			<li v-for="cat in spinner.categories" v-bind:data-spinner-stop="isCurrentCategory(cat)">
-				<i v-if="cat.icon.indexOf('url:') == -1" v-bind:class="['fa','fa-fw',cat.icon]"></i>
-				<img v-if="cat.icon.indexOf('url:') == 0" v-bind:src="cat.icon.substr(4)"/>
-				<span>{{cat.name}}</span>
-			</li>
-		</ul>
+		<category-spinner ref="spinner" v-on:flip="sound.click()" v-bind:categories="spinner.categories" v-bind:correct="session.currentCategory.name"/>
 	</div>
 	<div class="bottom">
 		<transition-group name="playerposition" tag="ul" class="playerlist">

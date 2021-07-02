@@ -10,6 +10,7 @@ import ListPlayer from '../components/playback/list.js';
 import AnswersPlayer from '../components/playback/answers.js';
 import Mp3WavePlayer from '../components/playback/mp3.js';
 import YoutubePlayer from '../components/playback/youtube.js';
+import CategorySpinner from '../components/spinner.js';
 
 function loadTemplate(url, component) {
 	return (resolve, reject) => {
@@ -31,6 +32,7 @@ Vue.component('answers-player', loadTemplate('./pages/playback/answers.html', An
 Vue.component('mp3-player', loadTemplate('./pages/playback/mp3.html', Mp3WavePlayer));
 Vue.component('youtube-player', loadTemplate('./pages/playback/youtube.html', YoutubePlayer));
 Vue.component('youtubeaudio-player', loadTemplate('./pages/playback/youtube.html', YoutubePlayer));
+Vue.component('category-spinner', loadTemplate('./pages/spinner.html', CategorySpinner));
 
 const routes = [
   	{ 

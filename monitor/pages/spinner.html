@@ -1,0 +1,7 @@
+<ul class="spinner" v-if="categories.length != 0">
+    <li v-for="cat in categories" v-bind:data-spinner-stop="isCorrectCategory(cat)">
+        <i v-if="cat.icon.indexOf('url:') == -1" v-bind:class="['fa','fa-fw',cat.icon]"></i>
+        <img v-if="cat.icon.indexOf('url:') == 0" v-bind:src="cat.icon.substr(4)"/>
+        <span>{{cat.name}}</span>
+    </li>
+</ul>
