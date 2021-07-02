@@ -173,7 +173,7 @@ class MovieQuestions {
 	}
 
 	async _loadSimilarYears(movie, attribute, selector) {
-		return selector.yearAlternatives(movie.year, 10).map((year) => { return { year : year }; });
+		return selector.yearAlternatives(movie.year).map((year) => { return { year : year }; });
 	}
 
 	async _randomMovieClip(selector, attribution) {

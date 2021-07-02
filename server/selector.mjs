@@ -161,7 +161,9 @@ class QuestionSelector {
 		return arr.reduce((a, b) => func(a) < func(b) ? a : b);
 	}
 
-	yearAlternatives(correct, maxJump) {
+	yearAlternatives(correct) {
+		let maxJump = Math.floor((new Date().getFullYear() - correct) / 5) + 5;
+		console.log(maxJump);
 		return this.numericAlternatives(correct, maxJump, new Date().getFullYear());
 	}
 
@@ -175,7 +177,7 @@ class QuestionSelector {
 			if (diff < 0 && (min + diff) > 0) {
 				min = min + diff;
 				result.unshift(min);
-			} else if (diff > 0 && max < maxAllowedValue) {
+			} else if (diff > 0 && (max + diff) <= maxAllowedValue) {
 				max = max + diff;
 				result.push(max);
 			}

@@ -285,7 +285,7 @@ class VideoGameQuestions {
 	}
 
 	_similarGameYears(game, selector) {
-		return selector.yearAlternatives(this._gameYear(game), 3).map((year) => ({ release_date : year }));
+		return selector.yearAlternatives(this._gameYear(game)).map((year) => ({ release_date : year }));
 	}
 
 	_similarPlatforms(game, selector) {
