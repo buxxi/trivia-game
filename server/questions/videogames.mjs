@@ -15,7 +15,7 @@ class VideoGameQuestions {
 
 		this._types = {
 			screenshot : {
-				title : (correct) => "What game is this a screenshot of?",
+				title : (correct) => "Which game is this a screenshot of?",
 				correct : (selector) => this._randomGame(selector),
 				similar : (correct, selector) => this._similarGames(correct, selector),
 				view : (correct, selector) => this._screenshot(correct, selector),
@@ -331,7 +331,7 @@ class VideoGameQuestions {
 	_blank(game, selector) {
 		return {
 			attribution : {
-				title : "Featured game",
+				title : "Game",
 				name : this._gameTitle(game) + " (" + this._gameYear(game) + ")",
 				links : [game.attribution]
 			}

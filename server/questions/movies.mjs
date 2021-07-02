@@ -9,7 +9,7 @@ class MovieQuestions {
 
 		this._types = {
 			title : {
-				title : (correct) => "What is the title of this movie?",
+				title : (correct) => "Which movie is this from?",
 				correct : (selector, attribution) => this._randomMovieClip(selector, attribution),
 				similar : (correct, attribution, selector) => this._loadSimilarMovies(correct, attribution, selector),
 				format : (correct) => this._movieTitle(correct),
@@ -18,7 +18,7 @@ class MovieQuestions {
 				weight : 75
 			},
 			year : {
-				title : (correct) => "What year is this movie from?",
+				title : (correct) => "Which year is this movie from?",
 				correct : (selector, attribution) => this._randomMovieClip(selector, attribution),
 				similar : (correct, attribution, selector) => this._loadSimilarYears(correct, attribution, selector),
 				format : (correct) => this._movieYear(correct),
@@ -173,7 +173,7 @@ class MovieQuestions {
 	}
 
 	async _loadSimilarYears(movie, attribute, selector) {
-		return selector.yearAlternatives(movie.year, 5).map((year) => { return { year : year }; });
+		return selector.yearAlternatives(movie.year, 10).map((year) => { return { year : year }; });
 	}
 
 	async _randomMovieClip(selector, attribution) {

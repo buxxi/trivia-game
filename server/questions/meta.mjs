@@ -2,53 +2,53 @@ class CurrentGameQuestions {
 	constructor() {
 		this._types = {
 			avatar : {
-				title : (correct) => "What animal does " + correct.name + " have as avatar?",
+				title : (correct) => "Which animal does " + correct.name + " have as avatar?",
 				correct : (correct) => this._randomPlayer(correct),
 				similar : (correct, selector) => this._otherAvatars(correct, selector),
 				format : (correct) => this._resolveAvatar(correct),
-				attribution : "Featured avatar"
+				attribution : "Avatar"
 			},
 			correct : {
 				title : (correct) => "Who has the most correct answers so far?",
 				correct : (selector) => this._playerWithMost(selector, (p) => p.stats.correct),
 				similar : (correct, selector) => this._playersWithLower(correct, selector, (p) => p.stats.correct),
 				format : (correct) => this._resolveName(correct),
-				attribution : "Most correct player"
+				attribution : "Most correct player (at that time)"
 			},
 			wrong : {
 				title : (correct) => "Who has the most incorrect answers so far?",
 				correct : (selector) => this._playerWithMost(selector, (p) => p.stats.wrong),
 				similar : (correct, selector) => this._playersWithLower(correct, selector, (p) => p.stats.wrong),
 				format : (correct) => this._resolveName(correct),
-				attribution : "Most incorrect player"
+				attribution : "Most incorrect player (at that time)"
 			},
 			total_correct : {
 				title : (correct) => "What is the total amount of correct answers so far?",
 				correct : (selector) => this._countTotal(selector, (p) => p.stats.correct),
 				similar : (correct, selector) => this._numericAlternatives(correct, selector),
 				format : (correct) => this._formatValue(correct),
-				attribution : "Total correct answers"
+				attribution : "Total correct answers (at that time)"
 			},
 			total_wrong : {
 				title : (correct) => "What is the total amount of incorrect answers so far?",
 				correct : (selector) => this._countTotal(selector, (p) => p.stats.wrong),
 				similar : (correct, selector) => this._numericAlternatives(correct, selector),
 				format : (correct) => this._formatValue(correct),
-				attribution : "Total incorrect answers"
+				attribution : "Total incorrect answers (at that time)"
 			},
 			fastest : {
 				title : (correct) => "Who has made the fastest correct answers so far?",
 				correct : (selector) => this._playerWithMost(selector, (p) => p.stats.fastest),
 				similar : (correct, selector) => this._playersWithLower(correct, selector, (p) => p.stats.fastest),
 				format : (correct) => this._resolveName(correct),
-				attribution : "Fastest player"
+				attribution : "Fastest player (at that time)"
 			},
 			slowest : {
 				title : (correct) => "Who has made the slowest correct answers so far?",
 				correct : (selector) => this._playerWithLeast(selector, (p) => p.stats.slowest),
 				similar : (correct, selector) => this._playersWithHigher(correct, selector, (p) => p.stats.slowest),
 				format : (correct) => this._resolveName(correct),
-				attribution : "Slowest player"
+				attribution : "Slowest player (at that time)"
 			}
 		}
 	}
@@ -79,7 +79,7 @@ class CurrentGameQuestions {
 			correct : type.format(correct),
 			view : {
 				attribution : {
-					title : type.attribution + " (at that time)",
+					title : type.attribution,
 					name : type.format(correct),
 					links : []
 				}

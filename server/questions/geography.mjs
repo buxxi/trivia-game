@@ -11,7 +11,8 @@ class GeographyQuestions {
 				correct : (selector) => this._randomCountry(selector),
 				similar : (correct) => this._similarCountries(correct),
 				load : (correct) => this._loadImage(correct.flag),
-				weight : 30
+				weight : 30,
+				attribution: "Flag"
 			},
 			shape : {
 				title : (correct) => "Which country has this shape?",
@@ -19,7 +20,8 @@ class GeographyQuestions {
 				correct : (selector) => this._randomCountry(selector),
 				similar : (correct) => this._similarCountries(correct),
 				load : (correct) => this._loadImage('https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + correct.code + '&chco=00000000|307bbb&chf=bg,s,00000000&cht=map:auto=50,50,50,50'),
-				weight : 15
+				weight : 15,
+				attribution: "Image of"
 			},
 			highpopulation : {
 				title : (correct) => "Which of these countries has the largest population?",
@@ -27,7 +29,8 @@ class GeographyQuestions {
 				correct : (selector) => this._randomCountry(selector),
 				similar : (correct) => this._similarPopulationCountries(correct),
 				load : (correct) => this._loadBlank(),
-				weight : 10
+				weight : 10,
+				attribution: "Country"
 			},
 			capital : {
 				title : (correct) => "In which country is " + correct.capital + " the capital?",
@@ -35,7 +38,8 @@ class GeographyQuestions {
 				correct : (selector) => this._randomCountry(selector),
 				similar : (correct) => this._similarCountries(correct),
 				load : (correct) => this._loadBlank(),
-				weight : 15
+				weight : 15,
+				attribution: "Country"
 			},
 			borders : {
 				title : (correct) => "Which country has borders to all these countries?",
@@ -43,7 +47,8 @@ class GeographyQuestions {
 				correct : (selector) => this._randomCountryWith2Neighbours(selector),
 				similar : (correct) => this._similarNeighbouringCountries(correct),
 				load : (correct) => this._loadNeighbours(correct),
-				weight : 10
+				weight : 10,
+				attribution: "Country"
 			},
 			region : {
 				title : (correct) => "Where is " + correct.name + " located?",
@@ -51,7 +56,8 @@ class GeographyQuestions {
 				correct : (selector) => this._randomCountry(selector),
 				similar : (correct) => this._allCountries(correct),
 				load : (correct) => this._loadBlank(),
-				weight : 10
+				weight : 10,
+				attribution: "Country"
 			},
 			area : {
 				title : (correct) => "Which of these countries has the largest land area?",
@@ -59,7 +65,8 @@ class GeographyQuestions {
 				correct : (selector) => this._randomCountry(selector),
 				similar : (correct) => this._similarAreaCountries(correct),
 				load : (correct) => this._loadBlank(),
-				weight : 10
+				weight : 10,
+				attribution: "Country"
 			}
 		}
 	}
@@ -91,7 +98,7 @@ class GeographyQuestions {
 		var title = type.title(correct);
 		var view = type.load(correct);
 		view.attribution = {
-			title : "Featured country",
+			title : type.attribution,
 			name : correct.name,
 			links : ['https://restcountries.eu', 'https://flagpedia.net?q=' + correct.code]
 		}

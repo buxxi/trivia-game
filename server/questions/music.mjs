@@ -36,7 +36,7 @@ class MusicQuestions {
 				weight : 10
 			},
 			artistImage : {
-				title : (correct) => "Name the artist in the image",
+				title : (correct) => "Which artist is this?",
 				correct : (selector) => this._randomTrack(selector),
 				similar : (correct, selector) => this._similarTracks(correct, selector),
 				format : (correct) => this._artistName(correct),

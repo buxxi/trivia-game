@@ -8,7 +8,7 @@ class DrinksQuestions {
 	
 		this._types = {
 			all : {
-				title : (correct) => "What drink do you get if you mix the following ingredients?",
+				title : (correct) => "Which drink do you get if you mix the following ingredients?",
 				correct : (correct) => this._randomDrink(correct),
 				similar : (correct, selector) => this._similarDrinks(correct, selector),
 				load : (correct) => this._loadList(correct),
@@ -26,7 +26,7 @@ class DrinksQuestions {
 				weight : 25
 			},
 			glass : {
-				title : (correct) => "What kind of glass should you serve a " + correct.name + " in?",
+				title : (correct) => "Which kind of glass should you serve a " + correct.name + " in?",
 				correct : (correct) => this._randomDrinkWithGlass(correct),
 				similar : (correct, selector) => this._drinksWithGlass(correct, selector),
 				load : (correct) => this._loadBlankDrink(correct),
@@ -154,7 +154,7 @@ class DrinksQuestions {
 	_loadBlankDrink(drink) {
 		return {
 			attribution : {
-				title : "Featured drink",
+				title : "Drink",
 				name : drink.name,
 				links : [drink.url]
 			}
@@ -164,7 +164,7 @@ class DrinksQuestions {
 	_loadBlankIngredient(ingredient) {
 		return {
 			attribution : {
-				title : "Featured drink",
+				title : "Drink",
 				name : ingredient.drink.name,
 				links : [ingredient.drink.url]
 			}
@@ -176,7 +176,7 @@ class DrinksQuestions {
 			player : 'list',
 			list : drink.ingredients,
 			attribution : {
-				title : "Featured drink",
+				title : "Drink",
 				name : drink.name,
 				links : [drink.url]
 			}
