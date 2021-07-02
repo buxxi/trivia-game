@@ -103,6 +103,15 @@ class QuestionSelector {
 		}, 0);
 	}
 
+	closest(arr, from, compare) {
+		return arr.filter(p => p != from).reduce((acc, cur) => {
+			if (!acc || Math.abs(compare(from) - compare(cur)) < Math.abs(compare(from, acc))) {
+				return cur;
+			}	
+			return acc;
+		});
+	}
+
 	wordsFromString(s) {
 		return s.split(/[^a-zA-Z0-9]/).filter((s) => s.length > 0).map((s) => s.toLowerCase());
 	}
