@@ -198,6 +198,7 @@
 	}
 	.kick {
 		&:hover {
+			cursor: not-allowed;
 			opacity : 0.5;
 		}
 	}
@@ -305,40 +306,35 @@ h1 {
 	width : 100%;
 }
 
-@mixin score-change($color, $border) {
-	animation: score-change 0.5s linear normal;
-	background-color : $color;
-	border-color : inherit;
-	border-style : solid;
-	border-width : 0.25em;
-	color : $font;
-	margin-left: 0.4em;
-	margin-top: 4.6em;
-	position: absolute;
-	text-shadow: 0px 1px 1px $border;
-	width: 4.5em;
-	z-index: 2;
-}
 
 .score-change-positive .avatar {
 	animation : glow-positive 1s linear normal;
 	box-shadow : 0 0 50px $correct, 0 0 25px $correct;
-}
 
-.score-change-positive span {
-	@include score-change($correct, $correct_border);
-	&:before {
-		content : "+";
+	img {
+		filter: contrast(200%);
+	}
+
+	&::after {
+		background-color: $correct;
+		border-color: $correct_border;
+		color: $font;
 	}
 }
 
 .score-change-negative .avatar {
 	animation : glow-negative 1s linear normal;
 	box-shadow : 0 0 50px $incorrect, 0 0 25px $incorrect;
-}
 
-.score-change-negative span {
-	@include score-change($incorrect, $incorrect_border);
+	img {
+		filter: grayscale(100%);
+	}
+	
+	&::after {
+		background-color: $incorrect;
+		border-color: $incorrect_border;
+		color: $font;
+	}
 }
 
 .score-change-negative~.score {
@@ -351,6 +347,7 @@ h1 {
 
 .leader {
 	position : absolute;
+	z-index: 2;
 	margin-left : 1.35em;
 	margin-top : -1em;
 	width : 3em;
@@ -377,12 +374,6 @@ h1 {
    100% { transform : scale(1); }
  }
 
- @keyframes score-change {
-    0% { transform : scale(0.5); }
-   50% { transform : scale(2); }
-   100% { transform : scale(1); }
- }
- 
  @keyframes glow-negative {
      0% { box-shadow : 0 0 0px $incorrect, 0 0 0px $incorrect }
      50% { box-shadow : 0 0 100px $incorrect, 0 0 50px $incorrect }

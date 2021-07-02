@@ -8,8 +8,8 @@
 			</div>
 			<div class="summary">
 				<h2>{{ score.name }}</h2>
-				<span class="correct"><i class="fas fa-fw fa-thumbs-up"></i>{{ score.stats.correct }}</span>
-				<span class="failed"><i class="fas fa-fw fa-thumbs-down"></i>{{ score.stats.wrong }}</span>
+				<span class="correct"><i class="fas fa-fw fa-check"></i>{{ score.stats.correct }}</span>
+				<span class="failed"><i class="fas fa-fw fa-times"></i>{{ score.stats.wrong }}</span>
 				<span class="fastest" v-if="score.stats.fastest > -1"><i class="fas fa-fw fa-clock"></i>{{ score.stats.fastest }}s</span>
 			</div>
 		</div>

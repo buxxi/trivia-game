@@ -34,10 +34,9 @@
 	</div>
 	<div class="bottom">
 		<transition-group name="playerposition" tag="ul" class="playerlist">
-			<li v-for="player in players" :key="player.id" v-bind:class="{'disconnected' : !player.connected, 'score-change-positive': achievedPoints(player), 'score-change-negative': lostPoints(player)}">
+			<li v-for="player in players" :key="player.id" v-bind:class="{'guessed' : player.guessed, 'disconnected' : !player.connected, 'score-change-positive': achievedPoints(player), 'score-change-negative': lostPoints(player)}">
 				<img src="img/crown.png" class="leader" v-if="isLeadingPlayer(player)"/>
-				<span v-if="achievedPoints(player) || lostPoints(player)" v-bind:style="{'border-color': player.color}">{{ player.pointChange }}</span>
-				<div class="avatar" v-bind:data-score="showPlayerName ? player.name : player.totalPoints" v-bind:data-multiplier="player.multiplier" v-bind:class="{'guessed' : player.guessed}" v-bind:style="{'background-color': player.color, 'border-color': player.color}">
+				<div class="avatar" v-bind:data-score="playerNameOrPoints(player)" v-bind:data-multiplier="player.multiplier" v-bind:style="{'background-color': player.color, 'border-color': player.color}">
 					<img v-bind:src="'../common/img/avatars/' + player.avatar + '.png'"/>
 				</div>
 			</li>

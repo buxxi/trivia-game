@@ -206,6 +206,15 @@ export default {
 				return category.name == this.session.currentCategory.name;
 			}
 			return false;
+		},
+		playerNameOrPoints: function(player) {
+			if (this.achievedPoints(player) || this.lostPoints(player)) {
+				return player.pointChange;
+			}
+			if (this.showPlayerName) {
+				return player.name;
+			}
+			return player.totalPoints;
 		}
 	}
 };

@@ -126,19 +126,20 @@ button {
 		border-color : inherit;
 		border-style : solid;
 		border-width : 0.25em;
+		border-radius: 0.5em;
 		color: $primary;
 		content: attr(data-score);
 		display: block;
 		font-weight: bold;
-		margin-left: -0.5em;
-		margin-top: -0.5em;
+		margin-left: -1em;
+		margin-top: -0.25em;
 		overflow : hidden;
 		position: absolute;
 		text-align: center;
-		width: 4.5em;
+		width: 5.5em;
 	}
 
-	&.guessed {
+	.guessed & {
 		img:first-of-type {
 			filter: invert(100%);
 		}
