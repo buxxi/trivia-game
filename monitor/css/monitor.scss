@@ -103,7 +103,7 @@
 		height : 3em;
 		position : absolute;
 		line-height : 3em;
-		transition-duration: 0.5s;
+		transition-duration: inherit;
 		transition-timing-function: linear;
 		transition-property: background, transform, top;
 		width : 100%;

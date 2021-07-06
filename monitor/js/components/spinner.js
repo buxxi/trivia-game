@@ -64,6 +64,7 @@ export default {
     data: function() { return {
 		duration: 50,
         maxDuration: 2000,
+        done: false,
         calculator: new KeepDuration()
     } },
     props: ['categories', 'correct'],
@@ -72,9 +73,8 @@ export default {
             return new Promise((resolve, reject) => {
                 let checkIfDone = () => {
                     try {
-                        let done = this.flip();
-                        if (done) {
-                            document.querySelector(".spinner").classList.add('highlight');
+                        this.done = this.flip();
+                        if (this.done) {
                             resolve();
                         } else {
                             setTimeout(checkIfDone, this.duration);
@@ -100,9 +100,6 @@ export default {
             this.calculator = this.calculator.next();
 
             let lis = document.querySelectorAll(".spinner li");
-            for (var i = 0; i < lis.length; i++) {
-                lis[i].style.transitionDuration = this.duration + "ms";
-            }
     
             if (this.duration < this.maxDuration) {
                 let li = lis[lis.length -1];
