@@ -35,7 +35,15 @@ class StepsDuration {
         return this;
     }
 
-    static _calculateStepsBeforeSlowingDown(duration, maxDuration) {
+    static _calculateStepsBeforeSlowingDown(duration, maxDuration, categories, correct) {
+        let indexOfChosen = categories.reduce((prev, current, index) => {
+            if (current.name == correct) {
+                return index;
+            } else {
+                return prev;
+            }
+        }, -1);
+
         var steps = 0;
         var sum = duration;
         while (sum < maxDuration) {
@@ -43,20 +51,12 @@ class StepsDuration {
             sum = new LogDuration().calculate(sum);
         }
 
-        var indexOfChosen = -1;
-        let lis = document.querySelectorAll(".spinner li");
-        for (var i = 0; i < lis.length; i++) {
-            if (lis[i].dataset.spinnerStop) {
-                indexOfChosen = i;
-            }
-        }
-
         function mod (n, m) {
             return ((n % m) + m) % m;
         }
 
         steps = (3 - steps) - indexOfChosen;
-        return mod(steps, lis.length);
+        return mod(steps, categories.length);
     }
 }
 
@@ -70,53 +70,49 @@ export default {
     props: ['categories', 'correct'],
     methods: {
         start: function() {
-            return new Promise((resolve, reject) => {
-                let checkIfDone = () => {
+            return new Promise(async (resolve, reject) => {
+                setTimeout(() => this.stop().catch(reject), 2000);
+
+                while (!this.done) {
                     try {
-                        this.done = this.flip();
+                        this.done = await this.flip();
                         if (this.done) {
                             resolve();
-                        } else {
-                            setTimeout(checkIfDone, this.duration);
                         }
                     } catch (e) {
                         reject(e);
                     }
                 }
-    
-                setTimeout(() => this.stop().catch(reject), 2000);
-                checkIfDone();
             });
         },
 
         stop: async function() {
-            this.calculator = new StepsDuration(StepsDuration._calculateStepsBeforeSlowingDown(this.duration, this.maxDuration));
+            this.calculator = new StepsDuration(StepsDuration._calculateStepsBeforeSlowingDown(this.duration, this.maxDuration, this.categories, this.correct));
         },
 
-        flip() {
+        flip: async function() {
             this.$emit('flip');
 
             this.duration = this.calculator.calculate(this.duration);
             this.calculator = this.calculator.next();
 
-            let lis = document.querySelectorAll(".spinner li");
-    
             if (this.duration < this.maxDuration) {
-                let li = lis[lis.length -1];
-                if (!li) {
-                    return false;
-                }
-                let parent = li.parentNode;
-                parent.removeChild(li);
-                parent.insertBefore(li, parent.childNodes[0]);
+                this.categories.unshift(this.categories.pop());
+
+                await this.$nextTick();
+                await this.wait(this.duration);
+                await this.$nextTick();
+
                 return false;
             } else {
                 return true;
             }
-        },    
+        }, 
 
-        isCorrectCategory(cat) {
-            return cat.name === this.correct;
+        wait: function(time) {
+            return new Promise((resolve, reject) => {
+                setTimeout(resolve, time);
+            });
         }
     }
 }

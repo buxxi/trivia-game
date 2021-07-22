@@ -16,6 +16,9 @@ async function showCategorySpinner(app, categories, correct, index, total) {
 
 	if (categories.length > 0) {
 		app.spinner.categories = categories;
+		for (var i = 0; i < categories.length; i++) {
+			categories[i].index = i;
+		}
 		let spinner = await resolveRef(app, 'spinner');
 		await spinner.start();
 	}

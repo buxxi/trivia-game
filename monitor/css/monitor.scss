@@ -93,9 +93,9 @@
 		display : block;
 		position : absolute;
 		top : 50%;
-		margin-top : -0.2em;
+		margin-top : -0.15em;
 		margin-left : -0.15em;
-		z-index : 2;
+		z-index : 6;
 	}
 
 	li {
@@ -105,7 +105,7 @@
 		line-height : 3em;
 		transition-duration: inherit;
 		transition-timing-function: linear;
-		transition-property: background, transform, top;
+		transition-property: color, background-color, transform;
 		width : 100%;
 		white-space: nowrap;
 		overflow: hidden;
@@ -119,40 +119,55 @@
 		}
 	}
 	li:nth-child(1) {
-		transform : rotateX(-90deg);
-		background : $primary_border;
-		top : 0;
-	}
+		transform : translateY(0) rotateX(-90deg);
+		color: darken($font, 75%);
+		background-color : $primary_border;
+		z-index: 2;
 
+	}
 	li:nth-child(2) {
-		transform : rotateX(-70deg);
-		background : mix($primary, $primary_border, 25%);
-		top : 0.5em;
+		transform : translateY(0.5em) rotateX(-70deg);
+		color: darken($font, 50%);
+		background-color : mix($primary, $primary_border, 25%);
+		z-index: 3;
 	}
 	li:nth-child(3) {
-		transform : rotateX(-40deg);
-		background : mix($primary, $primary_border, 50%);
-		top : 2.1em;
+		transform : translateY(2.1em) rotateX(-40deg);
+		color: darken($font, 25%);
+		background-color : mix($primary, $primary_border, 50%);
+		z-index: 4;
 	}
+
 	li:nth-child(4) {
+		transform : translateY(4.7em) rotateX(0deg);
+		color: $font;
 		background-color : $primary;
-		transform : rotateX(0deg);
-		top : 4.7em;
+		z-index: 5;
 	}
+
 	li:nth-child(5) {
-		transform : rotateX(40deg);
-		background : mix($primary, $primary_border, 50%);
-		top : 7.3em;
+		transform : translateY(7.3em) rotateX(40deg);
+		color: darken($font, 25%);
+		background-color : mix($primary, $primary_border, 50%);
+		z-index: 4;
 	}
 	li:nth-child(6) {
-		transform : rotateX(70deg);
-		background : mix($primary, $primary_border, 25%);
-		top : 8.9em;
+		transform : translateY(8.9em) rotateX(70deg);
+		color: darken($font, 50%);
+		background-color : mix($primary, $primary_border, 25%);
+		z-index: 3;
 	}
-	li:nth-child(n+7) {
-		transform : rotateX(90deg);
-		background : $primary_border;
-		top : 9.4em;
+	li:nth-child(7) {
+		transform : translateY(9.4em) rotateX(90deg);
+		color: darken($font, 75%);
+		background-color : $primary_border;
+		z-index: 2;
+	}
+	li:nth-child(n+8)  {
+		transform : translateY(4.7em) rotateX(180deg);
+		background-color : $primary_border;
+		z-index: 1;
+		transition-duration: 0;
 	}
 
 	&.highlight li:nth-child(4) {

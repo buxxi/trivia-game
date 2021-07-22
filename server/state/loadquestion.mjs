@@ -3,7 +3,7 @@ import QuestionErrorState from './questionerror.mjs';
 import ResultsState from './results.mjs';
 
 const JOKE_CHANCE = 0.5;
-const MINIMUM_CATEGORIES_COUNT = 6;
+const MINIMUM_CATEGORIES_COUNT = 8;
 
 class LoadingNextQuestionState {
     constructor(game, categories, clientConnections, monitorConnection) {
