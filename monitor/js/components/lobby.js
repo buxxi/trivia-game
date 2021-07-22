@@ -31,7 +31,7 @@ export default {
 			return this.availableCategories.filter(c => this.config.categories[c.type]).map(c => c.questionCount).reduce((a, b) => a + b, 0);
 		},
 		startMessage: function() {
-			if (this.players.length == 0) {
+			if (Object.keys(this.players).length == 0) {
 				return "Not enough players";
 			}
 	

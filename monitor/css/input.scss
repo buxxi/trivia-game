@@ -1,6 +1,6 @@
 .numeric-input {
 	color : $primary;
-	font-size: 2em;
+	font-size: 1.5em;
 	display : inline-flex;
 	border: 3px solid $primary;
 	border-radius: 1em;
@@ -38,7 +38,7 @@
 	padding : 0;
 	li {
 		display : inline;
-		font-size: 1.75em;
+		font-size: 1.5em;
 		list-style : none;
 		vertical-align : top;
 	}
@@ -76,12 +76,12 @@
 	}
 	.selected {
 		label {
-			background : radial-gradient(circle at center, $primary_border 0%, $primary 100%);
+			background : radial-gradient(circle at center, $primary 0%, $primary_border 100%);
 		}
 	}
 	.failed {
 		label {
-			background : radial-gradient(circle at center, $incorrect_border 0%, $incorrect 100%);
+			background : radial-gradient(circle at center, $incorrect 0%, $incorrect_border1 100%);
 			border-color : $incorrect_border;
 		}
 	}
