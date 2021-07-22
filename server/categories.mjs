@@ -63,6 +63,9 @@ class Categories {
 		let category = this._categoryByType(session.nextCategory(selector));
 
 		let question = await category.nextQuestion(selector);
+		if (!question.correct) {
+			throw new Error("Got empty correct answer for " + question.text);
+		}
 		this._shuffleAnswers(question);
 		session.newQuestion(category.describe(), question);
 		return question;
@@ -82,7 +85,7 @@ class Categories {
 	}
 
 	_shuffleAnswers(question) {
-		if (question.answers.length < 4) {
+		if (question.answers.filter(a => !!a).length < 4) {
 			throw new Error("Got to few answers for " + question.text + " (" + question.answers + ")");
 		}
 

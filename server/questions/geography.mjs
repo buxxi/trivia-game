@@ -35,7 +35,7 @@ class GeographyQuestions {
 			capital : {
 				title : (correct) => "In which country is " + correct.capital + " the capital?",
 				format : (correct) => this._formatName(correct),
-				correct : (selector) => this._randomCountry(selector),
+				correct : (selector) => this._randomCountryWithCapital(selector),
 				similar : (correct) => this._similarCountries(correct),
 				load : (correct) => this._loadBlank(),
 				weight : 15,
@@ -53,7 +53,7 @@ class GeographyQuestions {
 			region : {
 				title : (correct) => "Where is " + correct.name + " located?",
 				format : (correct) => this._formatRegion(correct),
-				correct : (selector) => this._randomCountry(selector),
+				correct : (selector) => this._randomCountryWithRegion(selector),
 				similar : (correct) => this._allCountries(correct),
 				load : (correct) => this._loadBlank(),
 				weight : 10,
@@ -123,7 +123,7 @@ class GeographyQuestions {
 				let result = data.map((country) => {
 					return {
 						code : country.alpha2Code,
-						region : country.subregion,
+						region : !country.subregion ? country.region : country.subregion,
 						name : country.name,
 						population : country.population,
 						capital : country.capital,
@@ -141,8 +141,16 @@ class GeographyQuestions {
 		return selector.fromArray(this._countries);
 	}
 
+	_randomCountryWithRegion(selector) {
+		return selector.fromArray(this._countries, c => !!c.region);
+	}
+
+	_randomCountryWithCapital(selector) {
+		return selector.fromArray(this._countries, c => !!c.capital);
+	}
+
 	_randomCountryWith2Neighbours(selector) {
-		return selector.fromArray(this._countries.filter((c) => c.neighbours.length >= 2));
+		return selector.fromArray(this._countries, c => c.neighbours.length >= 2);
 	}
 
 	_allCountries() {
