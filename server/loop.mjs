@@ -10,13 +10,16 @@ class GameLoop {
     }
     
     async run() {
+        let gameStart = new Date().getTime();
         console.log(`Game ${this._id} started`);
         this._monitorConnection.onClose().catch(() => this._disconnectClients());
         while (this._state && this._monitorConnection.connected()) {
             try {
+                let stateStart = new Date().getTime();
                 console.log(`Game ${this._id} - Starting state: ${this._state.constructor.name}`);
                 let result = await this._state.run();
-                console.log(`Game ${this._id} - Finished state: ${this._state.constructor.name}`);
+                let stateEnd = new Date().getTime();
+                console.log(`Game ${this._id} - Finished state: ${this._state.constructor.name} in ${(stateEnd - stateStart) / 1000}s`);
                 this._state = this._state.nextState(result);
             } catch (e) {
                 if (e) {
@@ -25,7 +28,8 @@ class GameLoop {
                 this._state = this._state.errorState(e);
             }
         }
-        console.log(`Game ${this._id} ended`);
+        let gameEnd = new Date().getTime();
+        console.log(`Game ${this._id} ended in ${(gameEnd - gameStart) / 1000}s`);
     }
 
     addClient(connection, clientId, userName, preferredAvatar) {
@@ -73,6 +77,7 @@ class GameLoop {
             console.log(`Game ${this._id} - error sending playersChanged: ${e.message}`);
         });
     }
+    
 }
 
 export default GameLoop;
