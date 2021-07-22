@@ -4,8 +4,8 @@ class MathQuestions {
             new ExpressionGenerator([ { from: 1, to: 20 } ], 
                 (values) => new Exponent(new Constant(values[0]), 2)
             ),
-            new ExpressionGenerator([ { from: 1, to: 20, after: (v) => Math.pow(v, 2)} ], 
-                (values) => new SquareRoot(new Constant(values[0]))
+            new ExpressionGenerator([ { from: 1, to: 20} ], 
+                (values) => new SquareRoot(new Constant(Math.pow(values[0], 2)))
             ),
             new ExpressionGenerator([ { from: 5, to: 10 }, { from: 1, to: 6 }, { from: 5, to: 10 }, { from: 1, to: 6 }],
                 (values) => new Multiply(new Parantheses(new Subtract(new Constant(values[0]), new Constant(values[1]))), new Parantheses(new Add(new Constant(values[2]), new Constant(values[3]))))    
@@ -201,12 +201,7 @@ class ExpressionGenerator {
 
     generateValues(selector) {
         return this._variables.map(v => {
-            let val = v.from + selector.random(v.to - v.from + 1);
-            if (v.after) {
-                return v.after(val);
-            } else {
-                return val;
-            }
+            return v.from + selector.random(v.to - v.from + 1);
         });
     }
 
