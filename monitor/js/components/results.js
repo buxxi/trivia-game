@@ -4,7 +4,7 @@ export default {
 			if (!this.history || !this.history) {
 				return 0;
 			}
-			return (this.scores.length + this.history.length + 1) * 5;
+			return (this.scores.length + this.history.length + 2) * 5;
 		},
 
 		scores: function() {
