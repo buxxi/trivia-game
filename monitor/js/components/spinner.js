@@ -60,12 +60,37 @@ class StepsDuration {
     }
 }
 
+class TransitionCounter {
+    constructor() {
+        this._count = 0;
+        this._promise = new Promise((resolve, reject) => {
+            this._resolvePromise = resolve;
+        });
+    }
+
+    wait() {
+        return this._promise;
+    }
+
+    countUp() {
+        this._count++;
+    }
+
+    countDown() {
+        this._count--;
+        if (this._count <= 0) {
+            this._resolvePromise();
+        }
+    }
+}
+
 export default {
     data: function() { return {
 		duration: 50,
         maxDuration: 2000,
         done: false,
-        calculator: new KeepDuration()
+        calculator: new KeepDuration(),
+        transitionCounter: new TransitionCounter()
     } },
     props: ['categories', 'correct'],
     methods: {
@@ -97,10 +122,11 @@ export default {
             this.calculator = this.calculator.next();
 
             if (this.duration < this.maxDuration) {
+                this.transitionCounter = new TransitionCounter();
                 this.categories.unshift(this.categories.pop());
 
                 await this.$nextTick();
-                await this.wait(this.duration);
+                await this.transitionCounter.wait();
                 await this.$nextTick();
 
                 return false;
@@ -109,10 +135,16 @@ export default {
             }
         }, 
 
-        wait: function(time) {
-            return new Promise((resolve, reject) => {
-                setTimeout(resolve, time);
-            });
+        transitionStart: function(event) {
+            if (event.propertyName == 'transform') {
+                this.transitionCounter.countUp();
+            }
+        },
+
+        transitionEnd: function(event) {
+            if (event.propertyName == 'transform') {
+                this.transitionCounter.countDown();
+            }
         }
     }
 }

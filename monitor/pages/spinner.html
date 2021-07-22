@@ -1,5 +1,5 @@
-<transition-group name="category-spinner" tag="ul" v-if="categories.length != 0" v-bind:class="{'spinner' : true, 'highlight' : done}" v-bind:style="{'transition-duration' : duration + 'ms'}">
-    <li v-for="cat in categories" v-bind:key="cat.index">
+<transition-group tag="ul" v-if="categories.length != 0" v-bind:class="{'spinner' : true, 'highlight' : done}" v-bind:style="{'transition-duration' : duration + 'ms'}">
+    <li v-for="cat in categories" v-bind:key="cat.index" v-on:transitionstart="transitionStart(event)" v-on:transitionend="transitionEnd(event)">
         <i v-if="cat.icon.indexOf('url:') == -1" v-bind:class="['fa','fa-fw',cat.icon]"></i>
         <img v-if="cat.icon.indexOf('url:') == 0" v-bind:src="cat.icon.substr(4)"/>
         <span>{{cat.name}}</span>
