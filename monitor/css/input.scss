@@ -81,7 +81,7 @@
 	}
 	.failed {
 		label {
-			background : radial-gradient(circle at center, $incorrect 0%, $incorrect_border1 100%);
+			background : radial-gradient(circle at center, $incorrect 0%, $incorrect_border 100%);
 			border-color : $incorrect_border;
 		}
 	}
