@@ -1,9 +1,6 @@
-import PresentQuestionState from './presentquestion.mjs'
+import PresentCategoryState from './presentcategory.mjs';
 import QuestionErrorState from './questionerror.mjs';
 import ResultsState from './results.mjs';
-
-const JOKE_CHANCE = 0.5;
-const MINIMUM_CATEGORIES_COUNT = 8;
 
 class LoadingNextQuestionState {
     constructor(game, categories, clientConnections, monitorConnection) {
@@ -17,46 +14,18 @@ class LoadingNextQuestionState {
         if (!this._game.hasMoreQuestions()) {
             return;
         }
-        let question = await this._game.nextQuestion();
-        let session = this._game.session();
-
-        let showCategorySpinner = this._game.showCategorySpinner();
-        let spinnerCategories = showCategorySpinner ? this._insertJokes(this._categories.enabled(session).map(this._toSpinnerCategory)) : [];
-        let correct = session.category();
-        let index = session.index();
-        let total = session.total();
-
-        await this._monitorConnection.categorySelected(spinnerCategories, correct, index, total);
-
-        return question;
+        return await this._game.nextQuestion();
 	}
 
 	nextState(question) {
         if (!question) {
             return new ResultsState(this._game, this._categories, this._clientConnections, this._monitorConnection);
         }
-		return new PresentQuestionState(this._game, this._categories, this._clientConnections, this._monitorConnection, question);
+		return new PresentCategoryState(this._game, this._categories, this._clientConnections, this._monitorConnection, question);
 	}
 
     errorState(error) {
         return new QuestionErrorState(this._game, this._categories, this._clientConnections, this._monitorConnection, error);
-    }
-
-    _insertJokes(categories) {
-        var result = [];
-        var insertJoke = Math.random() >= JOKE_CHANCE;
-		while (result.length < MINIMUM_CATEGORIES_COUNT || insertJoke) {
-			if (insertJoke) {
-				result.push(this._toSpinnerCategory(this._categories.joke()));
-			}
-			result = result.concat(categories); //TODO: shuffle this array?
-			insertJoke = Math.random() >= JOKE_CHANCE;
-		}
-        return result;
-    }
-
-    _toSpinnerCategory(c) {
-        return ({ name: c.name, icon: c.icon, fullName: c.name });
     }
 }
 
