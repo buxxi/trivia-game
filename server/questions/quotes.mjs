@@ -1,8 +1,8 @@
-import fetch from 'node-fetch';
 import nlp from 'compromise';
+import adjectives from 'compromise-adjectives';
 import quotesy from 'quotesy';
 
-const TOTAL_QUOTES = 50;
+nlp.extend(adjectives);
 
 class QuotesQuestions {
 	constructor() {
@@ -39,9 +39,9 @@ class QuotesQuestions {
 	}
 
 	async preload(progress, cache, game) {
-		progress(0, TOTAL_QUOTES);
+		progress(0, 1);
 		this._quotes = await this._loadQuotes(cache, progress);
-		progress(TOTAL_QUOTES, TOTAL_QUOTES);
+		progress(1, 1);
 		return this._countQuestions();
 	}
 
@@ -67,16 +67,15 @@ class QuotesQuestions {
 
 	_randomBlankQuote(selector) {
 		let quote = selector.fromArray(this._quotes);
-		let nlps = [(n) => n.adjectives(), (n) => n.verbs(), (n) => n.nouns()];
-		var word;
 
-		do {
-			word = nlps.shift()(nlp(quote.text)).random(1).trim().out('text');
-		}
-		while (!word);
+		let q = nlp(quote.text);
+
+		let words = [q.adjectives(), q.verbs(), q.nouns()].filter(words => words.length > 0).flatMap(words => words.post('').map(word => word.text()));
+
+		var word = selector.fromArray(words);
 
 		return {
-			text : quote.text.replace(this._formatWord({ word : word }), "_____"),
+			text : nlp(quote.text).replace(this._formatWord({ word : word }), "_____").text(),
 			author : quote.author,
 			word : word
 		}
@@ -87,24 +86,69 @@ class QuotesQuestions {
 	}
 
 	_similarWords(quote, selector) {
-		function sameTags(aWord, bWord) {
-			let a = nlp(aWord).out('tags');
-			let b = nlp(bWord).out('tags');	
+		let q = nlp(quote.word);
+		
+		let verbs = q.verbs();
+		let nouns = q.nouns();
+		let adjectives = q.adjectives();
 
-			let aValues = Object.values(a);
-			let bValues = Object.values(b);
-			if (aValues.length != bValues.length) {
-				return false;
-			}
-
-			return aValues.every((i) => a[i] == b[i]);
+		let otherQuotes = "";
+		for (var i = 0; i < 50; i++) {
+			otherQuotes += this._randomQuote(selector).text + ".\n";
 		}
 
-		var words = this._quotes.map((q) => nlp(q.text).terms().trim().out('array')); //Extract words
-		words = [].concat.apply([], words); //Flatten array of arrays
-		words = words.filter((word, index) => word != '' && words.indexOf(word) == index); //Remove duplicates
-		words = words.filter((word) => sameTags(word, quote.word)); //Find the same type of word
-		return words.map((w) => ({ word : w }));
+		if (verbs.wordCount() > 0) {
+			return this._similarVerbs(verbs.json()[0].terms[0].tags, nlp(otherQuotes).post('').verbs());
+		} else if (nouns.wordCount() > 0) {
+			return this._similarNouns(nouns.json()[0].terms[0].tags, nlp(otherQuotes).post('').nouns());
+		} else {
+			return this._similarAdjectives(adjectives.json()[0].terms[0].tags, nlp(otherQuotes).post('').adjectives());
+		}
+	}
+
+	_similarVerbs(tags, otherVerbs) {
+		return otherVerbs.map(verb => {
+			if ('Infinitive' in tags) {
+				verb = verb.toInfinitive();
+			}
+			if ('PastTense' in tags) {
+				verb = verb.toPastTense();
+			}
+			if ('PresentTense' in tags) {
+				verb = verb.toPresentTense();
+			}
+			if ('FutureTense' in tags) {
+				verb = verb.toFutureTense();
+			}
+			if ('Gerund' in tags) {
+				verb = verb.toGerund();
+			}
+			return verb.trim().text();
+		}).map(word => ({ 'word'  : word }));
+	}
+
+	_similarNouns(tags, otherNouns) {
+		return otherNouns.map(noun => {
+			if ('Singular' in tags) {
+				noun = noun.toSingular();
+			}
+			if ('Plural' in tags) {
+				noun = noun.toPlural();
+			}
+			return noun.trim().text();
+		}).map(word => ({ 'word'  : word }));
+	}
+
+	_similarAdjectives(tags, otherAdjectives) {
+		return otherAdjectives.map(adjective => {
+			if ('Superlative' in tags) {
+				adjective = adjective.toSuperlative();
+			}
+			if ('Comparative' in tags) {
+				adjective = adjective.toComparative();
+			}
+			return adjective.trim().text();
+		}).map(word => ({ 'word'  : word }));
 	}
 
 	_formatWord(q) {
@@ -131,10 +175,7 @@ class QuotesQuestions {
 	}
 
 	async _loadQuotes(cache, progress) {
-		progress(0, 1);
-		let result = quotesy.parse_json();
-		progress(1, 1);
-		return result;
+		return quotesy.parse_json();
 	}
 }
 

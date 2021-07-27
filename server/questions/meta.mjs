@@ -96,7 +96,6 @@ class CurrentGameQuestions {
 	}
 
 	_playerWithMost(selector, func) {
-		console.log(this._players().map(func));
 		return selector.max(this._players(), func);
 	}
 
