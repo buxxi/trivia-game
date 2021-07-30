@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 
-const ACTOR_COUNT = 500;
+const ACTOR_COUNT = 1000;
 
 class ActorQuestions {
 	constructor(tmdbApiKey) {
@@ -10,7 +10,7 @@ class ActorQuestions {
 		this._types = {
 			image : {
 				title : (correct) => "Who is this " + (correct.male ? "actor" : "actress") + "?",
-				correct : (selector) => this._randomActor(selector),
+				correct : (selector) => this._randomActorWithImage(selector),
 				similar : (correct) => this._similarActors(correct),
 				format : (correct) => this._actorName(correct),
 				view : (correct) => this._viewActorImage(correct),
@@ -18,7 +18,7 @@ class ActorQuestions {
 			},
 			age : {
 				title : (correct) => "Who is oldest of these " + (correct.male ? "actors" : "actresses") + "?",
-				correct : (selector) => this._randomActor(selector),
+				correct : (selector) => this._randomActorWithBirthday(selector),
 				similar : (correct) => this._youngerActors(correct),
 				format : (correct) => this._actorName(correct),
 				view : (correct) => this._viewBlank(correct),
@@ -26,7 +26,7 @@ class ActorQuestions {
 			},
 			born : {
 				title : (correct) => "Where was " + correct.name + " born?",
-				correct : (selector) => this._randomActor(selector),
+				correct : (selector) => this._randomActorWithBirth(selector),
 				similar : (correct) => this._similarActors(correct),
 				format : (correct) => this._countryOrState(correct),
 				view : (correct) => this._viewBlank(correct),
@@ -182,8 +182,16 @@ class ActorQuestions {
 		return this._actors.filter((a) => sameGender(a, actor) && younger(this._birthYear(a), this._birthYear(actor)));	
 	}
 
-	_randomActor(selector) {
-		return selector.fromArray(this._actors.filter(a => !!a.birthday));
+	_randomActorWithImage(selector) {
+		return selector.fromArray(this._actors, a => !!a.photo);
+	}
+
+	_randomActorWithBirthday(selector) {
+		return selector.fromArray(this._actors, a => !!a.birthday);
+	}
+
+	_randomActorWithBirth(selector) {
+		return selector.fromArray(this._actors, a => !!this._countryOrState(a));
 	}
 
 	_actorName(actor) {

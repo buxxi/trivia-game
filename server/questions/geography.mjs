@@ -26,7 +26,7 @@ class GeographyQuestions {
 			highpopulation : {
 				title : (correct) => "Which of these countries has the largest population?",
 				format : (correct) => this._formatName(correct),
-				correct : (selector) => this._randomCountry(selector),
+				correct : (selector) => this._randomNonMicroCountry(selector),
 				similar : (correct) => this._similarPopulationCountries(correct),
 				load : (correct) => this._loadBlank(),
 				weight : 10,
@@ -53,7 +53,7 @@ class GeographyQuestions {
 			region : {
 				title : (correct) => "Where is " + correct.name + " located?",
 				format : (correct) => this._formatRegion(correct),
-				correct : (selector) => this._randomCountryWithRegion(selector),
+				correct : (selector) => this._randomCountry(selector),
 				similar : (correct) => this._allCountries(correct),
 				load : (correct) => this._loadBlank(),
 				weight : 10,
@@ -62,7 +62,7 @@ class GeographyQuestions {
 			area : {
 				title : (correct) => "Which of these countries has the largest land area?",
 				format : (correct) => this._formatName(correct),
-				correct : (selector) => this._randomCountry(selector),
+				correct : (selector) => this._randomNonMicroCountry(selector),
 				similar : (correct) => this._similarAreaCountries(correct),
 				load : (correct) => this._loadBlank(),
 				weight : 10,
@@ -131,7 +131,7 @@ class GeographyQuestions {
 						neighbours : country.borders.map((code) => data.find((c) => code == c.alpha3Code).name),
 						flag : country.flag
 					}
-				});
+				}).filter(country => !!country.region);
 				resolve(result);
 			}).catch(reject);
 		});
@@ -141,9 +141,10 @@ class GeographyQuestions {
 		return selector.fromArray(this._countries);
 	}
 
-	_randomCountryWithRegion(selector) {
-		return selector.fromArray(this._countries, c => !!c.region);
+	_randomNonMicroCountry(selector) {
+		return selector.fromArray(this._countries, c => c.population > 50000 && c.area > 50000);
 	}
+
 
 	_randomCountryWithCapital(selector) {
 		return selector.fromArray(this._countries, c => !!c.capital);

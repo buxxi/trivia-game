@@ -295,11 +295,7 @@ class VideoGameQuestions {
 
 		var unused = Object.keys(this._platforms).map((p) => this._platforms[p]).filter((p) => game.platforms.indexOf(p) == -1).sort(dateDifference);
 
-		return [
-			{ platforms : [selector.splice(unused).name] },
-			{ platforms : [selector.splice(unused).name] },
-			{ platforms : [selector.splice(unused).name] }
-		]
+		return unused.map(platform => ({ 'platforms' : [platform.name] }));
 	}
 
 	_screenshot(game, selector) {
