@@ -1,7 +1,8 @@
 import fetch from 'node-fetch';
 import YoutubeLoader from '../youtubeloader.mjs';
 
-const GAMES_PER_PLATFORM = 50;
+const GAMES_PER_PLATFORM = 100;
+const PAGINATE_COUNT = 100;
 
 class VideoGameQuestions {
 	constructor(youtubeApiKey, youtubeRegion, igdbClientId, igdbClientSecret) {
@@ -120,7 +121,7 @@ class VideoGameQuestions {
 	_loadGames(platform, platforms, cache, token) {
 		return cache.get(platform, async (resolve, reject) => {
 			try {
-				let inputData = `fields name,url,first_release_date,platforms,screenshots,keywords,themes,genres; where platforms = ${platform} & first_release_date != null & screenshots != null & rating_count > 2; limit ${GAMES_PER_PLATFORM}; offset 0; sort rating desc;`;
+				let inputData = `fields name,url,first_release_date,platforms,screenshots,keywords,themes,genres; where platforms = (${platform}) & first_release_date != null & screenshots != null & rating_count > 2; limit ${GAMES_PER_PLATFORM}; offset 0; sort rating desc;`;
 				let response = await fetch(this._igdbBaseURL + 'games/',{
 					method : 'POST',
 					headers : {
@@ -163,7 +164,7 @@ class VideoGameQuestions {
 		let screenshotIds = games.flatMap(g => g.screenshots);
 		var result = {};
 		while (screenshotIds.length > 0) {
-			var chunkResult = await this._loadScreenshotChunk(screenshotIds.splice(0, 10), token);
+			var chunkResult = await this._loadScreenshotChunk(screenshotIds.splice(0, PAGINATE_COUNT), token);
 			Object.assign(result, chunkResult);
 		}
 		for (var game of games) {
@@ -173,7 +174,7 @@ class VideoGameQuestions {
 	}
 
 	async _loadScreenshotChunk(ids, token) {
-		let inputData = `fields id,image_id; where id = (${ids.join(',')}); limit 10;`;
+		let inputData = `fields id,image_id; where id = (${ids.join(',')}); limit ${PAGINATE_COUNT};`;
 		let response = await fetch(this._igdbBaseURL + 'screenshots/', {
 			method : 'POST',
 			headers : {
@@ -198,7 +199,7 @@ class VideoGameQuestions {
 				do {
 					chunkResult = await this._loadPlatformChunk(Object.keys(result).length, token);
 					result = Object.assign(result, chunkResult);
-				} while (false && Object.keys(chunkResult).length == 50);
+				} while (false && Object.keys(chunkResult).length == PAGINATE_COUNT);
 				resolve(result);
 			} catch(e) {
 				reject(e);
@@ -207,7 +208,7 @@ class VideoGameQuestions {
 	}
 
 	async _loadPlatformChunk(offset, token) {
-		let inputData = `fields id,name; where category = (1,5); limit 50; offset ${offset};`
+		let inputData = `fields id,name; where category = (1,5); limit ${PAGINATE_COUNT}; offset ${offset};`
 		let response = await fetch(this._igdbBaseURL + 'platforms/', {
 			method : 'POST',
 			headers : {
@@ -271,7 +272,7 @@ class VideoGameQuestions {
 	}
 
 	_randomGameWithSong(selector) {
-		return selector.fromArray(this._games.filter((g) => g.songs));
+		return selector.fromArray(this._games, g => !!g.songs);
 	}
 
 	_similarGames(game, selector) {
