@@ -104,7 +104,7 @@ button {
 
 	&.selected:before {
 		content: "\f023";
-		font-family: FontAwesome;
+		font-family: 'Font Awesome 5 Free';
 		background-color: darken($color, 20%);	
 		margin-left: 0.5em;	
 	}
