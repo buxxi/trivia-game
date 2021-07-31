@@ -36,6 +36,8 @@ function displayError(app, message) {
 	return new Promise((resolve, reject) => {
 		app.playback.view = {};
 		app.error = message;
+		app.state = 'error';
+		app.title = 'An error occured';
 		setTimeout(() => {
 			app.error = undefined;
 			resolve();

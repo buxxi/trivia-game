@@ -369,6 +369,10 @@ h1 {
 	height : 3em;
 }
 
+.error .message {
+	font-size: 2em;
+}
+
 @keyframes resize-title {
     0% { transform : scale(0.5) translateY(-50%); }
    10% { transform : scale(2) translateY(-50%); }

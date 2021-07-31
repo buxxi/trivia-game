@@ -126,7 +126,7 @@ export default {
                 this.categories.unshift(this.categories.pop());
 
                 await this.$nextTick();
-                await this.transitionCounter.wait();
+                await Promise.race([this.transitionCounter.wait(), this._detectStuck()]);
                 await this.$nextTick();
 
                 return false;
@@ -145,6 +145,18 @@ export default {
             if (event.propertyName == 'transform') {
                 this.transitionCounter.countDown();
             }
+        },
+
+        _detectStuck: function() {
+            return new Promise((resolve, reject) => {
+                let checkDuration = this.duration * 2;
+                if (checkDuration < 250) {
+                    checkDuration = 500;
+                }
+                setTimeout(() => {
+                    reject(new Error("Spinner seems to be stuck"));
+                }, checkDuration);
+            });
         }
     }
 }

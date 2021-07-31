@@ -7,7 +7,6 @@
 				</div>
 				<div class="category infobox" v-if="session.currentCategory">{{ session.currentCategory.fullName }}</div>
 			</div>
-			<div class="message" v-if="error">{{ error }}</div>
 			<div class="title" v-bind:class="{'full-animation' : state == 'pre-question', 'full-static' : (state == 'question' && !minimizeQuestion)}">{{ title }}</div>
 			<div class="timer" v-if="timer.running">
 				<div class="timer-score infobox"><i class="fas fa-fw fa-star"></i>{{ timer.score }}</div>
@@ -21,6 +20,7 @@
 	</div>
 	<div id="content" v-bind:class="state">
 		<component v-bind:is="playbackPlayer" v-bind:view="playback.view" ref="playback"></component>
+		<div class="message" v-if="error">{{ error }}</div>
 	</div>
 	<div id="correct" v-if="state == 'post-question'" v-bind:class="'button-icon-' + correct['key']">{{ correct['answer'] }}</div>
 	<div id="category-spinner" v-if="state == 'loading'">
