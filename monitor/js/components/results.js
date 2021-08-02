@@ -39,7 +39,11 @@ export default {
 			}
 		},
 		domain : function(link) {
-			return new URL(link).hostname;
+			try {
+				return new URL(link).hostname;
+			} catch (e) {
+				return link;
+			}
 		},
 		restart : function() {
 			this.$router.push({ path: "/", query : { gameId: this.gameId } });
