@@ -72,8 +72,13 @@ class SoundController {
 
 			let encodedText = encodeURIComponent(text);
 			let url = new URL("../tts", document.location).toString() + "?text=" + encodedText;
+			
 			let speak = new Pizzicato.Sound(url, () => {
-				speak.play();
+				try {
+					speak.play();
+				} catch (e) {
+					reject(new Error("Failed to load text2speech for: " + text));
+				}
 			});
 			speak.on('end', resolve);
 		});
