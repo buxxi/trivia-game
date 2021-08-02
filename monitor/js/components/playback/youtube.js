@@ -21,7 +21,7 @@ export default {
             return new Promise((resolve, reject) => {
                 let startTimeout = setTimeout(() => {
                     self.stop();
-                    reject("Didn't start playback before timeout");
+                    reject(new Error("Didn't start playback before timeout"));
                 }, 5000);
 
                 self.player = new YT.Player('video', {
