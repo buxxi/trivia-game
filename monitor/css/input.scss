@@ -42,10 +42,6 @@
 		list-style : none;
 		vertical-align : top;
 	}
-	:not(.static) + .static:before {
-		display : block;
-		content : "\A";
-	}
 	.static:not(.selected) label {
 		border-style : dotted;
 	}

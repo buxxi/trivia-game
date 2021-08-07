@@ -27,101 +27,104 @@
 				</a>
 			</li>
 		</ul>
-		<div class="settings">
-			<h1><i class="fas fa-fw fa-cogs"></i>Settings</h1>
-			<div>
-				<form>
-					<div class="general">
-						<div class="numeric-input">
-							<label for="questions" title="Number of questions"><i class="fas fa-fw fa-question"></i></label>
-							<input type="number" id="questions" step="5" min="1" v-model="config.questions">
-						</div>
 
-						<div class="numeric-input">
-							<label for="time" title="Seconds to answer"><i class="fas fa-fw fa-hourglass"></i></label>
-							<input type="number" id="time" step="5" min="1" v-model="config.time">
-						</div>
+		<div class="rules">
+			<h1><i class="fas fa-fw fa-gavel"></i>Rules</h1>
+			<ol>
+				<li>Use your phone to select the answer you think is correct</li>
+				<li>A correct answer awards you points and an incorrect removes points</li>
+				<li>You can't go below 0 points, make wild guesses if you don't know the correct answer</li>
+				<li>You are awarded more points for answering quick</li>
+				<li v-if="config.allowMultiplier">A correct answer will increase the points multiplier (up to {{config.maxMultiplier}}x) for the next question</li>
+				<li v-if="config.allowMultiplier">An invalid answer will reset the points multiplier to 1x</li>
+				<li v-if="config.allowMultiplier">Not answering will reset the points multiplier to 1x</li>
+				<li>You have <b>{{config.time}}</b> seconds to answer each question</li>
+			</ol>
 
-						<div class="numeric-input">
-							<label for="points" title="Points per round"><i class="fas fa-fw fa-star"></i></label>
-							<input type="number" id="points" step="100" min="1" v-model="config.pointsPerRound">
-						</div>
-
-						<div class="numeric-input" v-if="config.allowMultiplier">
-							<label for="maxMultiplier" title="Max multiplier"><i class="fas fa-fw fa-times"></i></label>
-							<input type="number" id="maxMultiplier" step="1" min="1" v-model="config.maxMultiplier">
-						</div>
-
-						<ul class="circle-checkboxes">
-							<li v-bind:class="{'selected' : config.stopOnAnswers}">
-								<label for="stop" title="Stop after all answered"><input type="checkbox" id="stop" v-model="config.stopOnAnswers"><i class="fas fa-stop"></i></label>
-							</li>
-							<li v-bind:class="{'selected' : config.allowMultiplier}">
-								<label for="multiplier" title="Use multipliers"><input type="checkbox" id="multiplier" v-model="config.allowMultiplier"><i class="fas fa-times"></i></label>
-							</li>
-							<li v-bind:class="{'selected' : config.sound.backgroundMusic}">
-								<label for="backgroundMusic" title="Background music"><input type="checkbox" id="backgroundMusic" v-model="config.sound.backgroundMusic"><i class="fas fa-music"></i></label>
-							</li>
-							<li v-bind:class="{'selected' : config.sound.text2Speech}">
-								<label for="text2Speech" title="Text-2-speech of questions"><input type="checkbox" id="text2Speech" v-model="config.sound.text2Speech"><i class="fas fa-comment"></i></label>
-							</li>
-							<li v-bind:class="{'selected' : config.sound.soundEffects}">
-								<label for="soundEffects" title="Sound effects"><input type="checkbox" id="soundEffects" v-model="config.sound.soundEffects"><i class="fas fa-exclamation"></i></label>
-							</li>
-							<li v-bind:class="{'selected' : config.categorySpinner}">
-								<label for="spinner" title="Category spinner"><input type="checkbox" id="spinner" v-model="config.categorySpinner"><i class="fas fa-spinner"></i></label>
-							</li>
-							<li v-bind:class="{'selected' : config.fullscreen}">
-								<label for="fullscreen" title="Toggle fullscreen"><input type="checkbox" id="fullscreen" v-model="config.fullscreen" v-on:change="toggleFullScreen()"><i class="fas fa-window-maximize"></i></label>
-							</li>
-						</ul>
-					</div>
-
-					<div id="categories">
-						<h1><i class="fas fa-fw fa-list-ul"></i>Categories</h1>
-						<ul class="circle-checkboxes">
-							<li v-bind:class="{'selected' : config.categories[category.type] && category.preload.done, 'loaded' : !config.categories[category.type] && category.preload.done, 'failed' : category.preload.failed, 'static' : category.static}" v-for="category in availableCategories">
-								<label v-bind:title="category.name">
-									<input type="checkbox" v-bind:id="category.type" v-model="config.categories[category.type]" v-on:change="preload(category.type)">
-									<i v-if="category.icon.indexOf('url:') == -1" v-bind:class="['fa',category.icon]"></i>
-									<img v-if="category.icon.indexOf('url:') == 0" v-bind:src="category.icon.substr(4)"/>
-								</label>
-								<div class="progress" v-if="config.categories[category.type] && !category.preload.done && !category.preload.failed">{{ category.preloadPercentage() }}%</div>
-							</li>
-						</ul>
-						<ul class="category-actions">
-							<li>
-								<label title="Select all categories"><a v-on:click="loadAll()"><i class="fas fa-spinner"></i></a></label>
-							</li>
-							<li>
-								<label title="Clear caches"><a v-on:click="clearCache()"><i class="fas fa-sync"></i></a></label>
-							</li>
-						</ul>
-					</div>
-				</form>
-			</div>
+			<h1><i class="fas fa-fw fa-heart" style="color : #aa0000"></i>Powered by</h1>
+			<ul class="carousel">
+				<li v-for="(site, index) in poweredBy" v-bind:class="{show : index == carouselIndex}"><a v-bind:href="site.url">{{ site.name }}</a></li>
+			</ul>
 		</div>
 	</div>
-	<div class="rules">
-		<h1><i class="fas fa-fw fa-gavel"></i>Rules</h1>
-		<ol>
-			<li>Use your phone to select the answer you think is correct</li>
-			<li>A correct answer awards you points</li>
-			<li>An incorrect answer removes points</li>
-			<li>You can't go below 0 points, make wild guesses if you don't know the correct answer</li>
-			<li>You are awarded more points for answering quick</li>
-			<li v-if="config.allowMultiplier">A correct answer will increase the points multiplier for the next question</li>
-			<li v-if="config.allowMultiplier">An invalid answer will reset the points multiplier to 1x</li>
-			<li v-if="config.allowMultiplier">Not answering will reset the points multiplier to 1x</li>
-			<li>You have <b>{{config.time}}</b> seconds to answer each question</li>
-			<li>There are <b>{{questionCount}}</b> possible questions in the selected categories</li>
-		</ol>
+	<div class="settings">
+		<h1><i class="fas fa-fw fa-cogs"></i>Settings</h1>
+		<div>
+			<form>
+				<div class="general">
+					<div class="numeric-input">
+						<label for="questions" title="Number of questions"><i class="fas fa-fw fa-question"></i></label>
+						<input type="number" id="questions" step="5" min="1" v-model="config.questions">
+					</div>
 
-		<h1><i class="fas fa-fw fa-heart" style="color : #aa0000"></i>Powered by</h1>
-		<ul class="carousel">
-			<li v-for="(site, index) in poweredBy" v-bind:class="{show : index == carouselIndex}"><a v-bind:href="site.url">{{ site.name }}</a></li>
-		</ul>
+					<div class="numeric-input">
+						<label for="time" title="Seconds to answer"><i class="fas fa-fw fa-hourglass"></i></label>
+						<input type="number" id="time" step="5" min="1" v-model="config.time">
+					</div>
+
+					<div class="numeric-input">
+						<label for="points" title="Points per round"><i class="fas fa-fw fa-star"></i></label>
+						<input type="number" id="points" step="100" min="1" v-model="config.pointsPerRound">
+					</div>
+
+					<div class="numeric-input" v-if="config.allowMultiplier">
+						<label for="maxMultiplier" title="Max multiplier"><i class="fas fa-fw fa-times"></i></label>
+						<input type="number" id="maxMultiplier" step="1" min="1" v-model="config.maxMultiplier">
+					</div>
+
+					<ul class="circle-checkboxes">
+						<li v-bind:class="{'selected' : config.stopOnAnswers}">
+							<label for="stop" title="Stop after all answered"><input type="checkbox" id="stop" v-model="config.stopOnAnswers"><i class="fas fa-stop"></i></label>
+						</li>
+						<li v-bind:class="{'selected' : config.allowMultiplier}">
+							<label for="multiplier" title="Use multipliers"><input type="checkbox" id="multiplier" v-model="config.allowMultiplier"><i class="fas fa-times"></i></label>
+						</li>
+						<li v-bind:class="{'selected' : config.sound.backgroundMusic}">
+							<label for="backgroundMusic" title="Background music"><input type="checkbox" id="backgroundMusic" v-model="config.sound.backgroundMusic"><i class="fas fa-music"></i></label>
+						</li>
+						<li v-bind:class="{'selected' : config.sound.text2Speech}">
+							<label for="text2Speech" title="Text-2-speech of questions"><input type="checkbox" id="text2Speech" v-model="config.sound.text2Speech"><i class="fas fa-comment"></i></label>
+						</li>
+						<li v-bind:class="{'selected' : config.sound.soundEffects}">
+							<label for="soundEffects" title="Sound effects"><input type="checkbox" id="soundEffects" v-model="config.sound.soundEffects"><i class="fas fa-exclamation"></i></label>
+						</li>
+						<li v-bind:class="{'selected' : config.categorySpinner}">
+							<label for="spinner" title="Category spinner"><input type="checkbox" id="spinner" v-model="config.categorySpinner"><i class="fas fa-spinner"></i></label>
+						</li>
+						<li v-bind:class="{'selected' : config.fullscreen}">
+							<label for="fullscreen" title="Toggle fullscreen"><input type="checkbox" id="fullscreen" v-model="config.fullscreen" v-on:change="toggleFullScreen()"><i class="fas fa-window-maximize"></i></label>
+						</li>
+					</ul>
+				</div>
+
+				<div id="categories">
+					<h1><i class="fas fa-fw fa-list-ul"></i>Categories</h1>
+					<ul class="circle-checkboxes">
+						<li v-bind:class="{'selected' : config.categories[category.type] && category.preload.done, 'loaded' : !config.categories[category.type] && category.preload.done, 'failed' : category.preload.failed, 'static' : category.static}" v-for="category in availableCategories">
+							<label v-bind:title="category.name">
+								<input type="checkbox" v-bind:id="category.type" v-model="config.categories[category.type]" v-on:change="preload(category.type)">
+								<i v-if="category.icon.indexOf('url:') == -1" v-bind:class="['fa',category.icon]"></i>
+								<img v-if="category.icon.indexOf('url:') == 0" v-bind:src="category.icon.substr(4)"/>
+							</label>
+							<div class="progress" v-if="config.categories[category.type] && !category.preload.done && !category.preload.failed">{{ category.preloadPercentage() }}%</div>
+						</li>
+					</ul>
+
+					<div class="questionCount"><b>{{questionCount}}</b> possible questions in the selected categories</div>
+
+					<ul class="category-actions">
+						<li>
+							<label title="Select all categories"><a v-on:click="loadAll()"><i class="fas fa-spinner"></i></a></label>
+						</li>
+						<li>
+							<label title="Clear caches"><a v-on:click="clearCache()"><i class="fas fa-sync"></i></a></label>
+						</li>
+					</ul>
+				</div>
+			</form>
+		</div>
 	</div>
+
 	<div v-if="message">
 		<div class="message">{{ message }}</div>
 	</div>
