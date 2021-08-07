@@ -64,12 +64,16 @@ class MusicQuestions {
 		progress(0, categories.length);
 		var loaded = 0;
 
+		var tracks = [];
+
 		for (let category of categories) {
 			let categoryData = await this._loadCategory(accessToken, category, cache);
 			loaded++;
-			this._tracks = this._tracks.concat(categoryData);
+			tracks = tracks.concat(categoryData);
 			progress(loaded, categories.length);
 		}
+
+		this._tracks = tracks;
 
 		return this._countQuestions();
 	}

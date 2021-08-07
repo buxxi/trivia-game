@@ -69,17 +69,19 @@ class VideoGameQuestions {
 		let toLoadPlatforms = Object.keys(this._platforms);
 		let total = toLoadPlatforms.length * GAMES_PER_PLATFORM;
 
-		progress(this._games.length, total);
+		var games = [];
+
+		progress(games.length, total);
 
 		for (let platform of toLoadPlatforms) {
 			let gamesChunk = await this._loadGames(platform, this._platforms, cache, token);
-			this._games = this._games.concat(gamesChunk);
-			progress(this._games.length, total);
+			games = games.concat(gamesChunk);
+			progress(games.length, total);
 		}
 
 		let videos = await this._loadVideos(progress, cache);
-		this._matchVideosToGames(videos, this._games);
-
+		this._games = this._matchVideosToGames(videos, games);
+		
 		return this._countQuestions();
 	}
 
@@ -239,6 +241,7 @@ class VideoGameQuestions {
 				game.songs.push(t.id);
 			}
 		});
+		return games;
 	}
 
 	_parseTitles(videos) {
