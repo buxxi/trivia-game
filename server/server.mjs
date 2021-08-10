@@ -1,6 +1,6 @@
 import express from 'express';
 import sass from 'node-sass';
-import ws from 'ws';
+import { WebSocketServer } from 'ws';
 import fetch from 'node-fetch';
 
 class TriviaServer {
@@ -72,7 +72,7 @@ class TriviaServer {
 		});
 		
 		//Init websocket server
-		this._wsServer = new ws.Server({ noServer: true });
+		this._wsServer = new WebSocketServer({ noServer: true });
 		
 		server.on('upgrade', (request, socket, head) => {
 			this._wsServer.handleUpgrade(request, socket, head, socket => {
