@@ -36,6 +36,10 @@ export default {
                 self.player.on('error', (err) => {
                     reject(new Error(err + ": " + self.src));
                 });
+
+                self.player.on('finish', () => {
+                    self.player.play();
+                });
     
                 self.player.load(self.src);
             });
