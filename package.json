@@ -23,6 +23,7 @@
     "commander": "^8.1.0",
     "compromise": "^13.11.3",
     "compromise-adjectives": "^0.0.7",
+    "convert-units": "^2.3.4",
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",
     "node-sass": "^6.0.1",

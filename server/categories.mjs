@@ -8,6 +8,7 @@ import GeographyQuestions from './questions/geography.mjs';
 import MusicQuestions from './questions/music.mjs';
 import QuotesQuestions from './questions/quotes.mjs';
 import MathQuestions from './questions/math.mjs';
+import UnitQuestions from './questions/units.mjs';
 import GenericCategoryLoader from './questions/genericloader.mjs';
 import Cache from './cache.mjs';
 import QuestionSelector from './selector.mjs';
@@ -30,7 +31,8 @@ class Categories {
 			new MusicQuestions(this._config.spotify.clientId, this._config.spotify.clientSecret, this._config.spotify.whiteList),
 			new QuotesQuestions(),
 			new VideoGameQuestions(this._config.youtube.clientId, this._config.youtube.region, this._config.igdb.clientId, this._config.igdb.clientSecret),
-			new MathQuestions()
+			new MathQuestions(),
+			new UnitQuestions()
 		]
 
 		for (let path of this._config.staticCategories) {
