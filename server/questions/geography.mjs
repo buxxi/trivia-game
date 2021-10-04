@@ -10,7 +10,7 @@ class GeographyQuestions {
 				format : (correct) => this._formatName(correct),
 				correct : (selector) => this._randomCountry(selector),
 				similar : (correct) => this._similarCountries(correct),
-				load : (correct) => this._loadImage(correct.flag),
+				load : (correct) => this._loadFlag(correct),
 				weight : 30,
 				attribution: "Flag"
 			},
@@ -19,7 +19,7 @@ class GeographyQuestions {
 				format : (correct) => this._formatName(correct),
 				correct : (selector) => this._randomCountry(selector),
 				similar : (correct) => this._similarCountries(correct),
-				load : (correct) => this._loadImage('https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + correct.code + '&chco=00000000|307bbb&chf=bg,s,00000000&cht=map:auto=50,50,50,50'),
+				load : (correct) => this._loadMap(correct),
 				weight : 15,
 				attribution: "Image of"
 			},
@@ -100,7 +100,7 @@ class GeographyQuestions {
 		view.attribution = {
 			title : type.attribution,
 			name : correct.name,
-			links : ['https://restcountries.eu', 'https://flagpedia.net?q=' + correct.code]
+			links : ['https://restcountries.com', 'https://flagpedia.net?q=' + correct.code]
 		}
 
 		return ({
@@ -117,21 +117,21 @@ class GeographyQuestions {
 
 	_loadCountries(cache) {
 		return cache.get('countries', (resolve, reject) => {
-			fetch('https://restcountries.eu/rest/v2/all').
+			fetch('https://restcountries.com/v3.1/all').
 			then(this._toJSON).
 			then((data) => {
 				let result = data.map((country) => {
 					return {
-						code : country.alpha2Code,
+						code : country.cca2,
 						region : !country.subregion ? country.region : country.subregion,
-						name : country.name,
+						name : country.name.common,
 						population : country.population,
-						capital : country.capital,
+						capital : country.capital ? country.capital[0] : undefined, 
 						area : country.area,
-						neighbours : country.borders.map((code) => data.find((c) => code == c.alpha3Code).name),
-						flag : country.flag
+						neighbours : (country.borders || []).map((code) => data.find((c) => code == c.cca3).name.common)
 					}
-				}).filter(country => !!country.region);
+				}).filter(country => !!country.region && !!country.capital);
+				console.log(result.length);
 				resolve(result);
 			}).catch(reject);
 		});
@@ -192,10 +192,17 @@ class GeographyQuestions {
 		return country.region;
 	}
 
-	_loadImage(url) {
+	_loadFlag(country) {
 		return {
 			player : 'image',
-			url : url
+			url : 'https://flagcdn.com/' + country.code.toLowerCase() + '.svg'
+		};
+	}
+
+	_loadMap(country) {
+		return {
+			player : 'image',
+			url : 'https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + country.code + '&chco=00000000|307bbb&chf=bg,s,00000000&cht=map:auto=50,50,50,50'
 		};
 	}
 
