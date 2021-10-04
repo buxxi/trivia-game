@@ -11,7 +11,23 @@ class QuestionSelector {
 			arr = arr.filter(filter);
 		}
 		return arr[this.random(arr.length)];
-	};
+	}
+
+	arrayPercentile(arr, compare, percentile) {
+		if (percentile < -1 || percentile > 1) {
+			throw new Error("Percentile must be between -1 and 1");
+		}
+
+		arr.sort((a, b) => compare(b) - compare(a));
+		
+		let index = Math.floor(Math.abs(percentile * arr.length));
+
+		if (percentile > 0) {
+			return arr.slice(0, index);
+		} else {
+			return arr.slice(index);
+		}
+	}
 
 	fromWeightedObject(obj) {
 		let keys = Object.keys(obj);
@@ -35,7 +51,7 @@ class QuestionSelector {
 			throw new Error("Trying to splice empty array");
 		}
 		return arr.splice(this.random(arr.length), 1)[0];
-	};
+	}
 
 	first(arr) {
 		if (arr.length == 0) {
