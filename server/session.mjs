@@ -37,9 +37,11 @@ class Session {
 	}
 
 	newQuestion(category, question) {
+		let viewParams = ['url','videoId','mp3','quote'];
 		this._previousQuestions.forEach((q) => {
-			if (q.text == question.text && q.correct == question.correct) {
-				throw new Error("Duplicate question");
+			if (q.text === question.text && q.correct === question.correct && viewParams.every(p => q.view[p] === question.view[p])) {
+				let params = JSON.stringify(Object.fromEntries(viewParams.map(p => [p, q.view[p]])));
+				throw new Error("Duplicate question: '" + q.text + "', answer: '" + q.correct + "', params: " + params);
 			}
 		});
 		this._currentQuestion = question;
