@@ -58,8 +58,8 @@ class TriviaServer {
 			let url = this._ttsUrl.replace('{text}', text);
 
 			fetch(url)
-				.then(response => response.buffer())
-				.then(buffer => res.send(buffer))
+				.then(response => response.arrayBuffer())
+				.then(array => res.send(Buffer.from(new Uint8Array(array))))
 				.catch((e) => {
 					console.log(e);
 					res.sendStatus(500);
