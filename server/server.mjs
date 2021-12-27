@@ -42,7 +42,7 @@ class TriviaServer {
 		app.use('/trivia/monitor/js/ext/Pizzicato.min.js', express.static('node_modules/pizzicato/distr/Pizzicato.min.js'));
 		app.use('/trivia/monitor/js/ext/wavesurfer.min.js', express.static('node_modules/wavesurfer.js/dist/wavesurfer.min.js'));
 		app.use('/trivia/monitor/js/ext/uuidv4.min.js', express.static('node_modules/uuid/dist/umd/uuidv4.min.js'));
-		app.use('/trivia/monitor/js/ext/qrcode.min.js', express.static('node_modules/qrcode/build/qrcode.min.js'));
+		app.use('/trivia/monitor/js/ext/qrcode.min.js', express.static('node_modules/qrcode/build/qrcode.js'));
 		
 		app.get('/trivia/tts', (req, res) => {
 			if (!this._ttsUrl) {
