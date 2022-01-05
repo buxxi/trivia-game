@@ -12,7 +12,9 @@ class QuestionErrorState {
 	async run() {
         console.log(this._error);
 
-        await this._monitorConnection.questionError(this._error.message);
+        this._monitorConnection.questionError(this._error.message);
+        
+        await this._wait(3000);
 	}
 
 	nextState() {
@@ -22,6 +24,10 @@ class QuestionErrorState {
     errorState(error) {
         return this;
     }
-}
+
+    _wait(ms) {
+        return new Promise((resolve, reject) => setTimeout(resolve, ms));
+    }
+} 
 
 export default QuestionErrorState;

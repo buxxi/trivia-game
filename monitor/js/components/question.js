@@ -38,10 +38,7 @@ function displayError(app, message) {
 		app.error = message;
 		app.state = 'error';
 		app.title = 'An error occured';
-		setTimeout(() => {
-			app.error = undefined;
-			resolve();
-		}, 3000);
+		resolve();
 	});
 }
 

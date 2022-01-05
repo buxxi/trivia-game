@@ -20,7 +20,7 @@
 	</div>
 	<div id="content" v-bind:class="state">
 		<component v-bind:is="playbackPlayer" v-bind:view="playback.view" ref="playback"></component>
-		<div class="message" v-if="error">{{ error }}</div>
+		<div class="message" v-if="state == 'error'">{{ error }}</div>
 	</div>
 	<div id="correct" v-if="state == 'post-question'" v-bind:class="'button-icon-' + correct['key']">{{ correct['answer'] }}</div>
 	<div id="category-spinner" v-if="state == 'loading'">
