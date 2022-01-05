@@ -18,29 +18,11 @@ class ClientToServerConnection {
     }
 
     connect(gameId, userName, preferredAvatar) {
-        return new Promise((resolve, reject) => {
-            let ws = new WebSocket(this._url);
-            ws.onopen = () => {
-                let pws = new PromisifiedWebSocket(ws, uuidv4);
-                pws.send(Protocol.JOIN_CLIENT, { gameId: gameId, userName: userName, preferredAvatar: preferredAvatar }).then((data) => {
-                    this._pws = pws;
-                    resolve(data);
-                }).catch(reject);
-            };
-        });
+        return this._connect({ gameId: gameId, userName: userName, preferredAvatar: preferredAvatar });
     }
 
     reconnect(gameId, clientId) {
-        return new Promise((resolve, reject) => {
-            let ws = new WebSocket(this._url);
-            ws.onopen = () => {
-                let pws = new PromisifiedWebSocket(ws, uuidv4);
-                pws.send(Protocol.JOIN_CLIENT, { gameId: gameId, clientId: clientId }).then((data) => {
-                    this._pws = pws;
-                    resolve(data);
-                }).catch(reject);
-            };
-        });
+        return this._connect({ gameId: gameId, clientId: clientId });
     }
 
     async guess(answer) {
@@ -65,6 +47,20 @@ class ClientToServerConnection {
 
     close() {
         this._pws.close();
+    }
+
+    _connect(payload) {
+        return new Promise((resolve, reject) => {
+            let ws = new WebSocket(this._url);
+            ws.onopen = () => {
+                let pws = new PromisifiedWebSocket(ws, uuidv4);
+                pws.send(Protocol.JOIN_CLIENT, payload).then((data) => {
+                    this._pws = pws;
+                    this._pws.on(Protocol.PING).then(async () => "pong");
+                    resolve(data);
+                }).catch(reject);
+            };
+        });
     }
 }
 

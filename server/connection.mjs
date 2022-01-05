@@ -125,6 +125,11 @@ class ServerToClientConnection {
         return this._pws.close();
     }
 
+    ping() {
+        let before = new Date().getTime();
+        return this._pws.send(Protocol.PING, "ping", 5000).then(response => new Date().getTime() - before);
+    }
+
     removeGuessListener() {
         this._pws.remove(Protocol.GUESS);
     }
