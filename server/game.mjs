@@ -198,8 +198,10 @@ class Game {
 		return this._config.categorySpinner;
 	}
 
-	nextQuestion() {
-		return this._categories.nextQuestion(this);
+	async nextQuestion() {
+		let question = await this._categories.nextQuestion(this, this._session._enabledCategories);
+		this._session.newQuestion(question);
+		return question;
 	}
 
 	avatars() {
@@ -252,7 +254,6 @@ class Session {
 			answers : {}
 		};
 		this._previousQuestions = [];
-		this._currentCategory = undefined;
 		this._totalQuestions = totalQuestions;
 
 		this._enabledCategories = Object.entries(enabledCategories).filter(([category, enabled]) => enabled).reduce((obj, [category, enabled]) => {
@@ -276,15 +277,7 @@ class Session {
 		return category in this._enabledCategories;
 	}
 
-	nextCategory(selector) {
-		let selected = selector.fromWeightedObject(this._enabledCategories);
-
-		let category = Object.entries(this._enabledCategories).find(([key, value]) => value == selected)[0];
-
-		return category;
-	}
-
-	newQuestion(category, question) {
+	newQuestion(question) {
 		let viewParams = ['url','videoId','mp3','quote'];
 		this._previousQuestions.forEach((q) => {
 			if (q.text === question.text && q.correct === question.correct && viewParams.every(p => q.view[p] === question.view[p])) {
@@ -293,10 +286,9 @@ class Session {
 			}
 		});
 		this._currentQuestion = question;
-		this._currentCategory = category;
 
 		Object.values(this._enabledCategories).forEach((value) => { value.weight *= 2; });
-		this._enabledCategories[this._currentCategory.type].weight = 2;
+		this._enabledCategories[this._currentQuestion.category.type].weight = 2;
 	}
 
 	endQuestion() {
@@ -316,8 +308,8 @@ class Session {
 	}
 
 	category() {
-		let name = this._currentCategory.name;
-		let subCategoryName = this._currentQuestion.view.category
+		let name = this._currentQuestion.category.name;
+		let subCategoryName = this._currentQuestion.view.category;
 		return {
 			name : name,
 			fullName: name + (subCategoryName ? ": " + subCategoryName : "")

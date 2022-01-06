@@ -60,16 +60,24 @@ class Categories {
 		return this._categoryByType(category).preload(progress, new Cache(category), game);
 	}
 
-	async nextQuestion(game) {
+	async nextQuestion(game, weightedCategories) {
 		let selector = new QuestionSelector();
-		let category = this._categoryByType(game.nextCategory(selector));
+
+		let selected = selector.fromWeightedObject(weightedCategories);
+		let categoryName = Object.entries(weightedCategories).find(([key, value]) => value == selected)[0];
+		let category = this._categoryByType(categoryName);
 
 		let question = await category.nextQuestion(selector);
 		if (!question.correct) {
 			throw new Error("Got empty correct answer for " + question.text);
 		}
+		if (question.answers.filter(a => !!a).length < 4) {
+			throw new Error("Got to few answers for " + question.text + " (" + question.answers + ")");
+		}
+
 		this._shuffleAnswers(question);
-		game.newQuestion(category.describe(), question);
+		question.category = category.describe();
+		
 		return question;
 	}
 
@@ -87,10 +95,6 @@ class Categories {
 	}
 
 	_shuffleAnswers(question) {
-		if (question.answers.filter(a => !!a).length < 4) {
-			throw new Error("Got to few answers for " + question.text + " (" + question.answers + ")");
-		}
-
 		let selector = new QuestionSelector();
 
 		let answers = {
