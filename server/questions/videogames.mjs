@@ -62,7 +62,7 @@ class VideoGameQuestions {
 		};
 	}
 
-	async preload(progress, cache, game) {
+	async preload(progress, cache) {
 		let token = await this._loadTwitchAccessToken();
 		this._platforms = await this._loadPlatforms(cache, token);
 		

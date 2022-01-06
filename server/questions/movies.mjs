@@ -41,7 +41,7 @@ class MovieQuestions {
 		};
 	}
 
-	async preload(progress, cache, game) {
+	async preload(progress, cache) {
 		let videos = await this._loadYoutubeVideos(progress, cache);
 		this._movies = this._parseTitles(videos);
 		return this._countQuestions();

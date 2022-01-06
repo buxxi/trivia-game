@@ -48,7 +48,7 @@ class DrinksQuestions {
 		};
 	}
 
-	async preload(progress, cache, game) {
+	async preload(progress, cache) {
 		progress(0, TOTAL_DRINKS);
 		this._drinks = await this._loadDrinks(cache, progress);
 		progress(TOTAL_DRINKS, TOTAL_DRINKS);

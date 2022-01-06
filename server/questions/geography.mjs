@@ -83,7 +83,7 @@ class GeographyQuestions {
 		};
 	}
 
-	async preload(progress, cache, game) {
+	async preload(progress, cache) {
 		progress(0, 1);
 		this._countries = await this._loadCountries(cache);
 		progress(1, 1);

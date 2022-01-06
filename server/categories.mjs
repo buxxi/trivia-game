@@ -56,8 +56,8 @@ class Categories {
 		return selector.fromArray(this._jokes);
 	}
 
-	preload(category, progress, game) {
-		return this._categoryByType(category).preload(progress, new Cache(category), game);
+	preload(category, progress) {
+		return this._categoryByType(category).preload(progress, new Cache(category));
 	}
 
 	async nextQuestion(game, weightedCategories) {
@@ -67,7 +67,7 @@ class Categories {
 		let categoryName = Object.entries(weightedCategories).find(([key, value]) => value == selected)[0];
 		let category = this._categoryByType(categoryName);
 
-		let question = await category.nextQuestion(selector);
+		let question = await category.nextQuestion(selector, game);
 		if (!question.correct) {
 			throw new Error("Got empty correct answer for " + question.text);
 		}

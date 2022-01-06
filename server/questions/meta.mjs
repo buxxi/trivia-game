@@ -3,50 +3,50 @@ class CurrentGameQuestions {
 		this._types = {
 			avatar : {
 				title : (correct) => "Which animal does " + correct.name + " have as avatar?",
-				correct : (correct) => this._randomPlayer(correct),
-				similar : (correct, selector) => this._otherAvatars(correct, selector),
+				correct : (selector, game) => this._randomPlayer(selector, game),
+				similar : (correct, game, selector) => this._otherAvatars(correct, game, selector),
 				format : (correct) => this._resolveAvatar(correct),
 				attribution : "Avatar"
 			},
 			correct : {
 				title : (correct) => "Who has the most correct answers so far?",
-				correct : (selector) => this._playerWithMost(selector, (p) => p.stats.correct),
-				similar : (correct, selector) => this._playersWithLower(correct, selector, (p) => p.stats.correct),
+				correct : (selector, game) => this._playerWithMost(selector, game, (p) => p.stats.correct),
+				similar : (correct, game, selector) => this._playersWithLower(correct, game, selector, (p) => p.stats.correct),
 				format : (correct) => this._resolveName(correct),
 				attribution : "Most correct player (at that time)"
 			},
 			wrong : {
 				title : (correct) => "Who has the most incorrect answers so far?",
-				correct : (selector) => this._playerWithMost(selector, (p) => p.stats.wrong),
-				similar : (correct, selector) => this._playersWithLower(correct, selector, (p) => p.stats.wrong),
+				correct : (selector, game) => this._playerWithMost(selector, game, (p) => p.stats.wrong),
+				similar : (correct, game, selector) => this._playersWithLower(correct, game, selector, (p) => p.stats.wrong),
 				format : (correct) => this._resolveName(correct),
 				attribution : "Most incorrect player (at that time)"
 			},
 			total_correct : {
 				title : (correct) => "What is the total amount of correct answers so far?",
-				correct : (selector) => this._countTotal(selector, (p) => p.stats.correct),
-				similar : (correct, selector) => this._numericAlternatives(correct, selector),
+				correct : (selector, game) => this._countTotal(selector, game, (p) => p.stats.correct),
+				similar : (correct, game, selector) => this._numericAlternatives(correct, game, selector),
 				format : (correct) => this._formatValue(correct),
 				attribution : "Total correct answers (at that time)"
 			},
 			total_wrong : {
 				title : (correct) => "What is the total amount of incorrect answers so far?",
-				correct : (selector) => this._countTotal(selector, (p) => p.stats.wrong),
-				similar : (correct, selector) => this._numericAlternatives(correct, selector),
+				correct : (selector, game) => this._countTotal(selector, game, (p) => p.stats.wrong),
+				similar : (correct, game, selector) => this._numericAlternatives(correct, game, selector),
 				format : (correct) => this._formatValue(correct),
 				attribution : "Total incorrect answers (at that time)"
 			},
 			fastest : {
 				title : (correct) => "Who has made the fastest correct answers so far?",
-				correct : (selector) => this._playerWithMost(selector, (p) => p.stats.fastest),
-				similar : (correct, selector) => this._playersWithLower(correct, selector, (p) => p.stats.fastest),
+				correct : (selector, game) => this._playerWithMost(selector, game, (p) => p.stats.fastest),
+				similar : (correct, game, selector) => this._playersWithLower(correct, game, selector, (p) => p.stats.fastest),
 				format : (correct) => this._resolveName(correct),
 				attribution : "Fastest player (at that time)"
 			},
 			slowest : {
 				title : (correct) => "Who has made the slowest correct answers so far?",
-				correct : (selector) => this._playerWithLeast(selector, (p) => p.stats.slowest),
-				similar : (correct, selector) => this._playersWithHigher(correct, selector, (p) => p.stats.slowest),
+				correct : (selector, game) => this._playerWithLeast(selector, game, (p) => p.stats.slowest),
+				similar : (correct, game, selector) => this._playersWithHigher(correct, game, selector, (p) => p.stats.slowest),
 				format : (correct) => this._resolveName(correct),
 				attribution : "Slowest player (at that time)"
 			}
@@ -64,18 +64,17 @@ class CurrentGameQuestions {
 		};
 	}
 
-	async preload(progress, cache, game) {
-		this._current_game = game; //This would make it have circular dependencies if put in constructor 
+	async preload() {
 		return this._countQuestions();
 	}
 
-	async nextQuestion(selector) {
+	async nextQuestion(selector, game) {
 		let type = selector.fromWeightedObject(this._types);
-		let correct = type.correct(selector);
+		let correct = type.correct(selector, game);
 
 		return ({
 			text : type.title(correct),
-			answers : selector.alternatives(type.similar(correct, selector), correct, type.format, (arr) => selector.splice(arr)),
+			answers : selector.alternatives(type.similar(correct, game, selector), correct, type.format, (arr) => selector.splice(arr)),
 			correct : type.format(correct),
 			view : {
 				attribution : {
@@ -91,37 +90,37 @@ class CurrentGameQuestions {
 		return Object.keys(this._types).length;
 	}
 
-	_randomPlayer(selector) {
-		return selector.fromArray(this._players());
+	_randomPlayer(selector, game) {
+		return selector.fromArray(this._players(game));
 	}
 
-	_playerWithMost(selector, func) {
-		return selector.max(this._players(), func);
+	_playerWithMost(selector, game, func) {
+		return selector.max(this._players(game), func);
 	}
 
-	_playersWithLower(player, selector, func) {
-		return this._players().filter((p) => func(p) < func(player));
+	_playersWithLower(player, game, selector, func) {
+		return this._players(game).filter((p) => func(p) < func(player));
 	}
 
-	_playerWithLeast(selector, func) {
-		return selector.min(this._players(), func);
+	_playerWithLeast(selector, game, func) {
+		return selector.min(this._players(game), func);
 	}
 
-	_playersWithHigher(player, selector, func) {
-		return this._players().filter((p) => func(p) > func(player));
+	_playersWithHigher(player, game, selector, func) {
+		return this._players(game).filter((p) => func(p) > func(player));
 	}
 
-	_countTotal(selector, func) {
-		return selector.sum(this._players(), func);
+	_countTotal(selector, game, func) {
+		return selector.sum(this._players(game), func);
 	}
 
-	_numericAlternatives(number, selector) {
-		var index = this._current_game.CurrentGameQuestions();
+	_numericAlternatives(number, game, selector) {
+		var index = game.currentQuestionIndex();
 		return selector.numericAlternatives(number, index);
 	}
 
-	_otherAvatars(player, selector) {
-		return this._current_game.avatars().map((a) => ({ avatar : a }));
+	_otherAvatars(player, game, selector) {
+		return game.avatars().map((a) => ({ avatar : a }));
 	}
 
 	_resolveName(player) {
@@ -136,8 +135,8 @@ class CurrentGameQuestions {
 		return value;
 	}
 
-	_players() {
-		return Object.values(this._current_game.players());
+	_players(game) {
+		return Object.values(game.players());
 	}
 }
 

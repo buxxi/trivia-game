@@ -46,7 +46,7 @@ class ActorQuestions {
 		};
 	}
 
-	async preload(progress, cache, game) {
+	async preload(progress, cache) {
 		progress(0, ACTOR_COUNT);
 		this._actors = await this._loadActors(progress, cache);
 		return this._countQuestions();

@@ -57,7 +57,7 @@ class MusicQuestions {
 		};
 	}
 
-	async preload(progress, cache, game) {	
+	async preload(progress, cache) {	
 		let accessToken = await this._loadSpotifyAccessToken();
 		let categories = await this._loadSpotifyCategories(accessToken, cache);
 

@@ -39,7 +39,7 @@ class UnitQuestions {
 		};
 	}
 
-	async preload(progress, cache, game) {
+	async preload(progress) {
 		progress(1, 1);
 		return this._countQuestions();
     }

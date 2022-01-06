@@ -38,7 +38,7 @@ class QuotesQuestions {
 		};
 	}
 
-	async preload(progress, cache, game) {
+	async preload(progress, cache) {
 		progress(0, 1);
 		this._quotes = await this._loadQuotes(cache, progress);
 		progress(1, 1);
