@@ -47,8 +47,8 @@ class Categories {
 		return this._categories.map((category) => category.describe());
 	}
 
-	enabled(session) {
-		return this.available().filter((category) => session.categoryEnabled(category.type));
+	enabled(game) {
+		return this.available().filter((category) => game.categoryEnabled(category.type));
 	}
 
 	joke() {
@@ -60,16 +60,16 @@ class Categories {
 		return this._categoryByType(category).preload(progress, new Cache(category), game);
 	}
 
-	async nextQuestion(session) {
+	async nextQuestion(game) {
 		let selector = new QuestionSelector();
-		let category = this._categoryByType(session.nextCategory(selector));
+		let category = this._categoryByType(game.nextCategory(selector));
 
 		let question = await category.nextQuestion(selector);
 		if (!question.correct) {
 			throw new Error("Got empty correct answer for " + question.text);
 		}
 		this._shuffleAnswers(question);
-		session.newQuestion(category.describe(), question);
+		game.newQuestion(category.describe(), question);
 		return question;
 	}
 
@@ -78,7 +78,7 @@ class Categories {
 	}
 
 	_categoryByType(type) {
-			for (var i = 0; i < this._categories.length; i++) {
+		for (var i = 0; i < this._categories.length; i++) {
 			if (this._categories[i].describe().type == type) {
 				return this._categories[i];
 			}

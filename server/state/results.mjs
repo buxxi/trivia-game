@@ -7,7 +7,7 @@ class ResultsState {
     }
 
 	async run() {
-        await this._monitorConnection.results(this._game.session().history(), this._game.players()); 
+        await this._monitorConnection.results(this._game.history(), this._game.players()); 
 
         await Promise.all(Object.values(this._clientConnections).map((client) => {
             return client.gameEnd();

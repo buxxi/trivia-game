@@ -1,6 +1,5 @@
 import randomColor from 'randomcolor';
 import Timer from './timer.mjs';
-import Session from './session.mjs';
 
 class Player {
 	constructor(name, color, avatar) {
@@ -154,8 +153,32 @@ class Game {
 		}
 	}
 
-	session() {
-		return this._session;
+	history() {
+		return this._session.history();
+	}
+
+	currentQuestionIndex() {
+		return this._session.index();
+	}
+
+	totalQuestionCount() {
+		return this._session.total();
+	}
+
+	currentCategory() {
+		return this._session.category();
+	}
+
+	categoryEnabled(category) {
+		return this._session.categoryEnabled(category);
+	}
+
+	nextCategory(selector) {
+		return this._session.nextCategory(selector);
+	}
+
+	newQuestion(category, question) {
+		return this._session.newQuestion(category, question);
 	}
 
 	startTimer(callback) {
@@ -176,7 +199,7 @@ class Game {
 	}
 
 	nextQuestion() {
-		return this._categories.nextQuestion(this._session);
+		return this._categories.nextQuestion(this);
 	}
 
 	avatars() {
@@ -220,6 +243,85 @@ class Game {
 			return preferred;
 		}
 		return unusedAvatars[unusedAvatars.length * Math.random() << 0];
+	}
+}
+
+class Session {
+	constructor(totalQuestions, enabledCategories) {
+		this._currentQuestion = {
+			answers : {}
+		};
+		this._previousQuestions = [];
+		this._currentCategory = undefined;
+		this._totalQuestions = totalQuestions;
+
+		this._enabledCategories = Object.entries(enabledCategories).filter(([category, enabled]) => enabled).reduce((obj, [category, enabled]) => {
+			obj[category] = {
+				weight : 2
+			};
+
+			return obj;
+		}, {});	
+	}
+
+	index() {
+		return this._previousQuestions.length + 1;
+	}
+
+	total() {
+		return this._totalQuestions;
+	}
+
+	categoryEnabled(category) {
+		return category in this._enabledCategories;
+	}
+
+	nextCategory(selector) {
+		let selected = selector.fromWeightedObject(this._enabledCategories);
+
+		let category = Object.entries(this._enabledCategories).find(([key, value]) => value == selected)[0];
+
+		return category;
+	}
+
+	newQuestion(category, question) {
+		let viewParams = ['url','videoId','mp3','quote'];
+		this._previousQuestions.forEach((q) => {
+			if (q.text === question.text && q.correct === question.correct && viewParams.every(p => q.view[p] === question.view[p])) {
+				let params = JSON.stringify(Object.fromEntries(viewParams.map(p => [p, q.view[p]])));
+				throw new Error("Duplicate question: '" + q.text + "', answer: '" + q.correct + "', params: " + params);
+			}
+		});
+		this._currentQuestion = question;
+		this._currentCategory = category;
+
+		Object.values(this._enabledCategories).forEach((value) => { value.weight *= 2; });
+		this._enabledCategories[this._currentCategory.type].weight = 2;
+	}
+
+	endQuestion() {
+		this._previousQuestions.push(this._currentQuestion);
+	}
+
+	finished() {
+		return this._previousQuestions.length < this._totalQuestions;
+	}
+
+	history() {
+		return this._previousQuestions;
+	}
+
+	question() {
+		return this._currentQuestion;
+	}
+
+	category() {
+		let name = this._currentCategory.name;
+		let subCategoryName = this._currentQuestion.view.category
+		return {
+			name : name,
+			fullName: name + (subCategoryName ? ": " + subCategoryName : "")
+		};
 	}
 }
 

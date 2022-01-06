@@ -14,13 +14,11 @@ class PresentCategoryState {
     }
 
 	async run() {
-        let session = this._game.session();
-
         let showCategorySpinner = this._game.showCategorySpinner();
-        let spinnerCategories = showCategorySpinner ? this._insertJokes(this._categories.enabled(session).map(this._toSpinnerCategory)) : [];
-        let correct = session.category();
-        let index = session.index();
-        let total = session.total();
+        let spinnerCategories = showCategorySpinner ? this._insertJokes(this._categories.enabled(this._game).map(this._toSpinnerCategory)) : [];
+        let correct = this._game.currentCategory();
+        let index = this._game.currentQuestionIndex();
+        let total = this._game.totalQuestionCount();
 
         await this._monitorConnection.categorySelected(spinnerCategories, correct, index, total);
 	}

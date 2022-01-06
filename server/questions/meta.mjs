@@ -116,7 +116,7 @@ class CurrentGameQuestions {
 	}
 
 	_numericAlternatives(number, selector) {
-		var index = this._current_game.session().index();
+		var index = this._current_game.CurrentGameQuestions();
 		return selector.numericAlternatives(number, index);
 	}
 
