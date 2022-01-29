@@ -18,24 +18,24 @@
   },
   "homepage": "https://github.com/buxxi/trivia-game#readme",
   "dependencies": {
-    "@fontsource/ubuntu": "^4.5.0",
+    "@fontsource/ubuntu": "^4.5.1",
     "@fortawesome/fontawesome-free": "^5.15.4",
-    "commander": "^8.3.0",
+    "commander": "^9.0.0",
     "compromise": "^13.11.4",
     "compromise-adjectives": "^0.0.7",
     "convert-units": "^2.3.4",
     "express": "^4.17.2",
-    "node-fetch": "^3.1.1",
+    "node-fetch": "^3.2.0",
     "node-sass": "^7.0.1",
     "pizzicato": "^0.6.4",
     "qcode-decoder": "^0.1.0",
     "qrcode": "^1.5.0",
-    "quotesy": "^1.0.5",
+    "quotesy": "^1.0.6",
     "randomcolor": "^0.6.2",
     "uuid": "^8.3.2",
     "vue": "^2.6.14",
     "vue-router": "^3.5.3",
     "wavesurfer.js": "^5.2.0",
-    "ws": "^8.4.0"
+    "ws": "^8.4.2"
   }
 }
