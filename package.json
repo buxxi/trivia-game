@@ -33,8 +33,8 @@
     "quotesy": "^1.0.9",
     "randomcolor": "^0.6.2",
     "uuid": "^8.3.2",
-    "vue": "^2.6.14",
-    "vue-router": "^3.5.3",
+    "vue": "^3.2.41",
+    "vue-router": "^4.1.6",
     "wavesurfer.js": "^6.3.0",
     "ws": "^8.10.0"
   }

@@ -3,12 +3,19 @@ import Answer from '../components/answer.js';
 import ClientToServerConnection from '../connection.mjs';
 
 function loadTemplate(url, component) {
-	return (resolve, reject) => {
-		fetch(url).then((response) => response.text()).then((data) => {
+	return () => {
+		return fetch(url).then((response) => response.text()).then((data) => {
 			component.template = data;
-			resolve(component);
+			return component;
 		});
-	};
+	}
+}
+
+function getState(key, defaultValue) {
+	if (key in window.history.state) {
+		return JSON.parse(window.history.state[key]);
+	}
+	return defaultValue;
 }
 
 const connection = new ClientToServerConnection(new URL("..", document.location));
@@ -21,8 +28,8 @@ const routes = [
 		props: (route) => ({
 			gameId: route.query.gameId,
 			connection: connection,
-			name: route.params.name,
-			preferredAvatar: route.params.preferredAvatar
+			name: route.query.name,
+			preferredAvatar: route.query.preferredAvatar
 		})
 	},
 	{
@@ -33,15 +40,18 @@ const routes = [
 			gameId: route.query.gameId,
 			clientId: route.query.clientId,
 			connection: connection,
-			stats: route.params.stats ? route.params.stats : {}
+			stats: getState('stats', {})
 		})
 	}
 ];
 
-const router = new VueRouter({
-	routes
+const router = VueRouter.createRouter({
+	history : VueRouter.createWebHashHistory(),
+	routes 
 });
 
-const app = new Vue({
-	router
-}).$mount('#main');
+const app = Vue.createApp({});
+
+app.use(router);
+
+app.mount('#main');

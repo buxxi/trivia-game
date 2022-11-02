@@ -13,26 +13,25 @@ import YoutubePlayer from '../components/playback/youtube.js';
 import CategorySpinner from '../components/spinner.js';
 
 function loadTemplate(url, component) {
-	return (resolve, reject) => {
-		fetch(url).then((response) => response.text()).then((data) => {
+	return () => {
+		return fetch(url).then((response) => response.text()).then((data) => {
 			component.template = data;
-			resolve(component);
+			return component;
 		});
-	};
+	}
+}
+
+function getState(key, defaultValue) {
+	if (key in window.history.state) {
+		return JSON.parse(window.history.state[key]);
+	}
+	return defaultValue;
 }
 
 const sound = new SoundController();
 const connection = new MonitorToServerConnection(new URL("..", document.location));
 
-Vue.component('blank-player', loadTemplate('./pages/playback/blank.html', BlankPlayer));
-Vue.component('image-player', loadTemplate('./pages/playback/image.html', ImagePlayer));
-Vue.component('quote-player', loadTemplate('./pages/playback/quote.html', QuotePlayer));
-Vue.component('list-player', loadTemplate('./pages/playback/list.html', ListPlayer));
-Vue.component('answers-player', loadTemplate('./pages/playback/answers.html', AnswersPlayer));
-Vue.component('mp3-player', loadTemplate('./pages/playback/mp3.html', Mp3WavePlayer));
-Vue.component('youtube-player', loadTemplate('./pages/playback/youtube.html', YoutubePlayer));
-Vue.component('youtubeaudio-player', loadTemplate('./pages/playback/youtube.html', YoutubePlayer));
-Vue.component('category-spinner', loadTemplate('./pages/spinner.html', CategorySpinner));
+const lobbyPlayers = [];
 
 const routes = [
   	{ 
@@ -51,7 +50,7 @@ const routes = [
 		props: (route) => ({ 
 				connection: connection,
 				gameId: route.query.gameId,
-				lobbyPlayers: route.params.players,
+				lobbyPlayers: getState('players', {}),
 				sound: sound
 		})		 
 	},
@@ -61,16 +60,29 @@ const routes = [
 		component: loadTemplate('./pages/results.html', Results),
 		props: (route) => ({ 
 			gameId: route.query.gameId,
-			results: route.params.results,
-			history: route.params.history
+			results: getState('results', {}),
+			history: getState('history', [])
 		})		 
 	},
 ];
 
-const router = new VueRouter({
-  routes
+const router = VueRouter.createRouter({
+	history : VueRouter.createWebHashHistory(),
+	routes 
 });
 
-const app = new Vue({
-  router
-}).$mount('#main');
+const app = Vue.createApp({});
+
+app.use(router);
+
+app.component('blank-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/blank.html', BlankPlayer)));
+app.component('image-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/image.html', ImagePlayer)));
+app.component('quote-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/quote.html', QuotePlayer)));
+app.component('list-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/list.html', ListPlayer)));
+app.component('answers-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/answers.html', AnswersPlayer)));
+app.component('mp3-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/mp3.html', Mp3WavePlayer)));
+app.component('youtube-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/youtube.html', YoutubePlayer)));
+app.component('youtubeaudio-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/youtube.html', YoutubePlayer)));
+app.component('category-spinner', Vue.defineAsyncComponent(loadTemplate('./pages/spinner.html', CategorySpinner)));
+
+app.mount('#main');

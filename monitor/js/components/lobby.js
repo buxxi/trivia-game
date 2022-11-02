@@ -79,7 +79,7 @@ export default {
 			}
 
 			for (let id in newPlayers) {
-				this.$set(this.players, id, new PlayerData(newPlayers[id]));
+				this.players[id] = new PlayerData(newPlayers[id]);
 			}	
 		});
 
@@ -128,29 +128,29 @@ export default {
 		},
 		loadAll: async function() {
 			for (let type of this.availableCategories.map(c => c.type)) {
-				this.$set(this.config.categories, type, true);
+				this.config.categories[type] = true;
 				await this.preload(type);
 			}
 		},
 		clearCache: async function() {
 			try {
 				for (let type of this.availableCategories.map(c => c.type)) {
-					this.$set(this.config.categories, type, false);
+					this.config.categories[type] = false;
 				}
 				await this.connection.clearCache();
 			} catch (e) {
 				this.message = "Failed to clear caches: " + e.message;
 			}
 		},
-		startGame: function() {
+		startGame: async function() {
 			try {
 				this.sound.config(this.config.sound);
 				clearInterval(this.carouselTimeout);
 				this.sound.play();
 				this.connection.clearListeners();
-				this.$router.push({name: 'game', query: { gameId: this.gameId }, params: { players: this.players } }, () => {
-					this.connection.startGame(this.config);
-				});
+
+				await this.$router.push({name: 'game', query: { gameId: this.gameId, }, state: { players: JSON.stringify(this.players) }});
+				this.connection.startGame(this.config);
 			} catch (e) {
 				this.message = "Failed to start game: " + e.message;
 			}

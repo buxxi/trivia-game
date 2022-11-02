@@ -30,7 +30,7 @@ export default {
 	methods: {
 		join: function() {
 			this.connection.connect(this.config.gameId, this.config.name, this.config.avatar).then((data) => {
-				this.$router.push({ name: "game", query : { gameId: this.config.gameId, clientId: data.clientId }, params: { stats: data.stats } });
+				this.$router.push({ name: "game", query : { gameId: this.config.gameId, clientId: data.clientId }, state: { stats: JSON.stringify(data.stats) } });
 			}).catch((err) => {
 				this.message = "Error when joining: " + err.message;
 			});

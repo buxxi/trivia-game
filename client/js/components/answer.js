@@ -26,7 +26,7 @@ function showClosed(app) {
 }
 
 function redirectToJoin(app) {
-	app.$router.push({ name: "join", query : { gameId: app.gameId }, params: { preferredAvatar: app.stats.avatar, name: app.stats.name } });
+	app.$router.push({ name: "join", query : { gameId: app.gameId, preferredAvatar: app.stats.avatar, name: app.stats.name } });
 }
 
 export default {
@@ -51,7 +51,7 @@ export default {
 			try {
 				let data = await this.connection.reconnect(this.gameId, this.clientId);
 				for (let key in data.stats) {
-					this.$set(this.stats, key, data.stats[key]);
+					this.stats[key] = data.stats[key];
 				}
 				this._registerListeners();
 				this.connected = true;

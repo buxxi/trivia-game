@@ -108,7 +108,7 @@ async function playerConnected(app, newPlayers) {
 
 async function gameEnded(app, history, results) {
 	app.connection.clearListeners();
-	app.$router.push({ name: 'results', query: { gameId: app.gameId }, params: { results: results, history: history } });	
+	app.$router.push({ name: 'results', query: { gameId: app.gameId }, state: { results: JSON.stringify(results), history: JSON.stringify(history) } });	
 }
 
 export default {
@@ -125,9 +125,9 @@ export default {
 		state: 'loading',
 		error: undefined,
 		minimizeQuestion: false,
-		players : []
+		players: []
 	})},
-	props: ['gameId', 'connection', 'sound', 'passed', 'lobbyPlayers'],
+	props: ['gameId', 'connection', 'sound', 'lobbyPlayers'],
 	computed: {
 		showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; },
 		playbackPlayer: function() {
@@ -179,10 +179,7 @@ export default {
 			return gameEnded(this, data.history, data.results);
 		});
 
-		for (let id in this.lobbyPlayers) {
-			let player = new PlayerData(id, this.lobbyPlayers[id]);
-			this.players.push(player);
-		}
+		this.players = Object.entries(this.lobbyPlayers).map(entry => new PlayerData(entry[0], entry[1]));
 	},
 	methods: {
 		isLeadingPlayer: function (player) {
