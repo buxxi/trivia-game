@@ -1,17 +1,17 @@
-import commander from 'commander';
+import {Command, Option} from 'commander';
 import ClientToServerConnection from './client/js/connection.mjs';
 import ws from 'ws';
 import {v4 as uuid} from 'uuid';
 
 global.WebSocket = ws;
 global.uuidv4 = uuid;
-const program = new commander.Command();
+const program = new Command();
 
 program.version('0.0.1')
-    .addOption(new commander.Option('-n, --count <count>', 'The number of bots to add').default(1))
-    .addOption(new commander.Option('-g, --gameid <id>', 'The id of the game').makeOptionMandatory())
-    .addOption(new commander.Option('-u, --url <url>', 'The url to the service').makeOptionMandatory())
-    .addOption(new commander.Option('-b, --behaviours <behaviours...>', 'The behaviour each bot use').default(['guess']).choices(['guess', 'reconnect']))
+    .addOption(new Option('-n, --count <count>', 'The number of bots to add').default(1))
+    .addOption(new Option('-g, --gameid <id>', 'The id of the game').makeOptionMandatory())
+    .addOption(new Option('-u, --url <url>', 'The url to the service').makeOptionMandatory())
+    .addOption(new Option('-b, --behaviours <behaviours...>', 'The behaviour each bot use').default(['guess']).choices(['guess', 'reconnect']))
     .parse();
 
 

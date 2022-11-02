@@ -20,22 +20,22 @@
   "dependencies": {
     "@fontsource/ubuntu": "^4.5.11",
     "@fortawesome/fontawesome-free": "^6.2.0",
-    "commander": "^9.0.0",
+    "commander": "^9.4.1",
     "compromise": "^13.11.4",
     "compromise-adjectives": "^0.0.7",
     "convert-units": "^2.3.4",
-    "express": "^4.17.2",
-    "node-fetch": "^3.2.0",
-    "node-sass": "^7.0.1",
+    "express": "^4.18.2",
+    "node-fetch": "^3.2.10",
+    "node-sass": "^7.0.3",
     "pizzicato": "^0.6.4",
     "qcode-decoder": "^0.1.0",
     "qrcode": "^1.5.0",
-    "quotesy": "^1.0.6",
+    "quotesy": "^1.0.9",
     "randomcolor": "^0.6.2",
     "uuid": "^8.3.2",
     "vue": "^2.6.14",
     "vue-router": "^3.5.3",
     "wavesurfer.js": "^5.2.0",
-    "ws": "^8.4.2"
+    "ws": "^8.10.0"
   }
 }
