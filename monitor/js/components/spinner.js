@@ -1,64 +1,7 @@
-class KeepDuration {
-    calculate(duration) {
-        return duration;
-    }
-
-    next() {
-        return this;
-    }
-}
-
-class LogDuration {
-    calculate(duration) {
-        return Math.max(Math.log10(duration * 0.1),1.1) * duration;
-    }
-
-    next() {
-        return this;
-    }
-}
-
-class StepsDuration {
-    constructor(steps) {
-        this._steps = steps;
-    }
-
-    calculate(duration) {
-        this._steps--;
-        return duration;
-    }
-
-    next() {
-        if (this._steps < 0) {
-            return new LogDuration();
-        }
-        return this;
-    }
-
-    static _calculateStepsBeforeSlowingDown(duration, maxDuration, categories, correct) {
-        let indexOfChosen = categories.reduce((prev, current, index) => {
-            if (current.name == correct) {
-                return index;
-            } else {
-                return prev;
-            }
-        }, -1);
-
-        var steps = 0;
-        var sum = duration;
-        while (sum < maxDuration) {
-            steps++;
-            sum = new LogDuration().calculate(sum);
-        }
-
-        function mod (n, m) {
-            return ((n % m) + m) % m;
-        }
-
-        steps = (3 - steps) - indexOfChosen;
-        return mod(steps, categories.length);
-    }
-}
+const MIN_SPINS = 15;
+const MAX_SPINS = 50;
+const MAX_DURATION = 50;
+const MIN_DURATION = 1000;
 
 class TransitionCounter {
     constructor() {
@@ -86,17 +29,17 @@ class TransitionCounter {
 
 export default {
     data: function() { return {
-		duration: 50,
-        maxDuration: 2000,
+		duration: MAX_DURATION,
         done: false,
-        calculator: new KeepDuration(),
-        transitionCounter: new TransitionCounter()
+        stepsLeft: -1,
+        totalSteps: -1
     } },
     props: ['categories', 'correct'],
     methods: {
         start: function() {
             return new Promise(async (resolve, reject) => {
-                setTimeout(() => this.stop().catch(reject), 2000);
+                this.totalSteps = this._calculateSteps()
+                this.stepsLeft = this.totalSteps;
 
                 while (!this.done) {
                     try {
@@ -111,23 +54,20 @@ export default {
             });
         },
 
-        stop: async function() {
-            this.calculator = new StepsDuration(StepsDuration._calculateStepsBeforeSlowingDown(this.duration, this.maxDuration, this.categories, this.correct));
-        },
-
         flip: async function() {
             this.$emit('flip');
 
-            this.duration = this.calculator.calculate(this.duration);
-            this.calculator = this.calculator.next();
+            this.duration = this._calculateDuration();
 
-            if (this.duration < this.maxDuration) {
+            if (this.stepsLeft > 0) {
                 this.transitionCounter = new TransitionCounter();
                 this.categories.unshift(this.categories.pop());
 
                 await this.$nextTick();
                 await Promise.race([this.transitionCounter.wait(), this._detectStuck()]);
                 await this.$nextTick();
+
+                this.stepsLeft--;
 
                 return false;
             } else {
@@ -157,6 +97,47 @@ export default {
                     reject(new Error("Spinner seems to be stuck"));
                 }, checkDuration);
             });
+        },
+
+        _calculateSteps: function() {
+            let indexesOfChosen = this.categories.map((current, index) => {
+                if (current.name == this.correct) {
+                    return index;
+                } else {
+                    return -1;
+                }
+            }).filter(index => index > -1);
+
+            // Create an array of possible amount of laps with a minimum of [0]
+            let possibleLaps = [...Array(Math.ceil((MAX_SPINS - MIN_SPINS) / this.categories.length)).keys()];
+
+            // Multiply each lap with the amount of categories for each index and make sure it's in the range of the minimum and maximum
+            let possibleSpins = indexesOfChosen.flatMap(index => {
+                return possibleLaps.map(laps => (laps * this.categories.length) + (this.categories.length - index + 3));
+            }).filter(spins => spins >= MIN_SPINS && spins <= MAX_SPINS);
+
+            // If we somehow got no result that matches just use a basic spin
+            if (possibleSpins.length == 0) {
+                return this.categories.length - indexesOfChosen[0] + 3;
+            }
+
+            return possibleSpins[(possibleSpins.length * Math.random() << 0)];
+        },
+
+        _calculateDuration: function() {
+            let curve = this._cubicBezier(0, -1, -0.1, 1);
+            let normalizedStep = (this.totalSteps - this.stepsLeft) / this.totalSteps;
+            let curvedStep = Math.max(0, curve(normalizedStep));
+
+            return (curvedStep * (MIN_DURATION - MAX_DURATION)) + MAX_DURATION;
+
+        },
+
+        _cubicBezier: function(p0, p1, p2, p3) {
+            return (t) =>   Math.pow(1 - t, 3) * p0 +
+                            3 * Math.pow(1 - t, 2) * t * p1 +
+                            3 * (1 - t) * Math.pow(t, 2) * p2 +
+                            Math.pow(t, 3) * p3;
         }
     }
 }
