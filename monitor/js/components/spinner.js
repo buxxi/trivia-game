@@ -59,20 +59,29 @@ export default {
 
             this.duration = this._calculateDuration();
 
-            if (this.stepsLeft > 0) {
-                this.transitionCounter = new TransitionCounter();
-                this.categories.unshift(this.categories.pop());
+            try {
+                if (this.stepsLeft > 0) {
+                    this.transitionCounter = new TransitionCounter();
+                    this.categories.unshift(this.categories.pop());
+                    this.stepsLeft--;
 
+                    await this.$nextTick();
+                    await Promise.race([this.transitionCounter.wait(), this._detectStuck()]);
+                    await this.$nextTick();
+
+                    return false;
+                }
+            } catch (ex) {
+                console.log(ex);
+                this.duration = 0;
+                while (this.stepsLeft > 0) {
+                    this.categories.unshift(this.categories.pop());
+                    this.stepsLeft--;
+                }
                 await this.$nextTick();
-                await Promise.race([this.transitionCounter.wait(), this._detectStuck()]);
-                await this.$nextTick();
-
-                this.stepsLeft--;
-
-                return false;
-            } else {
-                return true;
             }
+
+            return true;
         }, 
 
         transitionStart: function(event) {
