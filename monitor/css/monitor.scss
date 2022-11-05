@@ -305,7 +305,7 @@ h1 {
 	}
 
 	&::after {
-		border: 2px solid $primary;
+		border: 0.075em solid $primary;
 		content: "";
 		display: block;
 		margin-left: 20%;
@@ -371,6 +371,15 @@ h1 {
 
 .error .message {
 	font-size: 2em;
+}
+
+.infobox {
+	background-color: $secondary;
+	border-radius: 10px;
+	border: 5px solid $secondary_border;
+	color: $primary;
+	font-weight: bold;
+	padding: 0.5em 1em;
 }
 
 @keyframes resize-title {
