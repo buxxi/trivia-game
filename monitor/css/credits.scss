@@ -54,15 +54,15 @@
 		top : -2em;
 		.correct {
 			color : $correct;
-			text-shadow : 1px 1px 2px $correct_border;
+			text-shadow : 0.05em 0.05em 0.1em $correct_border;
 		}
 		.failed {
 			color : $incorrect;
-			text-shadow : 1px 1px 2px $incorrect_border;
+			text-shadow : 0.05em 0.05em 0.1em $incorrect_border;
 		}
 		.fastest {
 			color : $primary;
-			text-shadow: 1px 1px 2px $primary_border;
+			text-shadow: 0.05em 0.05em 0.1em $primary_border;
 		}
 	}
 	h2 {
@@ -75,9 +75,9 @@
 }
  
 @keyframes gold {
-    0% { text-shadow: 1px 1px 1px white; color : #907900; }
-   50% { text-shadow : 1px 1px 10px #FFD700; color : #FFD700; }
-   100% { text-shadow: 1px 1px 1px white; color : #907900; }
+    0% { text-shadow: 0 0 0.1em white; color : #907900; }
+   50% { text-shadow : 0 0 0.75em #FFD700; color : #FFD700; }
+   100% { text-shadow: 0 0 0.1em white; color : #907900; }
  }
 
 @keyframes scroll {
