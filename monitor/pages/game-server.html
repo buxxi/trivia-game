@@ -1,11 +1,11 @@
 <div class="question">
 	<div class="top">
-			<div class="index" v-if="timer.running">
+			<div class="index">
 				<div class="infobox">
 					<span class="current">{{ session.index }}</span>
 					<span class="total">{{ session.total }}</span>
 				</div>
-				<div class="category infobox" v-if="session.currentCategory">{{ session.currentCategory.fullName }}</div>
+				<div class="category infobox" v-if="session.currentCategory && state != 'loading'">{{ session.currentCategory.fullName }}</div>
 			</div>
 			<div class="title" v-bind:class="{'full-animation' : state == 'pre-question', 'full-static' : (state == 'question' && !minimizeQuestion)}">{{ title }}</div>
 			<div class="timer" v-if="timer.running">
