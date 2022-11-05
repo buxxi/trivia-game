@@ -151,3 +151,24 @@ ol {
 		border : 0.3em solid $primary;
 	}
 }
+
+#start a {
+	background-color : $primary;
+	border-radius: 1em;
+	border: 0.1em solid $primary_border;
+	color : $font;
+	cursor : pointer;
+	font-size: 2em;
+	margin : 1em;
+	padding : 1em;
+	position : fixed;
+	right : 0;
+	bottom : 0;
+
+	&[disabled] {
+		background-color : $incorrect;
+		border : 0.1em solid $incorrect_border;
+		cursor : not-allowed;
+		opacity : 0.5;
+	}
+}

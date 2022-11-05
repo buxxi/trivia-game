@@ -129,6 +129,6 @@
 		<div class="message">{{ message }}</div>
 	</div>
 	<div id="start">
-		<a v-on:click="startGame()" v-bind:disabled="startMessage != undefined" v-bind:title="startMessage != undefined ? startMessage : 'Game is ready to start'"><i class="fas fa-fw fa-play"></i></a>
+		<a v-on:click="startGame()" v-bind:disabled="startMessage != undefined ? 'disabled' : undefined" v-bind:title="startMessage != undefined ? startMessage : 'Game is ready to start'"><i class="fas fa-fw fa-play"></i></a>
 	</div>
 </div>
