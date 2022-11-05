@@ -75,7 +75,7 @@ export default {
 
 		this.connection.onPlayersChange().then(async newPlayers => {
 			for (let id in this.players) {
-				this.$delete(this.players, id);
+				delete this.players[id];
 			}
 
 			for (let id in newPlayers) {
