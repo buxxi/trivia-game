@@ -249,10 +249,9 @@
 }
 
 .timer-counter {
-	font-size: 2.1em;
 	position : relative;
-	width : 2em;
-	height : 2em;
+	width : 4.2em;
+	height : 4.2em;
 	float : right;
 	color : $primary;
 	@include timer-counter-loop;
@@ -264,7 +263,7 @@
 		circle {
 			transition: stroke-dashoffset 0.1s linear;
 			stroke: $secondary_border;
-			stroke-width: 0.15em;
+			stroke-width: 0.35em;
 			fill: $secondary;
 		}
 		#bar {
@@ -274,6 +273,7 @@
 	}
 
 	&:before {
+		font-size: 2.1em;
 		content : attr(data-seconds);
 		position : absolute;
 		z-index : 2;
