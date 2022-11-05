@@ -23,7 +23,7 @@
 		font-size: 6em;
 		font-weight: bold;
 		text-align: center;
-		text-shadow: 2px 2px 2px grey;
+		text-shadow: 0.025em 0.025em 0.025em grey;
 		transform : scale(0.5) translateY(-50%);
 
 		&.full-animation {
@@ -54,7 +54,7 @@
 		position : fixed;
 		text-align: center;
 		text-align: center;
-		text-shadow: 2px 2px 2px grey;
+		text-shadow: 0.025em 0.025em 0.025em grey;
 		top : 50%;
 		transform: translateY(-50%);
 		width : 100%;
@@ -75,6 +75,15 @@
 		width : 100%;
 		z-index: 2;
 	}
+}
+
+.infobox {
+	background-color: $secondary;
+	border-radius: 0.6em;
+	border: 0.3em solid $secondary_border;
+	color: $primary;
+	font-weight: bold;
+	padding: 0.5em 1em;
 }
 
 .spinner {
@@ -180,27 +189,6 @@
 	}
 }
 
-#start a {
-	background-color : $primary;
-	border-radius: 1em;
-	border: 3px solid $primary_border;
-	color : $font;
-	cursor : pointer;
-	font-size: 2em;
-	margin : 1em;
-	padding : 1em;
-	position : fixed;
-	right : 0;
-	bottom : 0;
-
-	&[disabled='disabled'] {
-		background-color : $incorrect;
-		border : 3px solid $incorrect_border;
-		cursor : not-allowed;
-		opacity : 0.5;
-	}
-}
-
 .playerlist {
 	margin-bottom : 0;
 	li {
@@ -232,9 +220,9 @@
 
 .category {
 	position: relative;
-	left: -10px;
+	left: -0.6em;
 	z-index: -1;
-	border-radius: 0 10px 10px 0;
+	border-radius: 0 0.6em 0.6em 0;
 }
 
 .timer-score {
@@ -276,7 +264,7 @@
 		circle {
 			transition: stroke-dashoffset 0.1s linear;
 			stroke: $secondary_border;
-			stroke-width: 5px;
+			stroke-width: 0.15em;
 			fill: $secondary;
 		}
 		#bar {
@@ -324,7 +312,7 @@ h1 {
 
 .score-change-positive .avatar {
 	animation : glow-positive 1s linear normal;
-	box-shadow : 0 0 50px $correct, 0 0 25px $correct;
+	box-shadow : 0 0 3em $correct, 0 0 1.5em $correct;
 
 	img {
 		filter: contrast(200%);
@@ -339,7 +327,7 @@ h1 {
 
 .score-change-negative .avatar {
 	animation : glow-negative 1s linear normal;
-	box-shadow : 0 0 50px $incorrect, 0 0 25px $incorrect;
+	box-shadow : 0 0 3em $incorrect, 0 0 1.5em $incorrect;
 
 	img {
 		filter: grayscale(100%);
@@ -373,15 +361,6 @@ h1 {
 	font-size: 2em;
 }
 
-.infobox {
-	background-color: $secondary;
-	border-radius: 10px;
-	border: 5px solid $secondary_border;
-	color: $primary;
-	font-weight: bold;
-	padding: 0.5em 1em;
-}
-
 @keyframes resize-title {
     0% { transform : scale(0.5) translateY(-50%); }
    10% { transform : scale(2) translateY(-50%); }
@@ -403,13 +382,13 @@ h1 {
  }
 
  @keyframes glow-negative {
-     0% { box-shadow : 0 0 0px $incorrect, 0 0 0px $incorrect }
-     50% { box-shadow : 0 0 100px $incorrect, 0 0 50px $incorrect }
-     100% { box-shadow : 0 0 50px $incorrect, 0 0 25px $incorrect }
+     0% { box-shadow : 0 0 0 $incorrect, 0 0 0 $incorrect }
+     50% { box-shadow : 0 0 6em $incorrect, 0 0 3em $incorrect }
+     100% { box-shadow : 0 0 3em $incorrect, 0 0 1.5em $incorrect }
  }
  
  @keyframes glow-positive {
-     0% { box-shadow : 0 0 0px $correct, 0 0 0px $correct }
-     50% { box-shadow : 0 0 100px $correct, 0 0 50px $correct }
-     100% { box-shadow : 0 0 50px $correct, 0 0 25px $correct }
+     0% { box-shadow : 0 0 0 $correct, 0 0 0 $correct }
+     50% { box-shadow : 0 0 6em $correct, 0 0 3em $correct }
+     100% { box-shadow : 0 0 3em $correct, 0 0 1.5em $correct }
  }
