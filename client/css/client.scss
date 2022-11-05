@@ -18,13 +18,13 @@
 	}
 	input {
 		background-color : $secondary;
-		border : 2px solid $primary;
+		border : 0.15em solid $primary;
 		border-radius: 0.5em;
 		box-sizing: border-box;
 		color : $primary;
 		font-weight: bold;
 		height : 2em;
-		padding : 2px 0.5em;
+		padding : 0.1em 0.5em;
 		width : 100%;
 		font-size : 2em;
 		margin-bottom: 0.5em;
@@ -127,8 +127,8 @@ button {
 	    display: flex;
 	    justify-content: space-around;
 	    align-items: center;
-		border-bottom : 2px solid $primary;
-		text-shadow : 2px 2px 0 $primary;
+		border-bottom : 0.1em solid $primary;
+		text-shadow : 0.05em 0.05em 0 $primary;
 	}
 
 	button {

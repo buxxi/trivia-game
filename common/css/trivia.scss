@@ -57,7 +57,7 @@ button {
 		border-color : $border;
 		border-radius: 2em;
 		border-style : solid;
-		border-width: 4px;
+		border-width: 0.1em;
 		color : $font;
 		content : $text;
 		display : inline-block;
@@ -89,7 +89,7 @@ button {
 
 .message {
 	background-color : $incorrect;
-	border : 3px solid $incorrect_border;
+	border : 0.2em solid $incorrect_border;
 	color : $font;
 	padding : 0.5em;
 	margin : 0.5em 0;
@@ -117,7 +117,7 @@ button {
 		padding: 0.25em;
 		position: absolute;
 		text-align : center;
-		text-shadow: 0 0 2px black;
+		text-shadow: 0 0 0.2em black;
 		width: 1.2em;
 	}
 
