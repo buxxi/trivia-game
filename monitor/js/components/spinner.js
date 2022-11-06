@@ -134,7 +134,7 @@ export default {
         },
 
         _calculateDuration: function() {
-            let curve = this._cubicBezier(0, -1, -0.1, 1);
+            let curve = this._cubicBezier(0, -4, -0.25, 1);
             let normalizedStep = (this.totalSteps - this.stepsLeft) / this.totalSteps;
             let curvedStep = Math.max(0, curve(normalizedStep));
 
