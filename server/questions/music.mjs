@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import FormData from 'form-data';
 
 const TRACKS_BY_CATEGORY = 100;
 
