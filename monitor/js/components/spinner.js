@@ -1,7 +1,7 @@
 const MIN_SPINS = 15;
 const MAX_SPINS = 50;
-const MAX_DURATION = 50;
-const MIN_DURATION = 1000;
+const RAMPDOWN_DURATIONS = [75, 100, 125, 175, 225, 300, 400, 600, 900, 1500];
+const NORMAL_DURATION = 50;
 
 class TransitionCounter {
     constructor() {
@@ -29,7 +29,7 @@ class TransitionCounter {
 
 export default {
     data: function() { return {
-		duration: MAX_DURATION,
+		duration: NORMAL_DURATION,
         done: false,
         stepsLeft: -1,
         totalSteps: -1
@@ -38,7 +38,7 @@ export default {
     methods: {
         start: function() {
             return new Promise(async (resolve, reject) => {
-                this.totalSteps = this._calculateSteps()
+                this.totalSteps = this._calculateSteps();
                 this.stepsLeft = this.totalSteps;
 
                 while (!this.done) {
@@ -134,19 +134,11 @@ export default {
         },
 
         _calculateDuration: function() {
-            let curve = this._cubicBezier(0, -4, -0.25, 1);
-            let normalizedStep = (this.totalSteps - this.stepsLeft) / this.totalSteps;
-            let curvedStep = Math.max(0, curve(normalizedStep));
-
-            return (curvedStep * (MIN_DURATION - MAX_DURATION)) + MAX_DURATION;
-
+            if (this.stepsLeft < RAMPDOWN_DURATIONS.length) {
+                return RAMPDOWN_DURATIONS[RAMPDOWN_DURATIONS.length - this.stepsLeft];
+            }
+            return NORMAL_DURATION;
         },
 
-        _cubicBezier: function(p0, p1, p2, p3) {
-            return (t) =>   Math.pow(1 - t, 3) * p0 +
-                            3 * Math.pow(1 - t, 2) * t * p1 +
-                            3 * (1 - t) * Math.pow(t, 2) * p2 +
-                            Math.pow(t, 3) * p3;
-        }
     }
 }
