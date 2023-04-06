@@ -5,6 +5,7 @@
 /node_modules
 /.cache
 /conf/*.json
+/data
 /data/*
 /css/trivia.css
 .idea/*
