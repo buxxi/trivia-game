@@ -1,14 +1,4 @@
 import { promises as fs } from 'fs';
-import MovieQuestions from './questions/movies.mjs';
-import VideoGameQuestions from './questions/videogames.mjs';
-import CurrentGameQuestions from './questions/meta.mjs';
-import ActorQuestions from './questions/actors.mjs';
-import DrinksQuestions from './questions/drinks.mjs';
-import GeographyQuestions from './questions/geography.mjs';
-import MusicQuestions from './questions/music.mjs';
-import QuotesQuestions from './questions/quotes.mjs';
-import MathQuestions from './questions/math.mjs';
-import UnitQuestions from './questions/units.mjs';
 import GenericCategoryLoader from './questions/genericloader.mjs';
 import Cache from './cache.mjs';
 import QuestionSelector from './selector.mjs';
@@ -22,18 +12,11 @@ class Categories {
 	}
 
 	async init() {
-		this._categories = [
-			new ActorQuestions(this._config.tmdb.clientId),
-			new DrinksQuestions(),
-			new GeographyQuestions(),
-			new CurrentGameQuestions(),
-			new MovieQuestions(this._config.youtube.clientId, this._config.youtube.region, this._config.tmdb.clientId),
-			new MusicQuestions(this._config.spotify.clientId, this._config.spotify.clientSecret, this._config.spotify.whiteList),
-			new QuotesQuestions(),
-			new VideoGameQuestions(this._config.youtube.clientId, this._config.youtube.region, this._config.igdb.clientId, this._config.igdb.clientSecret),
-			new MathQuestions(),
-			new UnitQuestions()
-		]
+		this._categories = [];
+		for (let category of this._config.categories) {
+			let categoryModule = await import(`./questions/${category}.mjs`);
+			this._categories.push(new categoryModule.default(this._config));
+		}
 
 		for (let path of this._config.staticCategories) {
 			let categoryData = await fs.readFile(path);

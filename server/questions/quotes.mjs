@@ -5,7 +5,7 @@ import quotesy from 'quotesy';
 nlp.extend(adjectives);
 
 class QuotesQuestions {
-	constructor() {
+	constructor(config) {
 		this._quotes = [];
 		this._types = {
 			author : {

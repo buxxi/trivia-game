@@ -3,11 +3,11 @@ import fetch from 'node-fetch';
 const TRACKS_BY_CATEGORY = 100;
 
 class MusicQuestions {
-	constructor(spotifyClientId, spotifyClientSecret, spotifyWhiteListGenres) {
+	constructor(config) {
 		this._tracks = [];
-		this._spotifyWhiteListGenres = spotifyWhiteListGenres;
-		this._spotifyClientId = spotifyClientId;
-		this._spotifyClientSecret = spotifyClientSecret;
+		this._spotifyWhiteListGenres = config.spotify.whiteList;
+		this._spotifyClientId = config.spotify.clientId;
+		this._spotifyClientSecret = config.spotify.clientSecret;
 
 		this._types = {
 			title : {

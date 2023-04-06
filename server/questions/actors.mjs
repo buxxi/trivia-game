@@ -3,9 +3,9 @@ import fetch from 'node-fetch';
 const ACTOR_COUNT = 1000;
 
 class ActorQuestions {
-	constructor(tmdbApiKey) {
+	constructor(config) {
 		this._actors = [];
-		this._tmdbApiKey = tmdbApiKey;
+		this._tmdbApiKey = config.tmdb.clientId;
     
 		this._types = {
 			image : {

@@ -1,5 +1,5 @@
 class MathQuestions {
-    constructor() {
+    constructor(config) {
         this._expressions = [
             new ExpressionGenerator([ { from: 1, to: 20 } ], 
                 (values) => new Exponent(new Constant(values[0]), 2)

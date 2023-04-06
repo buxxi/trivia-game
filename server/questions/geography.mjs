@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 class GeographyQuestions {
-	constructor() {
+	constructor(config) {
 		this._countries = [];
 
 		this._types = {

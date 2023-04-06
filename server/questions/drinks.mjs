@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 const TOTAL_DRINKS = 50;
 
 class DrinksQuestions {
-	constructor() {
+	constructor(config) {
 		this._drinks = [];
 	
 		this._types = {

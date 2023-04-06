@@ -1,7 +1,7 @@
 import convert from 'convert-units';
 
 class UnitQuestions {
-    constructor() {    
+    constructor(config) {    
 		this._types = {
 			type : {
 				title : (correct) => "'" + this._capitalize(correct.singular) + "' is used to measure what?",

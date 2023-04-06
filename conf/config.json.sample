@@ -16,6 +16,9 @@
 		"clientId": "<clientId from Internet Game Database>",
 		"clientSecret" : "<clientSecret from Internet Game Database>"
 	},
+	"categories": [
+		"movies"
+	]
 	"staticCategories": [
 		"conf/custom.json"
 	],

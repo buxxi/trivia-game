@@ -5,14 +5,14 @@ const GAMES_PER_PLATFORM = 100;
 const PAGINATE_COUNT = 100;
 
 class VideoGameQuestions {
-	constructor(youtubeApiKey, youtubeRegion, igdbClientId, igdbClientSecret) {
+	constructor(config) {
 		this._games = [];
 		this._platforms = [];
 
-		this._igdbClientId = igdbClientId;
-		this._igdbClientSecret = igdbClientSecret;
+		this._igdbClientId = config.igdb.clientId;
+		this._igdbClientSecret = config.igdb.clientSecret;
 		this._igdbBaseURL = 'https://api.igdb.com/v4/';
-		this._youtube = new YoutubeLoader('UCzRj15rxSdLAbANoZsbyWjg', youtubeApiKey, youtubeRegion);
+		this._youtube = new YoutubeLoader('UCzRj15rxSdLAbANoZsbyWjg', config.youtube.clientId, config.youtube.region);
 
 		this._types = {
 			screenshot : {

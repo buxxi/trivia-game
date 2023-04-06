@@ -1,5 +1,5 @@
 class CurrentGameQuestions {
-	constructor() {
+	constructor(config) {
 		this._types = {
 			avatar : {
 				title : (correct) => "Which animal does " + correct.name + " have as avatar?",
