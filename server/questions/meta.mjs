@@ -38,15 +38,15 @@ class CurrentGameQuestions {
 			},
 			fastest : {
 				title : (correct) => "Who has made the fastest correct answers so far?",
-				correct : (selector, game) => this._playerWithMost(selector, game, (p) => p.stats.fastest),
-				similar : (correct, game, selector) => this._playersWithLower(correct, game, selector, (p) => p.stats.fastest),
+				correct : (selector, game) => this._playerWithLeast(selector, game, (p) => p.stats.fastest),
+				similar : (correct, game, selector) => this._playersWithHigher(correct, game, selector, (p) => p.stats.fastest),
 				format : (correct) => this._resolveName(correct),
 				attribution : "Fastest player (at that time)"
 			},
 			slowest : {
 				title : (correct) => "Who has made the slowest correct answers so far?",
-				correct : (selector, game) => this._playerWithLeast(selector, game, (p) => p.stats.slowest),
-				similar : (correct, game, selector) => this._playersWithHigher(correct, game, selector, (p) => p.stats.slowest),
+				correct : (selector, game) => this._playerWithMost(selector, game, (p) => p.stats.slowest),
+				similar : (correct, game, selector) => this._playersWithLower(correct, game, selector, (p) => p.stats.slowest),
 				format : (correct) => this._resolveName(correct),
 				attribution : "Slowest player (at that time)"
 			}

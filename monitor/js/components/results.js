@@ -47,6 +47,13 @@ export default {
 		},
 		restart : function() {
 			this.$router.push({ path: "/", query : { gameId: this.gameId } });
+		},
+		formatTime : function(time) {
+			if (!time) {
+				return "-";
+			} else {
+				return time.toFixed(2) + "s";
+			}
 		}
 	},
 	created: function() {

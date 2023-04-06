@@ -31,8 +31,6 @@ function getState(key, defaultValue) {
 const sound = new SoundController();
 const connection = new MonitorToServerConnection(new URL("..", document.location));
 
-const lobbyPlayers = [];
-
 const routes = [
   	{ 
 		path: '/',

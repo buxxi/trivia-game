@@ -52,21 +52,27 @@
 		padding-bottom: 1em;
 		position: relative;
 		top : -2em;
-		.correct {
+		span {
+			padding-right : 0.5em;
+			font-size: 1.5em;
+		}
+		.correct i {
 			color : $correct;
 			text-shadow : 0.05em 0.05em 0.1em $correct_border;
 		}
-		.failed {
+		.failed i {
 			color : $incorrect;
 			text-shadow : 0.05em 0.05em 0.1em $incorrect_border;
 		}
-		.fastest {
+		.fastest i,.slowest i {
 			color : $primary;
-			text-shadow: 0.05em 0.05em 0.1em $primary_border;
+			text-shadow : 0.05em 0.05em 0.1em $primary_border;
 		}
 	}
 	h2 {
 		font-size: 2em;
+		text-align : left;
+		margin : 0.5em 0;
 	}
 
 	& > div {

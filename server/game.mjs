@@ -22,8 +22,8 @@ class Player {
 			this.score += timeScore * this.multiplier;
 			this.multiplier = Math.min(this.multiplier + 1, maxMultiplier);
 			this.stats.correct++;
-			this.stats.fastest = Math.max(time, this.stats.fastest);
-			this.stats.slowest = Math.min(time, this.stats.slowest);
+			this.stats.fastest = Math.min(time, this.stats.fastest);
+			this.stats.slowest = Math.max(time, this.stats.slowest);
 			this.stats.mostWon = Math.max(timeScore, this.stats.mostWon);
 		} else if (timeScore < 0) {
 			this.score = Math.max(0, this.score + timeScore);
@@ -40,8 +40,8 @@ class PlayerStats {
 	constructor() {
 		this.correct = 0;
 		this.wrong = 0;
-		this.fastest = -Infinity;
-		this.slowest = Infinity;
+		this.fastest = Infinity;
+		this.slowest = -Infinity;
 		this.mostWon = 0;
 		this.mostLost = 0;
 	}
@@ -210,7 +210,6 @@ class Game {
 	async nextQuestion() {
 		let question = await this._categories.nextQuestion(this, this._enabledCategories);
 		
-		let viewParams = ['url','videoId','mp3','quote'];
 		this._checkDuplicateQuestion(question);
 		this._currentQuestion = question;
 
@@ -235,12 +234,12 @@ class Game {
 
 			if (this.hasGuessed(peerid)) {
 				let timerScore = this._timer.score(this._guesses[peerid].time);
-				let timeLeft = this._timer.timeLeft(this._guesses[peerid].time);
+				let timeUsed = this._config.time - this._timer.timeLeft(this._guesses[peerid].time);
 				
 				if (this._guesses[peerid].answer == this.correctAnswer()['key']) {
-					player._updateScore(timerScore, timeLeft, maxMultiplier);
+					player._updateScore(timerScore, timeUsed, maxMultiplier);
 				} else {
-					player._updateScore(-timerScore, timeLeft, 1);
+					player._updateScore(-timerScore, timeUsed, 1);
 				}
 			} else {
 				player._updateScore(0, 0, 1);

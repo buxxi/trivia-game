@@ -12,7 +12,7 @@ class Timer {
 		if (time == undefined) {
 			time = new Date().getTime();
 		}
-		return Math.ceil((this._end - time) / 1000);
+		return (this._end - time) / 1000;
 	}
 
 	score(time) {
@@ -29,7 +29,7 @@ class Timer {
 			this._running = true;
 
 			let cancel = setInterval(() => {
-				callback(this.timeLeft(), this._percentageLeft(), this.score()).catch((e) => {
+				callback(Math.ceil(this.timeLeft()), this._percentageLeft(), this.score()).catch((e) => {
 					this._running = false;
 					clearInterval(cancel);
 					reject(e);
