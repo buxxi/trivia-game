@@ -72,10 +72,14 @@ class QuotesQuestions {
 
 		let words = [q.adjectives(), q.verbs(), q.nouns()].filter(words => words.length > 0).flatMap(words => words.post('').map(word => word.text()));
 
-		var word = selector.fromArray(words);
+		let word = selector.fromArray(words);
+		
+		let doc = nlp(quote.text);
+		doc.match(word).replaceWith("_____");
+		let maskedQuote = doc.text();
 
 		return {
-			text : nlp(quote.text).replace(this._formatWord({ word : word }), "_____").text(),
+			text : maskedQuote,
 			author : quote.author,
 			word : word
 		}
