@@ -100,7 +100,7 @@
 				<div id="categories">
 					<h1><i class="fas fa-fw fa-list-ul"></i>Categories</h1>
 					<ul class="circle-checkboxes">
-						<li v-bind:class="{'selected' : config.categories[category.type] && category.preload.done, 'loaded' : !config.categories[category.type] && category.preload.done, 'failed' : category.preload.failed, 'static' : category.static}" v-for="category in availableCategories">
+						<li v-bind:class="{'selected' : config.categories[category.type] && category.preload.done, 'loaded' : !config.categories[category.type] && category.preload.done, 'failed' : category.preload.failed}" v-for="category in availableCategories">
 							<label v-bind:title="category.name">
 								<input type="checkbox" v-bind:id="category.type" v-model="config.categories[category.type]" v-on:change="preload(category.type)">
 								<i v-if="category.icon.indexOf('url:') == -1" v-bind:class="['fa',category.icon]"></i>

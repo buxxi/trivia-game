@@ -1,5 +1,3 @@
-import { promises as fs } from 'fs';
-import GenericCategoryLoader from './questions/genericloader.mjs';
 import Cache from './cache.mjs';
 import QuestionSelector from './selector.mjs';
 
@@ -8,7 +6,6 @@ class Categories {
 		this._categories =  [];
 		this._config = config;
 		this._jokes = [];
-		this._genericloader = new GenericCategoryLoader();
 	}
 
 	async init() {
@@ -18,11 +15,6 @@ class Categories {
 			this._categories.push(new categoryModule.default(this._config));
 		}
 
-		for (let path of this._config.staticCategories) {
-			let categoryData = await fs.readFile(path);
-			var newCategory = this._genericloader.create(path, categoryData);
-			this._categories.push(newCategory);
-		}
 		this._jokes = this._config.jokes;
 	}
 

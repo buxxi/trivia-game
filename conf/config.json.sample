@@ -18,9 +18,6 @@
 	},
 	"categories": [
 		"movies"
-	]
-	"staticCategories": [
-		"conf/custom.json"
 	],
 	"jokes": [
 		{ "icon" : "fa-comments", "name" : "Internal Jokes" }

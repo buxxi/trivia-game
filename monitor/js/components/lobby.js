@@ -171,7 +171,6 @@ class CategorySelector {
 		this.type = c.type;
 		this.name = c.name,
 		this.icon = c.icon,
-		this.static = c.static,
 		this.attribution = c.attribution;
 		this.questionCount = 0;
 		this.preload = {
