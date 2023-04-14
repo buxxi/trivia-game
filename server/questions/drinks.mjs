@@ -133,13 +133,11 @@ class DrinksQuestions {
 	}
 
 	_similarDrinks(drink, selector) {
-		return this._drinks.slice().sort((a, b) => {
-				return selector.countCommon(drink.ingredients, b.ingredients) - selector.countCommon(drink.ingredients, a.ingredients);
-		});
+		return selector.sortCompareCorrect(this._drinks, selector.countCommon, drink, e => e.ingredients);
 	}
 
 	_differentIngredients(ingredient, selector) {
-		return this._drinks.filter((d) => selector.countCommon(ingredient.drink.ingredients, d.ingredients) == 0).map((d) => ({name : selector.fromArray(d.ingredients)}));
+		return this._drinks.filter((d) => selector.hasNoneCommon(ingredient.drink, d, e => e.ingredients)).map((d) => ({name : selector.fromArray(d.ingredients)}));
 	}
 
 	_resolveGlass(correct) {

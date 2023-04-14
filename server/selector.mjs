@@ -88,24 +88,31 @@ class QuestionSelector {
 		throw new Error("None of the lists provided has enough alternatives");
 	}
 
-	sortCompareCorrect(arr, compare, correct, mapping) {
-		if (mapping == undefined) {
-			mapping = (i) => i;
-		}
+	sortCompareCorrect(arr, compare, correct, mapping = i => i) {
 		return arr.sort((a, b) => {
-			return compare(mapping(b), mapping(correct)) - compare(mapping(a), mapping(correct));
+			return compare(b, correct, mapping) - compare(a, correct, mapping);
 		});
 	}
 
-	hasAllCommon(arr1, arr2) {
-		return this.countCommon(arr1, arr2) == arr2.length;
+	hasAllCommon(o1, o2, mapping = i => i) {
+		let arr1 = mapping(o1);
+		let arr2 = mapping(o2);
+		return this.countCommon(arr1, arr2, e => e) == arr2.length;
 	}
 
-	hasNoneCommon(arr1, arr2) {
-		return this.countCommon(arr1, arr2) == 0;
+	hasNoneCommon(o1, o2, mapping = i => i) {
+		let arr1 = mapping(o1);
+		let arr2 = mapping(o2);
+		if (!arr1 || !arr2) {
+			return false;
+		}
+		return this.countCommon(arr1, arr2, e => e) == 0;
 	}
 
-	countCommon(arr1, arr2) {
+	countCommon(o1, o2, mapping = i => i) {
+		let arr1 = mapping(o1);
+		let arr2 = mapping(o2);
+
 		if (!arr1 || !arr2) {
 			return 0;
 		}
@@ -137,7 +144,10 @@ class QuestionSelector {
 		return Math.floor(Math.log(Math.max(dist, 1)));
 	}
 
-	levenshteinDistance(a, b) { //copied from and modified to use array instead: https://gist.github.com/andrei-m/982927
+	//copied from and modified to use array instead: https://gist.github.com/andrei-m/982927
+	levenshteinDistance(o1, o2, mapping = i => i) { 
+		let a = mapping(o1);
+		let b = mapping(o2);
 		if(a.length == 0 || b.length == 0) {
 			return (a || b).length;
 		}

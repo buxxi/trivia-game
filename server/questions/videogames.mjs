@@ -282,7 +282,7 @@ class VideoGameQuestions {
 		return this._games.map((g) => {
 			return {
 				game : g,
-				score : selector.levenshteinDistance(titleWords, selector.wordsFromString(g.name)) + selector.levenshteinDistance(game.tags, g.tags) + selector.dateDistance(game.release_date, g.release_date)
+				score : selector.levenshteinDistance(titleWords, selector.wordsFromString(g.name)) + selector.levenshteinDistance(game, g, e => e.tags) + selector.dateDistance(game.release_date, g.release_date)
 			};
 		}).sort((a, b) => a.score - b.score).map((node) => node.game);
 	}
