@@ -52,7 +52,6 @@ class VideoGameQuestions {
 
 	describe() {
 		return {
-			type : 'videogames',
 			name : 'Video Games',
 			icon : 'fa-gamepad',
 			attribution : [

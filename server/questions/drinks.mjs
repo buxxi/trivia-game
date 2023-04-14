@@ -39,7 +39,6 @@ class DrinksQuestions {
 
 	describe() {
 		return {
-			type : 'drinks',
 			name : 'Drinks',
 			icon : 'fa-glass-martini-alt',
 			attribution : [

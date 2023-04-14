@@ -37,7 +37,6 @@ class ActorQuestions {
 
     describe() {
 		return {
-			type : 'actors',
 			name : 'Actors',
 			icon : 'fa-user',
 			attribution : [

@@ -31,7 +31,6 @@ class MovieQuestions {
 
 	describe() {
 		return {
-			type : 'movies',
 			name : 'Movies',
 			icon : 'fa-film',
 			attribution : [

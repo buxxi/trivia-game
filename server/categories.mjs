@@ -3,23 +3,23 @@ import QuestionSelector from './selector.mjs';
 
 class Categories {
 	constructor(config) {
-		this._categories =  [];
+		this._categories = {};
 		this._config = config;
 		this._jokes = [];
 	}
 
 	async init() {
-		this._categories = [];
+		this._categories = {};
 		for (let category of this._config.categories) {
-			let categoryModule = await import(`./questions/${category}.mjs`);
-			this._categories.push(new categoryModule.default(this._config));
+			let categoryModule = await Promise.any([import(`./questions/${category}.mjs`), import(`./questions/custom/${category}.mjs`)]);
+			this._categories[category] = new categoryModule.default(this._config);
 		}
 
 		this._jokes = this._config.jokes;
 	}
 
 	available() {
-		return this._categories.map((category) => category.describe());
+		return Object.entries(this._categories).map(([key, category]) => Object.assign({ type: key}, category.describe()));
 	}
 
 	enabled(game) {
@@ -51,7 +51,7 @@ class Categories {
 		}
 
 		this._shuffleAnswers(question);
-		question.category = category.describe();
+		question.category = Object.assign({type: categoryName}, category.describe());
 		
 		return question;
 	}
@@ -61,11 +61,10 @@ class Categories {
 	}
 
 	_categoryByType(type) {
-		for (var i = 0; i < this._categories.length; i++) {
-			if (this._categories[i].describe().type == type) {
-				return this._categories[i];
-			}
+		if (type in this._categories) {
+			return this._categories[type];
 		}
+
 		throw new Error("No such category: " + type);
 	}
 

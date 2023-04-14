@@ -33,7 +33,6 @@ class MathQuestions {
 
     describe() {
 		return {
-			type : 'math',
 			name : 'Quick maths',
 			icon : 'fa-calculator',
 			attribution : []

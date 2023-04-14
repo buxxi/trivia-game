@@ -73,7 +73,6 @@ class GeographyQuestions {
 
 	describe() {
 		return {
-			type : 'geography',
 			name : 'Geography',
 			icon : 'fa-globe-europe',
 			attribution : [

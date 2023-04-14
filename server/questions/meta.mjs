@@ -55,7 +55,6 @@ class CurrentGameQuestions {
 
 	describe() {
 		return {
-			type : 'game',
 			name : 'Current Game',
 			icon : 'fa-history',
 			attribution : [

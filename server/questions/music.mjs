@@ -47,7 +47,6 @@ class MusicQuestions {
 
 	describe() {
 		return {
-			type : 'music',
 			name : 'Music',
 			icon : 'fa-guitar',
 			attribution : [

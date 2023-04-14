@@ -29,7 +29,6 @@ class QuotesQuestions {
 
 	describe() {
 		return {
-			type : 'quotes',
 			name : 'Famous Quotes',
 			icon : 'fa-quote-right',
 			attribution : [

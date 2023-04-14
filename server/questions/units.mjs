@@ -32,7 +32,6 @@ class UnitQuestions {
 
     describe() {
 		return {
-			type : 'units',
 			name : 'Units',
 			icon : 'fa-balance-scale',
 			attribution : []
