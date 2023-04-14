@@ -12,7 +12,7 @@ class Categories {
 		this._categories = {};
 		for (let category of this._config.categories) {
 			let categoryModule = await Promise.any([import(`./questions/${category}.mjs`), import(`./questions/custom/${category}.mjs`)]);
-			this._categories[category] = new categoryModule.default(this._config);
+			this._categories[category] = new categoryModule.default(this._config, category);
 		}
 
 		this._jokes = this._config.jokes;

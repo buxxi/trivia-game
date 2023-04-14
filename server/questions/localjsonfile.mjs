@@ -1,9 +1,8 @@
 import { promises as fs } from 'fs';
 
-//Will replace all usages of genericloader.mjs eventually...
 class LocalJsonFileQuestions {
-    constructor(path) {
-        this._path = path;
+    constructor(config, categoryName) {
+        this._path = config.dataPath[categoryName];
         this._data = [];
     }
 
