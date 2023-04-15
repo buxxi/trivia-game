@@ -101,15 +101,22 @@ class QuestionSelector {
 	hasAllCommon(o1, o2, mapping = i => i) {
 		let arr1 = mapping(o1);
 		let arr2 = mapping(o2);
+
+		if (!arr1 || !arr2 || arr1.length == 0 || arr2.length == 0) {
+			return false;
+		}
+
 		return this.countCommon(arr1, arr2, e => e) == arr2.length;
 	}
 
 	hasNoneCommon(o1, o2, mapping = i => i) {
 		let arr1 = mapping(o1);
 		let arr2 = mapping(o2);
-		if (!arr1 || !arr2) {
+		
+		if (!arr1 || !arr2 || arr1.length == 0 || arr2.length == 0) {
 			return false;
 		}
+
 		return this.countCommon(arr1, arr2, e => e) == 0;
 	}
 
@@ -117,7 +124,7 @@ class QuestionSelector {
 		let arr1 = mapping(o1);
 		let arr2 = mapping(o2);
 
-		if (!arr1 || !arr2) {
+		if (!arr1 || !arr2 || arr1.length == 0 || arr2.length == 0) {
 			return 0;
 		}
 
