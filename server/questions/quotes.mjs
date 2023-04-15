@@ -3,6 +3,7 @@ import adjectives from 'compromise-adjectives';
 import quotesy from 'quotesy';
 import QuestionSelector from '../selector.mjs';
 import Generators from '../generators.mjs';
+import Random from '../random.mjs';
 
 nlp.extend(adjectives);
 
@@ -47,7 +48,7 @@ class QuotesQuestions {
 	}
 
 	async nextQuestion() {
-		let type = QuestionSelector.fromWeightedObject(this._types);
+		let type = Random.fromWeightedObject(this._types);
 		let quote = type.correct();
 		let similar = type.similar(quote);
 
@@ -64,17 +65,17 @@ class QuotesQuestions {
 	}
 
 	_randomQuote() {
-		return QuestionSelector.fromArray(this._quotes);
+		return Random.fromArray(this._quotes);
 	}
 
 	_randomBlankQuote() {
-		let quote = QuestionSelector.fromArray(this._quotes);
+		let quote = Random.fromArray(this._quotes);
 
 		let q = nlp(quote.text);
 
 		let words = [q.adjectives(), q.verbs(), q.nouns()].filter(words => words.length > 0).flatMap(words => words.post('').map(word => word.text()));
 
-		let word = QuestionSelector.fromArray(words);
+		let word = Random.fromArray(words);
 		
 		let doc = nlp(quote.text);
 		doc.match(word).replaceWith("_____");

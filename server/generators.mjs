@@ -1,3 +1,5 @@
+import Random from "./random.mjs";
+
 class Generators {
 	constructor() {
 	}
@@ -6,7 +8,7 @@ class Generators {
 		let indexes = list.map((obj, i) => i);
 		function* generator() {
 			while (indexes.length > 0) {
-                let random = indexes.length * Math.random() << 0
+                let random = Random.random(indexes.length);
 				yield list[indexes.splice(random, 1)[0]];
 			}
 		}

@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import YoutubeLoader from '../youtubeloader.mjs';
 import QuestionSelector from '../selector.mjs';
 import Generators from '../generators.mjs';
+import Random from '../random.mjs';
 
 const GAMES_PER_PLATFORM = 100;
 const PAGINATE_COUNT = 100;
@@ -87,7 +88,7 @@ class VideoGameQuestions {
 	}
 
 	async nextQuestion() {
-		let type = QuestionSelector.fromWeightedObject(this._types);
+		let type = Random.fromWeightedObject(this._types);
 		let correct = type.correct();
 		let similar = type.similar(correct);
 
@@ -269,11 +270,11 @@ class VideoGameQuestions {
 	}
 
 	_randomGame() {
-		return QuestionSelector.fromArray(this._games);
+		return Random.fromArray(this._games);
 	}
 
 	_randomGameWithSong() {
-		return QuestionSelector.fromArray(this._games, g => !!g.songs);
+		return Random.fromArray(this._games, g => !!g.songs);
 	}
 
 	_similarGames(game) {
@@ -305,7 +306,7 @@ class VideoGameQuestions {
 	_screenshot(game) {
 		return {
 			player : 'image',
-			url : 'https://images.igdb.com/igdb/image/upload/t_screenshot_huge/' + QuestionSelector.fromArray(game.screenshots) + '.jpg',
+			url : 'https://images.igdb.com/igdb/image/upload/t_screenshot_huge/' + Random.fromArray(game.screenshots) + '.jpg',
 			attribution : {
 				title : "Screenshot of",
 				name : this._gameTitle(game) + " (" + this._gameYear(game) + ")",
@@ -315,7 +316,7 @@ class VideoGameQuestions {
 	}
 
 	_songVideo(game) {
-		let videoId = QuestionSelector.fromArray(game.songs);
+		let videoId = Random.fromArray(game.songs);
 
 		return {
 			player : 'youtubeaudio',

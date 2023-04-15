@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import QuestionSelector from '../selector.mjs';
 import Generators from '../generators.mjs';
+import Random from '../random.mjs';
 
 const ACTOR_COUNT = 1000;
 
@@ -54,7 +55,7 @@ class ActorQuestions {
     }
 
 	async nextQuestion() {	
-		let type = QuestionSelector.fromWeightedObject(this._types);
+		let type = Random.fromWeightedObject(this._types);
 
 		let actor = type.correct();
 		let similar = type.similar(actor);
@@ -186,15 +187,15 @@ class ActorQuestions {
 	}
 
 	_randomActorWithImage() {
-		return QuestionSelector.fromArray(this._actors, a => !!a.photo);
+		return Random.fromArray(this._actors, a => !!a.photo);
 	}
 
 	_randomActorWithBirthday() {
-		return QuestionSelector.fromArray(this._actors, a => !!a.birthday);
+		return Random.fromArray(this._actors, a => !!a.birthday);
 	}
 
 	_randomActorWithBirth() {
-		return QuestionSelector.fromArray(this._actors, a => !!this._countryOrState(a));
+		return Random.fromArray(this._actors, a => !!this._countryOrState(a));
 	}
 
 	_actorName(actor) {

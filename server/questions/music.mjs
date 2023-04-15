@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import QuestionSelector from '../selector.mjs';
 import Generators from '../generators.mjs';
+import Random from '../random.mjs';
 
 const TRACKS_BY_CATEGORY = 100;
 
@@ -79,7 +80,7 @@ class MusicQuestions {
 	}
 
 	async nextQuestion() {
-		let type = QuestionSelector.fromWeightedObject(this._types);
+		let type = Random.fromWeightedObject(this._types);
 		let track = type.correct();
 		let similar = type.similar(track);
 
@@ -286,16 +287,16 @@ class MusicQuestions {
 			}
 		});
 
-		var category = QuestionSelector.fromWeightedObject(categoryWeight).name;
+		var category = Random.fromWeightedObject(categoryWeight).name;
 
-		return QuestionSelector.fromArray(this._tracks, (track) => track.category == category);
+		return Random.fromArray(this._tracks, (track) => track.category == category);
 	}
 
 	_similarTracks(track) {
 		var allowedCategories = [track.category];
 		var differentGenreCount = Math.floor((10 - track.popularity) / 2);
 		for (var i = 0; i < differentGenreCount; i++) {
-			allowedCategories.push(QuestionSelector.fromArray(this._spotifyWhiteListGenres)); //This could possibly add the same category many times
+			allowedCategories.push(Random.fromArray(this._spotifyWhiteListGenres)); //This could possibly add the same category many times
 		}
 		
 		let result = this._tracks.filter(function(s) {

@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import QuestionSelector from '../selector.mjs';
 import Generators from '../generators.mjs';
+import Random from '../random.mjs';
 
 class GeographyQuestions {
 	constructor(config) {
@@ -92,7 +93,7 @@ class GeographyQuestions {
 	}
 
 	async nextQuestion() {
-		let type = QuestionSelector.fromWeightedObject(this._types);
+		let type = Random.fromWeightedObject(this._types);
 
 		let correct = type.correct();
 		let similar = type.similar(correct);
@@ -141,20 +142,20 @@ class GeographyQuestions {
 	}
 
 	_randomCountry() {
-		return QuestionSelector.fromArray(this._countries);
+		return Random.fromArray(this._countries);
 	}
 
 	_randomNonMicroCountry() {
-		return QuestionSelector.fromArray(this._countries, c => c.population > 50000 && c.area > 50000);
+		return Random.fromArray(this._countries, c => c.population > 50000 && c.area > 50000);
 	}
 
 
 	_randomCountryWithCapital() {
-		return QuestionSelector.fromArray(this._countries, c => !!c.capital);
+		return Random.fromArray(this._countries, c => !!c.capital);
 	}
 
 	_randomCountryWith2Neighbours() {
-		return QuestionSelector.fromArray(this._countries, c => c.neighbours.length >= 2);
+		return Random.fromArray(this._countries, c => c.neighbours.length >= 2);
 	}
 
 	_allCountries() {

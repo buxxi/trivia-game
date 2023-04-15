@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import {YoutubeLoader, YoutubeError} from '../youtubeloader.mjs';
 import QuestionSelector from '../selector.mjs';
 import Generators from '../generators.mjs';
+import Random from '../random.mjs';
 
 class MovieQuestions {
 	constructor(config) {
@@ -49,7 +50,7 @@ class MovieQuestions {
 	}
 
 	async nextQuestion() {
-		var type = QuestionSelector.fromWeightedObject(this._types);
+		var type = Random.fromWeightedObject(this._types);
 		var attribution = [];
 
 		try {
@@ -178,8 +179,8 @@ class MovieQuestions {
 	}
 
 	async _randomMovieClip(attribution) {
-		let movie = QuestionSelector.fromArray(this._movies);
-		let videoId = QuestionSelector.fromArray(movie.videos);
+		let movie = Random.fromArray(this._movies);
+		let videoId = Random.fromArray(movie.videos);
 		try {
 			await this._youtube.checkEmbedStatus(videoId);
 			attribution.push('http://www.youtube.com/watch?v=' + videoId);

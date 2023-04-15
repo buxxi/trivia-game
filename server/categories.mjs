@@ -1,5 +1,5 @@
 import Cache from './cache.mjs';
-import QuestionSelector from './selector.mjs';
+import Random from './random.mjs';
 
 class Categories {
 	constructor(config) {
@@ -27,7 +27,7 @@ class Categories {
 	}
 
 	joke() {
-		return QuestionSelector.fromArray(this._jokes);
+		return Random.fromArray(this._jokes);
 	}
 
 	preload(category, progress) {
@@ -35,7 +35,7 @@ class Categories {
 	}
 
 	async nextQuestion(game, weightedCategories) {
-		let selected = QuestionSelector.fromWeightedObject(weightedCategories);
+		let selected = Random.fromWeightedObject(weightedCategories);
 		let categoryName = Object.entries(weightedCategories).find(([key, value]) => value == selected)[0];
 		let category = this._categoryByType(categoryName);
 
@@ -81,7 +81,7 @@ class Categories {
 		if (arr.length == 0) {
 			throw new Error("Trying to splice empty array");
 		}
-		return arr.splice(QuestionSelector.random(arr.length), 1)[0];
+		return arr.splice(Random.random(arr.length), 1)[0];
 	}
 }
 

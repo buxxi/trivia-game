@@ -1,5 +1,6 @@
 import QuestionSelector from '../selector.mjs';
 import Generators from '../generators.mjs';
+import Random from '../random.mjs';
 
 class CurrentGameQuestions {
 	constructor(config) {
@@ -71,7 +72,7 @@ class CurrentGameQuestions {
 	}
 
 	async nextQuestion(game) {
-		let type = QuestionSelector.fromWeightedObject(this._types);
+		let type = Random.fromWeightedObject(this._types);
 		let correct = type.correct(game);
 		let similar = type.similar(correct, game);
 
@@ -94,7 +95,7 @@ class CurrentGameQuestions {
 	}
 
 	_randomPlayer(game) {
-		return QuestionSelector.fromArray(this._players(game));
+		return Random.fromArray(this._players(game));
 	}
 
 	_playerWithMost(game, func) {

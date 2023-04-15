@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import QuestionSelector from '../selector.mjs';
+import Random from '../random.mjs';
 
 class LocalJsonFileQuestions {
     constructor(config, categoryName) {
@@ -15,7 +16,7 @@ class LocalJsonFileQuestions {
 	}
 
     async nextQuestion() {
-		let type = QuestionSelector.fromWeightedObject(this._types());
+		let type = Random.fromWeightedObject(this._types());
 
 		let correct = type.correct(this._data);
 		let similar = type.similar(correct, this._data);

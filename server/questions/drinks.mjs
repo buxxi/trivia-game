@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import QuestionSelector from '../selector.mjs';
 import Generators from '../generators.mjs';
+import Random from '../random.mjs';
 
 const TOTAL_DRINKS = 50;
 
@@ -54,7 +55,7 @@ class DrinksQuestions {
 	}
 
 	async nextQuestion() {
-		let type = QuestionSelector.fromWeightedObject(this._types);
+		let type = Random.fromWeightedObject(this._types);
 		let correct = type.correct();
 		let similar = type.similar(correct);
 
@@ -112,8 +113,8 @@ class DrinksQuestions {
 	}
 
 	_randomIngredient() {
-		let drink = QuestionSelector.fromArray(this._drinks);
-		let ingredient = QuestionSelector.fromArray(drink.ingredients);
+		let drink = Random.fromArray(this._drinks);
+		let ingredient = Random.fromArray(drink.ingredients);
 		return {
 			name : ingredient,
 			drink : drink
@@ -121,11 +122,11 @@ class DrinksQuestions {
 	}
 
 	_randomDrinkWithGlass() {
-		return QuestionSelector.fromArray(this._drinks.filter((d) => d.glass != 'vote'));
+		return Random.fromArray(this._drinks.filter((d) => d.glass != 'vote'));
 	}
 
 	_randomDrink() {
-		return QuestionSelector.fromArray(this._drinks);
+		return Random.fromArray(this._drinks);
 	}
 
 	_drinksWithGlass(drink) {
@@ -137,7 +138,7 @@ class DrinksQuestions {
 	}
 
 	_differentIngredients(ingredient) {
-		let result = this._drinks.filter((d) => QuestionSelector.hasNoneCommon(ingredient.drink, d, e => e.ingredients)).map((d) => ({name : QuestionSelector.fromArray(d.ingredients)}));
+		let result = this._drinks.filter((d) => QuestionSelector.hasNoneCommon(ingredient.drink, d, e => e.ingredients)).map((d) => ({name : Random.fromArray(d.ingredients)}));
 		return Generators.random(result);
 	}
 

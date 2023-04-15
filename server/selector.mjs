@@ -2,17 +2,6 @@ class QuestionSelector {
 	constructor() {
 	}
 
-	static random(max) {
-		return max * Math.random() << 0;
-	}
-
-	static fromArray(arr, filter) {
-		if (filter != undefined) {
-			arr = arr.filter(filter);
-		}
-		return arr[QuestionSelector.random(arr.length)];
-	}
-
 	static arrayPercentile(arr, compare, percentile) {
 		if (percentile < -1 || percentile > 1) {
 			throw new Error("Percentile must be between -1 and 1");
@@ -27,23 +16,6 @@ class QuestionSelector {
 		} else {
 			return arr.slice(index);
 		}
-	}
-
-	static fromWeightedObject(obj) {
-		let keys = Object.keys(obj);
-		let total = QuestionSelector.sum(keys.map((k) => obj[k].weight||1));
-		let randomWeight = QuestionSelector.random(total);
-
-		var index = 0;
-		while (randomWeight > 0) {
-			randomWeight -= obj[keys[index]].weight||1;
-			index++;
-		}
-		if (randomWeight < 0) {
-			index--;
-		}
-
-		return obj[keys[index]];
 	}
 
 	static alternatives(generator, correct, toString) {

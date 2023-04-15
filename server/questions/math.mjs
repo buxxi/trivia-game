@@ -1,5 +1,6 @@
 import QuestionSelector from '../selector.mjs';
 import Generators from '../generators.mjs';
+import Random from '../random.mjs';
 
 class MathQuestions {
     constructor(config) {
@@ -48,7 +49,7 @@ class MathQuestions {
 	}
 
 	async nextQuestion() {
-        let generator = QuestionSelector.fromArray(this._expressions);
+        let generator = Random.fromArray(this._expressions);
         let values = generator.generateValues();
         let exp = generator.generate(values);
         let correct = exp.eval();
@@ -205,7 +206,7 @@ class ExpressionGenerator {
 
     generateValues() {
         return this._variables.map(v => {
-            return v.from + QuestionSelector.random(v.to - v.from + 1);
+            return v.from + Random.random(v.to - v.from + 1);
         });
     }
 
@@ -214,8 +215,8 @@ class ExpressionGenerator {
         values = values.slice();
         let result = [];
         for (let i = 0; i < 100; i++) {
-            let j = QuestionSelector.random(values.length);
-            switch (QuestionSelector.random(5)) {
+            let j = Random.random(values.length);
+            switch (Random.random(5)) {
                 case 0, 1:
                     values[j]--;
                     break;

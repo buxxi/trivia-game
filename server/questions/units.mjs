@@ -1,6 +1,7 @@
 import convert from 'convert-units';
 import QuestionSelector from '../selector.mjs';
 import Generators from '../generators.mjs';
+import Random from '../random.mjs';
 
 class UnitQuestions {
     constructor(config) {    
@@ -46,7 +47,7 @@ class UnitQuestions {
     }
 
 	async nextQuestion() {	
-		let type = QuestionSelector.fromWeightedObject(this._types);
+		let type = Random.fromWeightedObject(this._types);
 
 		let unit = type.correct();
 		let similar = type.similar(unit);
@@ -64,7 +65,7 @@ class UnitQuestions {
 	}
 
 	_randomUnit() {
-		return QuestionSelector.fromArray(this._allUnits());
+		return Random.fromArray(this._allUnits());
 	}
 
 	_smallerUnits(correct) {
