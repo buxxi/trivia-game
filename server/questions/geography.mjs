@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import QuestionSelector from '../selector.mjs';
 
 class GeographyQuestions {
 	constructor(config) {
@@ -8,7 +9,7 @@ class GeographyQuestions {
 			flags : {
 				title : (correct) => "Which country does this flag belong to?",
 				format : (correct) => this._formatName(correct),
-				correct : (selector) => this._randomCountry(selector),
+				correct : () => this._randomCountry(),
 				similar : (correct) => this._similarCountries(correct),
 				load : (correct) => this._loadFlag(correct),
 				weight : 30,
@@ -17,7 +18,7 @@ class GeographyQuestions {
 			shape : {
 				title : (correct) => "Which country has this shape?",
 				format : (correct) => this._formatName(correct),
-				correct : (selector) => this._randomCountry(selector),
+				correct : () => this._randomCountry(),
 				similar : (correct) => this._similarCountries(correct),
 				load : (correct) => this._loadMap(correct),
 				weight : 15,
@@ -26,7 +27,7 @@ class GeographyQuestions {
 			highpopulation : {
 				title : (correct) => "Which of these countries has the largest population?",
 				format : (correct) => this._formatName(correct),
-				correct : (selector) => this._randomNonMicroCountry(selector),
+				correct : () => this._randomNonMicroCountry(),
 				similar : (correct) => this._similarPopulationCountries(correct),
 				load : (correct) => this._loadBlank(),
 				weight : 10,
@@ -35,7 +36,7 @@ class GeographyQuestions {
 			capital : {
 				title : (correct) => "In which country is " + correct.capital + " the capital?",
 				format : (correct) => this._formatName(correct),
-				correct : (selector) => this._randomCountryWithCapital(selector),
+				correct : () => this._randomCountryWithCapital(),
 				similar : (correct) => this._similarCountries(correct),
 				load : (correct) => this._loadBlank(),
 				weight : 15,
@@ -44,7 +45,7 @@ class GeographyQuestions {
 			borders : {
 				title : (correct) => "Which country has borders to all these countries?",
 				format : (correct) => this._formatName(correct),
-				correct : (selector) => this._randomCountryWith2Neighbours(selector),
+				correct : () => this._randomCountryWith2Neighbours(),
 				similar : (correct) => this._similarNeighbouringCountries(correct),
 				load : (correct) => this._loadNeighbours(correct),
 				weight : 10,
@@ -53,7 +54,7 @@ class GeographyQuestions {
 			region : {
 				title : (correct) => "Where is " + correct.name + " located?",
 				format : (correct) => this._formatRegion(correct),
-				correct : (selector) => this._randomCountry(selector),
+				correct : () => this._randomCountry(),
 				similar : (correct) => this._allCountries(correct),
 				load : (correct) => this._loadBlank(),
 				weight : 10,
@@ -62,7 +63,7 @@ class GeographyQuestions {
 			area : {
 				title : (correct) => "Which of these countries has the largest land area?",
 				format : (correct) => this._formatName(correct),
-				correct : (selector) => this._randomNonMicroCountry(selector),
+				correct : () => this._randomNonMicroCountry(),
 				similar : (correct) => this._similarAreaCountries(correct),
 				load : (correct) => this._loadBlank(),
 				weight : 10,
@@ -89,10 +90,10 @@ class GeographyQuestions {
 		return this._countQuestions();
 	}
 
-	async nextQuestion(selector) {
-		var type = selector.fromWeightedObject(this._types);
+	async nextQuestion() {
+		var type = QuestionSelector.fromWeightedObject(this._types);
 
-		var correct = type.correct(selector);
+		var correct = type.correct();
 		var similar = type.similar(correct);
 		var title = type.title(correct);
 		var view = type.load(correct);
@@ -104,7 +105,7 @@ class GeographyQuestions {
 
 		return ({
 			text : title,
-			answers : selector.alternatives(similar, correct, type.format, this._types['region'] == type ? arr => selector.splice(arr) : arr => selector.first(arr)),
+			answers : QuestionSelector.alternatives(similar, correct, type.format, this._types['region'] == type ? QuestionSelector.splice : QuestionSelector.first),
 			correct : type.format(correct),
 			view : view
 		});
@@ -136,21 +137,21 @@ class GeographyQuestions {
 		});
 	}
 
-	_randomCountry(selector) {
-		return selector.fromArray(this._countries);
+	_randomCountry() {
+		return QuestionSelector.fromArray(this._countries);
 	}
 
-	_randomNonMicroCountry(selector) {
-		return selector.fromArray(this._countries, c => c.population > 50000 && c.area > 50000);
+	_randomNonMicroCountry() {
+		return QuestionSelector.fromArray(this._countries, c => c.population > 50000 && c.area > 50000);
 	}
 
 
-	_randomCountryWithCapital(selector) {
-		return selector.fromArray(this._countries, c => !!c.capital);
+	_randomCountryWithCapital() {
+		return QuestionSelector.fromArray(this._countries, c => !!c.capital);
 	}
 
-	_randomCountryWith2Neighbours(selector) {
-		return selector.fromArray(this._countries, c => c.neighbours.length >= 2);
+	_randomCountryWith2Neighbours() {
+		return QuestionSelector.fromArray(this._countries, c => c.neighbours.length >= 2);
 	}
 
 	_allCountries() {

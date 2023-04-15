@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import QuestionSelector from '../selector.mjs';
 
 class LocalJsonFileQuestions {
     constructor(config, categoryName) {
@@ -13,20 +14,20 @@ class LocalJsonFileQuestions {
 		return this._countQuestions();
 	}
 
-    async nextQuestion(selector) {
-		let type = selector.fromWeightedObject(this._types());
+    async nextQuestion() {
+		let type = QuestionSelector.fromWeightedObject(this._types());
 
-		let correct = type.correct(this._data, selector);
-		let similar = type.similar(correct, this._data, selector);
+		let correct = type.correct(this._data, QuestionSelector);
+		let similar = type.similar(correct, this._data, QuestionSelector);
 		let title = type.title(correct);
 		let view = type.load(correct);
 		let format = (answer) => `${type.format(answer)}`;
 		let sorted = !!type.sorted;
-		let answerSelector = sorted ? (arr) => selector.first(arr) : (arr) => selector.splice(arr);
+		let answerSelector = sorted ? QuestionSelector.first : QuestionSelector.splice;
 
 		return ({
 			text : title,
-			answers : selector.alternatives(similar, correct, format, answerSelector),
+			answers : QuestionSelector.alternatives(similar, correct, format, answerSelector),
 			correct : format(correct),
 			view : view
 		});

@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import QuestionSelector from '../selector.mjs';
 
 const TOTAL_DRINKS = 50;
 
@@ -10,7 +11,7 @@ class DrinksQuestions {
 			all : {
 				title : (correct) => "Which drink do you get if you mix the following ingredients?",
 				correct : (correct) => this._randomDrink(correct),
-				similar : (correct, selector) => this._similarDrinks(correct, selector),
+				similar : (correct) => this._similarDrinks(correct),
 				load : (correct) => this._loadList(correct),
 				format : (correct) => this._resolveName(correct),
 				randomAnswer : false,
@@ -19,7 +20,7 @@ class DrinksQuestions {
 			single : {
 				title : (correct) => "Which of these ingredients do you need to make a " + correct.drink.name + "?",
 				correct : (correct) => this._randomIngredient(correct),
-				similar : (correct, selector) => this._differentIngredients(correct, selector),
+				similar : (correct) => this._differentIngredients(correct),
 				load : (correct) => this._loadBlankIngredient(correct),
 				format : (correct) =>this._resolveName(correct),
 				randomAnswer : true,
@@ -28,7 +29,7 @@ class DrinksQuestions {
 			glass : {
 				title : (correct) => "Which kind of glass should you serve a " + correct.name + " in?",
 				correct : (correct) => this._randomDrinkWithGlass(correct),
-				similar : (correct, selector) => this._drinksWithGlass(correct, selector),
+				similar : (correct) => this._drinksWithGlass(correct),
 				load : (correct) => this._loadBlankDrink(correct),
 				format : (correct) => this._resolveGlass(correct),
 				randomAnswer : true,
@@ -54,13 +55,13 @@ class DrinksQuestions {
 		return this._countQuestions();
 	}
 
-	async nextQuestion(selector) {
-		let type = selector.fromWeightedObject(this._types);
-		let correct = type.correct(selector);
+	async nextQuestion() {
+		let type = QuestionSelector.fromWeightedObject(this._types);
+		let correct = type.correct();
 
 		return ({
 			text : type.title(correct),
-			answers : selector.alternatives(type.similar(correct, selector), correct, type.format, type.randomAnswer ? arr => selector.splice(arr) : arr => selector.first(arr)),
+			answers : QuestionSelector.alternatives(type.similar(correct), correct, type.format, type.randomAnswer ? QuestionSelector.splice : QuestionSelector.first),
 			correct : type.format(correct),
 			view : type.load(correct)
 		});
@@ -111,33 +112,33 @@ class DrinksQuestions {
 		return response.json();
 	}
 
-	_randomIngredient(selector) {
-		let drink = selector.fromArray(this._drinks);
-		let ingredient = selector.fromArray(drink.ingredients);
+	_randomIngredient() {
+		let drink = QuestionSelector.fromArray(this._drinks);
+		let ingredient = QuestionSelector.fromArray(drink.ingredients);
 		return {
 			name : ingredient,
 			drink : drink
 		}
 	}
 
-	_randomDrinkWithGlass(selector) {
-		return selector.fromArray(this._drinks.filter((d) => d.glass != 'vote'));
+	_randomDrinkWithGlass() {
+		return QuestionSelector.fromArray(this._drinks.filter((d) => d.glass != 'vote'));
 	}
 
-	_randomDrink(selector) {
-		return selector.fromArray(this._drinks);
+	_randomDrink() {
+		return QuestionSelector.fromArray(this._drinks);
 	}
 
-	_drinksWithGlass(drink, selector) {
+	_drinksWithGlass(drink) {
 		return this._drinks.filter((d) => d.glass != 'vote');
 	}
 
-	_similarDrinks(drink, selector) {
-		return selector.sortCompareCorrect(this._drinks, selector.countCommon, drink, e => e.ingredients);
+	_similarDrinks(drink) {
+		return QuestionSelector.sortCompareCorrect(this._drinks, QuestionSelector.countCommon, drink, e => e.ingredients);
 	}
 
-	_differentIngredients(ingredient, selector) {
-		return this._drinks.filter((d) => selector.hasNoneCommon(ingredient.drink, d, e => e.ingredients)).map((d) => ({name : selector.fromArray(d.ingredients)}));
+	_differentIngredients(ingredient) {
+		return this._drinks.filter((d) => QuestionSelector.hasNoneCommon(ingredient.drink, d, e => e.ingredients)).map((d) => ({name : QuestionSelector.fromArray(d.ingredients)}));
 	}
 
 	_resolveGlass(correct) {

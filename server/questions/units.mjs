@@ -1,11 +1,12 @@
 import convert from 'convert-units';
+import QuestionSelector from '../selector.mjs';
 
 class UnitQuestions {
     constructor(config) {    
 		this._types = {
 			type : {
 				title : (correct) => "'" + this._capitalize(correct.singular) + "' is used to measure what?",
-				correct : (selector) => this._randomUnit(selector),
+				correct : () => this._randomUnit(),
 				similar : (correct) => this._allUnits(),
 				format : (correct) => this._measure(correct),
 				view : (correct) => this._attribution(correct),
@@ -13,7 +14,7 @@ class UnitQuestions {
 			},
 			largest : {
 				title : (correct) => "Which one of these is the largest?",
-				correct : (selector) => this._randomUnit(selector),
+				correct : () => this._randomUnit(),
 				similar : (correct) => this._smallerUnits(correct),
 				format : (correct) => this._formatValueWithUnit(correct),
 				view : (correct) => this._attribution(correct),
@@ -21,7 +22,7 @@ class UnitQuestions {
 			},
 			smallest : {
 				title : (correct) => "Which one of these is the smallest?",
-				correct : (selector) => this._randomUnit(selector),
+				correct : () => this._randomUnit(),
 				similar : (correct) => this._largerUnits(correct),
 				format : (correct) => this._formatValueWithUnit(correct),
 				view : (correct) => this._attribution(correct),
@@ -43,15 +44,15 @@ class UnitQuestions {
 		return this._countQuestions();
     }
 
-	async nextQuestion(selector) {	
-		let type = selector.fromWeightedObject(this._types);
+	async nextQuestion() {	
+		let type = QuestionSelector.fromWeightedObject(this._types);
 
-		let unit = type.correct(selector);
+		let unit = type.correct();
 		let similar = type.similar(unit);
 
 		return ({
 			text : type.title(unit),
-			answers : selector.alternatives(similar, unit, type.format, (arr) => selector.splice(arr)),
+			answers : QuestionSelector.alternatives(similar, unit, type.format, QuestionSelector.splice),
 			correct : type.format(unit),
 			view : type.view(unit)
 		});
@@ -61,8 +62,8 @@ class UnitQuestions {
 		return Object.keys(this._types).length * this._allUnits().length;
 	}
 
-	_randomUnit(selector) {
-		return selector.fromArray(this._allUnits());
+	_randomUnit() {
+		return QuestionSelector.fromArray(this._allUnits());
 	}
 
 	_smallerUnits(correct) {

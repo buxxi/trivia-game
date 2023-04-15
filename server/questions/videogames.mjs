@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import YoutubeLoader from '../youtubeloader.mjs';
+import QuestionSelector from '../selector.mjs';
 
 const GAMES_PER_PLATFORM = 100;
 const PAGINATE_COUNT = 100;
@@ -17,33 +18,33 @@ class VideoGameQuestions {
 		this._types = {
 			screenshot : {
 				title : (correct) => "Which game is this a screenshot of?",
-				correct : (selector) => this._randomGame(selector),
-				similar : (correct, selector) => this._similarGames(correct, selector),
-				view : (correct, selector) => this._screenshot(correct, selector),
+				correct : () => this._randomGame(),
+				similar : (correct) => this._similarGames(correct),
+				view : (correct) => this._screenshot(correct),
 				format : (correct) => this._gameTitle(correct),
 				weight : 45
 			},
 			year : {
 				title : (correct) => "In which year was '" + correct.name + "' first released?",
-				correct : (selector) => this._randomGame(selector),
-				similar : (correct, selector) => this._similarGameYears(correct, selector),
-				view : (correct, selector) => this._blank(correct, selector),
+				correct : () => this._randomGame(),
+				similar : (correct) => this._similarGameYears(correct),
+				view : (correct) => this._blank(correct),
 				format : (correct) => this._gameYear(correct),
 				weight : 10
 			},
 			platform : {
 				title : (correct) => "'" + correct.name + "' was released to one of these platforms, which one?",
-				correct : (selector) => this._randomGame(selector),
-				similar : (correct, selector) => this._similarPlatforms(correct, selector),
-				view : (correct, selector) => this._blank(correct, selector),
+				correct : () => this._randomGame(),
+				similar : (correct) => this._similarPlatforms(correct),
+				view : (correct) => this._blank(correct),
 				format : (correct) => this._gamePlatform(correct),
 				weight : 10
 			},
 			song : {
 				title : (correct) => "From which games soundtrack is this song?",
-				correct : (selector) => this._randomGameWithSong(selector),
-				similar : (correct, selector) => this._similarGames(correct, selector),
-				view : (correct, selector) => this._songVideo(correct, selector),
+				correct : () => this._randomGameWithSong(),
+				similar : (correct) => this._similarGames(correct),
+				view : (correct) => this._songVideo(correct),
 				format : (correct) => this._gameTitle(correct),
 				weight : 25
 			}
@@ -84,24 +85,21 @@ class VideoGameQuestions {
 		return this._countQuestions();
 	}
 
-	async nextQuestion(selector) {
-		let type = selector.fromWeightedObject(this._types);
-		let correct = type.correct(selector);
-		let similar = type.similar(correct, selector);
+	async nextQuestion() {
+		let type = QuestionSelector.fromWeightedObject(this._types);
+		let correct = type.correct();
+		let similar = type.similar(correct);
 
 		return ({
 			text : type.title(correct),
-			answers : selector.alternatives(similar, correct, type.format, (arr) => selector.first(arr)),
+			answers : QuestionSelector.alternatives(similar, correct, type.format, QuestionSelector.first),
 			correct : type.format(correct),
-			view : type.view(correct, selector)
+			view : type.view(correct)
 		});
 	}
 
 	_countQuestions() {
-		let countSelector = {
-			fromArray : (arr) => { return arr.length; }
-		};
-		return Object.keys(this._types).map((t) => this._types[t].correct(countSelector)).reduce((a, b) => { return a + b; }, 0);
+		return Object.keys(this._types).length * this._games.length;
 	}
 
 	async _loadTwitchAccessToken() {
@@ -269,31 +267,31 @@ class VideoGameQuestions {
 		return str.toLowerCase().replace(x, '');
 	}
 
-	_randomGame(selector) {
-		return selector.fromArray(this._games);
+	_randomGame() {
+		return QuestionSelector.fromArray(this._games);
 	}
 
-	_randomGameWithSong(selector) {
-		return selector.fromArray(this._games, g => !!g.songs);
+	_randomGameWithSong() {
+		return QuestionSelector.fromArray(this._games, g => !!g.songs);
 	}
 
-	_similarGames(game, selector) {
-		var titleWords = selector.wordsFromString(game.name);
+	_similarGames(game) {
+		var titleWords = QuestionSelector.wordsFromString(game.name);
 		return this._games.map((g) => {
 			return {
 				game : g,
-				score : selector.levenshteinDistance(titleWords, selector.wordsFromString(g.name)) + selector.levenshteinDistance(game, g, e => e.tags) + selector.dateDistance(game.release_date, g.release_date)
+				score : QuestionSelector.levenshteinDistance(titleWords, QuestionSelector.wordsFromString(g.name)) + QuestionSelector.levenshteinDistance(game, g, e => e.tags) + QuestionSelector.dateDistance(game.release_date, g.release_date)
 			};
 		}).sort((a, b) => a.score - b.score).map((node) => node.game);
 	}
 
-	_similarGameYears(game, selector) {
-		return selector.yearAlternatives(this._gameYear(game)).map((year) => ({ release_date : year }));
+	_similarGameYears(game) {
+		return QuestionSelector.yearAlternatives(this._gameYear(game)).map((year) => ({ release_date : year }));
 	}
 
-	_similarPlatforms(game, selector) {
+	_similarPlatforms(game) {
 		function dateDifference(a, b) {
-			return selector.dateDistance(a.release_date, game.release_date) - selector.dateDistance(b.release_date, game.release_date);
+			return QuestionSelector.dateDistance(a.release_date, game.release_date) - QuestionSelector.dateDistance(b.release_date, game.release_date);
 		}
 
 		var unused = Object.keys(this._platforms).map((p) => this._platforms[p]).filter((p) => game.platforms.indexOf(p) == -1).sort(dateDifference);
@@ -301,10 +299,10 @@ class VideoGameQuestions {
 		return unused.map(platform => ({ 'platforms' : [platform.name] }));
 	}
 
-	_screenshot(game, selector) {
+	_screenshot(game) {
 		return {
 			player : 'image',
-			url : 'https://images.igdb.com/igdb/image/upload/t_screenshot_huge/' + selector.fromArray(game.screenshots) + '.jpg',
+			url : 'https://images.igdb.com/igdb/image/upload/t_screenshot_huge/' + QuestionSelector.fromArray(game.screenshots) + '.jpg',
 			attribution : {
 				title : "Screenshot of",
 				name : this._gameTitle(game) + " (" + this._gameYear(game) + ")",
@@ -313,8 +311,8 @@ class VideoGameQuestions {
 		}
 	}
 
-	_songVideo(game, selector) {
-		let videoId = selector.fromArray(game.songs);
+	_songVideo(game) {
+		let videoId = QuestionSelector.fromArray(game.songs);
 
 		return {
 			player : 'youtubeaudio',
@@ -327,7 +325,7 @@ class VideoGameQuestions {
 		}
 	}
 
-	_blank(game, selector) {
+	_blank(game) {
 		return {
 			attribution : {
 				title : "Game",

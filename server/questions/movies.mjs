@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import {YoutubeLoader, YoutubeError} from '../youtubeloader.mjs';
+import QuestionSelector from '../selector.mjs';
 
 class MovieQuestions {
 	constructor(config) {
@@ -10,8 +11,8 @@ class MovieQuestions {
 		this._types = {
 			title : {
 				title : (correct) => "Which movie is this from?",
-				correct : (selector, attribution) => this._randomMovieClip(selector, attribution),
-				similar : (correct, attribution, selector) => this._loadSimilarMovies(correct, attribution, selector),
+				correct : (attribution) => this._randomMovieClip(attribution),
+				similar : (correct, attribution) => this._loadSimilarMovies(correct, attribution),
 				format : (correct) => this._movieTitle(correct),
 				view : (correct, attribution) => this._viewMovieClip(correct, attribution),
 				count : () => this._countUniqueClips(),
@@ -19,8 +20,8 @@ class MovieQuestions {
 			},
 			year : {
 				title : (correct) => "Which year is this movie from?",
-				correct : (selector, attribution) => this._randomMovieClip(selector, attribution),
-				similar : (correct, attribution, selector) => this._loadSimilarYears(correct, attribution, selector),
+				correct : (attribution) => this._randomMovieClip(attribution),
+				similar : (correct, attribution) => this._loadSimilarYears(correct, attribution),
 				format : (correct) => this._movieYear(correct),
 				view : (correct, attribution) => this._viewMovieClip(correct, attribution),
 				count : () => this._countUniqueClips(),
@@ -46,23 +47,23 @@ class MovieQuestions {
 		return this._countQuestions();
 	}
 
-	async nextQuestion(selector) {
-		var type = selector.fromWeightedObject(this._types);
+	async nextQuestion() {
+		var type = QuestionSelector.fromWeightedObject(this._types);
 		var attribution = [];
 
 		try {
-			var correct = await type.correct(selector, attribution);
-			var similar = await type.similar(correct, attribution, selector);
+			var correct = await type.correct(attribution);
+			var similar = await type.similar(correct, attribution);
 			
 			return ({
 				text : type.title(correct),
-				answers : selector.alternatives(similar, correct, type.format, selector.first),
+				answers : QuestionSelector.alternatives(similar, correct, type.format, QuestionSelector.first),
 				correct : type.format(correct),
 				view : type.view(correct, attribution)
 			});
 		} catch(err) {
 			if (err instanceof YoutubeError) {
-				return this.nextQuestion(selector);
+				return this.nextQuestion();
 			} else {
 				throw err;
 			}
@@ -142,7 +143,7 @@ class MovieQuestions {
 		});
 	}
 
-	async _loadSimilarMovies(movie, attribution, selector) {
+	async _loadSimilarMovies(movie, attribution) {
 		try {
 			let movieResponse = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${this._tmdbApiKey}&query=${movie.title}&year=${movie.year}`);
 			let movieData = await this._toJSON(movieResponse);
@@ -171,13 +172,13 @@ class MovieQuestions {
 		}
 	}
 
-	async _loadSimilarYears(movie, attribute, selector) {
-		return selector.yearAlternatives(movie.year).map((year) => { return { year : year }; });
+	async _loadSimilarYears(movie, attribute) {
+		return QuestionSelector.yearAlternatives(movie.year).map((year) => { return { year : year }; });
 	}
 
-	async _randomMovieClip(selector, attribution) {
-		let movie = selector.fromArray(this._movies);
-		let videoId = selector.fromArray(movie.videos);
+	async _randomMovieClip(attribution) {
+		let movie = QuestionSelector.fromArray(this._movies);
+		let videoId = QuestionSelector.fromArray(movie.videos);
 		try {
 			await this._youtube.checkEmbedStatus(videoId);
 			attribution.push('http://www.youtube.com/watch?v=' + videoId);

@@ -1,6 +1,7 @@
 import nlp from 'compromise';
 import adjectives from 'compromise-adjectives';
 import quotesy from 'quotesy';
+import QuestionSelector from '../selector.mjs';
 
 nlp.extend(adjectives);
 
@@ -11,7 +12,7 @@ class QuotesQuestions {
 			author : {
 				title : (correct) => "Who said this famous quote?",
 				correct : (correct) => this._randomQuote(correct),
-				similar : (correct, selector) => this._similarAuthors(correct, selector),
+				similar : (correct) => this._similarAuthors(correct),
 				load : (correct) => this._loadQuote(correct),
 				format : (correct) => this._resolveAuthor(correct),
 				weight : 50
@@ -19,7 +20,7 @@ class QuotesQuestions {
 			word : {
 				title : (correct) => "Which word is missing from this quote?",
 				correct : (correct) => this._randomBlankQuote(correct),
-				similar : (correct, selector) => this._similarWords(correct, selector),
+				similar : (correct) => this._similarWords(correct),
 				load : (correct) => this._loadQuote(correct),
 				format : (correct) => this._formatWord(correct),
 				weight : 50
@@ -44,13 +45,13 @@ class QuotesQuestions {
 		return this._countQuestions();
 	}
 
-	async nextQuestion(selector) {
-		let type = selector.fromWeightedObject(this._types);
-		let quote = type.correct(selector);
+	async nextQuestion() {
+		let type = QuestionSelector.fromWeightedObject(this._types);
+		let quote = type.correct();
 
 		return ({
 			text : type.title(quote),
-			answers : selector.alternatives(type.similar(quote, selector), quote, type.format, (arr) => selector.splice(arr)),
+			answers : QuestionSelector.alternatives(type.similar(quote), quote, type.format, QuestionSelector.splice),
 			correct : type.format(quote),
 			view : type.load(quote)
 		});
@@ -60,18 +61,18 @@ class QuotesQuestions {
 		return this._quotes.length * Object.keys(this._types).length;
 	}
 
-	_randomQuote(selector) {
-		return selector.fromArray(this._quotes);
+	_randomQuote() {
+		return QuestionSelector.fromArray(this._quotes);
 	}
 
-	_randomBlankQuote(selector) {
-		let quote = selector.fromArray(this._quotes);
+	_randomBlankQuote() {
+		let quote = QuestionSelector.fromArray(this._quotes);
 
 		let q = nlp(quote.text);
 
 		let words = [q.adjectives(), q.verbs(), q.nouns()].filter(words => words.length > 0).flatMap(words => words.post('').map(word => word.text()));
 
-		let word = selector.fromArray(words);
+		let word = QuestionSelector.fromArray(words);
 		
 		let doc = nlp(quote.text);
 		doc.match(word).replaceWith("_____");
@@ -84,11 +85,11 @@ class QuotesQuestions {
 		}
 	}
 
-	_similarAuthors(quote, selector) {
+	_similarAuthors(quote) {
 		return this._quotes;
 	}
 
-	_similarWords(quote, selector) {
+	_similarWords(quote) {
 		let q = nlp(quote.word);
 		
 		let verbs = q.verbs();
@@ -97,7 +98,7 @@ class QuotesQuestions {
 
 		let otherQuotes = "";
 		for (var i = 0; i < 50; i++) {
-			otherQuotes += this._randomQuote(selector).text + ".\n";
+			otherQuotes += this._randomQuote().text + ".\n";
 		}
 
 		if (verbs.wordCount() > 0) {

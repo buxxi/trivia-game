@@ -1,3 +1,5 @@
+import QuestionSelector from '../selector.mjs';
+
 class MathQuestions {
     constructor(config) {
         this._expressions = [
@@ -44,14 +46,14 @@ class MathQuestions {
 		return this._countQuestions();
 	}
 
-	async nextQuestion(selector) {
-        let generator = selector.fromArray(this._expressions);
-        let values = generator.generateValues(selector);
+	async nextQuestion() {
+        let generator = QuestionSelector.fromArray(this._expressions);
+        let values = generator.generateValues();
         let exp = generator.generate(values);
         let correct = exp.eval();
 		return ({
 			text : "Calculate the following",
-			answers : selector.alternatives(generator.alternativeValues(values, selector), correct, (e) => this._format(e), (arr) => selector.first(arr)),
+			answers : QuestionSelector.alternatives(generator.alternativeValues(values), correct, (e) => this._format(e), QuestionSelector.first),
 			correct : this._format(correct),
 			view : {
                 player : 'quote',
@@ -198,18 +200,18 @@ class ExpressionGenerator {
         }).reduce((a, b) => a * b, 1);
     }
 
-    generateValues(selector) {
+    generateValues() {
         return this._variables.map(v => {
-            return v.from + selector.random(v.to - v.from + 1);
+            return v.from + QuestionSelector.random(v.to - v.from + 1);
         });
     }
 
-    alternativeValues(values, selector) {
+    alternativeValues(values) {
         values = values.slice();
         let result = [];
         for (let i = 0; i < 100; i++) {
-            let j = selector.random(values.length);
-            switch (selector.random(5)) {
+            let j = QuestionSelector.random(values.length);
+            switch (QuestionSelector.random(5)) {
                 case 0, 1:
                     values[j]--;
                     break;

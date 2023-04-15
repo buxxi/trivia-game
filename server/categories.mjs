@@ -27,8 +27,7 @@ class Categories {
 	}
 
 	joke() {
-		var selector = new QuestionSelector();
-		return selector.fromArray(this._jokes);
+		return QuestionSelector.fromArray(this._jokes);
 	}
 
 	preload(category, progress) {
@@ -36,13 +35,11 @@ class Categories {
 	}
 
 	async nextQuestion(game, weightedCategories) {
-		let selector = new QuestionSelector();
-
-		let selected = selector.fromWeightedObject(weightedCategories);
+		let selected = QuestionSelector.fromWeightedObject(weightedCategories);
 		let categoryName = Object.entries(weightedCategories).find(([key, value]) => value == selected)[0];
 		let category = this._categoryByType(categoryName);
 
-		let question = await category.nextQuestion(selector, game);
+		let question = await category.nextQuestion(game);
 		if (!question.correct) {
 			throw new Error("Got empty correct answer for " + question.text);
 		}
@@ -69,13 +66,11 @@ class Categories {
 	}
 
 	_shuffleAnswers(question) {
-		let selector = new QuestionSelector();
-
 		let answers = {
-			A : selector.splice(question.answers),
-			B : selector.splice(question.answers),
-			C : selector.splice(question.answers),
-			D : selector.splice(question.answers),
+			A : QuestionSelector.splice(question.answers),
+			B : QuestionSelector.splice(question.answers),
+			C : QuestionSelector.splice(question.answers),
+			D : QuestionSelector.splice(question.answers),
 		};
 
 		question.answers = answers;

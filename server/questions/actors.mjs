@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import QuestionSelector from '../selector.mjs';
 
 const ACTOR_COUNT = 1000;
 
@@ -10,7 +11,7 @@ class ActorQuestions {
 		this._types = {
 			image : {
 				title : (correct) => "Who is this " + (correct.male ? "actor" : "actress") + "?",
-				correct : (selector) => this._randomActorWithImage(selector),
+				correct : () => this._randomActorWithImage(),
 				similar : (correct) => this._similarActors(correct),
 				format : (correct) => this._actorName(correct),
 				view : (correct) => this._viewActorImage(correct),
@@ -18,7 +19,7 @@ class ActorQuestions {
 			},
 			age : {
 				title : (correct) => "Who is oldest of these " + (correct.male ? "actors" : "actresses") + "?",
-				correct : (selector) => this._randomActorWithBirthday(selector),
+				correct : () => this._randomActorWithBirthday(),
 				similar : (correct) => this._youngerActors(correct),
 				format : (correct) => this._actorName(correct),
 				view : (correct) => this._viewBlank(correct),
@@ -26,7 +27,7 @@ class ActorQuestions {
 			},
 			born : {
 				title : (correct) => "Where was " + correct.name + " born?",
-				correct : (selector) => this._randomActorWithBirth(selector),
+				correct : () => this._randomActorWithBirth(),
 				similar : (correct) => this._similarActors(correct),
 				format : (correct) => this._countryOrState(correct),
 				view : (correct) => this._viewBlank(correct),
@@ -51,15 +52,15 @@ class ActorQuestions {
 		return this._countQuestions();
     }
 
-	async nextQuestion(selector) {	
-		let type = selector.fromWeightedObject(this._types);
+	async nextQuestion() {	
+		let type = QuestionSelector.fromWeightedObject(this._types);
 
-		let actor = type.correct(selector);
+		let actor = type.correct();
 		let similar = type.similar(actor);
 
 		return ({
 			text : type.title(actor),
-			answers : selector.alternatives(similar, actor, type.format, (arr) => selector.splice(arr)),
+			answers : QuestionSelector.alternatives(similar, actor, type.format, QuestionSelector.splice),
 			correct : type.format(actor),
 			view : type.view(actor)
 		});
@@ -181,16 +182,16 @@ class ActorQuestions {
 		return this._actors.filter((a) => sameGender(a, actor) && younger(this._birthYear(a), this._birthYear(actor)));	
 	}
 
-	_randomActorWithImage(selector) {
-		return selector.fromArray(this._actors, a => !!a.photo);
+	_randomActorWithImage() {
+		return QuestionSelector.fromArray(this._actors, a => !!a.photo);
 	}
 
-	_randomActorWithBirthday(selector) {
-		return selector.fromArray(this._actors, a => !!a.birthday);
+	_randomActorWithBirthday() {
+		return QuestionSelector.fromArray(this._actors, a => !!a.birthday);
 	}
 
-	_randomActorWithBirth(selector) {
-		return selector.fromArray(this._actors, a => !!this._countryOrState(a));
+	_randomActorWithBirth() {
+		return QuestionSelector.fromArray(this._actors, a => !!this._countryOrState(a));
 	}
 
 	_actorName(actor) {

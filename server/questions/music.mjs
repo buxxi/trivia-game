@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import QuestionSelector from '../selector.mjs';
 
 const TRACKS_BY_CATEGORY = 100;
 
@@ -12,32 +13,32 @@ class MusicQuestions {
 		this._types = {
 			title : {
 				title : (correct) => "What is the name of this song?",
-				correct : (selector) => this._randomTrack(selector),
-				similar : (correct, selector) => this._similarTracks(correct, selector),
+				correct : () => this._randomTrack(),
+				similar : (correct) => this._similarTracks(correct),
 				format : (correct) => this._trackTitle(correct),
 				view : (correct) => this._mp3Track(correct),
 				weight : 40
 			},
 			artist : {
 				title : (correct) => "Which artist is this?",
-				correct : (selector) => this._randomTrack(selector),
-				similar : (correct, selector) => this._similarTracks(correct, selector),
+				correct : () => this._randomTrack(),
+				similar : (correct) => this._similarTracks(correct),
 				format : (correct) => this._artistName(correct),
 				view : (correct) => this._mp3Track(correct),
 				weight : 30
 			},
 			album : {
 				title : (correct) => "From which album is this song?",
-				correct : (selector) => this._randomTrack(selector),
-				similar : (correct, selector) => this._similarTracks(correct, selector),
+				correct : () => this._randomTrack(),
+				similar : (correct) => this._similarTracks(correct),
 				format : (correct) => this._albumName(correct),
 				view : (correct) => this._mp3Track(correct),
 				weight : 10
 			},
 			artistImage : {
 				title : (correct) => "Which artist is this?",
-				correct : (selector) => this._randomTrack(selector),
-				similar : (correct, selector) => this._similarTracks(correct, selector),
+				correct : () => this._randomTrack(),
+				similar : (correct) => this._similarTracks(correct),
 				format : (correct) => this._artistName(correct),
 				view : (correct) => this._artistImage(correct),
 				weight : 20
@@ -76,13 +77,13 @@ class MusicQuestions {
 		return this._countQuestions();
 	}
 
-	async nextQuestion(selector) {
-		let type = selector.fromWeightedObject(this._types);
-		let track = type.correct(selector);
+	async nextQuestion() {
+		let type = QuestionSelector.fromWeightedObject(this._types);
+		let track = type.correct();
 
 		return ({
 			text : type.title(track),
-			answers : selector.alternatives(type.similar(track, selector), track, type.format, (arr) => selector.splice(arr)),
+			answers : QuestionSelector.alternatives(type.similar(track), track, type.format, QuestionSelector.splice),
 			correct : type.format(track),
 			view : type.view(track)
 		});
@@ -273,7 +274,7 @@ class MusicQuestions {
 		return artistIds;
 	}
 
-	_randomTrack(selector) {
+	_randomTrack() {
 		var categoryWeight = {};
 		this._tracks.forEach((track) => {
 			if (!categoryWeight[track.category]) {
@@ -283,16 +284,16 @@ class MusicQuestions {
 			}
 		});
 
-		var category = selector.fromWeightedObject(categoryWeight).name;
+		var category = QuestionSelector.fromWeightedObject(categoryWeight).name;
 
-		return selector.fromArray(this._tracks, (track) => track.category == category);
+		return QuestionSelector.fromArray(this._tracks, (track) => track.category == category);
 	}
 
-	_similarTracks(track, selector) {
+	_similarTracks(track) {
 		var allowedCategories = [track.category];
 		var differentGenreCount = Math.floor((10 - track.popularity) / 2);
 		for (var i = 0; i < differentGenreCount; i++) {
-			allowedCategories.push(selector.fromArray(this._spotifyWhiteListGenres)); //This could possibly add the same category many times
+			allowedCategories.push(QuestionSelector.fromArray(this._spotifyWhiteListGenres)); //This could possibly add the same category many times
 		}
 		
 		return this._tracks.filter(function(s) {
