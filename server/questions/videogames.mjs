@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import YoutubeLoader from '../youtubeloader.mjs';
 import QuestionSelector from '../selector.mjs';
+import Generators from '../generators.mjs';
 
 const GAMES_PER_PLATFORM = 100;
 const PAGINATE_COUNT = 100;
@@ -92,7 +93,7 @@ class VideoGameQuestions {
 
 		return ({
 			text : type.title(correct),
-			answers : QuestionSelector.alternatives(similar, correct, type.format, QuestionSelector.first),
+			answers : QuestionSelector.alternatives(similar, correct, type.format),
 			correct : type.format(correct),
 			view : type.view(correct)
 		});
@@ -277,16 +278,17 @@ class VideoGameQuestions {
 
 	_similarGames(game) {
 		var titleWords = QuestionSelector.wordsFromString(game.name);
-		return this._games.map((g) => {
+		let result = this._games.map((g) => {
 			return {
 				game : g,
 				score : QuestionSelector.levenshteinDistance(titleWords, QuestionSelector.wordsFromString(g.name)) + QuestionSelector.levenshteinDistance(game, g, e => e.tags) + QuestionSelector.dateDistance(game.release_date, g.release_date)
 			};
 		}).sort((a, b) => a.score - b.score).map((node) => node.game);
+		return Generators.sorted(result);
 	}
 
 	_similarGameYears(game) {
-		return QuestionSelector.yearAlternatives(this._gameYear(game)).map((year) => ({ release_date : year }));
+		return Generators.years(this._gameYear(game), (year) => ({ release_date : year }));
 	}
 
 	_similarPlatforms(game) {
@@ -294,9 +296,10 @@ class VideoGameQuestions {
 			return QuestionSelector.dateDistance(a.release_date, game.release_date) - QuestionSelector.dateDistance(b.release_date, game.release_date);
 		}
 
-		var unused = Object.keys(this._platforms).map((p) => this._platforms[p]).filter((p) => game.platforms.indexOf(p) == -1).sort(dateDifference);
+		let unused = Object.keys(this._platforms).map((p) => this._platforms[p]).filter((p) => game.platforms.indexOf(p) == -1).sort(dateDifference);
 
-		return unused.map(platform => ({ 'platforms' : [platform.name] }));
+		let result = unused.map(platform => ({ 'platforms' : [platform.name] }));
+		return Generators.sorted(result);
 	}
 
 	_screenshot(game) {

@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import QuestionSelector from '../selector.mjs';
+import Generators from '../generators.mjs';
 
 const TRACKS_BY_CATEGORY = 100;
 
@@ -80,10 +81,11 @@ class MusicQuestions {
 	async nextQuestion() {
 		let type = QuestionSelector.fromWeightedObject(this._types);
 		let track = type.correct();
+		let similar = type.similar(track);
 
 		return ({
 			text : type.title(track),
-			answers : QuestionSelector.alternatives(type.similar(track), track, type.format, QuestionSelector.splice),
+			answers : QuestionSelector.alternatives(similar, track, type.format),
 			correct : type.format(track),
 			view : type.view(track)
 		});
@@ -296,9 +298,10 @@ class MusicQuestions {
 			allowedCategories.push(QuestionSelector.fromArray(this._spotifyWhiteListGenres)); //This could possibly add the same category many times
 		}
 		
-		return this._tracks.filter(function(s) {
+		let result = this._tracks.filter(function(s) {
 			return allowedCategories.indexOf(s.category) != -1;
 		});
+		return Generators.random(result);
 	}
 
 	_trackTitle(track) {

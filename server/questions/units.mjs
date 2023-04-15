@@ -1,5 +1,6 @@
 import convert from 'convert-units';
 import QuestionSelector from '../selector.mjs';
+import Generators from '../generators.mjs';
 
 class UnitQuestions {
     constructor(config) {    
@@ -52,7 +53,7 @@ class UnitQuestions {
 
 		return ({
 			text : type.title(unit),
-			answers : QuestionSelector.alternatives(similar, unit, type.format, QuestionSelector.splice),
+			answers : QuestionSelector.alternatives(similar, unit, type.format),
 			correct : type.format(unit),
 			view : type.view(unit)
 		});
@@ -67,19 +68,21 @@ class UnitQuestions {
 	}
 
 	_smallerUnits(correct) {
-		return convert().list(correct.measure).filter(e => {
+		let result = convert().list(correct.measure).filter(e => {
 			return convert(1).from(correct.abbr).to(e.abbr) > 1;
 		});
+		return Generators.random(result);
 	}
 
 	_largerUnits(correct) {
-		return convert().list(correct.measure).filter(e => {
+		let result = convert().list(correct.measure).filter(e => {
 			return convert(1).from(correct.abbr).to(e.abbr) < 1;
 		});
+		return Generators.random(result);
 	}
 
 	_allUnits() {
-		return convert().list();
+		return Generators.random(convert().list());
 	}
 
 	_measure(unit) {

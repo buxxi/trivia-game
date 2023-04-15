@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import {YoutubeLoader, YoutubeError} from '../youtubeloader.mjs';
 import QuestionSelector from '../selector.mjs';
+import Generators from '../generators.mjs';
 
 class MovieQuestions {
 	constructor(config) {
@@ -57,7 +58,7 @@ class MovieQuestions {
 			
 			return ({
 				text : type.title(correct),
-				answers : QuestionSelector.alternatives(similar, correct, type.format, QuestionSelector.first),
+				answers : QuestionSelector.alternatives(similar, correct, type.format),
 				correct : type.format(correct),
 				view : type.view(correct, attribution)
 			});
@@ -166,14 +167,14 @@ class MovieQuestions {
 			});
 
 			attribution.push("http://www.themoviedb.org/movie/" + id);
-			return similar;
+			return Generators.sorted(similar);
 		} catch (e) {
 			throw e;
 		}
 	}
 
 	async _loadSimilarYears(movie, attribute) {
-		return QuestionSelector.yearAlternatives(movie.year).map((year) => { return { year : year }; });
+		return Generators.years(movie.year, (year) => { return { year : year }; });
 	}
 
 	async _randomMovieClip(attribution) {

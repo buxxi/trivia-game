@@ -1,4 +1,5 @@
 import QuestionSelector from '../selector.mjs';
+import Generators from '../generators.mjs';
 
 class CurrentGameQuestions {
 	constructor(config) {
@@ -72,10 +73,11 @@ class CurrentGameQuestions {
 	async nextQuestion(game) {
 		let type = QuestionSelector.fromWeightedObject(this._types);
 		let correct = type.correct(game);
+		let similar = type.similar(correct, game);
 
 		return ({
 			text : type.title(correct),
-			answers : QuestionSelector.alternatives(type.similar(correct, game), correct, type.format, QuestionSelector.splice),
+			answers : QuestionSelector.alternatives(similar, correct, type.format),
 			correct : type.format(correct),
 			view : {
 				attribution : {
@@ -100,7 +102,8 @@ class CurrentGameQuestions {
 	}
 
 	_playersWithLower(player, game, func) {
-		return this._players(game).filter((p) => func(p) < func(player));
+		let result = this._players(game).filter((p) => func(p) < func(player));
+		return Generators.random(result);
 	}
 
 	_playerWithLeast(game, func) {
@@ -108,7 +111,8 @@ class CurrentGameQuestions {
 	}
 
 	_playersWithHigher(player, game, func) {
-		return this._players(game).filter((p) => func(p) > func(player));
+		let result = this._players(game).filter((p) => func(p) > func(player));
+		return Generators.random(result);
 	}
 
 	_countTotal(game, func) {
@@ -117,11 +121,12 @@ class CurrentGameQuestions {
 
 	_numericAlternatives(number, game) {
 		var index = game.currentQuestionIndex();
-		return QuestionSelector.numericAlternatives(number, index);
+		return Generators.numeric(number, index);
 	}
 
 	_otherAvatars(player, game) {
-		return game.avatars().map((a) => ({ avatar : a }));
+		let result = game.avatars().map((a) => ({ avatar : a }));
+		return Generators.random(result);
 	}
 
 	_resolveName(player) {

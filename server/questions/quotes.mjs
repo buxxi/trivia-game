@@ -2,6 +2,7 @@ import nlp from 'compromise';
 import adjectives from 'compromise-adjectives';
 import quotesy from 'quotesy';
 import QuestionSelector from '../selector.mjs';
+import Generators from '../generators.mjs';
 
 nlp.extend(adjectives);
 
@@ -48,10 +49,11 @@ class QuotesQuestions {
 	async nextQuestion() {
 		let type = QuestionSelector.fromWeightedObject(this._types);
 		let quote = type.correct();
+		let similar = type.similar(quote);
 
 		return ({
 			text : type.title(quote),
-			answers : QuestionSelector.alternatives(type.similar(quote), quote, type.format, QuestionSelector.splice),
+			answers : QuestionSelector.alternatives(similar, quote, type.format),
 			correct : type.format(quote),
 			view : type.load(quote)
 		});
@@ -86,7 +88,7 @@ class QuotesQuestions {
 	}
 
 	_similarAuthors(quote) {
-		return this._quotes;
+		return Generators.random(this._quotes);
 	}
 
 	_similarWords(quote) {
@@ -102,11 +104,11 @@ class QuotesQuestions {
 		}
 
 		if (verbs.wordCount() > 0) {
-			return this._similarVerbs(verbs.json()[0].terms[0].tags, nlp(otherQuotes).post('').verbs());
+			return Generators.random(this._similarVerbs(verbs.json()[0].terms[0].tags, nlp(otherQuotes).post('').verbs()));
 		} else if (nouns.wordCount() > 0) {
-			return this._similarNouns(nouns.json()[0].terms[0].tags, nlp(otherQuotes).post('').nouns());
+			return Generators.random(this._similarNouns(nouns.json()[0].terms[0].tags, nlp(otherQuotes).post('').nouns()));
 		} else {
-			return this._similarAdjectives(adjectives.json()[0].terms[0].tags, nlp(otherQuotes).post('').adjectives());
+			return Generators.random(this._similarAdjectives(adjectives.json()[0].terms[0].tags, nlp(otherQuotes).post('').adjectives()));
 		}
 	}
 

@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import QuestionSelector from '../selector.mjs';
+import Generators from '../generators.mjs';
 
 const TOTAL_DRINKS = 50;
 
@@ -14,7 +15,6 @@ class DrinksQuestions {
 				similar : (correct) => this._similarDrinks(correct),
 				load : (correct) => this._loadList(correct),
 				format : (correct) => this._resolveName(correct),
-				randomAnswer : false,
 				weight : 50
 			},
 			single : {
@@ -22,8 +22,7 @@ class DrinksQuestions {
 				correct : (correct) => this._randomIngredient(correct),
 				similar : (correct) => this._differentIngredients(correct),
 				load : (correct) => this._loadBlankIngredient(correct),
-				format : (correct) =>this._resolveName(correct),
-				randomAnswer : true,
+				format : (correct) => this._resolveName(correct),
 				weight : 25
 			},
 			glass : {
@@ -32,7 +31,6 @@ class DrinksQuestions {
 				similar : (correct) => this._drinksWithGlass(correct),
 				load : (correct) => this._loadBlankDrink(correct),
 				format : (correct) => this._resolveGlass(correct),
-				randomAnswer : true,
 				weight : 25
 			}
 		};
@@ -58,10 +56,11 @@ class DrinksQuestions {
 	async nextQuestion() {
 		let type = QuestionSelector.fromWeightedObject(this._types);
 		let correct = type.correct();
+		let similar = type.similar(correct);
 
 		return ({
 			text : type.title(correct),
-			answers : QuestionSelector.alternatives(type.similar(correct), correct, type.format, type.randomAnswer ? QuestionSelector.splice : QuestionSelector.first),
+			answers : QuestionSelector.alternatives(similar, correct, type.format),
 			correct : type.format(correct),
 			view : type.load(correct)
 		});
@@ -130,15 +129,16 @@ class DrinksQuestions {
 	}
 
 	_drinksWithGlass(drink) {
-		return this._drinks.filter((d) => d.glass != 'vote');
+		return Generators.random(this._drinks.filter((d) => d.glass != 'vote'));
 	}
 
 	_similarDrinks(drink) {
-		return QuestionSelector.sortCompareCorrect(this._drinks, QuestionSelector.countCommon, drink, e => e.ingredients);
+		return Generators.sortedCompareCorrect(this._drinks, QuestionSelector.countCommon, drink, e => e.ingredients);
 	}
 
 	_differentIngredients(ingredient) {
-		return this._drinks.filter((d) => QuestionSelector.hasNoneCommon(ingredient.drink, d, e => e.ingredients)).map((d) => ({name : QuestionSelector.fromArray(d.ingredients)}));
+		let result = this._drinks.filter((d) => QuestionSelector.hasNoneCommon(ingredient.drink, d, e => e.ingredients)).map((d) => ({name : QuestionSelector.fromArray(d.ingredients)}));
+		return Generators.random(result);
 	}
 
 	_resolveGlass(correct) {

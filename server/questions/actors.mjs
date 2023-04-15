@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import QuestionSelector from '../selector.mjs';
+import Generators from '../generators.mjs';
 
 const ACTOR_COUNT = 1000;
 
@@ -60,7 +61,7 @@ class ActorQuestions {
 
 		return ({
 			text : type.title(actor),
-			answers : QuestionSelector.alternatives(similar, actor, type.format, QuestionSelector.splice),
+			answers : QuestionSelector.alternatives(similar, actor, type.format),
 			correct : type.format(actor),
 			view : type.view(actor)
 		});
@@ -164,7 +165,8 @@ class ActorQuestions {
 			return Math.abs(a - b) <= 5;
 		}
 
-		return this._actors.filter((a) => sameGender(a, actor) && aboutSameAge(this._birthYear(a), this._birthYear(actor)) && !!this._countryOrState(a));
+		let result = this._actors.filter((a) => sameGender(a, actor) && aboutSameAge(this._birthYear(a), this._birthYear(actor)) && !!this._countryOrState(a));
+		return Generators.random(result);
 	}
 
 	_youngerActors(actor) {
@@ -179,7 +181,8 @@ class ActorQuestions {
 			return a > b;
 		}
 
-		return this._actors.filter((a) => sameGender(a, actor) && younger(this._birthYear(a), this._birthYear(actor)));	
+		let result = this._actors.filter((a) => sameGender(a, actor) && younger(this._birthYear(a), this._birthYear(actor)));	
+		return Generators.random(result);
 	}
 
 	_randomActorWithImage() {

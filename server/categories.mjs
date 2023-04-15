@@ -67,14 +67,21 @@ class Categories {
 
 	_shuffleAnswers(question) {
 		let answers = {
-			A : QuestionSelector.splice(question.answers),
-			B : QuestionSelector.splice(question.answers),
-			C : QuestionSelector.splice(question.answers),
-			D : QuestionSelector.splice(question.answers),
+			A : this._splice(question.answers),
+			B : this._splice(question.answers),
+			C : this._splice(question.answers),
+			D : this._splice(question.answers),
 		};
 
 		question.answers = answers;
 		return question;
+	}
+
+	_splice(arr) {
+		if (arr.length == 0) {
+			throw new Error("Trying to splice empty array");
+		}
+		return arr.splice(QuestionSelector.random(arr.length), 1)[0];
 	}
 }
 

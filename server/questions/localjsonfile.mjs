@@ -17,17 +17,15 @@ class LocalJsonFileQuestions {
     async nextQuestion() {
 		let type = QuestionSelector.fromWeightedObject(this._types());
 
-		let correct = type.correct(this._data, QuestionSelector);
-		let similar = type.similar(correct, this._data, QuestionSelector);
+		let correct = type.correct(this._data);
+		let similar = type.similar(correct, this._data);
 		let title = type.title(correct);
 		let view = type.load(correct);
 		let format = (answer) => `${type.format(answer)}`;
-		let sorted = !!type.sorted;
-		let answerSelector = sorted ? QuestionSelector.first : QuestionSelector.splice;
-
+		
 		return ({
 			text : title,
-			answers : QuestionSelector.alternatives(similar, correct, format, answerSelector),
+			answers : QuestionSelector.alternatives(similar, correct, format),
 			correct : format(correct),
 			view : view
 		});

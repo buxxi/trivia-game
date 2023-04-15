@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import QuestionSelector from '../selector.mjs';
+import Generators from '../generators.mjs';
 
 class GeographyQuestions {
 	constructor(config) {
@@ -55,7 +56,7 @@ class GeographyQuestions {
 				title : (correct) => "Where is " + correct.name + " located?",
 				format : (correct) => this._formatRegion(correct),
 				correct : () => this._randomCountry(),
-				similar : (correct) => this._allCountries(correct),
+				similar : (correct) => this._allCountriesRandom(correct),
 				load : (correct) => this._loadBlank(),
 				weight : 10,
 				attribution: "Country"
@@ -91,12 +92,14 @@ class GeographyQuestions {
 	}
 
 	async nextQuestion() {
-		var type = QuestionSelector.fromWeightedObject(this._types);
+		let type = QuestionSelector.fromWeightedObject(this._types);
 
-		var correct = type.correct();
-		var similar = type.similar(correct);
-		var title = type.title(correct);
-		var view = type.load(correct);
+		let correct = type.correct();
+		let similar = type.similar(correct);
+		let title = type.title(correct);
+		let view = type.load(correct);
+		
+
 		view.attribution = {
 			title : type.attribution,
 			name : correct.name,
@@ -105,7 +108,7 @@ class GeographyQuestions {
 
 		return ({
 			text : title,
-			answers : QuestionSelector.alternatives(similar, correct, type.format, this._types['region'] == type ? QuestionSelector.splice : QuestionSelector.first),
+			answers : QuestionSelector.alternatives(similar, correct, type.format),
 			correct : type.format(correct),
 			view : view
 		});
@@ -155,17 +158,23 @@ class GeographyQuestions {
 	}
 
 	_allCountries() {
-		return this._countries;
+		return Generators.random(this._countries);
+	}
+
+	_allCountriesRandom() {
+		return Generators.sorted(this._countries);
 	}
 
 	_similarNeighbouringCountries(country) {
-		return this._similarCountries(country).filter(c => !country.neighbours.includes(c)).filter(c => !country.neighbours.every((o) => c.neighbours.includes(o)));
+		let result = this._countries.filter(c => country.region == c.region && !country.neighbours.includes(c)).filter(c => !country.neighbours.every((o) => c.neighbours.includes(o)));
+		return Generators.sorted(result);
 	}
 
 	_similarCountries(country) {
-		return this._countries.filter(function(c) {
+		let result = this._countries.filter(function(c) {
 			return country.region == c.region;
 		});
+		return Generators.sorted(result);
 	}
 
 	_similarAreaCountries(country) {
@@ -173,7 +182,8 @@ class GeographyQuestions {
 			return Math.floor(Math.log(c.area));
 		}
 
-		return this._countries.filter((c) => c.area < country.area).sort((a, b) => areaSort(b) - areaSort(a));
+		let result = this._countries.filter((c) => c.area < country.area).sort((a, b) => areaSort(b) - areaSort(a));
+		return Generators.sorted(result);
 	}
 
 	_similarPopulationCountries(country) {
@@ -181,7 +191,8 @@ class GeographyQuestions {
 			return Math.floor(Math.log(c.population));
 		}
 
-		return this._countries.filter((c) => c.population < country.population).sort((a, b) => populationSort(b) - populationSort(a));
+		let result = this._countries.filter((c) => c.population < country.population).sort((a, b) => populationSort(b) - populationSort(a));
+		return Generators.sorted(result);
 	}
 
 	_formatName(country) {

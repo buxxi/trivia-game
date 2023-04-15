@@ -1,4 +1,5 @@
 import QuestionSelector from '../selector.mjs';
+import Generators from '../generators.mjs';
 
 class MathQuestions {
     constructor(config) {
@@ -51,9 +52,11 @@ class MathQuestions {
         let values = generator.generateValues();
         let exp = generator.generate(values);
         let correct = exp.eval();
+        let similar = Generators.sorted(generator.alternativeValues(values));
+
 		return ({
 			text : "Calculate the following",
-			answers : QuestionSelector.alternatives(generator.alternativeValues(values), correct, (e) => this._format(e), QuestionSelector.first),
+			answers : QuestionSelector.alternatives(similar, correct, (e) => this._format(e)),
 			correct : this._format(correct),
 			view : {
                 player : 'quote',
@@ -206,6 +209,7 @@ class ExpressionGenerator {
         });
     }
 
+    //TODO: convert to generator function
     alternativeValues(values) {
         values = values.slice();
         let result = [];

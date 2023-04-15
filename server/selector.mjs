@@ -46,28 +46,14 @@ class QuestionSelector {
 		return obj[keys[index]];
 	}
 
-	static splice(arr) {
-		if (arr.length == 0) {
-			throw new Error("Trying to splice empty array");
-		}
-		return arr.splice(QuestionSelector.random(arr.length), 1)[0];
-	}
-
-	static first(arr) {
-		if (arr.length == 0) {
-			throw new Error("Trying to get first element of empty array");
-		}
-		return arr.shift();
-	}
-
-	static alternatives(list, correct, toString, picker) {
-		var list = list.slice();
+	static alternatives(generator, correct, toString) {
 		var result = [toString(correct)];
 		while (result.length < 4) {
-			if (list.length == 0) {
+			let value = generator.next();
+			if (value.done) {
 				return result;
 			}
-			var e = toString(picker(list));
+			var e = toString(value.value);
 			if (e == "") {
 				throw new Error("Empty alternative returned");
 			}
@@ -77,25 +63,6 @@ class QuestionSelector {
 			}
 		}
 		return result;
-	}
-
-	static prioritizeAlternatives() {
-		for (var i = 0; i < arguments.length; i++) {
-			if (arguments[i].length >= 3) {
-				return arguments[i];
-			}
-		}
-		throw new Error("None of the lists provided has enough alternatives");
-	}
-
-	static sortCompareCorrect(arr, compare, correct, mapping = i => i, asc = false) {
-		return arr.sort((a, b) => {
-			if (asc) {
-				return compare(a, correct, mapping) - compare(b, correct, mapping);
-			} else {
-				return compare(b, correct, mapping) - compare(a, correct, mapping);
-			}
-		});
 	}
 
 	static hasAllCommon(o1, o2, mapping = i => i) {
@@ -200,29 +167,6 @@ class QuestionSelector {
 	static min(arr, func) {
 		func = func || ((obj) => obj);
 		return arr.reduce((a, b) => func(a) < func(b) ? a : b);
-	}
-
-	static yearAlternatives(correct) {
-		let maxJump = Math.floor((new Date().getFullYear() - correct) / 5) + 5;
-		return QuestionSelector.numericAlternatives(correct, maxJump, new Date().getFullYear());
-	}
-
-	static numericAlternatives(year, maxJump, maxAllowedValue) {
-		maxAllowedValue = maxAllowedValue||Infinity;
-		var min = year;
-		var max = min;
-		var result = [];
-		while (result.length < 3) {
-			var diff = Math.floor(Math.random() * ((maxJump * 2) + 1)) - maxJump;
-			if (diff < 0 && (min + diff) > 0) {
-				min = min + diff;
-				result.unshift(min);
-			} else if (diff > 0 && (max + diff) <= maxAllowedValue) {
-				max = max + diff;
-				result.push(max);
-			}
-		}
-		return result;
 	}
 }
 
