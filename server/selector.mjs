@@ -88,9 +88,13 @@ class QuestionSelector {
 		throw new Error("None of the lists provided has enough alternatives");
 	}
 
-	sortCompareCorrect(arr, compare, correct, mapping = i => i) {
+	sortCompareCorrect(arr, compare, correct, mapping = i => i, asc = false) {
 		return arr.sort((a, b) => {
-			return compare(b, correct, mapping) - compare(a, correct, mapping);
+			if (asc) {
+				return compare(a, correct, mapping) - compare(b, correct, mapping);
+			} else {
+				return compare(b, correct, mapping) - compare(a, correct, mapping);
+			}
 		});
 	}
 
@@ -133,6 +137,10 @@ class QuestionSelector {
 			}	
 			return acc;
 		});
+	}
+
+	charsFromString(s) {
+		return s.replace(/[^a-zA-Z0-9]+/, '').split('');	
 	}
 
 	wordsFromString(s) {

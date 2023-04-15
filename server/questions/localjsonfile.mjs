@@ -20,13 +20,14 @@ class LocalJsonFileQuestions {
 		let similar = type.similar(correct, this._data, selector);
 		let title = type.title(correct);
 		let view = type.load(correct);
+		let format = (answer) => `${type.format(answer)}`;
 		let sorted = !!type.sorted;
 		let answerSelector = sorted ? (arr) => selector.first(arr) : (arr) => selector.splice(arr);
 
 		return ({
 			text : title,
-			answers : selector.alternatives(similar, correct, type.format, answerSelector),
-			correct : type.format(correct),
+			answers : selector.alternatives(similar, correct, format, answerSelector),
+			correct : format(correct),
 			view : view
 		});
 	}
