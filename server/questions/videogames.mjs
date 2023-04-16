@@ -285,7 +285,7 @@ class VideoGameQuestions {
 				score : QuestionSelector.levenshteinDistance(titleWords, QuestionSelector.wordsFromString(g.name)) + QuestionSelector.levenshteinDistance(game, g, e => e.tags) + QuestionSelector.dateDistance(game.release_date, g.release_date)
 			};
 		}).sort((a, b) => a.score - b.score).map((node) => node.game);
-		return Generators.sorted(result);
+		return Generators.inOrder(result);
 	}
 
 	_similarGameYears(game) {
@@ -300,7 +300,7 @@ class VideoGameQuestions {
 		let unused = Object.keys(this._platforms).map((p) => this._platforms[p]).filter((p) => game.platforms.indexOf(p) == -1).sort(dateDifference);
 
 		let result = unused.map(platform => ({ 'platforms' : [platform.name] }));
-		return Generators.sorted(result);
+		return Generators.inOrder(result);
 	}
 
 	_screenshot(game) {

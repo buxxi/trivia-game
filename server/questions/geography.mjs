@@ -163,19 +163,19 @@ class GeographyQuestions {
 	}
 
 	_allCountriesRandom() {
-		return Generators.sorted(this._countries);
+		return Generators.inOrder(this._countries);
 	}
 
 	_similarNeighbouringCountries(country) {
 		let result = this._countries.filter(c => country.region == c.region && !country.neighbours.includes(c)).filter(c => !country.neighbours.every((o) => c.neighbours.includes(o)));
-		return Generators.sorted(result);
+		return Generators.inOrder(result);
 	}
 
 	_similarCountries(country) {
 		let result = this._countries.filter(function(c) {
 			return country.region == c.region;
 		});
-		return Generators.sorted(result);
+		return Generators.inOrder(result);
 	}
 
 	_similarAreaCountries(country) {
@@ -184,7 +184,7 @@ class GeographyQuestions {
 		}
 
 		let result = this._countries.filter((c) => c.area < country.area).sort((a, b) => areaSort(b) - areaSort(a));
-		return Generators.sorted(result);
+		return Generators.inOrder(result);
 	}
 
 	_similarPopulationCountries(country) {
@@ -193,7 +193,7 @@ class GeographyQuestions {
 		}
 
 		let result = this._countries.filter((c) => c.population < country.population).sort((a, b) => populationSort(b) - populationSort(a));
-		return Generators.sorted(result);
+		return Generators.inOrder(result);
 	}
 
 	_formatName(country) {

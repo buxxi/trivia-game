@@ -168,7 +168,7 @@ class MovieQuestions {
 			});
 
 			attribution.push("http://www.themoviedb.org/movie/" + id);
-			return Generators.sorted(similar);
+			return Generators.inOrder(similar);
 		} catch (e) {
 			throw e;
 		}

@@ -53,7 +53,7 @@ class MathQuestions {
         let values = generator.generateValues();
         let exp = generator.generate(values);
         let correct = exp.eval();
-        let similar = Generators.sorted(generator.alternativeValues(values));
+        let similar = Generators.inOrder(generator.alternativeValues(values));
 
 		return ({
 			text : "Calculate the following",
