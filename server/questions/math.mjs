@@ -53,7 +53,7 @@ class MathQuestions {
         let values = generator.generateValues();
         let exp = generator.generate(values);
         let correct = exp.eval();
-        let similar = Generators.inOrder(generator.alternativeValues(values));
+        let similar = generator.alternativeValues(values);
 
 		return ({
 			text : "Calculate the following",
@@ -210,26 +210,28 @@ class ExpressionGenerator {
         });
     }
 
-    //TODO: convert to generator function
     alternativeValues(values) {
         values = values.slice();
-        let result = [];
-        for (let i = 0; i < 100; i++) {
-            let j = Random.random(values.length);
-            switch (Random.random(5)) {
-                case 0, 1:
-                    values[j]--;
-                    break;
-                case 2,3:
-                    values[j]++;
-                    break;
-                case 4:
-                    values[j] = values[j] + 3;
+        let valueGenerator = this;
+
+        function* generator() {
+            while (true) {
+                let j = Random.random(values.length);
+                switch (Random.random(5)) {
+                    case 0, 1:
+                        values[j]--;
+                        break;
+                    case 2,3:
+                        values[j]++;
+                        break;
+                    case 4:
+                        values[j] = values[j] + 3;
+                }
+                yield valueGenerator.generate(values).eval();
             }
-            result.push(this.generate(values).eval());
         }
 
-        return result;
+        return generator();
     }
 }
 
