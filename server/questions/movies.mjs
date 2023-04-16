@@ -204,7 +204,7 @@ class MovieQuestions {
 	_viewMovieClip(correct, attribution) {
 		return {
 			player : 'youtube',
-			videoId : correct.videos[0],
+			videoId : Random.fromArray(correct.videos),
 			attribution : {
 				title : "Clip from",
 				name : correct.title + " (" + correct.year + ")",
