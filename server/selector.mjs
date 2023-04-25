@@ -18,6 +18,10 @@ class QuestionSelector {
 		}
 	}
 
+	static unique(arr) {
+		return arr.filter((value, index, array) => array.indexOf(value) == index);
+	}
+
 	static alternatives(generator, correct, toString) {
 		var result = [toString(correct)];
 		while (result.length < 4) {
