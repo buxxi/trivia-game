@@ -1,5 +1,6 @@
-class QuestionSelector {
+class Selector {
 	constructor() {
+		throw new Error("Use only the static methods");
 	}
 
 	static arrayPercentile(arr, compare, percentile) {
@@ -22,25 +23,6 @@ class QuestionSelector {
 		return arr.filter((value, index, array) => array.indexOf(value) == index);
 	}
 
-	static alternatives(generator, correct, toString) {
-		var result = [toString(correct)];
-		while (result.length < 4) {
-			let value = generator.next();
-			if (value.done) {
-				return result;
-			}
-			var e = toString(value.value);
-			if (e == "") {
-				throw new Error("Empty alternative returned");
-			}
-
-			if (result.indexOf(e) == -1) {
-				result.push(e);
-			}
-		}
-		return result;
-	}
-
 	static hasAllCommon(o1, o2, mapping = i => i) {
 		let arr1 = mapping(o1);
 		let arr2 = mapping(o2);
@@ -49,7 +31,7 @@ class QuestionSelector {
 			return false;
 		}
 
-		return QuestionSelector.countCommon(arr1, arr2, e => e) == arr2.length;
+		return Selector.countCommon(arr1, arr2, e => e) == arr2.length;
 	}
 
 	static hasNoneCommon(o1, o2, mapping = i => i) {
@@ -60,7 +42,7 @@ class QuestionSelector {
 			return false;
 		}
 
-		return QuestionSelector.countCommon(arr1, arr2, e => e) == 0;
+		return Selector.countCommon(arr1, arr2, e => e) == 0;
 	}
 
 	static countCommon(o1, o2, mapping = i => i) {
@@ -130,20 +112,17 @@ class QuestionSelector {
 		return m[b.length][a.length];
 	}
 
-	static sum(arr, func) {
-		func = func || ((obj) => obj);
+	static sum(arr, func = obj => obj) {
 		return arr.map(func).reduce((a, b) => a + b, 0);
 	}
 
-	static max(arr, func) {
-		func = func || ((obj) => obj);
+	static max(arr, func = obj => obj) {
 		return arr.reduce((a, b) => func(a) > func(b) ? a : b);
 	}
 
-	static min(arr, func) {
-		func = func || ((obj) => obj);
+	static min(arr, func = obj => obj) {
 		return arr.reduce((a, b) => func(a) < func(b) ? a : b);
 	}
 }
 
-export default QuestionSelector;
+export default Selector;

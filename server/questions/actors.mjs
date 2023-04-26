@@ -1,41 +1,41 @@
 import fetch from 'node-fetch';
-import QuestionSelector from '../selector.mjs';
+import Selector from '../selector.mjs';
 import Generators from '../generators.mjs';
 import Random from '../random.mjs';
+import Questions from './questions.mjs';
 
 const ACTOR_COUNT = 1000;
 
-class ActorQuestions {
+class ActorQuestions extends Questions {
 	constructor(config) {
+		super();
 		this._actors = [];
 		this._tmdbApiKey = config.tmdb.clientId;
     
-		this._types = {
-			image : {
-				title : (correct) => "Who is this " + (correct.male ? "actor" : "actress") + "?",
-				correct : () => this._randomActorWithImage(),
-				similar : (correct) => this._similarActors(correct),
-				format : (correct) => this._actorName(correct),
-				view : (correct) => this._viewActorImage(correct),
-				count : () => this._countActors()
-			},
-			age : {
-				title : (correct) => "Who is oldest of these " + (correct.male ? "actors" : "actresses") + "?",
-				correct : () => this._randomActorWithBirthday(),
-				similar : (correct) => this._youngerActors(correct),
-				format : (correct) => this._actorName(correct),
-				view : (correct) => this._viewBlank(correct),
-				count : () => this._countActors()
-			},
-			born : {
-				title : (correct) => "Where was " + correct.name + " born?",
-				correct : () => this._randomActorWithBirth(),
-				similar : (correct) => this._similarActors(correct),
-				format : (correct) => this._countryOrState(correct),
-				view : (correct) => this._viewBlank(correct),
-				count : () => this._countActors()
-			}
-		};
+		this._addQuestion({
+			title : (correct) => "Who is this " + (correct.male ? "actor" : "actress") + "?",
+			correct : () => this._randomActorWithImage(),
+			similar : (correct) => this._similarActors(correct),
+			format : (correct) => this._actorName(correct),
+			load : (correct) => this._loadActorImage(correct),
+			count : () => this._countActors()
+		});
+		this._addQuestion({
+			title : (correct) => "Who is oldest of these " + (correct.male ? "actors" : "actresses") + "?",
+			correct : () => this._randomActorWithBirthday(),
+			similar : (correct) => this._youngerActors(correct),
+			format : (correct) => this._actorName(correct),
+			load : (correct) => this._loadBlank(correct),
+			count : () => this._countActors()
+		});
+		this._addQuestion({
+			title : (correct) => "Where was " + correct.name + " born?",
+			correct : () => this._randomActorWithBirth(),
+			similar : (correct) => this._similarActors(correct),
+			format : (correct) => this._countryOrState(correct),
+			load : (correct) => this._loadBlank(correct),
+			count : () => this._countActors()
+		});
 	}
 
     describe() {
@@ -53,20 +53,6 @@ class ActorQuestions {
 		this._actors = await this._loadActors(progress, cache);
 		return this._countQuestions();
     }
-
-	async nextQuestion() {	
-		let type = Random.fromWeightedObject(this._types);
-
-		let actor = type.correct();
-		let similar = type.similar(actor);
-
-		return ({
-			text : type.title(actor),
-			answers : QuestionSelector.alternatives(similar, actor, type.format),
-			correct : type.format(actor),
-			view : type.view(actor)
-		});
-	}
 
 	_countQuestions() {
 		return Object.keys(this._types).map((t) => this._types[t].count()).reduce((a, b) => a + b, 0);
@@ -91,13 +77,6 @@ class ActorQuestions {
 			}
 			resolve(result);
 		});
-	}
-
-	_toJSON(response) {
-		if (!response.ok) {
-			throw response;
-		}
-		return response.json();
 	}
 
 	async _loadActorsChunk(page) {
@@ -241,7 +220,7 @@ class ActorQuestions {
 		return country;
 	}
 
-	_viewBlank(correct) {
+	_loadBlank(correct) {
 		return {			
 			attribution : {
 				title : "Actor",
@@ -251,7 +230,7 @@ class ActorQuestions {
 		};
 	}
 
-	_viewActorImage(correct) {
+	_loadActorImage(correct) {
 		return {
 			player : 'image',
 			url : "https://image.tmdb.org/t/p/h632" + correct.photo,

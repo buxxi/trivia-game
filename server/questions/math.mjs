@@ -1,38 +1,45 @@
-import QuestionSelector from '../selector.mjs';
-import Generators from '../generators.mjs';
 import Random from '../random.mjs';
+import Questions from './questions.mjs';
 
-class MathQuestions {
+class MathQuestions extends Questions {
     constructor(config) {
+        super();
         this._expressions = [
-            new ExpressionGenerator([ { from: 1, to: 20 } ], 
+            new ExpressionCategory([ { from: 1, to: 20 } ], 
                 (values) => new Exponent(new Constant(values[0]), 2)
             ),
-            new ExpressionGenerator([ { from: 1, to: 20} ], 
+            new ExpressionCategory([ { from: 1, to: 20} ], 
                 (values) => new SquareRoot(new Constant(Math.pow(values[0], 2)))
             ),
-            new ExpressionGenerator([ { from: 5, to: 10 }, { from: 1, to: 6 }, { from: 5, to: 10 }, { from: 1, to: 6 }],
+            new ExpressionCategory([ { from: 5, to: 10 }, { from: 1, to: 6 }, { from: 5, to: 10 }, { from: 1, to: 6 }],
                 (values) => new Multiply(new Parantheses(new Subtract(new Constant(values[0]), new Constant(values[1]))), new Parantheses(new Add(new Constant(values[2]), new Constant(values[3]))))    
             ),    
-            new ExpressionGenerator([ { from: 1, to: 10 }, { from: 2, to: 6 }, { from: 2, to: 4 } ], 
+            new ExpressionCategory([ { from: 1, to: 10 }, { from: 2, to: 6 }, { from: 2, to: 4 } ], 
                 (values) => new Add(new Add(new Exponent(new Constant(values[0]), 1), new Exponent(new Constant(values[1]), 2)), new Exponent(new Constant(values[2]), 3))
             ),
-            new ExpressionGenerator([ { from: 1, to: 20 }, { from: 1, to: 20}, { from: 1, to: 20 }, { from: 1, to: 20 } ], 
+            new ExpressionCategory([ { from: 1, to: 20 }, { from: 1, to: 20}, { from: 1, to: 20 }, { from: 1, to: 20 } ], 
                 (values) => new Add(new Subtract(new Add(new Constant(values[0]), new Constant(values[1])), new Constant(values[2])), new Constant(values[3]))
             ),
-            new ExpressionGenerator([ { from: 5, to: 10 }, { from: 1, to: 5} ], 
+            new ExpressionCategory([ { from: 5, to: 10 }, { from: 1, to: 5} ], 
                 (values) => new Exponent(new Parantheses(new Subtract(new Constant(values[0]), new Constant(values[1]))), 2)
             ),
-            new ExpressionGenerator([ { from: 50, to: 100 }, { from: 50, to: 100} ], 
+            new ExpressionCategory([ { from: 50, to: 100 }, { from: 50, to: 100} ], 
                 (values) => new Add(new Constant(values[0]), new Constant(values[1]))
             ),  
-            new ExpressionGenerator([ { from: 100, to: 200 }, { from: 50, to: 100} ], 
+            new ExpressionCategory([ { from: 100, to: 200 }, { from: 50, to: 100} ], 
                 (values) => new Subtract(new Constant(values[0]), new Constant(values[1]))
             ),
-            new ExpressionGenerator([ { from: 5, to: 10 }, { from: 1, to: 6 }, { from: 5, to: 10 }, { from: 1, to: 6 } ],
+            new ExpressionCategory([ { from: 5, to: 10 }, { from: 1, to: 6 }, { from: 5, to: 10 }, { from: 1, to: 6 } ],
                 (values) => new Add(new Parantheses(new Multiply(new Constant(values[0]), new Constant(values[1]))), new Parantheses(new Multiply(new Constant(values[2]), new Constant(values[3]))))    
             )    
         ];
+        this._addQuestion({
+			title : () => "Calculate the following",
+			correct : () => Random.fromArray(this._expressions).generate(),
+			similar : (correct) => correct.alternativeValues(),
+			load : (correct) => this._loadQuote(correct),
+			format : (answer) => this._format(answer)
+		});
     }
 
     describe() {
@@ -48,31 +55,20 @@ class MathQuestions {
 		return this._countQuestions();
 	}
 
-	async nextQuestion() {
-        let generator = Random.fromArray(this._expressions);
-        let values = generator.generateValues();
-        let exp = generator.generate(values);
-        let correct = exp.eval();
-        let similar = generator.alternativeValues(values);
-
-		return ({
-			text : "Calculate the following",
-			answers : QuestionSelector.alternatives(similar, correct, (e) => this._format(e)),
-			correct : this._format(correct),
-			view : {
-                player : 'quote',
-                quote : exp.display(),
-				attribution : {
-					title : "Quick maths",
-					name : exp.display(),
-					links : []
-				}
-			}
-		});
+    _loadQuote(correct) {
+        return {
+            player : 'quote',
+            quote : correct.display(),
+            attribution : {
+                title : "Quick maths",
+                name : correct.display(),
+                links : []
+            }
+        };
     }
 
     _format(num) {
-        return "" + num;
+        return "" + num.eval();
     }
 
     _countQuestions() {
@@ -187,32 +183,23 @@ class Parantheses {
     }
 }
 
-class ExpressionGenerator {
-    constructor(variables, expressionResolver) {
-        this._variables = variables;
+class ExpressionQuestion {
+    constructor(expressionResolver, values) {
         this._expressionResolver = expressionResolver;
+        this._values = values;
     }
 
-    generate(values) {
-        let exp = this._expressionResolver(values);
-        return exp;
+    eval() {
+        return this._expressionResolver(this._values).eval();
     }
 
-    possibleVariableCount() {
-        return this._variables.map(v => {
-            return v.to - v.from + 1;
-        }).reduce((a, b) => a * b, 1);
-    }
-
-    generateValues() {
-        return this._variables.map(v => {
-            return v.from + Random.random(v.to - v.from + 1);
-        });
-    }
-
-    alternativeValues(values) {
-        values = values.slice();
-        let valueGenerator = this;
+    display() {
+        return this._expressionResolver(this._values).display();
+    }  
+    
+    alternativeValues() {
+        let values = this._values.slice();
+        let expressionResolver = this._expressionResolver;
 
         function* generator() {
             while (true) {
@@ -227,11 +214,31 @@ class ExpressionGenerator {
                     case 4:
                         values[j] = values[j] + 3;
                 }
-                yield valueGenerator.generate(values).eval();
+                yield new ExpressionQuestion(expressionResolver, values);
             }
         }
 
         return generator();
+    }
+}
+
+class ExpressionCategory {
+    constructor(variables, expressionResolver) {
+        this._variables = variables;
+        this._expressionResolver = expressionResolver;
+    }
+
+    generate() {
+        let values = this._variables.map(v => {
+            return v.from + Random.random(v.to - v.from + 1);
+        });
+        return new ExpressionQuestion(this._expressionResolver, values);
+    }
+
+    possibleVariableCount() {
+        return this._variables.map(v => {
+            return v.to - v.from + 1;
+        }).reduce((a, b) => a * b, 1);
     }
 }
 

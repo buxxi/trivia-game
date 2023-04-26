@@ -1,4 +1,4 @@
-import QuestionSelector from "./selector.mjs";
+import Selector from "./selector.mjs";
 
 class Random {
 	constructor() {
@@ -17,7 +17,7 @@ class Random {
 
     static fromWeightedObject(obj) {
 		let keys = Object.keys(obj);
-		let total = QuestionSelector.sum(keys.map((k) => obj[k].weight||1));
+		let total = Selector.sum(keys.map((k) => obj[k].weight||1));
 		let randomWeight = Random.random(total);
 
 		var index = 0;

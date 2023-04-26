@@ -1,33 +1,32 @@
 import nlp from 'compromise';
 import adjectives from 'compromise-adjectives';
 import quotesy from 'quotesy';
-import QuestionSelector from '../selector.mjs';
+import Questions from './questions.mjs';
 import Generators from '../generators.mjs';
 import Random from '../random.mjs';
 
 nlp.extend(adjectives);
 
-class QuotesQuestions {
+class QuotesQuestions extends Questions {
 	constructor(config) {
+		super();
 		this._quotes = [];
-		this._types = {
-			author : {
-				title : (correct) => "Who said this famous quote?",
-				correct : (correct) => this._randomQuote(correct),
-				similar : (correct) => this._similarAuthors(correct),
-				load : (correct) => this._loadQuote(correct),
-				format : (correct) => this._resolveAuthor(correct),
-				weight : 50
-			},
-			word : {
-				title : (correct) => "Which word is missing from this quote?",
-				correct : (correct) => this._randomBlankQuote(correct),
-				similar : (correct) => this._similarWords(correct),
-				load : (correct) => this._loadQuote(correct),
-				format : (correct) => this._formatWord(correct),
-				weight : 50
-			}
-		}
+		this._addQuestion({
+			title : (correct) => "Who said this famous quote?",
+			correct : (correct) => this._randomQuote(correct),
+			similar : (correct) => this._similarAuthors(correct),
+			load : (correct) => this._loadQuote(correct),
+			format : (correct) => this._resolveAuthor(correct),
+			weight : 50
+		});
+		this._addQuestion({
+			title : (correct) => "Which word is missing from this quote?",
+			correct : (correct) => this._randomBlankQuote(correct),
+			similar : (correct) => this._similarWords(correct),
+			load : (correct) => this._loadQuote(correct),
+			format : (correct) => this._formatWord(correct),
+			weight : 50
+		});
 	}
 
 	describe() {
@@ -45,19 +44,6 @@ class QuotesQuestions {
 		this._quotes = await this._loadQuotes(cache, progress);
 		progress(1, 1);
 		return this._countQuestions();
-	}
-
-	async nextQuestion() {
-		let type = Random.fromWeightedObject(this._types);
-		let quote = type.correct();
-		let similar = type.similar(quote);
-
-		return ({
-			text : type.title(quote),
-			answers : QuestionSelector.alternatives(similar, quote, type.format),
-			correct : type.format(quote),
-			view : type.load(quote)
-		});
 	}
 
 	_countQuestions() {

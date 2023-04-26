@@ -1,14 +1,16 @@
 import fetch from 'node-fetch';
 import YoutubeLoader from '../youtubeloader.mjs';
-import QuestionSelector from '../selector.mjs';
+import Questions from './questions.mjs';
+import Selector from '../selector.mjs';
 import Generators from '../generators.mjs';
 import Random from '../random.mjs';
 
 const GAMES_PER_PLATFORM = 100;
 const PAGINATE_COUNT = 100;
 
-class VideoGameQuestions {
+class VideoGameQuestions extends Questions {
 	constructor(config) {
+		super();
 		this._games = [];
 		this._platforms = [];
 
@@ -17,40 +19,38 @@ class VideoGameQuestions {
 		this._igdbBaseURL = 'https://api.igdb.com/v4/';
 		this._youtube = new YoutubeLoader('UCzRj15rxSdLAbANoZsbyWjg', config.youtube.clientId, config.youtube.region);
 
-		this._types = {
-			screenshot : {
-				title : (correct) => "Which game is this a screenshot of?",
-				correct : () => this._randomGame(),
-				similar : (correct) => this._similarGames(correct),
-				view : (correct) => this._screenshot(correct),
-				format : (correct) => this._gameTitle(correct),
-				weight : 45
-			},
-			year : {
-				title : (correct) => "In which year was '" + correct.name + "' first released?",
-				correct : () => this._randomGame(),
-				similar : (correct) => this._similarGameYears(correct),
-				view : (correct) => this._blank(correct),
-				format : (correct) => this._gameYear(correct),
-				weight : 10
-			},
-			platform : {
-				title : (correct) => "'" + correct.name + "' was released to one of these platforms, which one?",
-				correct : () => this._randomGame(),
-				similar : (correct) => this._similarPlatforms(correct),
-				view : (correct) => this._blank(correct),
-				format : (correct) => this._gamePlatform(correct),
-				weight : 10
-			},
-			song : {
-				title : (correct) => "From which games soundtrack is this song?",
-				correct : () => this._randomGameWithSong(),
-				similar : (correct) => this._similarGames(correct),
-				view : (correct) => this._songVideo(correct),
-				format : (correct) => this._gameTitle(correct),
-				weight : 25
-			}
-		}
+		this._addQuestion({
+			title : () => "Which game is this a screenshot of?",
+			correct : () => this._randomGame(),
+			similar : (correct) => this._similarGames(correct),
+			load : (correct) => this._screenshot(correct),
+			format : (correct) => this._gameTitle(correct),
+			weight : 45
+		});
+		this._addQuestion({
+			title : (correct) => "In which year was '" + correct.name + "' first released?",
+			correct : () => this._randomGame(),
+			similar : (correct) => this._similarGameYears(correct),
+			load : (correct) => this._blank(correct),
+			format : (correct) => this._gameYear(correct),
+			weight : 10
+		});
+		this._addQuestion({
+			title : (correct) => "'" + correct.name + "' was released to one of these platforms, which one?",
+			correct : () => this._randomGame(),
+			similar : (correct) => this._similarPlatforms(correct),
+			view : (correct) => this._blank(correct),
+			format : (correct) => this._gamePlatform(correct),
+			weight : 10
+		});
+		this._addQuestion({
+			title : () => "From which games soundtrack is this song?",
+			correct : () => this._randomGameWithSong(),
+			similar : (correct) => this._similarGames(correct),
+			view : (correct) => this._songVideo(correct),
+			format : (correct) => this._gameTitle(correct),
+			weight : 25
+		});
 	}
 
 	describe() {
@@ -85,19 +85,6 @@ class VideoGameQuestions {
 		this._games = this._matchVideosToGames(videos, games);
 		
 		return this._countQuestions();
-	}
-
-	async nextQuestion() {
-		let type = Random.fromWeightedObject(this._types);
-		let correct = type.correct();
-		let similar = type.similar(correct);
-
-		return ({
-			text : type.title(correct),
-			answers : QuestionSelector.alternatives(similar, correct, type.format),
-			correct : type.format(correct),
-			view : type.view(correct)
-		});
 	}
 
 	_countQuestions() {
@@ -278,11 +265,11 @@ class VideoGameQuestions {
 	}
 
 	_similarGames(game) {
-		var titleWords = QuestionSelector.wordsFromString(game.name);
+		var titleWords = Selector.wordsFromString(game.name);
 		let result = this._games.map((g) => {
 			return {
 				game : g,
-				score : QuestionSelector.levenshteinDistance(titleWords, QuestionSelector.wordsFromString(g.name)) + QuestionSelector.levenshteinDistance(game, g, e => e.tags) + QuestionSelector.dateDistance(game.release_date, g.release_date)
+				score : Selector.levenshteinDistance(titleWords, Selector.wordsFromString(g.name)) + Selector.levenshteinDistance(game, g, e => e.tags) + Selector.dateDistance(game.release_date, g.release_date)
 			};
 		}).sort((a, b) => a.score - b.score).map((node) => node.game);
 		return Generators.inOrder(result);
@@ -294,7 +281,7 @@ class VideoGameQuestions {
 
 	_similarPlatforms(game) {
 		function dateDifference(a, b) {
-			return QuestionSelector.dateDistance(a.release_date, game.release_date) - QuestionSelector.dateDistance(b.release_date, game.release_date);
+			return Selector.dateDistance(a.release_date, game.release_date) - Selector.dateDistance(b.release_date, game.release_date);
 		}
 
 		let unused = Object.keys(this._platforms).map((p) => this._platforms[p]).filter((p) => game.platforms.indexOf(p) == -1).sort(dateDifference);
@@ -353,13 +340,6 @@ class VideoGameQuestions {
 
 	_release_date(time) {
 		return new Date(time * 1000).toISOString();
-	}
-
-	_toJSON(response) { //TODO: copy pasted
-		if (!response.ok) {
-			throw response;
-		}
-		return response.json();
 	}
 }
 

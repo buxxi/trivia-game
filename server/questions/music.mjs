@@ -1,51 +1,51 @@
 import fetch from 'node-fetch';
-import QuestionSelector from '../selector.mjs';
+import Selector from '../selector.mjs';
+import Questions from './questions.mjs';
 import Generators from '../generators.mjs';
 import Random from '../random.mjs';
 
 const TRACKS_BY_CATEGORY = 100;
 
-class MusicQuestions {
+class MusicQuestions extends Questions {
 	constructor(config) {
+		super();
 		this._tracks = [];
 		this._spotifyWhiteListGenres = config.spotify.whiteList;
 		this._spotifyClientId = config.spotify.clientId;
 		this._spotifyClientSecret = config.spotify.clientSecret;
 
-		this._types = {
-			title : {
-				title : (correct) => "What is the name of this song?",
-				correct : () => this._randomTrack(),
-				similar : (correct) => this._similarTracks(correct),
-				format : (correct) => this._trackTitle(correct),
-				view : (correct) => this._mp3Track(correct),
-				weight : 40
-			},
-			artist : {
-				title : (correct) => "Which artist is this?",
-				correct : () => this._randomTrack(),
-				similar : (correct) => this._similarTracks(correct),
-				format : (correct) => this._artistName(correct),
-				view : (correct) => this._mp3Track(correct),
-				weight : 30
-			},
-			album : {
-				title : (correct) => "From which album is this song?",
-				correct : () => this._randomTrack(),
-				similar : (correct) => this._similarTracks(correct),
-				format : (correct) => this._albumName(correct),
-				view : (correct) => this._mp3Track(correct),
-				weight : 10
-			},
-			artistImage : {
-				title : (correct) => "Which artist is this?",
-				correct : () => this._randomTrack(),
-				similar : (correct) => this._similarTracks(correct),
-				format : (correct) => this._artistName(correct),
-				view : (correct) => this._artistImage(correct),
-				weight : 20
-			}
-		};
+		this._addQuestion({
+			title : () => "What is the name of this song?",
+			correct : () => this._randomTrack(),
+			similar : (correct) => this._similarTracks(correct),
+			format : (correct) => this._trackTitle(correct),
+			load : (correct) => this._mp3Track(correct),
+			weight : 40
+		});
+		this._addQuestion({
+			title : (correct) => "Which artist is this?",
+			correct : () => this._randomTrack(),
+			similar : (correct) => this._similarTracks(correct),
+			format : (correct) => this._artistName(correct),
+			load : (correct) => this._mp3Track(correct),
+			weight : 30
+		});
+		this._addQuestion({
+			title : (correct) => "From which album is this song?",
+			correct : () => this._randomTrack(),
+			similar : (correct) => this._similarTracks(correct),
+			format : (correct) => this._albumName(correct),
+			load : (correct) => this._mp3Track(correct),
+			weight : 10
+		});
+		this._addQuestion({
+			title : (correct) => "Which artist is this?",
+			correct : () => this._randomTrack(),
+			similar : (correct) => this._similarTracks(correct),
+			format : (correct) => this._artistName(correct),
+			view : (correct) => this._artistImage(correct),
+			weight : 20
+		});
 	}
 
 	describe() {
@@ -79,19 +79,6 @@ class MusicQuestions {
 		return this._countQuestions();
 	}
 
-	async nextQuestion() {
-		let type = Random.fromWeightedObject(this._types);
-		let track = type.correct();
-		let similar = type.similar(track);
-
-		return ({
-			text : type.title(track),
-			answers : QuestionSelector.alternatives(similar, track, type.format),
-			correct : type.format(track),
-			view : type.view(track)
-		});
-	}
-
 	_countQuestions() {
 		return this._tracks.length * Object.keys(this._types).length;
 	}
@@ -123,13 +110,6 @@ class MusicQuestions {
 				reject(e);
 			}
 		});
-	}
-
-	_toJSON(response) { //TODO: copy pasted
-		if (!response.ok) {
-			throw response;
-		}
-		return response.json();
 	}
 
 	async _loadCategoryChunk(accessToken, category, popularity) {

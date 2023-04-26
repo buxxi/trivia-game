@@ -1,60 +1,60 @@
-import QuestionSelector from '../selector.mjs';
+import Selector from '../selector.mjs';
+import Questions from './questions.mjs';
 import Generators from '../generators.mjs';
 import Random from '../random.mjs';
 
-class CurrentGameQuestions {
+class CurrentGameQuestions extends Questions {
 	constructor(config) {
-		this._types = {
-			avatar : {
-				title : (correct) => "Which animal does " + correct.name + " have as avatar?",
-				correct : (game) => this._randomPlayer(game),
-				similar : (correct, game) => this._otherAvatars(correct, game),
-				format : (correct) => this._resolveAvatar(correct),
-				attribution : "Avatar"
-			},
-			correct : {
-				title : (correct) => "Who has the most correct answers so far?",
-				correct : (game) => this._playerWithMost(game, (p) => p.stats.correct),
-				similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.stats.correct),
-				format : (correct) => this._resolveName(correct),
-				attribution : "Most correct player (at that time)"
-			},
-			wrong : {
-				title : (correct) => "Who has the most incorrect answers so far?",
-				correct : (game) => this._playerWithMost(game, (p) => p.stats.wrong),
-				similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.stats.wrong),
-				format : (correct) => this._resolveName(correct),
-				attribution : "Most incorrect player (at that time)"
-			},
-			total_correct : {
-				title : (correct) => "What is the total amount of correct answers so far?",
-				correct : (game) => this._countTotal(game, (p) => p.stats.correct),
-				similar : (correct, game) => this._numericAlternatives(correct, game),
-				format : (correct) => this._formatValue(correct),
-				attribution : "Total correct answers (at that time)"
-			},
-			total_wrong : {
-				title : (correct) => "What is the total amount of incorrect answers so far?",
-				correct : (game) => this._countTotal(game, (p) => p.stats.wrong),
-				similar : (correct, game) => this._numericAlternatives(correct, game),
-				format : (correct) => this._formatValue(correct),
-				attribution : "Total incorrect answers (at that time)"
-			},
-			fastest : {
-				title : (correct) => "Who has made the fastest correct answers so far?",
-				correct : (game) => this._playerWithLeast(game, (p) => p.stats.fastest),
-				similar : (correct, game) => this._playersWithHigher(correct, game, (p) => p.stats.fastest),
-				format : (correct) => this._resolveName(correct),
-				attribution : "Fastest player (at that time)"
-			},
-			slowest : {
-				title : (correct) => "Who has made the slowest correct answers so far?",
-				correct : (game) => this._playerWithMost(game, (p) => p.stats.slowest),
-				similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.stats.slowest),
-				format : (correct) => this._resolveName(correct),
-				attribution : "Slowest player (at that time)"
-			}
-		}
+		super();
+		this._addQuestion({
+			title : (correct) => "Which animal does " + correct.name + " have as avatar?",
+			correct : (game) => this._randomPlayer(game),
+			similar : (correct, game) => this._otherAvatars(correct, game),
+			format : (correct) => this._resolveAvatar(correct),
+			load : () => this._loadBlank("Avatar")
+		});
+		this._addQuestion({
+			title : () => "Who has the most correct answers so far?",
+			correct : (game) => this._playerWithMost(game, (p) => p.stats.correct),
+			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.stats.correct),
+			format : (correct) => this._resolveName(correct),
+			load : () => this._loadBlank("Most correct player (at that time)")
+		});
+		this._addQuestion({
+			title : () => "Who has the most incorrect answers so far?",
+			correct : (game) => this._playerWithMost(game, (p) => p.stats.wrong),
+			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.stats.wrong),
+			format : (correct) => this._resolveName(correct),
+			load : () => this._loadBlank("Most incorrect player (at that time)")
+		});
+		this._addQuestion({
+			title : () => "What is the total amount of correct answers so far?",
+			correct : (game) => this._countTotal(game, (p) => p.stats.correct),
+			similar : (correct, game) => this._numericAlternatives(correct, game),
+			format : (correct) => this._formatValue(correct),
+			load : () => this._loadBlank("Total correct answers (at that time)")
+		});
+		this._addQuestion({
+			title : () => "What is the total amount of incorrect answers so far?",
+			correct : (game) => this._countTotal(game, (p) => p.stats.wrong),
+			similar : (correct, game) => this._numericAlternatives(correct, game),
+			format : (correct) => this._formatValue(correct),
+			load : () => this._loadBlank("Total incorrect answers (at that time)")
+		});
+		this._addQuestion({
+			title : () => "Who has made the fastest correct answers so far?",
+			correct : (game) => this._playerWithLeast(game, (p) => p.stats.fastest),
+			similar : (correct, game) => this._playersWithHigher(correct, game, (p) => p.stats.fastest),
+			format : (correct) => this._resolveName(correct),
+			load : () => this._loadBlank("Fastest player (at that time)")
+		});
+		this._addQuestion({
+			title : () => "Who has made the slowest correct answers so far?",
+			correct : (game) => this._playerWithMost(game, (p) => p.stats.slowest),
+			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.stats.slowest),
+			format : (correct) => this._resolveName(correct),
+			load : () => this._loadBlank("Slowest player (at that time)")
+		});
 	}
 
 	describe() {
@@ -71,23 +71,14 @@ class CurrentGameQuestions {
 		return this._countQuestions();
 	}
 
-	async nextQuestion(game) {
-		let type = Random.fromWeightedObject(this._types);
-		let correct = type.correct(game);
-		let similar = type.similar(correct, game);
-
-		return ({
-			text : type.title(correct),
-			answers : QuestionSelector.alternatives(similar, correct, type.format),
-			correct : type.format(correct),
-			view : {
-				attribution : {
-					title : type.attribution,
-					name : type.format(correct),
-					links : []
-				}
+	_loadBlank(title) {
+		return {
+			attribution : {
+				title : title,
+				name : type.format(correct),
+				links : []
 			}
-		});
+		};
 	}
 
 	_countQuestions() {
@@ -99,7 +90,7 @@ class CurrentGameQuestions {
 	}
 
 	_playerWithMost(game, func) {
-		return QuestionSelector.max(this._players(game), func);
+		return Selector.max(this._players(game), func);
 	}
 
 	_playersWithLower(player, game, func) {
@@ -108,7 +99,7 @@ class CurrentGameQuestions {
 	}
 
 	_playerWithLeast(game, func) {
-		return QuestionSelector.min(this._players(game), func);
+		return Selector.min(this._players(game), func);
 	}
 
 	_playersWithHigher(player, game, func) {
@@ -117,7 +108,7 @@ class CurrentGameQuestions {
 	}
 
 	_countTotal(game, func) {
-		return QuestionSelector.sum(this._players(game), func);
+		return Selector.sum(this._players(game), func);
 	}
 
 	_numericAlternatives(number, game) {
