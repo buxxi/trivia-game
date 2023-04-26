@@ -174,32 +174,32 @@ class GeographyQuestions extends Questions {
 	}
 
 	_loadFlag(country) {
-		return Object.assign(this._loadBlank(correct, "Flag"), {
+		return Object.assign(this._loadBlank(country, "Flag"), {
 			player : 'image',
 			url : 'https://flagcdn.com/' + country.code.toLowerCase() + '.svg'
 		});
 	}
 
 	_loadMap(country) {
-		return Object.assign(this._loadBlank(correct, "Image of"), {
+		return Object.assign(this._loadBlank(country, "Image of"), {
 			player : 'image',
 			url : 'https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + country.code + '&chco=00000000|307bbb&chf=bg,s,00000000&cht=map:auto=50,50,50,50'
 		});
 	}
 
-	_loadNeighbours(correct) {
-		return Object.assign(this._loadBlank(correct), {
+	_loadNeighbours(country) {
+		return Object.assign(this._loadBlank(country), {
 			player : 'list',
-			list : correct.neighbours
+			list : country.neighbours
 		});
 	}
 
-	_loadBlank(correct, title = "Country") {
+	_loadBlank(country, title = "Country") {
 		return {
 			attribution: {
 				title : title,
-				name : correct.name,
-				links : ['https://restcountries.com', 'https://flagpedia.net?q=' + correct.code]
+				name : country.name,
+				links : ['https://restcountries.com', 'https://flagpedia.net?q=' + country.code]
 			}
 		};
 	}

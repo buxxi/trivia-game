@@ -12,7 +12,7 @@ class QuotesQuestions extends Questions {
 		super();
 		this._quotes = [];
 		this._addQuestion({
-			title : (correct) => "Who said this famous quote?",
+			title : () => "Who said this famous quote?",
 			correct : (correct) => this._randomQuote(correct),
 			similar : (correct) => this._similarAuthors(correct),
 			load : (correct) => this._loadQuote(correct),
@@ -20,7 +20,7 @@ class QuotesQuestions extends Questions {
 			weight : 50
 		});
 		this._addQuestion({
-			title : (correct) => "Which word is missing from this quote?",
+			title : () => "Which word is missing from this quote?",
 			correct : (correct) => this._randomBlankQuote(correct),
 			similar : (correct) => this._similarWords(correct),
 			load : (correct) => this._loadQuote(correct),

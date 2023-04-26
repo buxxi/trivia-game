@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import Selector from '../selector.mjs';
 import Questions from './questions.mjs';
 import Generators from '../generators.mjs';
 import Random from '../random.mjs';
@@ -23,7 +22,7 @@ class MusicQuestions extends Questions {
 			weight : 40
 		});
 		this._addQuestion({
-			title : (correct) => "Which artist is this?",
+			title : () => "Which artist is this?",
 			correct : () => this._randomTrack(),
 			similar : (correct) => this._similarTracks(correct),
 			format : (correct) => this._artistName(correct),
@@ -31,7 +30,7 @@ class MusicQuestions extends Questions {
 			weight : 30
 		});
 		this._addQuestion({
-			title : (correct) => "From which album is this song?",
+			title : () => "From which album is this song?",
 			correct : () => this._randomTrack(),
 			similar : (correct) => this._similarTracks(correct),
 			format : (correct) => this._albumName(correct),
@@ -39,11 +38,11 @@ class MusicQuestions extends Questions {
 			weight : 10
 		});
 		this._addQuestion({
-			title : (correct) => "Which artist is this?",
+			title : () => "Which artist is this?",
 			correct : () => this._randomTrack(),
 			similar : (correct) => this._similarTracks(correct),
 			format : (correct) => this._artistName(correct),
-			view : (correct) => this._artistImage(correct),
+			load : (correct) => this._artistImage(correct),
 			weight : 20
 		});
 	}

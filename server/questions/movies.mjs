@@ -123,11 +123,10 @@ class MovieQuestions extends Questions {
 
 	async _getMovieId(movie) {
 		try {
-			//TODO: handle this like youtube errors with a retry
 			let movieResponse = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${this._tmdbApiKey}&query=${movie.title}&year=${movie.year}`);
 			let movieData = await this._toJSON(movieResponse);
 			if (movieData.results.length != 1) {
-				throw "Didn't find an exact match for the movie metadata";
+				throw new TmdbError("Didn't find an exact match for the movie metadata");
 			}
 			return movieData.results[0].id;
 		} catch (e) {
@@ -140,7 +139,7 @@ class MovieQuestions extends Questions {
 			let similarResponse = await fetch(`https://api.themoviedb.org/3/movie/${movie.tmdbId}/similar?api_key=${this._tmdbApiKey}`);
 			let similarData = await this._toJSON(similarResponse);
 			if (similarData.results.length < 3) {
-				throw "Got less than 3 similar movies";
+				throw new TmdbError("Got less than 3 similar movies");
 			}
 
 			let similar = similarData.results.map((item) => {
@@ -173,6 +172,9 @@ class MovieQuestions extends Questions {
 			if (err instanceof YoutubeError) {
 				console.log(movie.title + " can't be embedded " + err + ", trying another one");
 				return await this._randomMovieClip();
+			} else if (err instanceof TmdbError) {
+				console.log(movie.title + " can't be matched " + err + ", trying another one");
+				return await this._randomMovieClip();
 			} else {
 				throw err;
 			}
@@ -201,6 +203,12 @@ class MovieQuestions extends Questions {
 
 	_countUniqueClips() {
 		return this._movies.map((m) => m.videos.length).reduce((a, b) => a + b, 0);
+	}
+}
+
+class TmdbError extends Error {
+	constructor(message) {
+		super(message);
 	}
 }
 

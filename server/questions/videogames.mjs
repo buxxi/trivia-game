@@ -39,7 +39,7 @@ class VideoGameQuestions extends Questions {
 			title : (correct) => "'" + correct.name + "' was released to one of these platforms, which one?",
 			correct : () => this._randomGame(),
 			similar : (correct) => this._similarPlatforms(correct),
-			view : (correct) => this._blank(correct),
+			load : (correct) => this._blank(correct),
 			format : (correct) => this._gamePlatform(correct),
 			weight : 10
 		});
@@ -47,7 +47,7 @@ class VideoGameQuestions extends Questions {
 			title : () => "From which games soundtrack is this song?",
 			correct : () => this._randomGameWithSong(),
 			similar : (correct) => this._similarGames(correct),
-			view : (correct) => this._songVideo(correct),
+			load : (correct) => this._songVideo(correct),
 			format : (correct) => this._gameTitle(correct),
 			weight : 25
 		});
