@@ -10,15 +10,12 @@
 			<i class="fas fa-stack-1x" v-bind:class="{'fa-eye' : connected, 'fa-bolt' : !connected}"></i>
 		</div>
 		<h3>{{ message }}</h3>
-		<ul v-if="!connected">
-			<li>
-				<button v-on:click.prevent="reconnect"><i class="fas fa-fw fa-sync"></i> Reconnect</button>
-			</li>
-			<li>
-				<button v-on:click.prevent="returnToLobby"><i class="fas fa-fw fa-sign-out-alt"></i> To lobby</button>
-			</li>
-		</ul>
+		<div class="buttons" v-if="!connected">
+			<button v-on:click.prevent="reconnect"><i class="fas fa-fw fa-sync"></i> Reconnect</button>
+			<button v-on:click.prevent="returnToLobby"><i class="fas fa-fw fa-sign-out-alt"></i> To lobby</button>
+		</div>
 	</div>
+	
 	<button class="button-icon-A" v-if="!waiting && answers.A" v-on:click.prevent="makeGuess('A')" v-bind:class="buttonClass('A')" v-bind:disabled="hasGuessed">{{ answers.A }}</button>
 	<button class="button-icon-B" v-if="!waiting && answers.B" v-on:click.prevent="makeGuess('B')" v-bind:class="buttonClass('B')" v-bind:disabled="hasGuessed">{{ answers.B }}</button>
 	<button class="button-icon-C" v-if="!waiting && answers.C" v-on:click.prevent="makeGuess('C')" v-bind:class="buttonClass('C')" v-bind:disabled="hasGuessed">{{ answers.C }}</button>

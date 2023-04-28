@@ -16,11 +16,15 @@
 			</div>
 			<div>
 				<label for="avatar-selector">Preferred avatar</label>
-				<div class="avatar-selector">
-					<label v-for="avatar in avatars">
-						<input type="radio" name="avatar" v-model="config.avatar" v-bind:value="avatar"/>
-						<div class="avatar"><img v-bind:src="'../common/img/avatars/' + avatar + '.png'"/></div>
-					</label>
+				<div id="avatar-selector">
+					<button v-on:click.prevent="scrollAvatarsLeft"><i class="fa-solid fa-arrow-left"></i></button>
+					<div>
+						<label v-for="avatar in avatars">
+							<input type="radio" name="avatar" v-model="config.avatar" v-bind:value="avatar"/>
+							<div class="avatar"><img v-bind:src="'../common/img/avatars/' + avatar + '.png'"/></div>
+						</label>
+					</div>
+					<button v-on:click.prevent="scrollAvatarsRight"><i class="fa-solid fa-arrow-right"></i></button>
 				</div>
 			</div>
 

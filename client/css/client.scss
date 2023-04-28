@@ -31,46 +31,56 @@
 		font-size : 2em;
 		margin-bottom: 0.5em;
 	}
-	.avatar-selector {
-		font-size: 0.35em;
-		clear : both;
-		overflow : hidden;
+	#avatar-selector {
+		display : flex;
+		div {
+			font-size: 0.65em;
+			clear : both;
+			overflow-x: scroll;
+			white-space: nowrap;
 
-		label {
-			width : auto;
-			float : left;
-		}
-		input {
-			display : none;
-		}
-		input:checked + .avatar {
-			background-color : $primary;
+			label {
+				width : auto;
+			}
+			input {
+				display : none;
+			}
+			input:checked + .avatar {
+				background-color : $primary;
+			}
 		}
 	}
-	.buttons {
-		text-align: center;
-		button {
-			float : none;
-			font-size: 2.5em;
+}
+
+.buttons {
+	
+	button {
+		font-size: 2.5em;
+		width: calc(100% - 1em);
+		justify-content : center;
+		i {
+			margin-right : 0.5em;
 		}
 	}
 }
 
 button {
+	display : flex;
+	align-items: center;
 	background-color: $primary;
 	border : 0.2em solid $primary_border;
 	border-radius: 0.5em;
 	cursor : pointer;
-	display : block;
-	float : right;
 	font-size: 1.5em;
 	font-weight: bold;
-	width: calc(100% - 1em);
 	line-height: 1em;
 	margin : 0.5em;
 	padding : 0.5em;
 	color : white;
 	text-decoration: none;
+	white-space : nowrap;
+	overflow : hidden;
+	outline : none;
 
 	&:active {
 		border-color : $secondary_border;
@@ -84,6 +94,7 @@ button {
 @mixin guess-button($color) {
 	background-color: darken($color, 20%);
 	border-color: $color;
+	width: calc(100% - 1em);
 	&.selected {
 		background-color: $color;
 		border-color: darken($color, 20%);		
@@ -135,6 +146,8 @@ button {
 	text-align: center;
 	top : 0;
 	width : 100%;
+	display : flex;
+	flex-direction: column;
 
 	.stats {
 		height: 20%;
@@ -148,12 +161,9 @@ button {
 	}
 
 	button {
-		display : block;
 		font-size: 1.5em;
-		height : calc(20% - 1em);
-		outline : none;
 		text-align: left;
-		white-space : normal;
+		flex: 1;
 	}
 
 	button.button-icon-A {
@@ -184,15 +194,5 @@ button {
 	}
 	h3 {
 		font-size: 2em;
-	}
-	ul {
-		text-align: center;
-		padding : 0;
-		li {
-			display: block;
-			a {
-				float : none;
-			}
-		}
 	}
 }

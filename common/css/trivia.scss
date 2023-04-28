@@ -40,28 +40,6 @@ body {
 	color : $font;
 	font-family: 'Ubuntu' !important;
 	overflow : hidden;
-
-	@media (min-height: 720px) {
-		font-size: 0.666em;
-	}
-	@media (min-height: 810px) {
-		font-size: 0.75em;
-	}
-	@media (min-height: 1080px) {
-		font-size: 1em;
-	}
-	@media (min-height: 1440px) {
-		font-size: 1.25em;
-	}
-	@media (min-height: 1620px) {
-		font-size: 1.5em;
-	}
-	@media (min-height: 1890px) {
-		font-size: 1.75em;
-	}
-	@media (min-height: 2160px) {
-		font-size: 2em;
-	}
 }
 
 button {

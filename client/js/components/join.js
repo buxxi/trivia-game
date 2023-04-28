@@ -68,6 +68,18 @@ export default {
 					}
 				}, true);
 			});
+		},
+
+		scrollAvatarsLeft: function() {
+			let selector = document.querySelector("#avatar-selector div");
+			let width = selector.clientWidth;
+			selector.scrollLeft -= width;
+		},
+
+		scrollAvatarsRight: function() {
+			let selector = document.querySelector("#avatar-selector div");
+			let width = selector.clientWidth;
+			selector.scrollLeft += width;
 		}
 	},
 	created: async function() {
