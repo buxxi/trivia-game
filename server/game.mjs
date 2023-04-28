@@ -263,6 +263,7 @@ class Game {
 	}
 
 	_checkDuplicateQuestion(question) {
+		let viewParams = ['url','videoId','mp3','quote'];
 		this._previousQuestions.forEach((q) => {
 			if (q.text === question.text && q.correct === question.correct && viewParams.every(p => q.view[p] === question.view[p])) {
 				let params = JSON.stringify(Object.fromEntries(viewParams.map(p => [p, q.view[p]])));
