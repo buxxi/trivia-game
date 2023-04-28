@@ -84,6 +84,8 @@ export default {
 				return "unused"
 			} else if (!this.correct && answer == this.guess) {
 				return "selected";
+			} else if (!this.correct && this.guess) {
+				return "unused";
 			} else {
 				return "";
 			}

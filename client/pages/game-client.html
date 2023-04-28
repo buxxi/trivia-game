@@ -1,4 +1,9 @@
 <div class="answer">
+	<div class="stats" v-bind:style="{'background-color': stats.color}">
+		<img v-bind:src="'../common/img/avatars/' + stats.avatar + '.png'"/>
+		<div><i class="fas fa-fw fa-star"></i>{{stats.score}}</div>
+		<div><i class="fas fa-fw fa-times"></i>{{stats.multiplier}}</div>
+	</div>
 	<div v-if="waiting">
 		<div class="fa-stack fa-5x">
 			<i class="fas fa-tv fa-stack-2x"></i>
@@ -14,15 +19,8 @@
 			</li>
 		</ul>
 	</div>
-	<div v-if="!waiting">
-		<div class="stats" v-bind:style="{'background-color': stats.color}">
-			<img v-bind:src="'../common/img/avatars/' + stats.avatar + '.png'"/>
-			<div><i class="fas fa-fw fa-star"></i>{{stats.score}}</div>
-			<div><i class="fas fa-fw fa-times"></i>{{stats.multiplier}}</div>
-		</div>
-		<button class="button-icon-A" v-if="answers.A" v-on:click.prevent="makeGuess('A')" v-bind:class="buttonClass('A')" v-bind:disabled="hasGuessed">{{ answers.A }}</button>
-		<button class="button-icon-B" v-if="answers.B" v-on:click.prevent="makeGuess('B')" v-bind:class="buttonClass('B')" v-bind:disabled="hasGuessed">{{ answers.B }}</button>
-		<button class="button-icon-C" v-if="answers.C" v-on:click.prevent="makeGuess('C')" v-bind:class="buttonClass('C')" v-bind:disabled="hasGuessed">{{ answers.C }}</button>
-		<button class="button-icon-D" v-if="answers.D" v-on:click.prevent="makeGuess('D')" v-bind:class="buttonClass('D')" v-bind:disabled="hasGuessed">{{ answers.D }}</button>
-	</div>
+	<button class="button-icon-A" v-if="!waiting && answers.A" v-on:click.prevent="makeGuess('A')" v-bind:class="buttonClass('A')" v-bind:disabled="hasGuessed">{{ answers.A }}</button>
+	<button class="button-icon-B" v-if="!waiting && answers.B" v-on:click.prevent="makeGuess('B')" v-bind:class="buttonClass('B')" v-bind:disabled="hasGuessed">{{ answers.B }}</button>
+	<button class="button-icon-C" v-if="!waiting && answers.C" v-on:click.prevent="makeGuess('C')" v-bind:class="buttonClass('C')" v-bind:disabled="hasGuessed">{{ answers.C }}</button>
+	<button class="button-icon-D" v-if="!waiting && answers.D" v-on:click.prevent="makeGuess('D')" v-bind:class="buttonClass('D')" v-bind:disabled="hasGuessed">{{ answers.D }}</button>
 </div>

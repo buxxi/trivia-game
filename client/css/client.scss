@@ -92,11 +92,25 @@ button {
 	&.correct {
 		background-color: $correct;
 		border-color: $correct_border;
+		&:before {
+			content: "\f00c";
+			font-family: 'Font Awesome 6 Free';
+			color: $correct;
+			background-color : $correct_border !important;
+			border-color : $correct !important;
+		}	
 	}
 
 	&.incorrect {
 		background-color: $incorrect;
-		border-color: $incorrect_border;	
+		border-color: $incorrect_border;
+		&:before {
+			content: "\f00d";
+			font-family: 'Font Awesome 6 Free';
+			color: $incorrect;
+			background-color : $incorrect_border !important;
+			border-color : $incorrect !important;
+		}	
 	}
 
 	&.unused {
@@ -106,7 +120,7 @@ button {
 
 	&.selected:before {
 		content: "\f023";
-		font-family: 'Font Awesome 5 Free';
+		font-family: 'Font Awesome 6 Free';
 		background-color: darken($color, 20%);	
 		margin-left: 0.5em;	
 	}
@@ -159,7 +173,7 @@ button {
 	}
 
 	.fa-stack {
-		margin-top : 25%;
+		margin-top : 1em;
 	}
 	.fa-stack-2x {
 		color: $primary;
@@ -170,12 +184,6 @@ button {
 	}
 	h3 {
 		font-size: 2em;
-	}
-	& > div {
-		height : 100%;
-		margin : 0;
-		padding : 0;
-		width : 100%;
 	}
 	ul {
 		text-align: center;

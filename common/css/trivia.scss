@@ -38,7 +38,7 @@ html {
 
 body {
 	color : $font;
-	font-family: 'Font Awesome 5 Free', 'Ubuntu' !important;
+	font-family: 'Ubuntu' !important;
 	overflow : hidden;
 
 	@media (min-height: 720px) {
@@ -65,7 +65,7 @@ body {
 }
 
 button {
-	font-family: 'Font Awesome 5 Free', 'Ubuntu' !important;
+	font-family: 'Ubuntu' !important;
 }
 
 @mixin button-icon($color, $text) {
@@ -157,6 +157,11 @@ button {
 		width: 5.5em;
 	}
 
+	.disconnected {
+		font-size: 3em;
+		padding : 0.2em;
+	}
+
 	.guessed & {
 		img:first-of-type {
 			filter: invert(100%);
@@ -165,19 +170,5 @@ button {
 			background-color : $primary;
 			color : $font;
 		}
-	}
-
-	.disconnected &:before {
-		background-color : inherit;
-		border-radius: 2em;
-		font-weight: bold;
-		margin-left: -1em;
-		margin-top: -0.8em;
-		padding: 0.25em;
-		position: absolute;
-		text-align : center;
-		width: 1.2em;
-		color : $D_color;
-		content: "\f0e7";
 	}
 }
