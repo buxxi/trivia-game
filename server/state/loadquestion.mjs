@@ -2,6 +2,8 @@ import PresentCategoryState from './presentcategory.mjs';
 import QuestionErrorState from './questionerror.mjs';
 import ResultsState from './results.mjs';
 
+
+//TODO: move all the common constructor parameters to run() instead
 class LoadingNextQuestionState {
     constructor(game, categories, clientConnections, monitorConnection) {
         this._game = game;
@@ -10,11 +12,18 @@ class LoadingNextQuestionState {
         this._clientConnections = clientConnections;
     }
 
-	async run() {
+	async run(textToSpeech) {
         if (!this._game.hasMoreQuestions()) {
             return;
         }
-        return await this._game.nextQuestion();
+        let question = await this._game.nextQuestion();
+        if (this._game.config().sound.text2Speech) {
+            question.tts = {
+                category : textToSpeech.load(question.category.name), //TODO: full name
+                question : textToSpeech.load(question.text)
+            }
+        }
+        return question;
 	}
 
 	nextState(question) {

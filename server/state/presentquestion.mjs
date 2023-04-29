@@ -11,7 +11,8 @@ class PresentQuestionState {
     }
 
 	async run() {
-        await this._monitorConnection.showQuestion(this._question.text);
+        let ttsId = this._question.tts ? this._question.tts.question : null;
+        await this._monitorConnection.showQuestion(this._question.text, ttsId);
 	}
 
 	nextState() {

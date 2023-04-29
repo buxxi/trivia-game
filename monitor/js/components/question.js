@@ -9,7 +9,7 @@ function resolveRef(app, ref) {
 	});
 }
 
-async function showCategorySpinner(app, categories, correct, index, total) {
+async function showCategorySpinner(app, categories, correct, index, total, ttsId) {
 	app.state = 'loading';
 	app.title = 'Selecting next question';
 	app.session.update(index, total, correct);
@@ -23,13 +23,13 @@ async function showCategorySpinner(app, categories, correct, index, total) {
 		await spinner.start();
 	}
 
-	return app.sound.speak(app.gameId, app.session.currentCategory.fullName, 3000);
+	return app.sound.speak(app.gameId, ttsId, 3000);
 }
 
-async function displayQuestion(app, text) {
+async function displayQuestion(app, text, ttsId) {
 	app.state = 'pre-question';
 	app.title = text;
-	await app.sound.speak(app.gameId, text, 3000);
+	await app.sound.speak(app.gameId, ttsId, 3000);
 }
 
 function displayError(app, message) {
@@ -148,11 +148,11 @@ export default {
 		});
 
 		this.connection.onCategorySelect().then(data => {
-			return showCategorySpinner(this, data.categories, data.correct, data.index, data.total);
+			return showCategorySpinner(this, data.categories, data.correct, data.index, data.total, data.ttsId);
 		});
 
-		this.connection.onQuestion().then(text => {
-			return displayQuestion(this, text);
+		this.connection.onQuestion().then(data => {
+			return displayQuestion(this, data.text, data.ttsId);
 		});
 
 		this.connection.onQuestionError().then(message => {

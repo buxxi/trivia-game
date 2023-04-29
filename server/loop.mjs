@@ -18,7 +18,7 @@ class GameLoop {
             try {
                 let stateStart = new Date().getTime();
                 console.log(`Game ${this._id} - Starting state: ${this._state.constructor.name}`);
-                let result = await this._state.run();
+                let result = await this._state.run(this._textToSpeech);
                 let stateEnd = new Date().getTime();
                 console.log(`Game ${this._id} - Finished state: ${this._state.constructor.name} in ${(stateEnd - stateStart) / 1000}s`);
                 this._state = this._state.nextState(result);

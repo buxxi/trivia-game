@@ -46,10 +46,8 @@ class TriviaServer {
 		app.get('/trivia/tts', async (req, res) => {
 			try {
 				let gameId = req.query.gameId;
-				let game = this._repository.getGame(gameId);
-				console.log(game);
-				let tts = game.textToSpeech();
-				let ttsId = tts.load(req.query.text);
+				let ttsId = req.query.ttsId;
+				let tts = this._repository.getGame(gameId).textToSpeech();
 				let intArray = await tts.get(ttsId);
 				res.send(Buffer.from(intArray));
 			} catch (e) {

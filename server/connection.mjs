@@ -14,17 +14,21 @@ class ServerToMonitorConnection {
         return this._pws.send(Protocol.PRELOAD_CATEGORY_PROGRESS(category), { current: current, total: total });
     }
 
-    categorySelected(spinnerCategories, correct, index, total) {
+    categorySelected(spinnerCategories, correct, index, total, ttsId) {
         return this._pws.send(Protocol.SHOW_CATEGORY_SELECT, {
             categories: spinnerCategories,
             correct: correct,
             index: index,
-            total: total
+            total: total,
+            ttsId: ttsId
         });
     }
 
-    showQuestion(text) {
-        return this._pws.send(Protocol.SHOW_QUESTION, text);
+    showQuestion(text, ttsId) {
+        return this._pws.send(Protocol.SHOW_QUESTION, {
+            text: text,
+            ttsId:  ttsId
+        });
     }
 
     questionError(message) {

@@ -19,8 +19,9 @@ class PresentCategoryState {
         let correct = this._game.currentCategory();
         let index = this._game.currentQuestionIndex();
         let total = this._game.totalQuestionCount();
+        let ttsId = this._question.tts ? this._question.tts.category : null;
 
-        await this._monitorConnection.categorySelected(spinnerCategories, correct, index, total);
+        await this._monitorConnection.categorySelected(spinnerCategories, correct, index, total, ttsId);
 	}
 
 	nextState() {

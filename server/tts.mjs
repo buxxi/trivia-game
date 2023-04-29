@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import {v4 as uuid} from 'uuid';
 
+//TODO: better error handling
 class TextToSpeech {
     constructor(ttsUrl) {
         this._ttsUrl = ttsUrl;
