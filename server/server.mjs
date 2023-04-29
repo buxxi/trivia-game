@@ -1,13 +1,12 @@
 import express from 'express';
 import sass from 'node-sass';
 import { WebSocketServer } from 'ws';
-import fetch from 'node-fetch';
 
 class TriviaServer {
-	constructor(port, avatars, ttsUrl) {
+	constructor(port, avatars, tts) {
 		this._port = port;
 		this._avatars = avatars;
-		this._ttsUrl = ttsUrl;
+		this._tts = tts;
 	}
 
 	start() {
@@ -44,26 +43,15 @@ class TriviaServer {
 		app.use('/trivia/monitor/js/ext/uuidv4.min.js', express.static('node_modules/uuid/dist/umd/uuidv4.min.js'));
 		app.use('/trivia/monitor/js/ext/qrcode.min.js', express.static('node_modules/qrcode/build/qrcode.js'));
 		
-		app.get('/trivia/tts', (req, res) => {
-			if (!this._ttsUrl) {
-				res.sendStatus(403);
-				return;
+		app.get('/trivia/tts', async (req, res) => {
+			try {
+				let ttsId = this._tts.load(req.query.text);
+				let intArray = await this._tts.get(ttsId);
+				res.send(Buffer.from(intArray));
+			} catch (e) {
+				let status = typeof e == 'number' ? e : 500;
+				res.sendStatus(status);
 			}
-			if (!req.query.text) {
-				res.sendStatus(400);
-				return;
-			}
-			
-			let text = encodeURIComponent(req.query.text);
-			let url = this._ttsUrl.replace('{text}', text);
-
-			fetch(url)
-				.then(response => response.arrayBuffer())
-				.then(array => res.send(Buffer.from(new Uint8Array(array))))
-				.catch((e) => {
-					console.log(e);
-					res.sendStatus(500);
-				});
 		});
 
 		//Init regular web server

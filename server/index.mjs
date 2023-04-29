@@ -5,6 +5,7 @@ import Categories from './categories.mjs';
 import GameLoop from './loop.mjs';
 import {v4 as uuid} from 'uuid';
 import ServerConnection from './connection.mjs';
+import TextToSpeech from './tts.mjs';
 
 class GameRepository {
 	constructor(categories, avatars) {
@@ -50,7 +51,7 @@ async function loadCategories(config) {
 
 function startServer(config) {
 	console.log("Starting server");
-	let server = new TriviaServer(8080, config.avatars, config.ttsUrl);
+	let server = new TriviaServer(8080, config.avatars, new TextToSpeech(config.ttsUrl));
 	server.start();
 	return server;
 }
