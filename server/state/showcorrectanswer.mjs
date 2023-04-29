@@ -2,30 +2,26 @@ import LoadingNextQuestionState from './loadquestion.mjs';
 import QuestionErrorState from './questionerror.mjs';
 
 class ShowCorrectAnswerState {
-    constructor(game, categories, clientConnections, monitorConnection, pointsThisRound) {
-        this._game = game;
-        this._categories = categories;
-        this._monitorConnection = monitorConnection;
-        this._clientConnections = clientConnections;
+    constructor(pointsThisRound) {
         this._pointsThisRound = pointsThisRound;
     }
 
-	async run() {
-        let correct = this._game.correctAnswer();
+	async run(game, categories, clientConnections, monitorConnection, text2Speech) {
+        let correct = game.correctAnswer();
         console.log(correct);
 
-        await Promise.all(Object.keys(this._clientConnections).map(clientId => {
-            return this._clientConnections[clientId].questionEnd(this._pointsThisRound[clientId], correct);
+        await Promise.all(Object.keys(clientConnections).map(clientId => {
+            return clientConnections[clientId].questionEnd(this._pointsThisRound[clientId], correct);
         }));
-        await this._monitorConnection.questionEnd(this._pointsThisRound, correct);
+        await monitorConnection.questionEnd(this._pointsThisRound, correct);
 	}
 
 	nextState() {
-        return new LoadingNextQuestionState(this._game, this._categories, this._clientConnections, this._monitorConnection);
+        return new LoadingNextQuestionState();
 	}
 
     errorState(error) {
-        return new QuestionErrorState(this._game, this._categories, this._clientConnections, this._monitorConnection, error);
+        return new QuestionErrorState(error);
     }
 }
 

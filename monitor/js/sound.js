@@ -76,7 +76,7 @@ class SoundController {
 				try {
 					speak.play();
 				} catch (e) {
-					reject(new Error("Failed to load text2speech for: " + text));
+					reject(new Error("Failed to load text2speech for: " + ttsId));
 				}
 			});
 			speak.on('end', resolve);

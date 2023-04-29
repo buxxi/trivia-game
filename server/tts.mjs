@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import {v4 as uuid} from 'uuid';
 
 //TODO: better error handling
-class TextToSpeech {
+class Text2Speech {
     constructor(ttsUrl) {
         this._ttsUrl = ttsUrl;
         this._requests = {};
@@ -30,4 +30,4 @@ class TextToSpeech {
     }
 }
 
-export default TextToSpeech;
+export default Text2Speech;

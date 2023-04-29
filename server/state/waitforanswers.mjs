@@ -2,43 +2,39 @@ import ShowCorrectAnswerState from './showcorrectanswer.mjs';
 import QuestionErrorState from './questionerror.mjs';
 
 class WaitForAnswersState {
-    constructor(game, categories, clientConnections, monitorConnection, question) {
-        this._game = game;
-        this._categories = categories;
-        this._monitorConnection = monitorConnection;
-        this._clientConnections = clientConnections;
+    constructor(question) {
         this._question = question;
     }
 
-	async run() {
-        await Promise.all(Object.values(this._clientConnections).map(client => client.questionStart(this._question.answers)));
-        await this._monitorConnection.questionStart(this._question.view, this._question.answers);
+	async run(game, categories, clientConnections, monitorConnection, text2Speech) {
+        await Promise.all(Object.values(clientConnections).map(client => client.questionStart(this._question.answers)));
+        await monitorConnection.questionStart(this._question.view, this._question.answers);
        
-        for (let clientId in this._clientConnections) {
-            let client = this._clientConnections[clientId];
+        for (let clientId in clientConnections) {
+            let client = clientConnections[clientId];
             client.onGuess().then(async guess => {
-                this._game.guess(clientId, guess);
-                return this._monitorConnection.playerGuessed(clientId);
+                game.guess(clientId, guess);
+                return monitorConnection.playerGuessed(clientId);
             });
         };
         
         console.log(this._question.answers);
 
-        let pointsThisRound = await this._game.startTimer((timeLeft, percentageLeft, currentScore) => { 
-            return this._monitorConnection.timerTick(timeLeft, percentageLeft, currentScore);
+        let pointsThisRound = await game.startTimer((timeLeft, percentageLeft, currentScore) => { 
+            return monitorConnection.timerTick(timeLeft, percentageLeft, currentScore);
         });  
 
-        Object.values(this._clientConnections).forEach(client => client.removeGuessListener());
+        Object.values(clientConnections).forEach(client => client.removeGuessListener());
 
         return pointsThisRound;
 	}
 
 	nextState(pointsThisRound) {
-		return new ShowCorrectAnswerState(this._game, this._categories, this._clientConnections, this._monitorConnection, pointsThisRound);
+		return new ShowCorrectAnswerState(pointsThisRound);
 	}
 
     errorState(error) {
-        return new QuestionErrorState(this._game, this._categories, this._clientConnections, this._monitorConnection, error);
+        return new QuestionErrorState(error);
     }
 }
 

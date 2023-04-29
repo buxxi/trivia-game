@@ -1,21 +1,16 @@
 class ResultsState {
-    constructor(game, categories, clientConnections, monitorConnection) {
-        this._game = game;
-        this._categories = categories;
-        this._monitorConnection = monitorConnection;
-        this._clientConnections = clientConnections;
-    }
+    constructor() {}
 
-	async run() {
-        await this._monitorConnection.results(this._game.history(), this._game.players()); 
+	async run(game, categories, clientConnections, monitorConnection, text2Speech) {
+        await monitorConnection.results(game.history(), game.players()); 
 
-        await Promise.all(Object.values(this._clientConnections).map((client) => {
+        await Promise.all(Object.values(clientConnections).map((client) => {
             return client.gameEnd();
         }));
 
-        this._monitorConnection.close();
+        monitorConnection.close();
         
-        Object.values(this._clientConnections).forEach((client) => {
+        Object.values(clientConnections).forEach((client) => {
             client.close();
         });
 	}

@@ -47,7 +47,7 @@ class TriviaServer {
 			try {
 				let gameId = req.query.gameId;
 				let ttsId = req.query.ttsId;
-				let tts = this._repository.getGame(gameId).textToSpeech();
+				let tts = this._repository.getGame(gameId).text2Speech();
 				let intArray = await tts.get(ttsId);
 				res.send(Buffer.from(intArray));
 			} catch (e) {

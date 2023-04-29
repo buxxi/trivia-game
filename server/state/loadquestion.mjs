@@ -3,24 +3,18 @@ import QuestionErrorState from './questionerror.mjs';
 import ResultsState from './results.mjs';
 
 
-//TODO: move all the common constructor parameters to run() instead
 class LoadingNextQuestionState {
-    constructor(game, categories, clientConnections, monitorConnection) {
-        this._game = game;
-        this._categories = categories;
-        this._monitorConnection = monitorConnection;
-        this._clientConnections = clientConnections;
-    }
+    constructor() {}
 
-	async run(textToSpeech) {
-        if (!this._game.hasMoreQuestions()) {
+	async run(game, categories, clientConnections, monitorConnection, text2Speech) {
+        if (!game.hasMoreQuestions()) {
             return;
         }
-        let question = await this._game.nextQuestion();
-        if (this._game.config().sound.text2Speech) {
+        let question = await game.nextQuestion();
+        if (game.config().sound.text2Speech) {
             question.tts = {
-                category : textToSpeech.load(question.category.name), //TODO: full name
-                question : textToSpeech.load(question.text)
+                category : text2Speech.load(question.category.name), //TODO: full name
+                question : text2Speech.load(question.text)
             }
         }
         return question;
@@ -28,13 +22,13 @@ class LoadingNextQuestionState {
 
 	nextState(question) {
         if (!question) {
-            return new ResultsState(this._game, this._categories, this._clientConnections, this._monitorConnection);
+            return new ResultsState();
         }
-		return new PresentCategoryState(this._game, this._categories, this._clientConnections, this._monitorConnection, question);
+		return new PresentCategoryState(question);
 	}
 
     errorState(error) {
-        return new QuestionErrorState(this._game, this._categories, this._clientConnections, this._monitorConnection, error);
+        return new QuestionErrorState(error);
     }
 }
 
