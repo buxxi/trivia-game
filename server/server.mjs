@@ -3,10 +3,10 @@ import sass from 'node-sass';
 import { WebSocketServer } from 'ws';
 
 class TriviaServer {
-	constructor(port, avatars, tts) {
+	constructor(port, avatars, repository) {
 		this._port = port;
 		this._avatars = avatars;
-		this._tts = tts;
+		this._repository = repository;
 	}
 
 	start() {
@@ -45,10 +45,15 @@ class TriviaServer {
 		
 		app.get('/trivia/tts', async (req, res) => {
 			try {
-				let ttsId = this._tts.load(req.query.text);
-				let intArray = await this._tts.get(ttsId);
+				let gameId = req.query.gameId;
+				let game = this._repository.getGame(gameId);
+				console.log(game);
+				let tts = game.textToSpeech();
+				let ttsId = tts.load(req.query.text);
+				let intArray = await tts.get(ttsId);
 				res.send(Buffer.from(intArray));
 			} catch (e) {
+				console.log(e);
 				let status = typeof e == 'number' ? e : 500;
 				res.sendStatus(status);
 			}

@@ -8,9 +8,9 @@ import ServerConnection from './connection.mjs';
 import TextToSpeech from './tts.mjs';
 
 class GameRepository {
-	constructor(categories, avatars) {
+	constructor(categories, config) {
 		this._categories = categories;
-		this._avatars = avatars;
+		this._config = config;
 		this._currentGames = {};
 	}
 
@@ -22,8 +22,8 @@ class GameRepository {
 	}
 
 	startGame(gameId, monitorConnection) {
-		let game = new Game(this._categories, this._avatars);
-		let loop = new GameLoop(game, gameId, this._categories, monitorConnection);
+		let game = new Game(this._categories, this._config.avatars);
+		let loop = new GameLoop(game, gameId, this._categories, monitorConnection, new TextToSpeech(this._config.ttsUrl));
 		
 		if (gameId in this._currentGames) {
 			throw new Error("Game " + gameId + " is already running");
@@ -49,9 +49,9 @@ async function loadCategories(config) {
 	return categories;
 }
 
-function startServer(config) {
+function startServer(config, repository) {
 	console.log("Starting server");
-	let server = new TriviaServer(8080, config.avatars, new TextToSpeech(config.ttsUrl));
+	let server = new TriviaServer(8080, config.avatars, repository);
 	server.start();
 	return server;
 }
@@ -59,8 +59,8 @@ function startServer(config) {
 async function init() {
 	let config = await loadConfig();
 	let categories = await loadCategories(config);
-	let repository = new GameRepository(categories, config.avatars);
-	let server = startServer(config);
+	let repository = new GameRepository(categories, config);
+	let server = startServer(config, repository);
 
 	server.addWebSocketConnectionListener(socket => {
 		let connection = new ServerConnection(socket);

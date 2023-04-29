@@ -63,7 +63,7 @@ class SoundController {
 		}
 	}
 
-	speak(text, minimumTime) {
+	speak(gameId, text, minimumTime) {
 		return new Promise((resolve, reject) => {
 			if (!this._config.text2Speech) {
 				setTimeout(resolve, minimumTime);
@@ -71,7 +71,7 @@ class SoundController {
 			}
 
 			let encodedText = encodeURIComponent(text);
-			let url = new URL("../tts", document.location).toString() + "?text=" + encodedText;
+			let url = new URL("../tts", document.location).toString() + "?gameId=" + gameId + "&text=" + encodedText;
 			
 			let speak = new Pizzicato.Sound(url, () => {
 				try {

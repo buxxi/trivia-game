@@ -23,13 +23,13 @@ async function showCategorySpinner(app, categories, correct, index, total) {
 		await spinner.start();
 	}
 
-	return app.sound.speak(app.session.currentCategory.fullName, 3000);
+	return app.sound.speak(app.gameId, app.session.currentCategory.fullName, 3000);
 }
 
 async function displayQuestion(app, text) {
 	app.state = 'pre-question';
 	app.title = text;
-	await app.sound.speak(text, 3000);
+	await app.sound.speak(app.gameId, text, 3000);
 }
 
 function displayError(app, message) {

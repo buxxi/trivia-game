@@ -1,12 +1,13 @@
 import ConfigureState from './state/configure.mjs';
 
 class GameLoop {
-    constructor(game, id, categories, monitorConnection) {
+    constructor(game, id, categories, monitorConnection, textToSpeech) {
         this._id = id;
         this._game = game;
         this._monitorConnection = monitorConnection;
         this._clientConnections = {};
-        this._state = new ConfigureState(game, categories, this._clientConnections, monitorConnection);
+        this._state = new ConfigureState(game, categories, this._clientConnections, monitorConnection, textToSpeech);
+        this._textToSpeech = textToSpeech;
     }
     
     async run() {
@@ -52,6 +53,10 @@ class GameLoop {
         });
         this._sendPlayerChanges();
         return this._game.stats(clientId);
+    }
+
+    textToSpeech() {
+        return this._textToSpeech;
     }
     
     _disconnectClients() {
