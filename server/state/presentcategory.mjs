@@ -1,5 +1,6 @@
 import PresentQuestionState from './presentquestion.mjs';
 import QuestionErrorState from './questionerror.mjs';
+import Random from '../random.mjs';
 
 const JOKE_CHANCE = 0.5;
 const MINIMUM_CATEGORIES_COUNT = 8;
@@ -34,16 +35,24 @@ class PresentCategoryState {
         var insertJoke = Math.random() >= JOKE_CHANCE;
 		while (result.length < MINIMUM_CATEGORIES_COUNT || insertJoke) {
 			if (insertJoke) {
-				result.push(this._toSpinnerCategory(categories.joke()));
+				result.push(this._toSpinnerCategory(categories.joke(game.players())));
 			}
-			result = result.concat(enabledCategories); //TODO: shuffle this array?
+			result = result.concat(enabledCategories);
 			insertJoke = Math.random() >= JOKE_CHANCE;
 		}
-        return result;
+        return this._shuffle(result);
     }
 
     _toSpinnerCategory(c) {
         return ({ name: c.name, icon: c.icon, fullName: c.name });
+    }
+
+    _shuffle(input) {
+        let result = [];
+        while (input.length > 0) {
+            result.push(input.splice(Random.random(input.length), 1)[0]);
+        }
+        return result;
     }
 }
 
