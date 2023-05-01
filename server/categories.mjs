@@ -26,8 +26,13 @@ class Categories {
 		return this.available().filter((category) => game.categoryEnabled(category.type));
 	}
 
-	joke() {
-		return Random.fromArray(this._jokes);
+	joke(players) {
+		let player = Random.fromWeightedObject(players) ?? {name : ""};
+		let joke = Random.fromArray(this._jokes);
+		return {
+			icon: joke.icon,
+			name: joke.name.replace("{playerName}", player.name)
+		}
 	}
 
 	preload(category, progress) {
