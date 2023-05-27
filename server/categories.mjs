@@ -51,6 +51,9 @@ class Categories {
 		if (question.answers.filter(a => !!a).length < 4) {
 			throw new Error("Got to few answers for " + question.text + " (" + question.answers + ")");
 		}
+		if (!question.answers.includes(question.correct)) {
+			throw new Error("The correct answer wasn't part of the possible answers for " + question.text);
+		}
 
 		this._shuffleAnswers(question);
 		question.category = Object.assign({type: categoryName}, category.describe());
