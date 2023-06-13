@@ -13,6 +13,7 @@ class ActorQuestions extends Questions {
 		this._tmdbApiKey = config.tmdb.clientId;
     
 		this._addQuestion({
+			weight : 60,
 			title : (correct) => "Who is this " + (correct.male ? "actor" : "actress") + "?",
 			correct : () => this._randomActorWithImage(),
 			similar : (correct) => this._similarActors(correct),
@@ -21,6 +22,7 @@ class ActorQuestions extends Questions {
 			count : () => this._countActors()
 		});
 		this._addQuestion({
+			weight : 10,
 			title : (correct) => "Who is oldest of these " + (correct.male ? "actors" : "actresses") + "?",
 			correct : () => this._randomActorWithBirthday(),
 			similar : (correct) => this._youngerActors(correct),
@@ -29,6 +31,7 @@ class ActorQuestions extends Questions {
 			count : () => this._countActors()
 		});
 		this._addQuestion({
+			weight : 30,
 			title : (correct) => "Where was " + correct.name + " born?",
 			correct : () => this._randomActorWithBirth(),
 			similar : (correct) => this._similarActors(correct),
