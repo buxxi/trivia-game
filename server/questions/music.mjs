@@ -50,7 +50,7 @@ class MusicQuestions extends Questions {
 	describe() {
 		return {
 			name : 'Music',
-			icon : 'fa-guitar',
+			icon : 'fa-compact-disc',
 			attribution : [
 				{ url: 'https://spotify.com', name: 'Spotify' }
 			]
@@ -156,13 +156,7 @@ class MusicQuestions extends Questions {
 					}
 				});
 				let data = await this._toJSON(response);
-				var genres = data.genres;
-				if (this._spotifyWhiteListGenres) {
-					genres = genres.filter((g) => this._spotifyWhiteListGenres.indexOf(g) > -1);
-				} else {
-					this._spotifyWhiteListGenres = genres;
-				}
-				resolve(genres);
+				resolve(data.genres);
 			} catch(e) {
 				try {
 					await this._retryAfterHandler(e);
@@ -170,6 +164,13 @@ class MusicQuestions extends Questions {
 				} catch (ex) {
 					reject(ex);
 				}			
+			}
+		}).then(genres => {
+			if (this._spotifyWhiteListGenres) {
+				return genres.filter((g) => this._spotifyWhiteListGenres.indexOf(g) > -1);
+			} else {
+				this._spotifyWhiteListGenres = genres;
+				return genres;
 			}
 		});
 	}
