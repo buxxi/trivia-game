@@ -50,7 +50,7 @@ class Questions {
 				throw new Error("Empty alternative returned");
 			}
 
-			if (result.indexOf(e) == -1) {
+			if (!result.some(x => e.toLowerCase() == x.toLowerCase())) {
 				result.push(e);
 			}
 		}
