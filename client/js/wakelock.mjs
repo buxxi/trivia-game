@@ -6,13 +6,11 @@ class WakeLock {
     async aquire() {
         if (this.supported()) {
             this.lock = await navigator.wakeLock.request("screen");
-            console.log("wake lock aquired");
         }
     }
 
     async release() {
         await this.lock.release();
-        console.log("wake lock released");
         this.lock = new UnlockedWakeLock();
     }
 
