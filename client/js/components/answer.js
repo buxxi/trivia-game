@@ -39,7 +39,7 @@ export default {
 		correct: undefined,
 		guess: undefined
 	})},
-	props: ['connection', 'gameId', 'clientId', 'stats'],
+	props: ['connection', 'wakelock', 'gameId', 'clientId', 'stats'],
 	created: function() {
 		if (!this.connection.connected()) {
 			return;
@@ -95,7 +95,10 @@ export default {
 			this.connection.onQuestionStart().then(async answers => showAnswers(this, answers));
 			this.connection.onQuestionEnd().then(async (data) => showCorrect(this, data.pointsThisRound, data.correct));
 			this.connection.onClose().catch(() => showClosed(this));
-			this.connection.onGameEnd().then(async () => { redirectToJoin(this)});
+			this.connection.onGameEnd().then(async () => { 
+				await this.wakelock.release();
+				redirectToJoin(this);
+			});
 		}
 	}
 };

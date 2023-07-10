@@ -1,3 +1,5 @@
+import WakeLock from "../wakelock.mjs";
+
 async function resolveBackCamera() {
 	let sources = await navigator.mediaDevices.enumerateDevices();
 	let backCamera = sources.find((source) => {
@@ -26,14 +28,16 @@ export default {
 			return this.config.gameId && this.config.name;
 		}
 	},
-	props: ['gameId', 'connection', 'name', 'preferredAvatar'],
+	props: ['gameId', 'wakelock', 'connection', 'name', 'preferredAvatar'],
 	methods: {
-		join: function() {
-			this.connection.connect(this.config.gameId, this.config.name, this.config.avatar).then((data) => {
+		join: async function() {
+			try {
+				let data = await this.connection.connect(this.config.gameId, this.config.name, this.config.avatar);
+				await this.wakelock.aquire();
 				this.$router.push({ name: "game", query : { gameId: this.config.gameId, clientId: data.clientId }, state: { stats: JSON.stringify(data.stats) } });
-			}).catch((err) => {
+			} catch (err) {
 				this.message = "Error when joining: " + err.message;
-			});
+			}
 		},
 		
 		qrscan: function() {
@@ -86,5 +90,8 @@ export default {
 		let request = await fetch("avatars.json");
 		let avatars = await request.json();
 		avatars.forEach((avatar) => this.avatars.push(avatar));
+		if (!this.wakelock.supported()) {
+			this.message = "Keeping the screen awake not supported on this device";
+		}
 	}
 };

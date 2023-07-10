@@ -1,6 +1,7 @@
 import Join from '../components/join.js';
 import Answer from '../components/answer.js';
 import ClientToServerConnection from '../connection.mjs';
+import WakeLock from '../wakelock.mjs';
 
 function loadTemplate(url, component) {
 	return () => {
@@ -19,6 +20,7 @@ function getState(key, defaultValue) {
 }
 
 const connection = new ClientToServerConnection(new URL("..", document.location));
+const wakelock = new WakeLock();
 
 const routes = [
 	{
@@ -28,6 +30,7 @@ const routes = [
 		props: (route) => ({
 			gameId: route.query.gameId,
 			connection: connection,
+			wakelock: wakelock,
 			name: route.query.name,
 			preferredAvatar: route.query.preferredAvatar
 		})
@@ -40,6 +43,7 @@ const routes = [
 			gameId: route.query.gameId,
 			clientId: route.query.clientId,
 			connection: connection,
+			wakelock: wakelock,
 			stats: getState('stats', {})
 		})
 	}
