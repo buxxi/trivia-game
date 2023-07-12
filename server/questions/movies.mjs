@@ -60,17 +60,17 @@ class MovieQuestions extends Questions {
 			}
 		}
 		var patterns = [
-			/(.*) \((\d+)\) - .* | Movieclips/i,
-			/.*?- (.*) \(\d+\/\d+\) Movie CLIP \((\d+)\) HD/i,
-			/(.*?) \(\d+\/\d+\) Movie CLIP - .* \((\d+)\) HD/i,
-			/(.*?) #\d+ Movie CLIP - .* \((\d+)\) HD/i,
-			/.*? - (.*) Movie \((\d+)\) - HD/i,
-			/(.*?) Movie CLIP - .* \((\d+)\) HD/i,
-			/(.*?) \(\d+\/\d+\).* -\s+\((\d+)\) HD/i,
-			/.*? SCENE - (.*) \((\d+)\) HD/i,
-			/(.*?) \(\d+\/\d+\) MovieCLIP[s]? - .* \((\d+)\)/i,
-			/(.*?) \(\d+\/\d+\) Movie CLIP - .*\((\d+)\) HD/i,
-			/(.*?) - .*\((\d+)\) HD/i
+			/(.*) \((\d{4})\) .* \| Movieclips/i,
+			/.*?- (.*) \(\d+\/\d+\) Movie CLIP \((\d{4})\) HD/i,
+			/(.*?) \(\d+\/\d+\) Movie CLIP - .* \((\d{4})\) HD/i,
+			/(.*?) #\d+ Movie CLIP - .* \((\d{4})\) HD/i,
+			/.*? - (.*) Movie \((\d{4})\) - HD/i,
+			/(.*?) Movie CLIP - .* \((\d{4})\) HD/i,
+			/(.*?) \(\d+\/\d+\).* -\s+\((\d{4})\) HD/i,
+			/.*? SCENE - (.*) \((\d{4})\) HD/i,
+			/(.*?) \(\d+\/\d+\) MovieCLIP[s]? - .* \((\d{4})\)/i,
+			/(.*?) \(\d+\/\d+\) Movie CLIP - .*\((\d{4})\) HD/i,
+			/(.*?) - .*\((\d{4})\) HD/i
 		];
 
 		for (var i = 0; i < patterns.length; i++) {
