@@ -80,7 +80,6 @@ app.component('list-player', Vue.defineAsyncComponent(loadTemplate('./pages/play
 app.component('answers-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/answers.html', AnswersPlayer)));
 app.component('mp3-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/mp3.html', Mp3WavePlayer)));
 app.component('youtube-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/youtube.html', YoutubePlayer)));
-app.component('youtubeaudio-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/youtube.html', YoutubePlayer)));
 app.component('category-spinner', Vue.defineAsyncComponent(loadTemplate('./pages/spinner.html', CategorySpinner)));
 
 app.mount('#main');

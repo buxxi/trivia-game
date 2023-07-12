@@ -17,7 +17,6 @@ class VideoGameQuestions extends Questions {
 		this._igdbClientId = config.igdb.clientId;
 		this._igdbClientSecret = config.igdb.clientSecret;
 		this._igdbBaseURL = 'https://api.igdb.com/v4/';
-		this._youtube = new YoutubeLoader('UCzRj15rxSdLAbANoZsbyWjg', config.youtube.clientId, config.youtube.region);
 
 		this._addQuestion({
 			title : () => "Which game is this a screenshot of?",
@@ -42,14 +41,6 @@ class VideoGameQuestions extends Questions {
 			load : (correct) => this._blank(correct),
 			format : (correct) => this._gamePlatform(correct),
 			weight : 10
-		});
-		this._addQuestion({
-			title : () => "From which games soundtrack is this song?",
-			correct : () => this._randomGameWithSong(),
-			similar : (correct) => this._similarGames(correct),
-			load : (correct) => this._songVideo(correct),
-			format : (correct) => this._gameTitle(correct),
-			weight : 25
 		});
 	}
 
@@ -81,8 +72,7 @@ class VideoGameQuestions extends Questions {
 			progress(games.length, total);
 		}
 
-		let videos = await this._loadVideos(progress, cache);
-		this._games = this._matchVideosToGames(videos, games);
+		this._games = games;
 		
 		return this._countQuestions();
 	}
@@ -98,12 +88,6 @@ class VideoGameQuestions extends Questions {
 		});
 		let data = await this._toJSON(response);
 		return data.access_token;
-	}
-
-	_loadVideos(progress, cache) {
-		return cache.get('songs', (resolve, reject) => {
-			this._youtube.loadChannel(progress).then(resolve).catch(reject);
-		});
 	}
 
 	_loadGames(platform, platforms, cache, token) {
@@ -215,53 +199,8 @@ class VideoGameQuestions extends Questions {
 		return result;
 	};
 
-	_matchVideosToGames(videos, games) {
-		let gamesByName = {};
-		for (let game of games) {
-			gamesByName[this._toAlphaNumeric(game.name)] = game;
-		}
-		this._parseTitles(videos).forEach((t) => {
-			let game = gamesByName[t.title];
-			if (game) {
-				game.songs = game.songs || [];
-				game.songs.push(t.id);
-			}
-		});
-		return games;
-	}
-
-	_parseTitles(videos) {
-		let patterns = [
-			/VGM [0-9]+ - (.*?)( - ).*/i,
-			/(.*) OST[\s]*-? .*/i,
-		];
-
-		return videos.map((v) => {
-			for (let pattern of patterns) {
-				let match = v.title.match(pattern);
-				if (match) {
-					return {
-						id : v.id,
-						title : this._toAlphaNumeric(match[1])
-					};
-				}
-			}
-
-			return null;
-		}).filter((v) => v != null);
-	}
-
-	_toAlphaNumeric(str) {
-		let x = /[^a-z0-9]/g;
-		return str.toLowerCase().replace(x, '');
-	}
-
 	_randomGame() {
 		return Random.fromArray(this._games);
-	}
-
-	_randomGameWithSong() {
-		return Random.fromArray(this._games, g => !!g.songs);
 	}
 
 	_similarGames(game) {
@@ -298,20 +237,6 @@ class VideoGameQuestions extends Questions {
 				title : "Screenshot of",
 				name : this._gameTitle(game) + " (" + this._gameYear(game) + ")",
 				links : [game.attribution]
-			}
-		}
-	}
-
-	_songVideo(game) {
-		let videoId = Random.fromArray(game.songs);
-
-		return {
-			player : 'youtubeaudio',
-			videoId : videoId,
-			attribution : {
-				title : "Music from",
-				name : this._gameTitle(game) + " (" + this._gameYear(game) + ")",
-				links : [game.attribution, 'http://www.youtube.com/watch?v=' + videoId]
 			}
 		}
 	}

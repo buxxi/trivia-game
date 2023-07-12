@@ -19,10 +19,6 @@
         }
     }
 
-    &.youtubeaudio {
-        visibility : hidden;
-    }
-
     &.youtube {
         &.playing:before {
             content: "";

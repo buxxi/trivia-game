@@ -9,9 +9,6 @@ export default {
     computed: {
         videoId: function() {
             return this.view.videoId;
-        },
-        playerClass: function() {
-            return this.view.player == 'youtube' ? 'youtube' : 'youtubeaudio';
         }
     },
     methods: {
