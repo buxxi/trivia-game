@@ -1,5 +1,5 @@
 import express from 'express';
-import sass from 'node-sass';
+import * as sass from 'sass';
 import { WebSocketServer } from 'ws';
 
 class TriviaServer {
@@ -12,8 +12,8 @@ class TriviaServer {
 	start() {
 		const app = express();
 
-		let clientStyle = sass.renderSync({ file: 'client/css/client.scss' }).css.toString();
-		let monitorStyle = sass.renderSync({ file: 'monitor/css/monitor.scss' }).css.toString();
+		let clientStyle = sass.compile('client/css/client.scss').css;
+		let monitorStyle = sass.compile('monitor/css/monitor.scss').css;
 		
 		app.get('/trivia', (req, res) => {
 			let isClient = !!req.headers['user-agent'].match(/Mobi/);
