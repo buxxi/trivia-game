@@ -35,7 +35,7 @@
     "uuid": "^8.3.2",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4",
-    "wavesurfer.js": "^6.6.3",
+    "wavesurfer.js": "^7.1.1",
     "ws": "^8.13.0"
   }
 }
