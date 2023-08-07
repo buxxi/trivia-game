@@ -77,7 +77,7 @@ class MovieQuestions extends Questions {
 			var match = patterns[i].exec(input);
 			if (match) {
 				return {
-					title : match[1],
+					title : match[1].trim(),
 					year : match[2]
 				};
 			}
@@ -125,10 +125,18 @@ class MovieQuestions extends Questions {
 		try {
 			let movieResponse = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${this._tmdbApiKey}&query=${movie.title}&year=${movie.year}`);
 			let movieData = await this._toJSON(movieResponse);
-			if (movieData.results.length != 1) {
-				throw new TmdbError("Didn't find an exact match for the movie metadata");
+
+			if (movieData.results.length == 1) {
+				return movieData.results[0].id;
 			}
-			return movieData.results[0].id;
+
+			for (var i in movieData.results) {
+				if (movieData.results[i].title == movie.title) {
+					return movieData.results[i].id;
+				}
+			}
+
+			throw new TmdbError("Didn't find an exact match for the movie metadata");
 		} catch (e) {
 			throw e;
 		}
