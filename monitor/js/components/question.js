@@ -129,7 +129,9 @@ export default {
 	})},
 	props: ['gameId', 'connection', 'sound', 'lobbyPlayers'],
 	computed: {
-		showPlayerName: function() { return this.timer.timeLeft % 10 >= 5; },
+		hidePlayers: function() { 
+			return (this.state == 'pre-question' || this.state == 'question') && this.session.currentCategory.name == 'Current Game';
+		 },
 		playbackPlayer: function() {
 			if (!this.playback.view.player) {
 				return undefined;
@@ -196,7 +198,10 @@ export default {
 			if (this.achievedPoints(player) || this.lostPoints(player)) {
 				return player.pointChange;
 			}
-			if (this.showPlayerName) {
+			if (this.hidePlayers) {
+				return "???";
+			}
+			if (this.timer.timeLeft % 10 >= 5) {
 				return player.name;
 			}
 			return player.totalPoints;

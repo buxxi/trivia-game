@@ -31,8 +31,9 @@
 			<li v-for="player in players" :key="player.id" v-bind:class="{'guessed' : player.guessed, 'score-change-positive': achievedPoints(player), 'score-change-negative': lostPoints(player)}">
 				<img src="img/crown.png" class="leader" v-if="isLeadingPlayer(player)"/>
 				<div class="avatar" v-bind:data-score="playerNameOrPoints(player)" v-bind:data-multiplier="player.multiplier" v-bind:style="{'background-color': player.color, 'border-color': player.color}">
-					<img v-if="player.connected" v-bind:src="'../common/img/avatars/' + player.avatar + '.png'"/>
-					<i v-if="!player.connected" class="fa-solid fa-bolt disconnected"></i>
+					<img v-if="player.connected && !hidePlayers" v-bind:src="'../common/img/avatars/' + player.avatar + '.png'"/>
+					<i v-if="player.connected && hidePlayers" class="fa-solid fa-question"></i>
+					<i v-if="!player.connected" class="fa-solid fa-bolt"></i>
 				</div>
 			</li>
 		</transition-group>
