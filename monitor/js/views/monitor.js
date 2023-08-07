@@ -11,6 +11,7 @@ import AnswersPlayer from '../components/playback/answers.js';
 import Mp3WavePlayer from '../components/playback/mp3.js';
 import YoutubePlayer from '../components/playback/youtube.js';
 import CategorySpinner from '../components/spinner.js';
+import { v4 as uuidv4 } from '../ext/uuid.mjs';
 
 function loadTemplate(url, component) {
 	return () => {
@@ -29,7 +30,7 @@ function getState(key, defaultValue) {
 }
 
 const sound = new SoundController();
-const connection = new MonitorToServerConnection(new URL("..", document.location));
+const connection = new MonitorToServerConnection(new URL("..", document.location), uuidv4);
 
 const routes = [
   	{ 

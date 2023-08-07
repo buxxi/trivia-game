@@ -1,12 +1,13 @@
 import {Protocol, PromisifiedWebSocket} from '../../common/js/protocol.mjs';
 
 class MonitorToServerConnection {
-    constructor(url) {
+    constructor(url, uuidGenerator) {
         if (url.protocol === 'https:') {
             this._url = `wss://${url.host}${url.pathname}`;
         } else {
             this._url = `ws://${url.host}${url.pathname}`;
         }
+        this._uuidGenerator = uuidGenerator;
     }
 
     connected() {
@@ -17,7 +18,7 @@ class MonitorToServerConnection {
         return new Promise((resolve, reject) => {
             let ws = new WebSocket(this._url);
             ws.onopen = () => {
-                let pws = new PromisifiedWebSocket(ws, uuidv4);
+                let pws = new PromisifiedWebSocket(ws, this._uuidGenerator);
                 pws.send(Protocol.JOIN_MONITOR, forceGameId).then(gameId => {
                     this._pws = pws;
                     resolve(gameId);

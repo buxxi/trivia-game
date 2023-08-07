@@ -2,6 +2,7 @@ import Join from '../components/join.js';
 import Answer from '../components/answer.js';
 import ClientToServerConnection from '../connection.mjs';
 import WakeLock from '../wakelock.mjs';
+import { v4 as uuidv4 } from '../ext/uuid.mjs';
 
 function loadTemplate(url, component) {
 	return () => {
@@ -19,7 +20,7 @@ function getState(key, defaultValue) {
 	return defaultValue;
 }
 
-const connection = new ClientToServerConnection(new URL("..", document.location));
+const connection = new ClientToServerConnection(new URL("..", document.location), uuidv4);
 const wakelock = new WakeLock();
 
 const routes = [

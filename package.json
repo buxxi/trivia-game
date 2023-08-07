@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/index.mjs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "cd node_modules/uuid && npm install rollup && ./node_modules/rollup/dist/bin/rollup dist/esm-browser/index.js --format es --name uuid --file dist/esm-browser/uuid.mjs"
   },
   "repository": {
     "type": "git",
@@ -32,7 +33,7 @@
     "quotesy": "^1.0.10",
     "randomcolor": "^0.6.2",
     "sass": "^1.64.2",
-    "uuid": "^8.3.2",
+    "uuid": "^9.0.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4",
     "wavesurfer.js": "^7.1.1",

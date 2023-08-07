@@ -1,7 +1,7 @@
 import {Protocol, PromisifiedWebSocket} from '../../common/js/protocol.mjs';
 
 class ClientToServerConnection {
-    constructor(url) {
+    constructor(url, uuidGenerator) {
         if (url instanceof URL) {
             if (url.protocol === 'https:') {
                 this._url = `wss://${url.host}${url.pathname}`;
@@ -11,6 +11,7 @@ class ClientToServerConnection {
         } else {
             this._url = url;
         }
+        this._uuidGenerator = uuidGenerator;
     }
 
     connected() {
@@ -53,7 +54,7 @@ class ClientToServerConnection {
         return new Promise((resolve, reject) => {
             let ws = new WebSocket(this._url);
             ws.onopen = () => {
-                let pws = new PromisifiedWebSocket(ws, uuidv4);
+                let pws = new PromisifiedWebSocket(ws, this._uuidGenerator);
                 pws.send(Protocol.JOIN_CLIENT, payload).then((data) => {
                     this._pws = pws;
                     this._pws.on(Protocol.PING).then(async () => "pong");
