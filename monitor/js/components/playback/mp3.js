@@ -14,7 +14,7 @@ export default {
         start: async function() {
             let self = this;
         
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 self.player = WaveSurfer.create({
                     container: '#player',
                     waveColor: 'white',
@@ -26,22 +26,22 @@ export default {
                     barGap: 3,
                     height: 256
                 });
-    
+
                 self.player.on('ready', () => {
                     self.player.setVolume(0.3);
                     self.player.play();
                     resolve();
                 });
-    
-                self.player.on('error', (err) => {
-                    reject(new Error(err + ": " + self.src));
-                });
 
                 self.player.on('finish', () => {
                     self.player.play();
                 });
-    
-                self.player.load(self.src);
+
+                try {
+                    await self.player.load(self.src);
+                } catch (e) {
+                    reject(new Error(e + ": " + self.src));
+                }
             });
         },
         
