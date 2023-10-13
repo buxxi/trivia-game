@@ -2,7 +2,19 @@ import Join from '../components/join.js';
 import Answer from '../components/answer.js';
 import ClientToServerConnection from '../connection.mjs';
 import WakeLock from '../wakelock.mjs';
-import { v4 as uuidv4 } from '../ext/uuid.mjs';
+
+function uuidPolyfill() {
+	let crypto = window.crypto;
+
+	if (!('randomUUID' in crypto)) {
+		console.log("No randomUUID available, using polyfill");
+		crypto.randomUUID = () => {
+			return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+				(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+			);
+		}
+	}
+}
 
 function loadTemplate(url, component) {
 	return () => {
@@ -20,7 +32,9 @@ function getState(key, defaultValue) {
 	return defaultValue;
 }
 
-const connection = new ClientToServerConnection(new URL("..", document.location), uuidv4);
+uuidPolyfill();
+
+const connection = new ClientToServerConnection(new URL("..", document.location), () => crypto.randomUUID());
 const wakelock = new WakeLock();
 
 const routes = [

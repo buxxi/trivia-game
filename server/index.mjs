@@ -3,7 +3,6 @@ import TriviaServer from './server.mjs';
 import Game from './game.mjs';
 import Categories from './categories.mjs';
 import GameLoop from './loop.mjs';
-import {v4 as uuid} from 'uuid';
 import ServerConnection from './connection.mjs';
 import Text2Speech from './tts.mjs';
 
@@ -67,7 +66,7 @@ async function init() {
 
 		let monitorJoin = connection.onMonitorJoin().then(async (gameId) => {
 			if (!gameId) {
-				gameId = uuid();
+				gameId = crypto.randomUUID();
 			}
 			repository.startGame(gameId, connection.toMonitor());
 			return gameId;
@@ -75,7 +74,7 @@ async function init() {
 
 		let clientJoin = connection.onClientJoin().then(async (data) => {
 			let game = repository.getGame(data.gameId);
-			let clientId = data.clientId ? data.clientId : uuid();
+			let clientId = data.clientId ? data.clientId : crypto.randomUUID();
 			let stats = game.addClient(connection.toClient(), clientId, data.userName, data.preferredAvatar);
 			return { clientId: clientId, stats: stats };
 		});

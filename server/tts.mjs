@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import {v4 as uuid} from 'uuid';
 
 //TODO: better error handling
 class Text2Speech {
@@ -17,7 +16,7 @@ class Text2Speech {
         }
 
         let url = this._ttsUrl.replace('{text}', encodeURIComponent(text));
-        let ttsId = uuid();
+        let ttsId = crypto.randomUUID();
         this._requests[ttsId] = fetch(url);
         return ttsId;
     }

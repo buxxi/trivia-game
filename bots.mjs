@@ -1,7 +1,6 @@
 import {Command, Option} from 'commander';
 import ClientToServerConnection from './client/js/connection.mjs';
 import ws from 'ws';
-import {v4 as uuidv4} from 'uuid';
 
 global.WebSocket = ws;
 const program = new Command();
@@ -82,7 +81,7 @@ class Bot {
 
 async function createBots(count, gameId, url, behaviours) {
     for (var i = 0; i < count; i++) {
-        let conn = new ClientToServerConnection(url, uuidv4);
+        let conn = new ClientToServerConnection(url, () => crypto.randomUUID());
         let bot = new Bot(`Bot ${i + 1}`, conn, gameId, behaviours);
         await bot.init();
     }
