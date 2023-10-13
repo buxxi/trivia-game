@@ -4,7 +4,7 @@ Accompanying the question a movie clip, music or an image could be played with 4
 This project previously used WebRTC and tried to use do everything in the browser which made a nightmare to support.
 
 ### Build instructions:
-with node (tested on node16):
+with node (tested on node20):
 ```
 git clone https://github.com/buxxi/trivia-game.git
 cd trivia-game
