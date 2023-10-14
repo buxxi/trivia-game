@@ -1,7 +1,7 @@
 <div class="question">
 	<div class="top">
 			<div class="index">
-				<div class="infobox">
+				<div class="infobox" v-if="session.currentCategory && state != 'loading'">
 					<span class="current">{{ session.index }}</span>
 					<span class="total">{{ session.total }}</span>
 				</div>

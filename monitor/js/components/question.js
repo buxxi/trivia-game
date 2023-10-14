@@ -11,7 +11,7 @@ function resolveRef(app, ref) {
 
 async function showCategorySpinner(app, categories, correct, index, total, ttsId) {
 	app.state = 'loading';
-	app.title = 'Selecting next question';
+	app.title = '';
 	app.session.update(index, total, correct);
 
 	if (categories.length > 0) {
