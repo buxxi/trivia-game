@@ -19,9 +19,14 @@ class SoundController {
 			trombone.volume = 0.5;
 		});
 
+		let applauds = new Pizzicato.Sound('sound/applauds.mp3', () => {
+			applauds.volume = 0.5;
+		});
+
 		this._backgroundMusic = backgroundMusic;
 		this._click = click;
 		this._trombone = trombone;
+		this._applauds = applauds;
 	}
 
 	config(config) {
@@ -61,6 +66,12 @@ class SoundController {
 		if (this._config.soundEffects) {
 			this._trombone.clone().play();
 		}
+	}
+
+	applauds() {
+		if (this._config.soundEffects) {
+			this._applauds.clone().play();
+		}		
 	}
 
 	speak(gameId, ttsId, minimumTime) {

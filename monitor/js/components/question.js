@@ -70,8 +70,14 @@ function playbackEnd(app, pointsThisRound, correct) {
 		app.timer.stop();
 		app.sound.play();
 
+		// Someone lost their multiplier
 		if (Object.values(pointsThisRound).some(p => p.multiplier <= -4)) {
 			app.sound.trombone();
+		}
+
+		// All correct
+		if (Object.values(pointsThisRound).filter(p => p.points > 0).length == app.players.length) {
+			app.sound.applauds();
 		}
 
 		app.title = "The correct answer was";
