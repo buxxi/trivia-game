@@ -23,6 +23,7 @@
 		<div class="message" v-if="state == 'error'">{{ error }}</div>
 	</div>
 	<div id="correct" v-if="state == 'post-question'" v-bind:class="'button-icon-' + correct['key']">{{ correct['answer'] }}</div>
+	<div id="round" v-if="state == 'loading'" v-bind:data-round="'Question ' + session.index"></div>
 	<div id="category-spinner" v-if="state == 'loading'">
 		<category-spinner ref="spinner" v-on:flip="sound.click()" v-bind:categories="spinner.categories" v-bind:correct="session.currentCategory.name"/>
 	</div>

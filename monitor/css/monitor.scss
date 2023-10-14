@@ -87,6 +87,49 @@
 	padding: 0.5em 1em;
 }
 
+#round {
+  position: fixed;
+  background-color: $primary_border;
+  left: 0;
+  top: 40%;
+  width: 100%;
+  z-index: 2;
+  font-size: 10em;
+  bottom: 40%;
+  border-style: solid;
+  border-width : 5px 0;
+  border-color : $primary;
+  box-shadow: 0 0 50px $primary;
+  opacity : 0;
+  animation: round 3s linear;
+
+  &:before {
+	content: attr(data-round);
+	background-clip: text;
+	color: rgba(0, 0, 0, 0);
+	position: absolute;
+	top: 0.1em;
+	left: 0;
+	width : 100%;
+	text-align: center;
+	background-image: linear-gradient($font 55%, rgba(0,0,0,0) 0%);
+	animation: round-from-left 3s linear;
+  }
+
+  &:after {
+	content: attr(data-round);
+	background-clip: text;
+	color: rgba(0, 0, 0, 0);
+	position: absolute;
+	top: 0.1em;
+	left: 0;
+	width : 100%;
+	text-align: center;
+	background-image: linear-gradient(rgba(0,0,0,0) 55%, $font 0%);	
+	animation: round-from-right 3s linear;
+  }
+}
+
 .spinner {
 	position : relative;
 	height : 10em;
@@ -397,3 +440,24 @@ h1 {
      50% { box-shadow : 0 0 6em $correct, 0 0 3em $correct }
      100% { box-shadow : 0 0 3em $correct, 0 0 1.5em $correct }
  }
+
+ @keyframes round {
+	0% { opacity : 0 }
+	10% { opacity: 1 }
+	70% { opacity : 1 }
+	80% { opacity : 0 }
+}
+
+@keyframes round-from-left {
+	0% { margin-left : -150vw }
+	30% { margin-left : 0 }
+	60% { margin-left : 0 }
+	100% { margin-left : 150vw }
+}
+
+@keyframes round-from-right {
+	0% { margin-left : 150vw }
+	30% { margin-left : 0 }
+	60% { margin-left : 0 }
+	100% { margin-left : -150vw }
+}
