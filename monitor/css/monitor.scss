@@ -132,13 +132,14 @@
 
 .spinner {
 	position : relative;
-	height : 10em;
+	height : 9.4em;
 	padding: 0;
 	display: block;
 	text-align: center;
-	margin: 2em 4em;
+	margin: 0;
 	font-size: 3em;
-	top: 15%;
+	top : 50%;
+	transform: translateY(-50%);
 
 	&:before {
 		content : "\f04b";
@@ -147,7 +148,7 @@
 		display : block;
 		position : absolute;
 		top : 50%;
-		margin-top : -0.15em;
+		margin-top : -0.5em;
 		margin-left : -0.15em;
 		z-index : 6;
 	}
@@ -177,52 +178,52 @@
 		}
 	}
 	li:nth-child(1) {
-		transform : translateY(0) rotateX(-90deg);
+		transform : translateY(-1.5em) rotateX(-90deg);
 		color: darken($font, 75%);
 		background-color : $primary_border;
 		z-index: 2;
 
 	}
 	li:nth-child(2) {
-		transform : translateY(0.5em) rotateX(-70deg);
+		transform : translateY(-1em) rotateX(-70deg);
 		color: darken($font, 50%);
 		background-color : mix($primary, $primary_border, 25%);
 		z-index: 3;
 	}
 	li:nth-child(3) {
-		transform : translateY(2.1em) rotateX(-40deg);
+		transform : translateY(0.6em) rotateX(-40deg);
 		color: darken($font, 25%);
 		background-color : mix($primary, $primary_border, 50%);
 		z-index: 4;
 	}
 
 	li:nth-child(4) {
-		transform : translateY(4.7em) rotateX(0deg);
+		transform : translateY(3.2em) rotateX(0deg);
 		color: $font;
 		background-color : $primary;
 		z-index: 5;
 	}
 
 	li:nth-child(5) {
-		transform : translateY(7.3em) rotateX(40deg);
+		transform : translateY(5.8em) rotateX(40deg);
 		color: darken($font, 25%);
 		background-color : mix($primary, $primary_border, 50%);
 		z-index: 4;
 	}
 	li:nth-child(6) {
-		transform : translateY(8.9em) rotateX(70deg);
+		transform : translateY(7.4em) rotateX(70deg);
 		color: darken($font, 50%);
 		background-color : mix($primary, $primary_border, 25%);
 		z-index: 3;
 	}
 	li:nth-child(7) {
-		transform : translateY(9.4em) rotateX(90deg);
+		transform : translateY(7.9em) rotateX(90deg);
 		color: darken($font, 75%);
 		background-color : $primary_border;
 		z-index: 2;
 	}
 	li:nth-child(n+8)  {
-		transform : translateY(4.7em) rotateX(180deg);
+		transform : translateY(3.2em) rotateX(180deg);
 		background-color : $primary_border;
 		z-index: 1;
 		transition-duration: 0;
@@ -451,14 +452,14 @@ h1 {
 
 @keyframes round-from-left {
 	0% { margin-left : -150vw }
-	30% { margin-left : 0 }
-	60% { margin-left : 0 }
+	20% { margin-left : 0 }
+	70% { margin-left : 0 }
 	100% { margin-left : 150vw }
 }
 
 @keyframes round-from-right {
 	0% { margin-left : 150vw }
-	30% { margin-left : 0 }
-	60% { margin-left : 0 }
+	20% { margin-left : 0 }
+	70% { margin-left : 0 }
 	100% { margin-left : -150vw }
 }
