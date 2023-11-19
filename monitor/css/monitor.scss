@@ -106,6 +106,7 @@
 
   &:before {
 	content: attr(data-round);
+	-webkit-background-clip: text;
 	background-clip: text;
 	color: rgba(0, 0, 0, 0);
 	position: absolute;
@@ -119,6 +120,7 @@
 
   &:after {
 	content: attr(data-round);
+	-webkit-background-clip: text;
 	background-clip: text;
 	color: rgba(0, 0, 0, 0);
 	position: absolute;
