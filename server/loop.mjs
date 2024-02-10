@@ -54,7 +54,7 @@ class GameLoop {
             try { this._game.removePlayer(clientId) } catch (e) {};
         });
         this._sendPlayerChanges();
-        return this._game.stats(clientId);
+        return this._game.players()[clientId];
     }
 
     text2Speech() {

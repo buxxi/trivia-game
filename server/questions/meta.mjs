@@ -15,43 +15,43 @@ class CurrentGameQuestions extends Questions {
 		});
 		this._addQuestion({
 			title : () => "Who has the most correct answers so far?",
-			correct : (game) => this._playerWithMost(game, (p) => p.stats.correct),
-			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.stats.correct),
+			correct : (game) => this._playerWithMost(game, (p) => p.correctGuesses()),
+			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.correctGuesses()),
 			format : (correct) => this._resolveName(correct),
 			load : (correct) => this._loadBlankName("Most correct player (at that time)", correct)
 		});
 		this._addQuestion({
 			title : () => "Who has the most incorrect answers so far?",
-			correct : (game) => this._playerWithMost(game, (p) => p.stats.wrong),
-			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.stats.wrong),
+			correct : (game) => this._playerWithMost(game, (p) => p.wrongGuesses()),
+			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.wrongGuesses()),
 			format : (correct) => this._resolveName(correct),
 			load : (correct) => this._loadBlankName("Most incorrect player (at that time)", correct)
 		});
 		this._addQuestion({
 			title : () => "What is the total amount of correct answers so far?",
-			correct : (game) => this._countTotal(game, (p) => p.stats.correct),
+			correct : (game) => this._countTotal(game, (p) => p.correctGuesses()),
 			similar : (correct, game) => this._numericAlternatives(correct, game),
 			format : (correct) => this._formatValue(correct),
 			load : (correct) => this._loadBlankValue("Total correct answers (at that time)", correct)
 		});
 		this._addQuestion({
 			title : () => "What is the total amount of incorrect answers so far?",
-			correct : (game) => this._countTotal(game, (p) => p.stats.wrong),
+			correct : (game) => this._countTotal(game, (p) => p.wrongGuesses()),
 			similar : (correct, game) => this._numericAlternatives(correct, game),
 			format : (correct) => this._formatValue(correct),
 			load : (correct) => this._loadBlankValue("Total incorrect answers (at that time)", correct)
 		});
 		this._addQuestion({
 			title : () => "Who has made the fastest correct answers so far?",
-			correct : (game) => this._playerWithLeast(game, (p) => p.stats.fastest),
-			similar : (correct, game) => this._playersWithHigher(correct, game, (p) => p.stats.fastest),
+			correct : (game) => this._playerWithLeast(game, (p) => p.fastestCorrectGuess()),
+			similar : (correct, game) => this._playersWithHigher(correct, game, (p) => p.fastestCorrectGuess()),
 			format : (correct) => this._resolveName(correct),
 			load : (correct) => this._loadBlankName("Fastest player (at that time)", correct)
 		});
 		this._addQuestion({
 			title : () => "Who has made the slowest correct answers so far?",
-			correct : (game) => this._playerWithMost(game, (p) => p.stats.slowest),
-			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.stats.slowest),
+			correct : (game) => this._playerWithMost(game, (p) => p.slowestCorrectGuess()),
+			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.slowestCorrectGuess()),
 			format : (correct) => this._resolveName(correct),
 			load : (correct) => this._loadBlankName("Slowest player (at that time)", correct)
 		});

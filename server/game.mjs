@@ -8,43 +8,65 @@ class Player {
 		this.avatar = avatar;
 		this.score = 0;
 		this.multiplier = 1;
-		this.stats = new PlayerStats();
+		this.guesses = [];
+	}
+
+	correctGuesses() {
+		return this.guesses.filter(g => g.correct === true).length;
+	}
+
+	wrongGuesses() {
+		return this.guesses.filter(g => g.correct === false).length;
+	}
+
+	fastestCorrectGuess() {
+		return Math.min(...this.guesses.filter(g => g.correct === true).map(g => g.time));
+	}
+
+	slowestCorrectGuess() {
+		return Math.max(...this.guesses.filter(g => g.correct === true).map(g => g.time));
+	}
+
+	mostPointsWon() {
+		return Math.max(...this.guesses.map(g => g.points));
+	}
+
+	mostPointsLost() {
+		return Math.abs(Math.min(...this.guesses.map(g => g.points)));
 	}
 
 	_reset() {
 		this.score = 0;
 		this.multiplier = 1;
-		this.stats = new PlayerStats();
+		this.guesses = [];
 	}
 
-	_updateScore(timeScore, time, maxMultiplier) {
+	_updateScore(timeScore, time, maxMultiplier, answer) {
 		if (timeScore > 0) {
-			this.score += timeScore * this.multiplier;
+			let scored = timeScore * this.multiplier;
+			this.guesses.push(new PlayerGuess(answer, true, time, scored, this.multiplier));
+			this.score += scored;
 			this.multiplier = Math.min(this.multiplier + 1, maxMultiplier);
-			this.stats.correct++;
-			this.stats.fastest = Math.min(time, this.stats.fastest);
-			this.stats.slowest = Math.max(time, this.stats.slowest);
-			this.stats.mostWon = Math.max(timeScore, this.stats.mostWon);
 		} else if (timeScore < 0) {
-			this.score = Math.max(0, this.score + timeScore);
+			let scored = this.score > Math.abs(timeScore) ? timeScore : -this.score;
+			this.guesses.push(new PlayerGuess(answer, false, time, scored, this.multiplier));
+			this.score = this.score += scored;
 			this.multiplier = 1;
-			this.stats.wrong++;
-			this.stats.mostLost = Math.max(Math.abs(timeScore), this.stats.mostLost);
 		} else {
+			this.guesses.push(new PlayerGuess(null, null, null, 0, this.multiplier));
 			this.multiplier = 1;
 		}
+		console.log(this);
 	}
 }
 
-//TODO: keep all guesses and calculate these values instead
-class PlayerStats {
-	constructor() {
-		this.correct = 0;
-		this.wrong = 0;
-		this.fastest = Infinity;
-		this.slowest = -Infinity;
-		this.mostWon = 0;
-		this.mostLost = 0;
+class PlayerGuess {
+	constructor(guessed, correct, time, points, multiplier) {
+		this.guessed = guessed;
+		this.correct = correct;
+		this.time = time;
+		this.points = points;
+		this.multiplier = multiplier;
 	}
 }
 
@@ -126,11 +148,6 @@ class Game {
 		this._started = true;
 	}
 
-	//TODO: make private
-	hasGuessed(peerid) {
-		return this._guesses[peerid];
-	}
-
 	guess(peerid, answer) {
 		if (this._guesses[peerid]) {
 			throw new Error("Has already guessed!");
@@ -145,18 +162,6 @@ class Game {
 		if (Object.keys(this._guesses).length == Object.keys(this._players).length && this._config.stopOnAnswers) {
 			this._timer.stop();
 		}
-	}
-
-	//TODO: change to getPlayer(peerid) and map the stats outside instead, or is this really needed at all?
-	stats(peerid) {
-		let player = this._players[peerid];
-		return {
-			name : player.name,
-			avatar : player.avatar,
-			color : player.color,
-			score : player.score,
-			multiplier : player.multiplier
-		};
 	}
 
 	correctAnswer() {
@@ -235,17 +240,18 @@ class Game {
 			let scoreBefore = player.score;
 			let multiplierBefore = player.multiplier;
 
-			if (this.hasGuessed(peerid)) {
+			if (this._guesses[peerid]) {
 				let timerScore = this._timer.score(this._guesses[peerid].time);
 				let timeUsed = this._config.time - this._timer.timeLeft(this._guesses[peerid].time);
-				
-				if (this._guesses[peerid].answer == this.correctAnswer()['key']) {
-					player._updateScore(timerScore, timeUsed, maxMultiplier);
+				let answer = this._guesses[peerid].answer;
+
+				if (answer == this.correctAnswer()['key']) {
+					player._updateScore(timerScore, timeUsed, maxMultiplier, answer);
 				} else {
-					player._updateScore(-timerScore, timeUsed, 1);
+					player._updateScore(-timerScore, timeUsed, 1, answer);
 				}
 			} else {
-				player._updateScore(0, 0, 1);
+				player._updateScore(0, 0, 1, null);
 			}
 
 			result[peerid] = { points: player.score - scoreBefore, multiplier: player.multiplier - multiplierBefore }; 

@@ -8,10 +8,10 @@
 			</div>
 			<div class="summary">
 				<h2>{{ score.name }}</h2>
-				<span class="correct"><i class="fas fa-fw fa-check"></i>{{ score.stats.correct }}</span>
-				<span class="failed"><i class="fas fa-fw fa-times"></i>{{ score.stats.wrong }}</span>
-				<span class="fastest" v-if="score.stats.fastest > -1"><i class="fas fa-fw fa-person-running"></i>{{ formatTime(score.stats.fastest) }}</span>
-				<span class="slowest" v-if="score.stats.slowest > -1"><i class="fas fa-fw fa-person-cane"></i>{{ formatTime(score.stats.slowest) }}</span>
+				<span class="correct"><i class="fas fa-fw fa-check"></i>{{ score.correct }}</span>
+				<span class="failed"><i class="fas fa-fw fa-times"></i>{{ score.wrong }}</span>
+				<span class="fastest" v-if="score.fastest > -1"><i class="fas fa-fw fa-person-running"></i>{{ formatTime(score.fastest) }}</span>
+				<span class="slowest" v-if="score.slowest > -1"><i class="fas fa-fw fa-person-cane"></i>{{ formatTime(score.slowest) }}</span>
 			</div>
 		</div>
 
