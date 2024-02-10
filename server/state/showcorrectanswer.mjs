@@ -6,7 +6,7 @@ class ShowCorrectAnswerState {
         this._pointsThisRound = pointsThisRound;
     }
 
-	async run(game, categories, clientConnections, monitorConnection, text2Speech) {
+	async run(game, categories, clientConnections, monitorConnection, text2Speech, stats) {
         let correct = game.correctAnswer();
         console.log(correct);
 
@@ -14,6 +14,7 @@ class ShowCorrectAnswerState {
             return clientConnections[clientId].questionEnd(this._pointsThisRound[clientId], correct);
         }));
         await monitorConnection.questionEnd(this._pointsThisRound, correct);
+        stats.questionEnd(game);
 	}
 
 	nextState() {

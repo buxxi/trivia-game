@@ -1,7 +1,7 @@
 class ResultsState {
     constructor() {}
 
-	async run(game, categories, clientConnections, monitorConnection, text2Speech) {
+	async run(game, categories, clientConnections, monitorConnection, text2Speech, stats) {
         await monitorConnection.results(game.history(), game.players()); 
 
         await Promise.all(Object.values(clientConnections).map((client) => {
@@ -13,6 +13,8 @@ class ResultsState {
         Object.values(clientConnections).forEach((client) => {
             client.close();
         });
+
+        stats.save();
 	}
 
 	nextState() {

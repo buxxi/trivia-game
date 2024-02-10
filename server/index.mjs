@@ -5,6 +5,7 @@ import Categories from './categories.mjs';
 import GameLoop from './loop.mjs';
 import ServerConnection from './connection.mjs';
 import Text2Speech from './tts.mjs';
+import GameStatistics from './stats.mjs';
 
 class GameRepository {
 	constructor(categories, config) {
@@ -22,7 +23,10 @@ class GameRepository {
 
 	startGame(gameId, monitorConnection) {
 		let game = new Game(this._categories, this._config.avatars);
-		let loop = new GameLoop(game, gameId, this._categories, monitorConnection, new Text2Speech(this._config.ttsUrl));
+		let stats = new GameStatistics(this._config.statsPath);
+		let tts = new Text2Speech(this._config.ttsUrl);
+		let loop = new GameLoop(game, gameId, this._categories, monitorConnection, tts, stats);
+		
 		
 		if (gameId in this._currentGames) {
 			throw new Error("Game " + gameId + " is already running");

@@ -6,7 +6,7 @@ import ResultsState from './results.mjs';
 class LoadingNextQuestionState {
     constructor() {}
 
-	async run(game, categories, clientConnections, monitorConnection, text2Speech) {
+	async run(game, categories, clientConnections, monitorConnection, text2Speech, stats) {
         if (!game.hasMoreQuestions()) {
             return;
         }

@@ -6,7 +6,7 @@ class PresentQuestionState {
         this._question = question;
     }
 
-	async run(game, categories, clientConnections, monitorConnection, text2Speech) {
+	async run(game, categories, clientConnections, monitorConnection, text2Speech, stats) {
         let ttsId = this._question.tts ? this._question.tts.question : null;
         await monitorConnection.showQuestion(this._question.text, ttsId);
 	}

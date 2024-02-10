@@ -36,6 +36,7 @@ class Player {
 	}
 }
 
+//TODO: keep all guesses and calculate these values instead
 class PlayerStats {
 	constructor() {
 		this.correct = 0;
@@ -125,6 +126,7 @@ class Game {
 		this._started = true;
 	}
 
+	//TODO: make private
 	hasGuessed(peerid) {
 		return this._guesses[peerid];
 	}
@@ -145,6 +147,7 @@ class Game {
 		}
 	}
 
+	//TODO: change to getPlayer(peerid) and map the stats outside instead, or is this really needed at all?
 	stats(peerid) {
 		let player = this._players[peerid];
 		return {

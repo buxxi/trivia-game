@@ -10,7 +10,7 @@ class PresentCategoryState {
         this._question = question;
     }
 
-	async run(game, categories, clientConnections, monitorConnection, text2Speech) {
+	async run(game, categories, clientConnections, monitorConnection, text2Speech, stats) {
         let showCategorySpinner = game.showCategorySpinner();
         let spinnerCategories = showCategorySpinner ? this._makeCategoryList(categories, game) : [];
         let correct = game.currentCategory();

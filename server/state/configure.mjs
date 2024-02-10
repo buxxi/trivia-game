@@ -3,7 +3,7 @@ import LoadingNextQuestionState from './loadquestion.mjs';
 class ConfigureState {
     constructor() {}
 
-    run(game, categories, clientConnections, monitorConnection, text2Speech) {
+    run(game, categories, clientConnections, monitorConnection, text2Speech, stats) {
         return new Promise((stateResolve, stateReject) => {
             monitorConnection.onLoadCategories().then(async () => {
                 return categories.available();	
@@ -27,6 +27,7 @@ class ConfigureState {
             monitorConnection.onStartGame().then(async (config) => {
                 monitorConnection.clearSetupListeners();
                 game.start(config);
+                stats.start(game);
             }).then(stateResolve).catch(stateReject);
         });
     }

@@ -6,7 +6,7 @@ class WaitForAnswersState {
         this._question = question;
     }
 
-	async run(game, categories, clientConnections, monitorConnection, text2Speech) {
+	async run(game, categories, clientConnections, monitorConnection, text2Speech, stats) {
         await Promise.all(Object.values(clientConnections).map(client => client.questionStart(this._question.answers)));
         await monitorConnection.questionStart(this._question.view, this._question.answers);
        

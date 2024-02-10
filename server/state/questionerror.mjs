@@ -5,7 +5,7 @@ class QuestionErrorState {
         this._error = error;
     }
 
-	async run(game, categories, clientConnections, monitorConnection, text2Speech) {
+	async run(game, categories, clientConnections, monitorConnection, text2Speech, stats) {
         console.log(this._error);
 
         monitorConnection.questionError(this._error.message);
