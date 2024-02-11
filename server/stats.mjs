@@ -9,6 +9,9 @@ class GameStatistics {
     }
 
     start(game) {
+        if (!game.config().saveStatistics) {
+            return;
+        }
         Object.assign(this.data, {
             uuid: crypto.randomUUID(),
             started: new Date().toISOString(),
@@ -17,12 +20,18 @@ class GameStatistics {
     }
 
     questionEnd(game) {
+        if (!game.config().saveStatistics) {
+            return;
+        }
         Object.assign(this.data, {
             questions: this._createQuestions(game.history(), game.players())
         });
     }
 
     async save(game) {
+        if (!game.config().saveStatistics) {
+            return;
+        }
         let statsFile = path.resolve(this.path, `${this.data.started.replaceAll(/[^0-9a-z]/g, '')}_${this.data.uuid}.json`);
 		await fs.writeFile(statsFile, JSON.stringify(this.data));
     }

@@ -91,6 +91,9 @@
 						<li v-bind:class="{'selected' : config.categorySpinner}">
 							<label for="spinner" title="Category spinner"><input type="checkbox" id="spinner" v-model="config.categorySpinner"><i class="fas fa-spinner"></i></label>
 						</li>
+						<li v-bind:class="{'selected' : config.saveStatistics}">
+							<label for="statistics" title="Save statistics"><input type="checkbox" id="statistics" v-model="config.saveStatistics"><i class="fas fa-chart-simple"></i></label>
+						</li>
 						<li v-bind:class="{'selected' : config.fullscreen}">
 							<label for="fullscreen" title="Toggle fullscreen"><input type="checkbox" id="fullscreen" v-model="config.fullscreen" v-on:change="toggleFullScreen()"><i class="fas fa-window-maximize"></i></label>
 						</li>

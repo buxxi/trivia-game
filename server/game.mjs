@@ -84,6 +84,7 @@ class Game {
 			stopOnAnswers : true,
 			allowMultiplier : true,
 			maxMultiplier : 5,
+			saveStatistics: true,
 			sound : {
 				backgroundMusic : true,
 				soundEffects : true,
