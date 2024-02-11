@@ -56,7 +56,6 @@ class Player {
 			this.guesses.push(new PlayerGuess(null, null, null, 0, this.multiplier));
 			this.multiplier = 1;
 		}
-		console.log(this);
 	}
 }
 

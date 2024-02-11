@@ -18,8 +18,6 @@ class WaitForAnswersState {
             });
         };
         
-        console.log(this._question.answers);
-
         let pointsThisRound = await game.startTimer((timeLeft, percentageLeft, currentScore) => { 
             return monitorConnection.timerTick(timeLeft, percentageLeft, currentScore);
         });  

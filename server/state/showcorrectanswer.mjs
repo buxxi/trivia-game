@@ -8,7 +8,6 @@ class ShowCorrectAnswerState {
 
 	async run(game, categories, clientConnections, monitorConnection, text2Speech, stats) {
         let correct = game.correctAnswer();
-        console.log(correct);
 
         await Promise.all(Object.keys(clientConnections).map(clientId => {
             return clientConnections[clientId].questionEnd(this._pointsThisRound[clientId], correct);

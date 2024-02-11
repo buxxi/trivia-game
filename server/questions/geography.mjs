@@ -104,7 +104,6 @@ class GeographyQuestions extends Questions {
 						neighbours : (country.borders || []).map((code) => data.find((c) => code == c.cca3).name.common)
 					}
 				}).filter(country => !!country.region && !!country.capital);
-				console.log(result.length);
 				resolve(result);
 			}).catch(reject);
 		});
