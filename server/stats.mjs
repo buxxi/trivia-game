@@ -14,8 +14,8 @@ class GameStatistics {
         }
         Object.assign(this.data, {
             uuid: crypto.randomUUID(),
-            started: new Date().toISOString(),
-            players: this._createPlayers(game.players()),
+            config: game.config(),
+            started: new Date().toISOString()
         });
     }
 
@@ -24,7 +24,9 @@ class GameStatistics {
             return;
         }
         Object.assign(this.data, {
-            questions: this._createQuestions(game.history(), game.players())
+            ended: new Date().toISOString(),
+            questions: this._createQuestions(game.history(), game.players()),
+            players: this._createPlayers(game.players())
         });
     }
 
@@ -40,7 +42,9 @@ class GameStatistics {
         return Object.entries(players).reduce((result, entry) => {
             result[entry[0]] = {
                 name : entry[1].name,
-                avatar : entry[1].avatar
+                avatar : entry[1].avatar,
+                points: entry[1].score,
+                place: Object.values(players).filter(p => p.score > entry[1].score).length + 1
             };
             return result;
         }, {});
