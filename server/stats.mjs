@@ -55,7 +55,7 @@ class GameStatistics {
             return ({
                 category: question.category.name,
                 question: question.text,
-                answers: Object.values(question.answers),
+                answers: question.answers,
                 correct: question.correct,
                 guesses: this._createGuesses(players, i)
             });
