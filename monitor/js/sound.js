@@ -74,8 +74,9 @@ class SoundController {
 		}		
 	}
 
-	speak(gameId, ttsId, minimumTime) {
+	speak(gameId, ttsId, minimumTime, silenceAfterTime) {
 		return new Promise((resolve, reject) => {
+			let startTime = new Date().getTime();
 			if (!this._config.text2Speech) {
 				setTimeout(resolve, minimumTime);
 				return;
@@ -90,7 +91,10 @@ class SoundController {
 					reject(new Error("Failed to load text2speech for: " + ttsId));
 				}
 			});
-			speak.on('end', resolve);
+			speak.on('end', () => {
+				let elapsedTime = new Date().getTime() - startTime;
+				setTimeout(resolve, Math.max(silenceAfterTime, minimumTime - elapsedTime));
+			});
 		});
 	}
 }
