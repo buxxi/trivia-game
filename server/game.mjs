@@ -112,6 +112,7 @@ class Game {
 	}
 
 	addPlayer(peerid, name, avatar) {
+		name = name ? name.trim() : name;
 		if (!name) {
 			throw new Error("Invalid name " + name);
 		}
