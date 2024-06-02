@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import Generators from '../generators.mjs';
 import Random from '../random.mjs';
 import Questions from './questions.mjs';
+import GeoJson2Svg from '../geojson2svg.mjs';
 
 class GeographyQuestions extends Questions {
 	constructor(config) {
@@ -72,15 +73,17 @@ class GeographyQuestions extends Questions {
 			icon : 'fa-globe-europe',
 			attribution : [
 				{ url: 'https://restcountries.eu', name: 'REST Countries' },
-				{ url: 'https://developers.google.com/chart', name: 'Google Charts' }
+				{ url: 'https://public.opendatasoft.com/', name: 'OpenDataSoft' }
 			]
 		};
 	}
 
 	async preload(progress, cache) {
-		progress(0, 1);
+		progress(0, 2);
 		this._countries = await this._loadCountries(cache);
-		progress(1, 1);
+		progress(1, 2);
+		this._worldMap = await this._loadWorldMap(cache);
+		progress(2, 2);
 		return this._countQuestions();
 	}
 
@@ -107,6 +110,32 @@ class GeographyQuestions extends Questions {
 				resolve(result);
 			}).catch(reject);
 		});
+	}
+
+	_loadWorldMap(cache) {
+		return cache.get('worldmap', async (resolve, reject) => {
+			try {
+				var result = [];
+				var data;
+				do {
+					data = await this._loadWorldMapChunk(result.length);
+					result = result.concat(data.results);
+				} while (result.length < data.total_count);
+
+				console.log("Done");
+
+				resolve(result);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+
+	async _loadWorldMapChunk(offset) {
+		let url = `https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/world-administrative-boundaries/records?limit=100&offset=${offset}`;
+		console.log(url);
+		let response = await fetch(url);
+		return await this._toJSON(response);
 	}
 
 	_randomCountry() {
@@ -180,9 +209,10 @@ class GeographyQuestions extends Questions {
 	}
 
 	_loadMap(country) {
+		let data = new GeoJson2Svg(this._worldMap).convert(country.code);
 		return Object.assign(this._loadBlank(country, "Image of"), {
 			player : 'image',
-			url : 'https://chart.googleapis.com/chart?cht=map&chs=590x500&chld=' + country.code + '&chco=00000000|307bbb&chf=bg,s,00000000&cht=map:auto=50,50,50,50'
+			url : 'data:image/svg+xml,' + encodeURIComponent(data).replace(/'/g, '%27').replace(/"/g, '%22')
 		});
 	}
 
