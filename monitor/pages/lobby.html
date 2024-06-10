@@ -54,17 +54,17 @@
 				<div class="general">
 					<div class="numeric-input">
 						<label for="questions" title="Number of questions"><i class="fas fa-fw fa-question"></i></label>
-						<input type="number" id="questions" step="5" min="1" v-model="config.questions">
+						<input type="number" id="questions" step="5" min="5" v-model="config.questions">
 					</div>
 
 					<div class="numeric-input">
 						<label for="time" title="Seconds to answer"><i class="fas fa-fw fa-hourglass"></i></label>
-						<input type="number" id="time" step="5" min="1" v-model="config.time">
+						<input type="number" id="time" step="5" min="5" v-model="config.time">
 					</div>
 
 					<div class="numeric-input">
 						<label for="points" title="Points per round"><i class="fas fa-fw fa-star"></i></label>
-						<input type="number" id="points" step="100" min="1" v-model="config.pointsPerRound">
+						<input type="number" id="points" step="100" min="100" v-model="config.pointsPerRound">
 					</div>
 
 					<div class="numeric-input" v-if="config.allowMultiplier">
@@ -104,7 +104,7 @@
 					<h1><i class="fas fa-fw fa-list-ul"></i>Categories</h1>
 					<ul class="circle-checkboxes">
 						<li v-bind:class="{'selected' : config.categories[category.type] && category.preload.done, 'loaded' : !config.categories[category.type] && category.preload.done, 'failed' : category.preload.failed}" v-for="category in availableCategories">
-							<label v-bind:title="category.name">
+							<label v-bind:title="category.name" v-on:contextmenu.prevent="clearCache(category.type)">
 								<input type="checkbox" v-bind:id="category.type" v-model="config.categories[category.type]" v-on:change="preload(category.type)">
 								<i v-if="category.icon.indexOf('url:') == -1" v-bind:class="['fa',category.icon]"></i>
 								<img v-if="category.icon.indexOf('url:') == 0" v-bind:src="category.icon.substr(4)"/>
@@ -113,16 +113,14 @@
 						</li>
 					</ul>
 
-					<div class="questionCount"><b>{{questionCount}}</b> possible questions in the selected categories</div>
+					<div class="buttons">
+						<button v-on:click="loadAll()"><i class="fas fa-spinner"></i> Select all</button>
+						<button v-on:click="loadRandom()"><i class="fas fa-random"></i> Select 1 random</button>
+					</div>
 
-					<ul class="category-actions">
-						<li>
-							<label title="Select all categories"><a v-on:click="loadAll()"><i class="fas fa-spinner"></i></a></label>
-						</li>
-						<li>
-							<label title="Clear caches"><a v-on:click="clearCache()"><i class="fas fa-sync"></i></a></label>
-						</li>
-					</ul>
+					<div class="questionCount">
+						<span><b>{{questionCount}}</b> possible questions in the selected categories</span>
+					</div>
 				</div>
 			</form>
 		</div>

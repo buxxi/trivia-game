@@ -20,8 +20,8 @@ class ConfigureState {
                 game.removePlayer(playerId);
             });
     
-            monitorConnection.onClearCache().then(async () => {
-                categories.clearCache();
+            monitorConnection.onClearCache().then(async (category) => {
+                categories.clearCache(category);
             });
     
             monitorConnection.onStartGame().then(async (config) => {

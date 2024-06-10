@@ -28,8 +28,9 @@ class FileSystemCache {
 		});
 	}
 
-	static clearAll() {
-		fs.rm(CACHE_PATH, { force: true, recursive: true })
+	clear() {
+		let folderPath = `${CACHE_PATH}/${this._primaryKey}`;
+		fs.rm(folderPath, { force: true, recursive: true });
 	}
 }
 

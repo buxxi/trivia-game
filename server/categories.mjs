@@ -61,8 +61,8 @@ class Categories {
 		return question;
 	}
 
-	clearCache() {
-		Cache.clearAll();
+	clearCache(category) {
+		new Cache(category).clear();	
 	}
 
 	_categoryByType(type) {

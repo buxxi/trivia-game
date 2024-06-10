@@ -35,8 +35,8 @@ class MonitorToServerConnection {
         return this._pws.send(Protocol.REMOVE_PLAYER, playerId);
     }
 
-    clearCache() {
-        return this._pws.send(Protocol.CLEAR_CACHE, {} );
+    clearCache(category) {
+        return this._pws.send(Protocol.CLEAR_CACHE, category);
     }
 
     startGame(config) {
