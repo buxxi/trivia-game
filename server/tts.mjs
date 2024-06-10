@@ -1,6 +1,5 @@
 import fetch from 'node-fetch';
 
-//TODO: better error handling
 class Text2Speech {
     constructor(ttsUrl) {
         this._ttsUrl = ttsUrl;
@@ -8,24 +7,41 @@ class Text2Speech {
     }
 
     load(text) {
-        if (!this._ttsUrl) {
-            throw 403;
-        }
-        if (!text) {
-            throw 400;
-        }
-
-        let url = this._ttsUrl.replace('{text}', encodeURIComponent(text));
         let ttsId = crypto.randomUUID();
-        this._requests[ttsId] = fetch(url);
+        if (!this._ttsUrl) {
+            this._requests[ttsId] = {response: {ok : false, data: "No TTS server url configured"}};
+        } else if (!text) {
+            this._requests[ttsId] = {response: {ok : false, data: "No TTS text provided"}};
+        } else {
+            let url = this._ttsUrl.replace('{text}', encodeURIComponent(text));
+            this._requests[ttsId] = {response: {ok : undefined, data: undefined}};
+            fetch(url)
+                .then(response => response.arrayBuffer())
+                .then(arrayBuffer => this._requests[ttsId].response = {ok : true, data: new Uint8Array(arrayBuffer)})
+                .catch(e => this._requests[ttsId].response = {ok: false, data: e.toString() });
+        }
         return ttsId;
     }
 
-    async get(ttsId) {
-        let response = await this._requests[ttsId];
-        delete this._requests[ttsId];
-        let arrayBuffer = await response.arrayBuffer();
-        return new Uint8Array(arrayBuffer);
+    get(ttsId) {
+        return new Promise((resolve, reject) => {
+            let handler = {
+                set(target, prop, value) {
+                    target[prop] = value;
+                    if (typeof target.response.ok !== "undefined") {
+                        if (target.response.ok) {
+                            resolve(target.response.data);
+                        } else {
+                            reject(target.response.data);
+                        }
+                    }
+                    return true;
+                }
+            };
+            this._requests[ttsId] = new Proxy(this._requests[ttsId], handler);
+            //Trigger the proxy if it was already set before this get call was done
+            this._requests[ttsId].response = this._requests[ttsId].response;
+        });
     }
 }
 
