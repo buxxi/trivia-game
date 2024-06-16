@@ -6,21 +6,25 @@ class SoundController {
 			text2Speech : true
 		};
 
-		let backgroundMusic = new Pizzicato.Sound('sound/background.mp3', () => {
-			backgroundMusic.volume = 0.10;
-			backgroundMusic.loop = true;
+		let backgroundMusic = new Howl({
+			src: ['sound/background.mp3'], 
+			volume: 0.10,
+			loop: true
 		});
 
-		let click = new Pizzicato.Sound('sound/click.mp3', () => {
-			click.volume = 0.2;
+		let click = new Howl({
+			src: ['sound/click.mp3'],
+			volume: 0.2
 		});
 
-		let trombone = new Pizzicato.Sound('sound/sad.mp3', () => {
-			trombone.volume = 0.5;
+		let trombone = new Howl({
+			src: ['sound/sad.mp3'],
+			volume: 0.5
 		});
 
-		let applauds = new Pizzicato.Sound('sound/applauds.mp3', () => {
-			applauds.volume = 0.5;
+		let applauds = new Howl({
+			src: ['sound/applauds.mp3'], 
+			volume: 0.5
 		});
 
 		this._backgroundMusic = backgroundMusic;
@@ -34,43 +38,45 @@ class SoundController {
 	}
 
 	play() {
-		if (!this._config.backgroundMusic || this._backgroundMusic.playing) {
+		if (!this._config.backgroundMusic || this._backgroundMusic.playing()) {
 			return;
 		}
 		this._backgroundMusic.play();
 	}
 
 	pause() {
-		if (!this._config.backgroundMusic || this._backgroundMusic.paused) {
+		if (!this._config.backgroundMusic || !this._backgroundMusic.playing()) {
 			return;
 		}
+		
 		this._backgroundMusic.pause();
 	}
 
 	click() {
 		if (this._config.soundEffects) {
-			this._click.clone().play();
+			this._click.play();
 		}
 	}
 
 	beep(count) {
 		if (this._config.soundEffects) {
-			let beep = new Pizzicato.Sound('sound/beep.mp3', () => {
-				beep.play();
-				beep.sourceNode.playbackRate.value = 1.5 + (0.5 * count);
+			new Howl({
+				src: ['sound/beep.mp3'], 
+				autoplay: true,
+				rate: 1.5 + (0.5 * count)
 			});
 		}
 	}
 
 	trombone() {
 		if (this._config.soundEffects) {
-			this._trombone.clone().play();
+			this._trombone.play();
 		}
 	}
 
 	applauds() {
 		if (this._config.soundEffects) {
-			this._applauds.clone().play();
+			this._applauds.play();
 		}		
 	}
 
@@ -84,16 +90,17 @@ class SoundController {
 
 			let url = new URL("../tts", document.location).toString() + "?gameId=" + gameId + "&ttsId=" + ttsId;
 			
-			let speak = new Pizzicato.Sound(url, () => {
-				try {
-					speak.play();
-				} catch (e) {
-					reject(new Error("Failed to load text2speech for: " + ttsId));
+			let speak = new Howl({
+				src: [url],
+				format: ['wav'],
+				autoplay: true,
+				onloaderror: () => {
+					reject(new Error("Failed to load text2speech for: " + ttsId));	
+				},
+				onend: () => {
+					let elapsedTime = new Date().getTime() - startTime;
+					setTimeout(resolve, Math.max(silenceAfterTime, minimumTime - elapsedTime));
 				}
-			});
-			speak.on('end', () => {
-				let elapsedTime = new Date().getTime() - startTime;
-				setTimeout(resolve, Math.max(silenceAfterTime, minimumTime - elapsedTime));
 			});
 		});
 	}
