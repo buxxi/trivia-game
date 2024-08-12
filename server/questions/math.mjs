@@ -23,7 +23,7 @@ class MathQuestions extends Questions {
             new ExpressionCategory([ { from: 5, to: 10 }, { from: 1, to: 5} ], 
                 (values) => new Exponent(new Parantheses(new Subtract(new Constant(values[0]), new Constant(values[1]))), 2)
             ),
-            new ExpressionCategory([ { from: 50, to: 100 }, { from: 50, to: 100} ], 
+            new ExpressionCategory([ { from: -50, to: 100 }, { from: -50, to: 100} ], 
                 (values) => new Add(new Constant(values[0]), new Constant(values[1]))
             ),  
             new ExpressionCategory([ { from: 100, to: 200 }, { from: 50, to: 100} ], 
@@ -31,7 +31,10 @@ class MathQuestions extends Questions {
             ),
             new ExpressionCategory([ { from: 5, to: 10 }, { from: 1, to: 6 }, { from: 5, to: 10 }, { from: 1, to: 6 } ],
                 (values) => new Add(new Parantheses(new Multiply(new Constant(values[0]), new Constant(values[1]))), new Parantheses(new Multiply(new Constant(values[2]), new Constant(values[3]))))    
-            )    
+            ),
+            new ExpressionCategory([ { from: 5, to: 15 }, { from: 2, to: 10}, { from: 1, to: 10}],
+                (values) => new Subtract(new Parantheses(new Divide(new Constant(values[0] * values[1]), new Constant(values[1]))), new Constant(values[2]))
+            )
         ];
         this._addQuestion({
 			title : () => "Calculate the following",
@@ -169,6 +172,21 @@ class Multiply {
     }
 }
 
+class Divide {
+    constructor(left, right) {
+        this._left = left;
+        this._right = right;
+    }
+
+    eval() {
+        return this._left.eval() / this._right.eval();
+    }
+
+    display() {
+        return this._left.display() + " \u00F7 " + this._right.display();
+    }
+}
+
 class Parantheses {
     constructor(expression) {
         this._expression = expression;
@@ -199,26 +217,45 @@ class ExpressionQuestion {
     
     alternativeValues() {
         let values = this._values.slice();
+        let originalValues = this._values;
         let expressionResolver = this._expressionResolver;
+        let shuffleDigits = this._shuffleDigits;
 
         function* generator() {
             while (true) {
-                let j = Random.random(values.length);
                 switch (Random.random(5)) {
-                    case 0, 1:
-                        values[j]--;
+                    case 0: //Decrease random variable
+                        values[Random.random(values.length)]--;
+                        yield new ExpressionQuestion(expressionResolver, values);
                         break;
-                    case 2,3:
-                        values[j]++;
+                    case 1: //Decrease random variable
+                        values[Random.random(values.length)]++;
+                        yield new ExpressionQuestion(expressionResolver, values);
                         break;
-                    case 4:
-                        values[j] = values[j] + 3;
-                }
-                yield new ExpressionQuestion(expressionResolver, values);
+                    case 2: //Off by small amount on correct
+                        yield new Constant(new ExpressionQuestion(expressionResolver, originalValues).eval() + Random.fromArray([-3, -2, -1, 1, 2, 3, 10, 10, -10, -10, 20, -20]));
+                        break;
+                    case 3: //Off by small amount on current
+                        yield new Constant(new ExpressionQuestion(expressionResolver, values).eval() + Random.fromArray([-3, -2, -1, 1, 2, 3, 10, 10, -10, -10, 20, 20]));
+                        break;
+                    case 4: //Shuffle digits
+                        yield new Constant(shuffleDigits(new ExpressionQuestion(expressionResolver, values).eval()));
+                        break;
+                }  
             }
         }
 
         return generator();
+    }
+
+    _shuffleDigits(input) {
+        let sign = input >= 0 ? 1 : -1;
+        let digits = Math.abs(input).toString().split("");
+        let result = [];
+        while (digits.length > 0) {
+            result.push(digits.splice(Random.random(digits.length), 1)[0]);
+        }
+        return sign * parseInt(result.join(""));
     }
 }
 
