@@ -36,10 +36,8 @@ sudo docker run -d -p 8080:8080 --volume ~/.trivia-game/conf:/opt/trivia/conf --
 ### API's used:
 - Youtube: https://developers.google.com/youtube/v3
 - The movie database: http://docs.themoviedb.apiary.io
-- Spotify: https://developer.spotify.com/web-api/
 - REST Countries: https://restcountries.eu
 - IGDB: https://www.igdb.com/api
-- Reponsive Voice: http://responsivevoice.org/api/
 - The Cocktail DB: http://www.thecocktaildb.com/api/json/v1/1/random.php
 
 ### Clips from:

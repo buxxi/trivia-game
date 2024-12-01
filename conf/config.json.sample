@@ -7,11 +7,6 @@
 	"tmdb": {
 		"clientId": "<clientId from The Movie Database>"
 	},
-	"spotify": {
-		"clientId": "<clientId from Spotify>",
-		"clientSecret": "<clientSecret from Spotify>",
-		"whiteList" : ["classical","death-metal"]
-	},
 	"igdb": {
 		"clientId": "<clientId from Internet Game Database>",
 		"clientSecret" : "<clientSecret from Internet Game Database>"
