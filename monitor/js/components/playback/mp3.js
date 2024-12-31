@@ -2,7 +2,8 @@ export default {
     data: function() { return {
         player: {},
         pauseMusic: true,
-        minimizeQuestion: true
+        minimizeQuestion: true,
+        timeout: 0
     }},
     props: ['view'],
     computed: {
@@ -13,6 +14,7 @@ export default {
     methods: {
         start: async function() {
             let self = this;
+            self.timeout = -1;
         
             return new Promise(async (resolve, reject) => {
                 self.player = WaveSurfer.create({
@@ -34,7 +36,7 @@ export default {
                 });
 
                 self.player.on('finish', () => {
-                    self.player.play();
+                    self.timeout = setTimeout(() => self.player.play(), 500);
                 });
 
                 try {
@@ -46,6 +48,9 @@ export default {
         },
         
         stop: async function() {
+            if (self.timeout) {
+                clearTimeout(self.timeout);
+            }
             this.player.stop();
             this.player.destroy();
         }
