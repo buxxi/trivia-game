@@ -8,7 +8,7 @@ export default {
     props: ['view'],
     computed: {
         src: function() {
-            return this.view.mp3;
+            return this.view.url;
         }
     },
     methods: {

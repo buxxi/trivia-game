@@ -8,7 +8,7 @@ import ImagePlayer from '../components/playback/image.js';
 import QuotePlayer from '../components/playback/quote.js';
 import ListPlayer from '../components/playback/list.js';
 import AnswersPlayer from '../components/playback/answers.js';
-import Mp3WavePlayer from '../components/playback/mp3.js';
+import AudioPlayer from '../components/playback/audio.js';
 import YoutubePlayer from '../components/playback/youtube.js';
 import CategorySpinner from '../components/spinner.js';
 
@@ -78,7 +78,7 @@ app.component('image-player', Vue.defineAsyncComponent(loadTemplate('./pages/pla
 app.component('quote-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/quote.html', QuotePlayer)));
 app.component('list-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/list.html', ListPlayer)));
 app.component('answers-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/answers.html', AnswersPlayer)));
-app.component('mp3-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/mp3.html', Mp3WavePlayer)));
+app.component('audio-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/audio.html', AudioPlayer)));
 app.component('youtube-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/youtube.html', YoutubePlayer)));
 app.component('category-spinner', Vue.defineAsyncComponent(loadTemplate('./pages/spinner.html', CategorySpinner)));
 
