@@ -199,8 +199,8 @@ class MovieQuestions extends Questions {
 
 	_loadMovieClip(correct) {
 		return {
-			player : 'youtube',
-			videoId : correct.video,
+			player : 'video',
+			url : `https://www.youtube.com/watch?v=${correct.video}`,
 			attribution : {
 				title : "Clip from",
 				name : correct.title + " (" + correct.year + ")",

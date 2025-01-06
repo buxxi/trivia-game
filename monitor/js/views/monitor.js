@@ -9,7 +9,7 @@ import QuotePlayer from '../components/playback/quote.js';
 import ListPlayer from '../components/playback/list.js';
 import AnswersPlayer from '../components/playback/answers.js';
 import AudioPlayer from '../components/playback/audio.js';
-import YoutubePlayer from '../components/playback/youtube.js';
+import VideoPlayer from '../components/playback/video.js';
 import CategorySpinner from '../components/spinner.js';
 
 function loadTemplate(url, component) {
@@ -79,7 +79,7 @@ app.component('quote-player', Vue.defineAsyncComponent(loadTemplate('./pages/pla
 app.component('list-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/list.html', ListPlayer)));
 app.component('answers-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/answers.html', AnswersPlayer)));
 app.component('audio-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/audio.html', AudioPlayer)));
-app.component('youtube-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/youtube.html', YoutubePlayer)));
+app.component('video-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/video.html', VideoPlayer)));
 app.component('category-spinner', Vue.defineAsyncComponent(loadTemplate('./pages/spinner.html', CategorySpinner)));
 
 app.mount('#main');
