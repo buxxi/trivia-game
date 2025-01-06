@@ -1,6 +1,8 @@
+@use "../../common/css/colors.scss" as triviacolors;
+
 .credits {
 	animation : 1s scroll linear infinite;
-	color : $font;
+	color : triviacolors.$font;
 	position : relative;
 	text-align: center;
 	width : 100%;
@@ -25,7 +27,7 @@
 			font-size: 4em;
 		}
 		a {
-			color : $primary;
+			color : triviacolors.$primary;
 			font-weight: bold;
 			text-decoration: none;
 		}
@@ -57,16 +59,16 @@
 			font-size: 1.5em;
 		}
 		.correct i {
-			color : $correct;
-			text-shadow : 0.05em 0.05em 0.1em $correct_border;
+			color : triviacolors.$correct;
+			text-shadow : 0.05em 0.05em 0.1em triviacolors.$correct_border;
 		}
 		.failed i {
-			color : $incorrect;
-			text-shadow : 0.05em 0.05em 0.1em $incorrect_border;
+			color : triviacolors.$incorrect;
+			text-shadow : 0.05em 0.05em 0.1em triviacolors.$incorrect_border;
 		}
 		.fastest i,.slowest i {
-			color : $primary;
-			text-shadow : 0.05em 0.05em 0.1em $primary_border;
+			color : triviacolors.$primary;
+			text-shadow : 0.05em 0.05em 0.1em triviacolors.$primary_border;
 		}
 	}
 	h2 {

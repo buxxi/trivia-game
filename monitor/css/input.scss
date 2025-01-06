@@ -1,18 +1,20 @@
+@use "../../common/css/colors.scss" as triviacolors;
+
 .numeric-input {
-	color : $primary;
+	color : triviacolors.$primary;
 	font-size: 1.5em;
 	display : inline-flex;
-	border: 0.2em solid $primary;
+	border: 0.2em solid triviacolors.$primary;
 	border-radius: 1em;
 	overflow: hidden;
 	margin: 0.25em;
-	background-color: $primary_border;
+	background-color: triviacolors.$primary_border;
 
 	label {
 		display : inline-block;
-		color: $font;
+		color: triviacolors.$font;
 		padding: 0.25em;
-		border-right : 0.1em solid $primary;
+		border-right : 0.1em solid triviacolors.$primary;
 	}
 
 	input {
@@ -21,7 +23,7 @@
 		appearance : textfield;
 		background-color: transparent;
 		border : 0;
-		color : $font;
+		color : triviacolors.$font;
 		font-size: 1em;
 		font-weight: bold;
 		width : 2.75em;
@@ -49,7 +51,7 @@
 		position: absolute;
 		margin-top: -0.6em;
 		margin-left: -3em;
-		background-color: $primary;
+		background-color: triviacolors.$primary;
 		width: 2.5em;
 		height: 2.5em;
 		line-height: 2.5em;
@@ -57,8 +59,8 @@
 		font-weight: bold;
 	}
 	label {
-		background: $primary_border;
-		border : 0.2em solid $primary;
+		background: triviacolors.$primary_border;
+		border : 0.2em solid triviacolors.$primary;
 		border-radius: 10em;
 		cursor : pointer;
 		display : inline-block;
@@ -69,13 +71,13 @@
 	}
 	.selected {
 		label {
-			background : radial-gradient(circle at center, $primary 0%, $primary_border 100%);
+			background : radial-gradient(circle at center, triviacolors.$primary 0%, triviacolors.$primary_border 100%);
 		}
 	}
 	.failed {
 		label {
-			background : radial-gradient(circle at center, $incorrect 0%, $incorrect_border 100%);
-			border-color : $incorrect_border;
+			background : radial-gradient(circle at center, triviacolors.$incorrect 0%, triviacolors.$incorrect_border 100%);
+			border-color : triviacolors.$incorrect_border;
 		}
 	}
 
@@ -101,8 +103,8 @@
 
 button {
 	align-items: center;
-	background-color: $primary;
-	border : 0.2em solid $primary_border;
+	background-color: triviacolors.$primary;
+	border : 0.2em solid triviacolors.$primary_border;
 	border-radius: 0.5em;
 	cursor : pointer;
 	font-weight: bold;
@@ -115,12 +117,12 @@ button {
 	outline : none;
 
 	&:active {
-		border-color : $secondary_border;
+		border-color : triviacolors.$secondary_border;
 	}
 
 	&[disabled=""] {
-		background-color : $incorrect;
-		border-color : $incorrect_border;
+		background-color : triviacolors.$incorrect;
+		border-color : triviacolors.$incorrect_border;
 		cursor : not-allowed;
 	}
 }

@@ -1,4 +1,7 @@
-@import "../../common/css/trivia.scss";
+@use "sass:color";
+
+@use "../../common/css/colors.scss" as triviacolors;
+@use "../../common/css/trivia.scss" as *;
 
 .join {
 	font-size: 0.75em;
@@ -19,11 +22,11 @@
 		font-size: 2em;
 	}
 	input {
-		background-color : $secondary;
-		border : 0.15em solid $primary;
+		background-color : triviacolors.$secondary;
+		border : 0.15em solid triviacolors.$primary;
 		border-radius: 0.5em;
 		box-sizing: border-box;
-		color : $primary;
+		color : triviacolors.$primary;
 		font-weight: bold;
 		height : 2em;
 		padding : 0.1em 0.5em;
@@ -46,7 +49,7 @@
 				display : none;
 			}
 			input:checked + .avatar {
-				background-color : $primary;
+				background-color : triviacolors.$primary;
 			}
 		}
 		button {
@@ -70,8 +73,8 @@
 button {
 	display : flex;
 	align-items: center;
-	background-color: $primary;
-	border : 0.2em solid $primary_border;
+	background-color: triviacolors.$primary;
+	border : 0.2em solid triviacolors.$primary_border;
 	border-radius: 0.5em;
 	cursor : pointer;
 	font-size: 1.5em;
@@ -85,7 +88,7 @@ button {
 	outline : none;
 
 	&:active {
-		border-color : $secondary_border;
+		border-color : triviacolors.$secondary_border;
 	}
 
 	&[disabled="disabled"] {
@@ -94,47 +97,47 @@ button {
 }
 
 @mixin guess-button($color) {
-	background-color: darken($color, 20%);
+	background-color: color.adjust($color, $lightness: -20%, $space: hsl);
 	border-color: $color;
 	width: calc(100% - 1em);
 	&.selected {
 		background-color: $color;
-		border-color: darken($color, 20%);		
+		border-color: color.adjust($color, $lightness: -20%, $space: hsl);
 	}
 
 	&.correct {
-		background-color: $correct;
-		border-color: $correct_border;
+		background-color: triviacolors.$correct;
+		border-color: triviacolors.$correct_border;
 		&:before {
 			content: "\f00c";
 			font-family: 'Font Awesome 6 Free';
-			color: $correct;
-			background-color : $correct_border !important;
-			border-color : $correct !important;
+			color: triviacolors.$correct;
+			background-color : triviacolors.$correct_border !important;
+			border-color : triviacolors.$correct !important;
 		}	
 	}
 
 	&.incorrect {
-		background-color: $incorrect;
-		border-color: $incorrect_border;
+		background-color: triviacolors.$incorrect;
+		border-color: triviacolors.$incorrect_border;
 		&:before {
 			content: "\f00d";
 			font-family: 'Font Awesome 6 Free';
-			color: $incorrect;
-			background-color : $incorrect_border !important;
-			border-color : $incorrect !important;
+			color: triviacolors.$incorrect;
+			background-color : triviacolors.$incorrect_border !important;
+			border-color : triviacolors.$incorrect !important;
 		}	
 	}
 
 	&.unused {
 		background-color: #AAA;
-		border-color: darken(#AAAA, 20%);
+		border-color: color.adjust(#AAAA, $lightness: -20%, $space: hsl);
 	}
 
 	&.selected:before {
 		content: "\f023";
 		font-family: 'Font Awesome 6 Free';
-		background-color: darken($color, 20%);	
+		background-color: color.adjust($color, $lightness: -20%, $space: hsl);
 		margin-left: 0.5em;	
 	}
 }
@@ -158,8 +161,8 @@ button {
 	    display: flex;
 	    justify-content: space-around;
 	    align-items: center;
-		border-bottom : 0.1em solid $primary;
-		text-shadow : 0.05em 0.05em 0 $primary;
+		border-bottom : 0.1em solid triviacolors.$primary;
+		text-shadow : 0.05em 0.05em 0 triviacolors.$primary;
 	}
 
 	button {
@@ -169,26 +172,26 @@ button {
 	}
 
 	button.button-icon-A {
-		@include guess-button($A_color);
+		@include guess-button(triviacolors.$A_color);
 	}
 
 	button.button-icon-B {
-		@include guess-button($B_color);
+		@include guess-button(triviacolors.$B_color);
 	}
 
 	button.button-icon-C {
-		@include guess-button($C_color);
+		@include guess-button(triviacolors.$C_color);
 	}
 
 	button.button-icon-D {
-		@include guess-button($D_color);
+		@include guess-button(triviacolors.$D_color);
 	}
 
 	.fa-stack {
 		margin-top : 1em;
 	}
 	.fa-stack-2x {
-		color: $primary;
+		color: triviacolors.$primary;
 	}
 	.fa-stack-1x {
 		animation: splash 0.5s linear normal;

@@ -1,7 +1,9 @@
-@import "../../common/css/trivia.scss";
-@import "./playback.scss";
-@import "./lobby.scss";
-@import "./credits.scss";
+@use "sass:color";
+@use "../../common/css/colors.scss" as triviacolors;
+@use "../../common/css/trivia.scss" as *;
+@use "./playback.scss" as *;
+@use "./lobby.scss" as *;
+@use "./credits.scss" as *;
 
 .question {
 	#content, #category-spinner {
@@ -18,7 +20,7 @@
 		}
 	}
 	.title {
-		color : $font;
+		color : triviacolors.$font;
 		font-size: 3em;
 		font-size: 6em;
 		font-weight: bold;
@@ -47,7 +49,7 @@
 	}
 	#correct {
 		animation : resize-correct 1s linear normal;
-		color : $font;
+		color : triviacolors.$font;
 		font-size: 3em;
 		font-size: 6em;
 		font-weight: bold;
@@ -79,10 +81,10 @@
 }
 
 .infobox {
-	background-color: $secondary;
+	background-color: triviacolors.$secondary;
 	border-radius: 0.6em;
-	border: 0.3em solid $secondary_border;
-	color: $primary;
+	border: 0.3em solid triviacolors.$secondary_border;
+	color: triviacolors.$primary;
 	font-weight: bold;
 	font-size: 1.25em;
 	padding: 0.5em 1em;
@@ -90,7 +92,7 @@
 
 #round {
   position: fixed;
-  background-color: $primary_border;
+  background-color: triviacolors.$primary_border;
   left: 0;
   top: 40%;
   width: 100%;
@@ -99,8 +101,8 @@
   bottom: 40%;
   border-style: solid;
   border-width : 5px 0;
-  border-color : $primary;
-  box-shadow: 0 0 50px $primary;
+  border-color : triviacolors.$primary;
+  box-shadow: 0 0 50px triviacolors.$primary;
   opacity : 0;
   animation: round 3s linear;
 
@@ -114,7 +116,7 @@
 	left: 0;
 	width : 100%;
 	text-align: center;
-	background-image: linear-gradient($font 55%, rgba(0,0,0,0) 0%);
+	background-image: linear-gradient(triviacolors.$font 55%, rgba(0,0,0,0) 0%);
 	animation: round-from-left 3s linear;
   }
 
@@ -128,7 +130,7 @@
 	left: 0;
 	width : 100%;
 	text-align: center;
-	background-image: linear-gradient(rgba(0,0,0,0) 55%, $font 0%);	
+	background-image: linear-gradient(rgba(0,0,0,0) 55%, triviacolors.$font 0%);
 	animation: round-from-right 3s linear;
   }
 }
@@ -182,58 +184,58 @@
 	}
 	li:nth-child(1) {
 		transform : translateY(-1.5em) rotateX(-90deg);
-		color: darken($font, 75%);
-		background-color : $primary_border;
+		color: color.adjust(triviacolors.$font, $lightness: -75%, $space: hsl);
+		background-color : triviacolors.$primary_border;
 		z-index: 2;
 
 	}
 	li:nth-child(2) {
 		transform : translateY(-1em) rotateX(-70deg);
-		color: darken($font, 50%);
-		background-color : mix($primary, $primary_border, 25%);
+		color: color.adjust(triviacolors.$font, $lightness: -50%, $space: hsl);
+		background-color : color.mix(triviacolors.$primary, triviacolors.$primary_border, $weight: 25%);
 		z-index: 3;
 	}
 	li:nth-child(3) {
 		transform : translateY(0.6em) rotateX(-40deg);
-		color: darken($font, 25%);
-		background-color : mix($primary, $primary_border, 50%);
+		color: color.adjust(triviacolors.$font, $lightness: -25%, $space: hsl);
+		background-color : color.mix(triviacolors.$primary, triviacolors.$primary_border, $weight: 50%);
 		z-index: 4;
 	}
 
 	li:nth-child(4) {
 		transform : translateY(3.2em) rotateX(0deg);
-		color: $font;
-		background-color : $primary;
+		color: triviacolors.$font;
+		background-color : triviacolors.$primary;
 		z-index: 5;
 	}
 
 	li:nth-child(5) {
 		transform : translateY(5.8em) rotateX(40deg);
-		color: darken($font, 25%);
-		background-color : mix($primary, $primary_border, 50%);
+		color: color.adjust(triviacolors.$font, $lightness: -25%, $space: hsl);
+		background-color : color.mix(triviacolors.$primary, triviacolors.$primary_border, $weight: 50%);
 		z-index: 4;
 	}
 	li:nth-child(6) {
 		transform : translateY(7.4em) rotateX(70deg);
-		color: darken($font, 50%);
-		background-color : mix($primary, $primary_border, 25%);
+		color: color.adjust(triviacolors.$font, $lightness: -50%, $space: hsl);
+		background-color : color.mix(triviacolors.$primary, triviacolors.$primary_border, $weight: 25%);
 		z-index: 3;
 	}
 	li:nth-child(7) {
 		transform : translateY(7.9em) rotateX(90deg);
-		color: darken($font, 75%);
-		background-color : $primary_border;
+		color: color.adjust(triviacolors.$font, $lightness: -75%, $space: hsl);
+		background-color : triviacolors.$primary_border;
 		z-index: 2;
 	}
 	li:nth-child(n+8)  {
 		transform : translateY(3.2em) rotateX(180deg);
-		background-color : $primary_border;
+		background-color : triviacolors.$primary_border;
 		z-index: 1;
-		transition-duration: 0;
+		transition-duration: 0s;
 	}
 
 	&.highlight li:nth-child(4) {
-		background-color :$correct !important;
+		background-color : triviacolors.$correct !important;
 		transition-duration: 0.1s !important;
 		* {
 			transition: font-size 0.5s linear;
@@ -288,13 +290,13 @@
 @mixin timer-counter-loop {
     @for $i from 10 to 0 {
         &[data-percentage="#{$i}"] {
-            color : $incorrect;
+            color : triviacolors.$incorrect;
             &:before {
                 transform: scale(0.5, 0.5);
                 animation: timer-pulse 1s linear infinite;
             }
             svg #bar {
-                stroke : $incorrect;
+                stroke : triviacolors.$incorrect;
             }
         }
     }
@@ -306,7 +308,7 @@
 	height : 4.2em;
 	top : -0.5em;
 	float : right;
-	color : $primary;
+	color : triviacolors.$primary;
 	@include timer-counter-loop;
 
 	svg {
@@ -315,12 +317,12 @@
 		height : 100%;
 		circle {
 			transition: stroke-dashoffset 0.1s linear;
-			stroke: $secondary_border;
+			stroke: triviacolors.$secondary_border;
 			stroke-width: 0.35em;
-			fill: $secondary;
+			fill: triviacolors.$secondary;
 		}
 		#bar {
-			stroke: $primary;
+			stroke: triviacolors.$primary;
 			fill: transparent;
 		}
 	}
@@ -339,14 +341,14 @@
 }
 
 h1 {
-	color : $secondary_border;
+	color : triviacolors.$secondary_border;
 
 	i {
-		color : $primary;
+		color : triviacolors.$primary;
 	}
 
 	&::after {
-		border: 0.075em solid $primary;
+		border: 0.075em solid triviacolors.$primary;
 		content: "";
 		display: block;
 		margin-left: 20%;
@@ -365,40 +367,40 @@ h1 {
 
 .score-change-positive .avatar {
 	animation : glow-positive 1s linear normal;
-	box-shadow : 0 0 3em $correct, 0 0 1.5em $correct;
+	box-shadow : 0 0 3em triviacolors.$correct, 0 0 1.5em triviacolors.$correct;
 
 	img {
 		filter: contrast(200%);
 	}
 
 	&::after {
-		background-color: $correct;
-		border-color: $correct_border;
-		color: $font;
+		background-color: triviacolors.$correct;
+		border-color: triviacolors.$correct_border;
+		color: triviacolors.$font;
 	}
 }
 
 .score-change-negative .avatar {
 	animation : glow-negative 1s linear normal;
-	box-shadow : 0 0 3em $incorrect, 0 0 1.5em $incorrect;
+	box-shadow : 0 0 3em triviacolors.$incorrect, 0 0 1.5em triviacolors.$incorrect;
 
 	img {
 		filter: grayscale(100%);
 	}
 	
 	&::after {
-		background-color: $incorrect;
-		border-color: $incorrect_border;
-		color: $font;
+		background-color: triviacolors.$incorrect;
+		border-color: triviacolors.$incorrect_border;
+		color: triviacolors.$font;
 	}
 }
 
 .score-change-negative~.score {
-	color : $font;
+	color : triviacolors.$font;
 }
 
 .score-change-positive~.score {
-	color : $font;
+	color : triviacolors.$font;
 }
 
 .leader {
@@ -435,15 +437,15 @@ h1 {
  }
 
  @keyframes glow-negative {
-     0% { box-shadow : 0 0 0 $incorrect, 0 0 0 $incorrect }
-     50% { box-shadow : 0 0 6em $incorrect, 0 0 3em $incorrect }
-     100% { box-shadow : 0 0 3em $incorrect, 0 0 1.5em $incorrect }
+     0% { box-shadow : 0 0 0 triviacolors.$incorrect, 0 0 0 triviacolors.$incorrect }
+     50% { box-shadow : 0 0 6em triviacolors.$incorrect, 0 0 3em triviacolors.$incorrect }
+     100% { box-shadow : 0 0 3em triviacolors.$incorrect, 0 0 1.5em triviacolors.$incorrect }
  }
  
  @keyframes glow-positive {
-     0% { box-shadow : 0 0 0 $correct, 0 0 0 $correct }
-     50% { box-shadow : 0 0 6em $correct, 0 0 3em $correct }
-     100% { box-shadow : 0 0 3em $correct, 0 0 1.5em $correct }
+     0% { box-shadow : 0 0 0 triviacolors.$correct, 0 0 0 triviacolors.$correct }
+     50% { box-shadow : 0 0 6em triviacolors.$correct, 0 0 3em triviacolors.$correct }
+     100% { box-shadow : 0 0 3em triviacolors.$correct, 0 0 1.5em triviacolors.$correct }
  }
 
  @keyframes round {

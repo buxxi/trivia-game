@@ -1,0 +1,16 @@
+@use "sass:color";
+
+$primary : #307bbb;
+$primary_border : #133451;
+$secondary : #ffffff;
+$secondary_border : #aaaaaa;
+$incorrect : #880000;
+$incorrect_border : color.adjust($incorrect, $lightness: -20%, $space: hsl);
+$correct : #008800;
+$correct_border : color.adjust($correct, $lightness: -20%, $space: hsl);
+$font : #ffffff;
+$background : color.adjust($primary, $alpha: -0.7, $space: hsl);
+$A_color: #ff2600ee;
+$B_color: #228b22;
+$C_color: #1e90ff;
+$D_color: #ccb805;

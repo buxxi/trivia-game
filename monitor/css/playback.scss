@@ -1,3 +1,5 @@
+@use "../../common/css/colors.scss" as triviacolors;
+
 #player {
     display : flex;
     align-items : center;
@@ -58,7 +60,7 @@
     }
 
     &.quote {
-        color : $font;
+        color : triviacolors.$font;
         .fa-quote-left {
             float : left;
             font-size : 4em;

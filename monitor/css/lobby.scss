@@ -1,4 +1,5 @@
-@import "./input.scss";
+@use "../../common/css/colors.scss" as triviacolors;
+@use "./input.scss" as *;
 
 body {
 	@media (min-height: 720px) {
@@ -26,7 +27,7 @@ body {
 
 
 .lobby {
-	color : $font;
+	color : triviacolors.$font;
 	.settings {
 		float : left;
 		text-align: center;
@@ -45,9 +46,9 @@ body {
 		}
 	}
 	.questionCount {
-		background-color : $primary_border;
-		border : 0.2em solid $primary;
-		color : $font;
+		background-color : triviacolors.$primary_border;
+		border : 0.2em solid triviacolors.$primary;
+		color : triviacolors.$font;
 		padding : 0.5em;
 		margin : 0.5em 0;
 		border-radius: 1em;
@@ -120,9 +121,9 @@ ol {
 		margin-bottom : 0.5em;
 		text-align: left;
 		&:before {
-			background-color : $primary_border;
+			background-color : triviacolors.$primary_border;
 			border-radius: 1em;
-			border: 0.1em solid $primary;
+			border: 0.1em solid triviacolors.$primary;
 			content : counter(help);
 			counter-increment: help;
 			display : inline-block;
@@ -147,16 +148,16 @@ ol {
     
 	.qr {
 		display: inline-block;
-		background-color: $secondary;
+		background-color: triviacolors.$secondary;
 		border-radius: 1em 1em 0 0;
 		margin-bottom: -0.3em;
-		border: 0.3em solid $primary;
+		border: 0.3em solid triviacolors.$primary;
 		width: 24em;
 		height: 24em;
 		overflow: hidden;
 		i {
 			line-height: 24em;
-			color: $primary;
+			color: triviacolors.$primary;
 		}
 		img {
 			width: 100%;
@@ -165,7 +166,7 @@ ol {
 		}
 	}
 	.code {
-		background-color : $primary;
+		background-color : triviacolors.$primary;
 		border-radius : 0 0 1em 1em;
 		display : inline-block;
 		font-weight: bold;
@@ -173,15 +174,15 @@ ol {
 		padding : 1em 0;
 		text-transform: uppercase;
 		width : 24em;
-		border : 0.3em solid $primary;
+		border : 0.3em solid triviacolors.$primary;
 	}
 }
 
 #start a {
-	background-color : $primary;
+	background-color : triviacolors.$primary;
 	border-radius: 1em;
-	border: 0.1em solid $primary_border;
-	color : $font;
+	border: 0.1em solid triviacolors.$primary_border;
+	color : triviacolors.$font;
 	cursor : pointer;
 	font-size: 2em;
 	margin : 1em;
@@ -191,8 +192,8 @@ ol {
 	bottom : 0;
 
 	&[disabled] {
-		background-color : $incorrect;
-		border : 0.1em solid $incorrect_border;
+		background-color : triviacolors.$incorrect;
+		border : 0.1em solid triviacolors.$incorrect_border;
 		cursor : not-allowed;
 		opacity : 0.5;
 	}

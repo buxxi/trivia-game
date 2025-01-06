@@ -1,39 +1,28 @@
-@import "../../node_modules/@fontsource/ubuntu/scss/mixins.scss";
+@use "sass:color";
+@use "colors.scss" as triviacolors;
 
+@use "../../node_modules/@fontsource/ubuntu/scss/mixins.scss" as ubuntu;
+
+//This deprecation will be fixed in FontAwesome 7, use whatever is suggested then
 $fa-font-path: "../../common/fonts/fontawesome";
 @import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
 @import "../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
 
-@include faces(
+@include ubuntu.faces(
   $weights: (400),
   $styles: all,
   $directory: "../../common/fonts/ubuntu"
 );
 
-$primary : #307bbb;
-$primary_border : #133451;
-$secondary : #ffffff;
-$secondary_border : #aaaaaa;
-$incorrect : #880000;
-$incorrect_border : darken($incorrect, 20%);
-$correct : #008800;
-$correct_border : darken($correct, 20%);
-$font : #ffffff;
-$background : transparentize($primary, 0.7);
-$A_color: #ff2600ee;
-$B_color: #228b22;
-$C_color: #1e90ff;
-$D_color: #ccb805;
-
 html {
-   background: linear-gradient(290deg, $background, adjust-hue($background, -20deg)), url('../../common/img/simple_dashed.png');
+   background: linear-gradient(290deg, triviacolors.$background, color.adjust(triviacolors.$background, $hue: -20deg, $space: hsl)), url('../../common/img/simple_dashed.png');
    background-size: cover, 2em;
    background-blend-mode: screen;
    height : 100%;
 }
 
 body {
-	color : $font;
+	color : triviacolors.$font;
 	font-family: 'Ubuntu' !important;
 	overflow : hidden;
 }
@@ -43,14 +32,14 @@ button {
 }
 
 @mixin button-icon($color, $text) {
-	$border: darken($color, 10%);
+	$border: color.adjust($color, $lightness: -10%, $space: hsl);
 	&:before {
 		background-color : $color;
 		border-color : $border;
 		border-radius: 1.5em;
 		border-style : solid;
 		border-width: 0.1em;
-		color : $font;
+		color : triviacolors.$font;
 		content : $text;
 		display : inline-block;
 		font-weight: bold;
@@ -65,25 +54,25 @@ button {
 }
 
 .button-icon-A {
-	@include button-icon($A_color, "A");
+	@include button-icon(triviacolors.$A_color, "A");
 }
 
 .button-icon-B {
-	@include button-icon($B_color, "B");
+	@include button-icon(triviacolors.$B_color, "B");
 }
 
 .button-icon-C {
-	@include button-icon($C_color, "C");
+	@include button-icon(triviacolors.$C_color, "C");
 }
 
 .button-icon-D {
-	@include button-icon($D_color, "D");
+	@include button-icon(triviacolors.$D_color, "D");
 }
 
 .message {
-	background-color : $incorrect;
-	border : 0.2em solid $incorrect_border;
-	color : $font;
+	background-color : triviacolors.$incorrect;
+	border : 0.2em solid triviacolors.$incorrect_border;
+	color : triviacolors.$font;
 	padding : 0.5em;
 	margin : 0.5em 0;
 	border-radius: 1em;
@@ -102,7 +91,7 @@ button {
 	&[data-multiplier]::before {
 		background-color : inherit;
 		border-radius: 2em;
-		color: $font;
+		color: triviacolors.$font;
 		content: attr(data-multiplier) "x";
 		font-weight: bold;
 		margin-left: -1em;
@@ -115,12 +104,12 @@ button {
 	}
 
 	&[data-score]::after {
-		background-color : $secondary;
+		background-color : triviacolors.$secondary;
 		border-color : inherit;
 		border-style : solid;
 		border-width : 0.25em;
 		border-radius: 0.5em;
-		color: $primary;
+		color: triviacolors.$primary;
 		content: attr(data-score);
 		display: block;
 		font-weight: bold;
@@ -144,8 +133,8 @@ button {
 			filter: invert(100%);
 		}
 		&::after {
-			background-color : $primary;
-			color : $font;
+			background-color : triviacolors.$primary;
+			color : triviacolors.$font;
 		}
 	}
 }
