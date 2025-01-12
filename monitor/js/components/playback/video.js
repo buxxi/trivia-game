@@ -2,6 +2,7 @@ class YoutubeVideoPlayer {
     constructor(delegate, videoId) {
         this._delegate = delegate;
         this._videoId = videoId;
+        this.className = 'youtube';
     }
 
     async start () {
@@ -53,19 +54,31 @@ class YoutubeVideoPlayer {
     }
 }
 
-//TODO: implement me
 class NormalVideoPlayer {
     constructor(delegate, url) {
         this._delegate = delegate;
         this._url = url;
+        this.className = 'html5video';
     }
 
     async start () {
-        throw new Error("Not implemented");
+        return new Promise((resolve, reject) => {
+            let video = document.createElement("video");
+            video.src = this._url;
+            video.controls = false;
+            video.autoplay = true;
+            document.querySelector('#video').appendChild(video);
+            video.addEventListener('canplay', () => {
+                this._delegate.playing = true;
+                resolve();
+            })
+            video.addEventListener('error', () => reject(new Error("Could not load video")));
+        });
     }
 
     async stop () {
-        throw new Error("Not implemented");
+        this._delegate.playing = false;
+        document.querySelector('#video video').pause();
     }
 }
 
@@ -77,6 +90,11 @@ export default {
         playing : false
     }},
     props: ['view'],
+    computed: {
+        className() {
+            return this._player.className;
+        }
+    },
     methods: {
         start: async function() {
             let url = new URL(this.view.url);
