@@ -1,5 +1,7 @@
 import Cache from './cache.mjs';
 import Random from './random.mjs';
+import { register } from 'node:module';
+import {customQuestionPath} from "./xdg.mjs";
 
 class Categories {
 	constructor(config) {
@@ -9,9 +11,10 @@ class Categories {
 	}
 
 	async init() {
+		register('./custom-question-loader.mjs', import.meta.url);
 		this._categories = {};
 		for (let category of this._config.categories) {
-			let categoryModule = await Promise.any([import(`./questions/${category}.mjs`), import(`./questions/custom/${category}.mjs`)]);
+			let categoryModule = await Promise.any([import(`./questions/${category}.mjs`), this._readCustomCategory(category)]);
 			this._categories[category] = new categoryModule.default(this._config, category);
 		}
 
@@ -90,6 +93,10 @@ class Categories {
 			throw new Error("Trying to splice empty array");
 		}
 		return arr.splice(Random.random(arr.length), 1)[0];
+	}
+
+	async _readCustomCategory(category) {
+		return import(customQuestionPath(`${category}.mjs`));
 	}
 }
 

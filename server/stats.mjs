@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import path from "path";
+import {statsPath} from "./xdg.mjs";
 
 class GameStatistics {
     constructor(path, id) {
@@ -34,7 +34,7 @@ class GameStatistics {
         if (!game.config().saveStatistics) {
             return;
         }
-        let statsFile = path.resolve(this.path, `${this.data.started.replaceAll(/[^0-9a-z]/g, '')}_${this.data.uuid}.json`);
+        let statsFile = statsPath(`${this.data.started.replaceAll(/[^0-9a-z]/g, '')}_${this.data.uuid}.json`);
 		await fs.writeFile(statsFile, JSON.stringify(this.data));
     }
 

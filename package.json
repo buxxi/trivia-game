@@ -36,5 +36,12 @@
     "vue-router": "^4.5.0",
     "wavesurfer.js": "^7.8.15",
     "ws": "^8.18.0"
+  },
+  "imports": {
+    "#selector": "./server/selector.mjs",
+    "#questions": "./server/questions/questions.mjs",
+    "#random": "./server/random.mjs",
+    "#generators": "./server/generators.mjs",
+    "#localjsonfile": "./server/questions/localjsonfile.mjs"
   }
 }

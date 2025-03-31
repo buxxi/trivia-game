@@ -6,6 +6,7 @@ import GameLoop from './loop.mjs';
 import ServerConnection from './connection.mjs';
 import Text2Speech from './tts.mjs';
 import GameStatistics from './stats.mjs';
+import {configPath} from "./xdg.mjs";
 
 class GameRepository {
 	constructor(categories, config) {
@@ -42,7 +43,7 @@ class GameRepository {
 
 async function loadConfig() {
 	console.log("Loading config");
-	return JSON.parse(await fs.readFile('conf/config.json'));
+	return JSON.parse(await fs.readFile(configPath()));
 }
 
 async function loadCategories(config) {

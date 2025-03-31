@@ -9,6 +9,8 @@ with node (tested on node20):
 git clone https://github.com/buxxi/trivia-game.git
 cd trivia-game
 npm install
+mkdir ~/.config/trivia-game
+cp config.json.sample ~/.config/trivia-game/config.json
 npm run start
 ```
 or with Docker:
@@ -16,7 +18,9 @@ or with Docker:
 git clone https://github.com/buxxi/trivia-game.git
 cd trivia-game
 sudo docker build -t buxxi/trivia .
-sudo docker run -d -p 8080:8080 --volume ~/.trivia-game/conf:/opt/trivia/conf --restart always --name trivia buxxi/trivia
+mkdir ~/.config/trivia-game
+cp config.json.sample ~/.config/trivia-game/config.json
+sudo docker run -d -p 8080:8080 --volume ~/.local/share/trivia-game:/opt/trivia/data/trivia-game --volume ~/.config/trivia-game:/opt/trivia/conf/trivia-game --volume ~/.cache/trivia-game:/opt/trivia/cache/trivia-game --name trivia buxxi/trivia
 ```
 
 ### Sample screenshot:
