@@ -37,6 +37,7 @@ class TriviaServer {
 		app.get('/trivia/monitor/css/monitor.css', (req, res) => { res.type("css").send(monitorStyle); });
 		app.use('/trivia/monitor/js/ext/vue.min.js', express.static('node_modules/vue/dist/vue.global.prod.js'));
 		app.use('/trivia/monitor/js/ext/vue-router.min.js', express.static('node_modules/vue-router/dist/vue-router.global.prod.js'));
+		app.use('/trivia/monitor/js/ext/vue-i18n.min.js', express.static('node_modules/vue-i18n/dist/vue-i18n.global.js'));
 		app.use('/trivia/monitor/js/ext/howler.min.js', express.static('node_modules/howler/dist/howler.min.js'));
 		app.use('/trivia/monitor/js/ext/wavesurfer.min.js', express.static('node_modules/wavesurfer.js/dist/wavesurfer.min.js'));
 		app.use('/trivia/monitor/js/ext/qrcode.min.js', express.static('node_modules/qrcode/build/qrcode.js'));

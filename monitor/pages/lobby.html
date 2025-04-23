@@ -1,107 +1,112 @@
 <div class="lobby">
 	<div class="connect">
-		<h1>Trivia Game</h1>
+		<h1>{{ $t('title') }}</h1>
 		<div>
 			<div class="qr">
 				<img v-if="gameId != null" v-bind:src="qrUrl"/>
 				<i v-if="gameId == null" class="fas fa-cog fa-spin fa-fw"></i>
 			</div>
 			<div class="code" v-if="gameId != null">{{ gameId }}</div>
-			<div class="code" v-if="gameId == null">Loading...</div>
+			<div class="code" v-if="gameId == null">{{ $t('loading') }}...</div>
 		</div>
 		<div class="instructions" v-bind:data-url="serverUrl">
 			<div>
-				<h3>Join on your Smartphone!</h3>
-				By QR Code or go to:<br/>
+				<h3>{{ $t('join.header') }}</h3>
+				{{ $t('join.qrCodeOrUrl') }}:<br/>
 				<b>{{serverUrl}}</b>
 			</div>
 		</div>
 	</div>
 	<div class="players">
-		<h1><i class="fas fa-fw fa-users"></i>Players</h1>
-		<p v-if="Object.entries(players).length == 0">No players have joined yet</p>
+		<h1><i class="fas fa-fw fa-users"></i>{{ $t('players.header') }}</h1>
+		<p v-if="Object.entries(players).length == 0">{{ $t('players.none')}}</p>
 		<ul class="playerlist" v-if="Object.entries(players).length > 0">
 			<li v-for="(player, id) in players">
-				<a v-on:click="kickPlayer(id)" class="kick" title="Kick player">
+				<a v-on:click="kickPlayer(id)" class="kick" v-bind:title="$t('players.kick')">
 					<div class="avatar" v-bind:data-score="player.name" v-bind:style="{'background-color': player.color, 'border-color': player.color}"><img v-bind:src="'../common/img/avatars/' + player.avatar + '.png'"/></div>
 				</a>
 			</li>
 		</ul>
 
 		<div class="rules">
-			<h1><i class="fas fa-fw fa-gavel"></i>Rules</h1>
+			<h1><i class="fas fa-fw fa-gavel"></i>{{ $t('rules.header') }}</h1>
 			<ol>
-				<li>Use your phone to select the answer you think is correct</li>
-				<li>A correct answer awards you points and an incorrect removes points</li>
-				<li>You can't go below 0 points, make wild guesses if you don't know the correct answer</li>
-				<li>You are awarded more points for answering quick</li>
-				<li v-if="config.allowMultiplier">A correct answer will increase the points multiplier (up to {{config.maxMultiplier}}x) for the next question</li>
-				<li v-if="config.allowMultiplier">An invalid answer will reset the points multiplier to 1x</li>
-				<li v-if="config.allowMultiplier">Not answering will reset the points multiplier to 1x</li>
-				<li>You have <b>{{config.time}}</b> seconds to answer each question</li>
+				<li>{{ $t('rules.controller') }}</li>
+				<li>{{ $t('rules.scoring') }}</li>
+				<li>{{ $t('rules.belowZero') }}</li>
+				<li>{{ $t('rules.speed') }}</li>
+				<li v-if="config.allowMultiplier">{{ $t('rules.multiplier.correct', {maxMultiplier: config.maxMultiplier }) }}</li>
+				<li v-if="config.allowMultiplier">{{ $t('rules.multiplier.incorrect') }}</li>
+				<li v-if="config.allowMultiplier">{{ $t('rules.multiplier.unanswered') }}</li>
+                <i18n-t keypath="rules.time" tag="li" scope="global">
+                    <template v-slot:seconds><b>{{config.time}}</b></template>
+                </i18n-t>
 			</ol>
 
-			<h1><i class="fas fa-fw fa-heart" style="color : #aa0000"></i>Powered by</h1>
+			<h1><i class="fas fa-fw fa-heart" style="color : #aa0000"></i>{{ $t('poweredBy') }}</h1>
 			<ul class="carousel">
 				<li v-for="(site, index) in poweredBy" v-bind:class="{show : index == carouselIndex}"><a v-bind:href="site.url">{{ site.name }}</a></li>
 			</ul>
 		</div>
 	</div>
 	<div class="settings">
-		<h1><i class="fas fa-fw fa-cogs"></i>Settings</h1>
+		<h1><i class="fas fa-fw fa-cogs"></i>{{ $t('settings.header') }}</h1>
 		<div>
 			<form>
 				<div class="general">
 					<div class="numeric-input">
-						<label for="questions" title="Number of questions"><i class="fas fa-fw fa-question"></i></label>
+						<label for="questions" v-bind:title="$t('settings.questions')"><i class="fas fa-fw fa-question"></i></label>
 						<input type="number" id="questions" step="5" min="5" v-model="config.questions">
 					</div>
 
 					<div class="numeric-input">
-						<label for="time" title="Seconds to answer"><i class="fas fa-fw fa-hourglass"></i></label>
+						<label for="time" v-bind:title="$t('settings.time')"><i class="fas fa-fw fa-hourglass"></i></label>
 						<input type="number" id="time" step="5" min="5" v-model="config.time">
 					</div>
 
 					<div class="numeric-input">
-						<label for="points" title="Points per round"><i class="fas fa-fw fa-star"></i></label>
+						<label for="points" v-bind:title="$t('settings.pointsPerRound')"><i class="fas fa-fw fa-star"></i></label>
 						<input type="number" id="points" step="100" min="100" v-model="config.pointsPerRound">
 					</div>
 
 					<div class="numeric-input" v-if="config.allowMultiplier">
-						<label for="maxMultiplier" title="Max multiplier"><i class="fas fa-fw fa-times"></i></label>
+						<label for="maxMultiplier" v-bind:title="$t('settings.maxMultiplier')"><i class="fas fa-fw fa-times"></i></label>
 						<input type="number" id="maxMultiplier" step="1" min="1" v-model="config.maxMultiplier">
 					</div>
 
 					<ul class="circle-checkboxes">
 						<li v-bind:class="{'selected' : config.stopOnAnswers}">
-							<label for="stop" title="Stop after all answered"><input type="checkbox" id="stop" v-model="config.stopOnAnswers"><i class="fas fa-stop"></i></label>
+							<label for="stop" v-bind:title="$t('settings.stopOnAnswers')"><input type="checkbox" id="stop" v-model="config.stopOnAnswers"><i class="fas fa-stop"></i></label>
 						</li>
 						<li v-bind:class="{'selected' : config.allowMultiplier}">
-							<label for="multiplier" title="Use multipliers"><input type="checkbox" id="multiplier" v-model="config.allowMultiplier"><i class="fas fa-times"></i></label>
+							<label for="multiplier" v-bind:title="$t('settings.allowMultiplier')"><input type="checkbox" id="multiplier" v-model="config.allowMultiplier"><i class="fas fa-times"></i></label>
 						</li>
 						<li v-bind:class="{'selected' : config.sound.backgroundMusic}">
-							<label for="backgroundMusic" title="Background music"><input type="checkbox" id="backgroundMusic" v-model="config.sound.backgroundMusic"><i class="fas fa-music"></i></label>
+							<label for="backgroundMusic" v-bind:title="$t('settings.backgroundMusic')"><input type="checkbox" id="backgroundMusic" v-model="config.sound.backgroundMusic"><i class="fas fa-music"></i></label>
 						</li>
 						<li v-bind:class="{'selected' : config.sound.text2Speech}">
-							<label for="text2Speech" title="Text-2-speech of questions"><input type="checkbox" id="text2Speech" v-model="config.sound.text2Speech"><i class="fas fa-comment"></i></label>
+							<label for="text2Speech" v-bind:title="$t('settings.text2Speech')"><input type="checkbox" id="text2Speech" v-model="config.sound.text2Speech"><i class="fas fa-comment"></i></label>
 						</li>
 						<li v-bind:class="{'selected' : config.sound.soundEffects}">
-							<label for="soundEffects" title="Sound effects"><input type="checkbox" id="soundEffects" v-model="config.sound.soundEffects"><i class="fas fa-exclamation"></i></label>
+							<label for="soundEffects" v-bind:title="$t('settings.soundEffects')"><input type="checkbox" id="soundEffects" v-model="config.sound.soundEffects"><i class="fas fa-exclamation"></i></label>
 						</li>
 						<li v-bind:class="{'selected' : config.categorySpinner}">
-							<label for="spinner" title="Category spinner"><input type="checkbox" id="spinner" v-model="config.categorySpinner"><i class="fas fa-spinner"></i></label>
+							<label for="spinner" v-bind:title="$t('settings.categorySpinner')"><input type="checkbox" id="spinner" v-model="config.categorySpinner"><i class="fas fa-spinner"></i></label>
 						</li>
 						<li v-bind:class="{'selected' : config.saveStatistics}">
-							<label for="statistics" title="Save statistics"><input type="checkbox" id="statistics" v-model="config.saveStatistics"><i class="fas fa-chart-simple"></i></label>
+							<label for="statistics" v-bind:title="$t('settings.saveStatistics')"><input type="checkbox" id="statistics" v-model="config.saveStatistics"><i class="fas fa-chart-simple"></i></label>
 						</li>
 						<li v-bind:class="{'selected' : config.fullscreen}">
-							<label for="fullscreen" title="Toggle fullscreen"><input type="checkbox" id="fullscreen" v-model="config.fullscreen" v-on:change="toggleFullScreen()"><i class="fas fa-window-maximize"></i></label>
+							<label for="fullscreen" v-bind:title="$t('settings.fullscreen')"><input type="checkbox" id="fullscreen" v-model="config.fullscreen" v-on:change="toggleFullScreen()"><i class="fas fa-window-maximize"></i></label>
 						</li>
+                        <li class="selected">
+                            <label for="language" v-bind:title="$t('settings.language')"><input type="checkbox" id="language" v-on:click="nextLanguage()">{{ languageIcon }}</label>
+                        </li>
 					</ul>
 				</div>
 
 				<div id="categories">
-					<h1><i class="fas fa-fw fa-list-ul"></i>Categories</h1>
+					<h1><i class="fas fa-fw fa-list-ul"></i>{{ $t('categories.header') }}</h1>
 					<ul class="circle-checkboxes">
 						<li v-bind:class="{'selected' : config.categories[category.type] && category.preload.done, 'loaded' : !config.categories[category.type] && category.preload.done, 'failed' : category.preload.failed}" v-for="category in availableCategories">
 							<label v-bind:title="category.name" v-on:contextmenu.prevent="clearCache(category.type)">
@@ -114,12 +119,14 @@
 					</ul>
 
 					<div class="buttons">
-						<button v-on:click="loadAll()"><i class="fas fa-spinner"></i> Select all</button>
-						<button v-on:click="loadRandom()"><i class="fas fa-random"></i> Select 1 random</button>
+						<button v-on:click="loadAll()"><i class="fas fa-spinner"></i> {{ $t('categories.selectAll') }}</button>
+						<button v-on:click="loadRandom()"><i class="fas fa-random"></i> {{ $t('categories.selectRandom') }}</button>
 					</div>
 
 					<div class="questionCount">
-						<span><b>{{questionCount}}</b> possible questions in the selected categories</span>
+                        <i18n-t keypath="categories.questionCount" tag="span" scope="global">
+                            <template v-slot:questionCount><b>{{questionCount}}</b></template>
+                        </i18n-t>
 					</div>
 				</div>
 			</form>
@@ -130,6 +137,6 @@
 		<div class="message">{{ message }}</div>
 	</div>
 	<div id="start">
-		<a v-on:click="startGame()" v-bind:disabled="startMessage != undefined ? 'disabled' : undefined" v-bind:title="startMessage != undefined ? startMessage : 'Game is ready to start'"><i class="fas fa-fw fa-play"></i></a>
+		<a v-on:click="startGame()" v-bind:disabled="startMessage != undefined ? 'disabled' : undefined" v-bind:title="startMessage != undefined ? $t(startMessage) : $t('ready')"><i class="fas fa-fw fa-play"></i></a>
 	</div>
 </div>

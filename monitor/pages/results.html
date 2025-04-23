@@ -20,27 +20,27 @@
 			<span>{{ attr.name }}</span>
 			<ul>
 				<li v-for="link in attr.links">
-					<a v-bind:href="link">Lookup at {{domain(link)}} <i class="fas fa-fw fa-external-link-alt"></i></a>
+					<a v-bind:href="link">{{ $t('credits.attribution', {domain: domain(link)}) }} <i class="fas fa-fw fa-external-link-alt"></i></a>
 				</li>
 			</ul>
 		</div>
 
 		<div class="attribution">
-			<h1>Music by</h1>
+			<h1>{{ $t('credits.music.by') }}</h1>
 			<span>Last Haze</span>
 			<ul>
 				<li>
-					<a href="https://open.spotify.com/track/4fMVIYFWlSXxXQowcB8csH?si=9562dc0736ce4a9f">Play on spotify <i class="fas fa-fw fa-external-link-alt"></i></a>
+					<a href="https://open.spotify.com/track/4fMVIYFWlSXxXQowcB8csH?si=9562dc0736ce4a9f">{{ $t('credits.music.spotify') }} <i class="fas fa-fw fa-external-link-alt"></i></a>
 				</li>
 			</ul>
 		</div>	
 
 		<div class="attribution">
-			<h1>A game made by</h1>
+			<h1>{{ $t('credits.game.by') }}</h1>
 			<span>BuXXi</span>
 			<ul>
 				<li>
-					<a href="https://github.com/buxxi/trivia-game">Lookup at github.com <i class="fas fa-fw fa-external-link-alt"></i></a>
+					<a href="https://github.com/buxxi/trivia-game">{{ $t('credits.game.source') }} <i class="fas fa-fw fa-external-link-alt"></i></a>
 				</li>
 			</ul>
 		</div>	

@@ -15,9 +15,11 @@ export default {
 			},
 			categories : {},
 			fullscreen : false,
-			categorySpinner : true
+			categorySpinner : true,
+			language: 'en'
 		},
 		carouselIndex : 0,
+		i18n: undefined,
 		gameId: undefined,
 		availableCategories: [],
 		serverUrl: new URL("..", document.location).toString(),
@@ -28,23 +30,31 @@ export default {
 	})},
 	props: ['connection', 'sound', 'preferredGameId'],
 	computed: {
+		languageIcon: function () {
+			switch (this.config.language) {
+				case 'en':
+					return '🇬🇧';
+				case 'sv':
+					return '🇸🇪';
+			}
+		},
 		questionCount: function() { 
 			return this.availableCategories.filter(c => this.config.categories[c.type]).map(c => c.questionCount).reduce((a, b) => a + b, 0);
 		},
 		startMessage: function() {
 			if (Object.keys(this.players).length == 0) {
-				return "Not enough players";
+				return "players.none";
 			}
 	
 			var enabledCategories = Object.keys(this.config.categories).filter((cat) => this.config.categories[cat]);
 			if (enabledCategories.length == 0) {
-				return "Not enough categories selected";
+				return "categories.none";
 			}
 
 			var allPreloaded = this.availableCategories.filter(c => c.type in enabledCategories).map((cat) => cat.preload.done).reduce((pre, cur) => pre && cur, true);
 	
 			if (!allPreloaded) {
-				return "Not all selected categories has preloaded";
+				return "categories.stillLoading";
 			} else {
 				return undefined;
 			}
@@ -53,6 +63,8 @@ export default {
 	created: async function() {
 		let app = this;
 		app.carouselTimeout = 0;
+		app.i18n = VueI18n.useI18n();
+		app.config.language = app.i18n.locale;
 
 		function moveCarousel() {
 			app.carouselTimeout = setInterval(() => {
@@ -71,7 +83,7 @@ export default {
 			this.poweredBy = categories.flatMap(c => c.attribution);
 		} catch (e) {
 			console.log(e);
-			this.message = "Error when loading initial setup: " + e.message;
+			this.message = this.i18n.t("errors.initial", {message: e.message});
 		}
 
 		this.connection.onPlayersChange().then(async newPlayers => {
@@ -87,6 +99,12 @@ export default {
 		moveCarousel();
 	},
 	methods: {
+		nextLanguage: function() {
+			let i = (this.i18n.availableLocales.indexOf(this.config.language) + 1) % this.i18n.availableLocales.length;
+			this.config.language = this.i18n.availableLocales[i];
+			this.i18n.locale = this.config.language;
+		},
+
 		kickPlayer: async function(id) {
 			await this.connection.removePlayer(id);
 			delete this.players[id];
@@ -142,14 +160,14 @@ export default {
 
 
 		clearCache: async function(category) {
-			if (!confirm(`Clear cache for ${category}, this could take a while?`)) {
+			if (!confirm(this.i18n.t('categories.clearCache', {category : category}))) {
 				return;
 			}
 			try {
 				this.config.categories[category] = false;
 				await this.connection.clearCache(category);
 			} catch (e) {
-				this.message = "Failed to clear cache: " + e.message;
+				this.message = this.i18n.t('errors.clearCache', {message: e.message});
 			}
 		},
 		startGame: async function() {
@@ -162,7 +180,7 @@ export default {
 				await this.$router.push({name: 'game', query: { gameId: this.gameId, }, state: { players: JSON.stringify(this.players) }});
 				this.connection.startGame(this.config);
 			} catch (e) {
-				this.message = "Failed to start game: " + e.message;
+				this.message = this.i18n.t('errors.startGame', {message: e.message});
 			}
 		}
 	}

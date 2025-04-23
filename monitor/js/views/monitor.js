@@ -11,6 +11,8 @@ import AnswersPlayer from '../components/playback/answers.js';
 import AudioPlayer from '../components/playback/audio.js';
 import VideoPlayer from '../components/playback/video.js';
 import CategorySpinner from '../components/spinner.js';
+import en from '../translations/en.js';
+import sv from '../translations/sv.js';
 
 function loadTemplate(url, component) {
 	return () => {
@@ -69,9 +71,18 @@ const router = VueRouter.createRouter({
 	routes 
 });
 
+const i18n = VueI18n.createI18n({
+	locale: 'en',
+	messages: {
+		en: en,
+		sv: sv
+	}
+});
+
 const app = Vue.createApp({});
 
 app.use(router);
+app.use(i18n);
 
 app.component('blank-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/blank.html', BlankPlayer)));
 app.component('image-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/image.html', ImagePlayer)));
