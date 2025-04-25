@@ -136,7 +136,7 @@ export default {
 	props: ['gameId', 'connection', 'sound', 'lobbyPlayers'],
 	computed: {
 		hidePlayers: function() { 
-			return (this.state == 'pre-question' || this.state == 'question') && this.session.currentCategory.name == 'Current Game';
+			return (this.state == 'pre-question' || this.state == 'question') && this.playback.view.hidePlayers;
 		 },
 		playbackPlayer: function() {
 			if (!this.playback.view.player) {

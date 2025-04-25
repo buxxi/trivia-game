@@ -85,6 +85,7 @@ class CurrentGameQuestions extends Questions {
 
 	_loadBlank(title, name) {
 		return {
+			hidePlayers: true,
 			attribution : {
 				title : title,
 				name : name,
