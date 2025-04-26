@@ -9,7 +9,8 @@ class LocalJsonFileQuestions extends Questions {
         this._data = [];
     }
 
-	async preload(progress, cache) {
+	async preload(language, progress, cache) {
+		this._onlyEnglish(language);
 		progress(0, 1);
 		this._data = JSON.parse(await fs.readFile(this._path));
 		progress(1, 1);

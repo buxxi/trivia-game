@@ -39,7 +39,8 @@ class QuotesQuestions extends Questions {
 		};
 	}
 
-	async preload(progress, cache) {
+	async preload(language, progress, cache) {
+		this._onlyEnglish(language);
 		progress(0, 1);
 		this._quotes = await this._loadQuotes(cache, progress);
 		progress(1, 1);

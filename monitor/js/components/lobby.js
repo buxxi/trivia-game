@@ -78,9 +78,7 @@ export default {
 			this.gameId = await this.connection.connect(this.preferredGameId);
 			let clientUrl = new URL("../client#", document.location) + "?gameId=" + this.gameId; 
 			this.qrUrl = await QRCode.toDataURL(clientUrl, {width: 400, height: 400});
-			let categories = await this.connection.loadCategories();
-			this.availableCategories = categories.map(c => new CategorySelector(c));
-			this.poweredBy = categories.flatMap(c => c.attribution);
+			await this.loadCategories();
 		} catch (e) {
 			console.log(e);
 			this.message = this.i18n.t("errors.initial", {message: e.message});
@@ -99,10 +97,19 @@ export default {
 		moveCarousel();
 	},
 	methods: {
-		nextLanguage: function() {
+		nextLanguage: async function() {
 			let i = (this.i18n.availableLocales.indexOf(this.config.language) + 1) % this.i18n.availableLocales.length;
 			this.config.language = this.i18n.availableLocales[i];
 			this.i18n.locale = this.config.language;
+			await this.connection.changeLanguage(this.config.language);
+			await this.loadCategories();
+		},
+
+		loadCategories: async function() {
+			let categories = await this.connection.loadCategories(this.config.language);
+			this.availableCategories = categories.map(c => new CategorySelector(c));
+			this.poweredBy = categories.flatMap(c => c.attribution);
+			this.config.categories = {};
 		},
 
 		kickPlayer: async function(id) {
@@ -142,6 +149,7 @@ export default {
 			} catch (e) {
 				console.log(e);
 				preload.failed = true;
+				delete this.config.categories[type];
 			}
 			preload.running = false;
 		},

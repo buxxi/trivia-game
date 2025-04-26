@@ -42,7 +42,8 @@ class MovieQuestions extends Questions {
 		};
 	}
 
-	async preload(progress, cache) {
+	async preload(language, progress, cache) {
+		this._onlyEnglish(language);
 		let videos = await this._loadYoutubeVideos(progress, cache);
 		this._movies = this._parseTitles(videos);
 		return this._countQuestions();

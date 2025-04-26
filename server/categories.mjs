@@ -21,25 +21,25 @@ class Categories {
 		this._jokes = this._config.jokes;
 	}
 
-	available() {
-		return Object.entries(this._categories).map(([key, category]) => Object.assign({ type: key}, category.describe()));
+	available(game) {
+		return this._localize(Object.entries(this._categories).map(([key, category]) => Object.assign({ type: key}, category.describe())), game);
 	}
 
 	enabled(game) {
-		return this.available().filter((category) => game.categoryEnabled(category.type));
+		return this.available(game).filter((category) => game.categoryEnabled(category.type));
 	}
 
-	joke(players) {
-		let player = Random.fromWeightedObject(players) ?? {name : ""};
+	joke(game) {
+		let player = Random.fromWeightedObject(game.players()) ?? {name : ""};
 		let joke = Random.fromArray(this._jokes);
-		return {
+		return this._localize({
 			icon: joke.icon,
 			name: joke.name.replace("{playerName}", player.name)
-		}
+		}, game);
 	}
 
-	preload(category, progress) {
-		return this._categoryByType(category).preload(progress, new Cache(category));
+	preload(category, game, progress) {
+		return this._categoryByType(category).preload(game.config().language, progress, new Cache(category));
 	}
 
 	async nextQuestion(game, weightedCategories) {
@@ -61,7 +61,7 @@ class Categories {
 		this._shuffleAnswers(question);
 		question.category = Object.assign({type: categoryName}, category.describe());
 		
-		return question;
+		return this._localize(question, game);
 	}
 
 	clearCache(category) {
@@ -95,8 +95,29 @@ class Categories {
 		return arr.splice(Random.random(arr.length), 1)[0];
 	}
 
+	_localize(obj, game) {
+		if (obj instanceof Translatable) {
+			return obj.toLocaleString(game.config().language);
+		} else if (typeof obj === "object") {
+			if (Array.isArray(obj)) {
+				return obj.map(e => this._localize(e, game));
+			} else {
+				return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, this._localize(value, game)]));
+			}
+		} else {
+			return obj;
+		}
+	}
+
 	async _readCustomCategory(category) {
 		return import(customQuestionPath(`${category}.mjs`));
+	}
+}
+
+//TODO: move this and implement
+class Translatable {
+	toLocaleString(language) {
+
 	}
 }
 

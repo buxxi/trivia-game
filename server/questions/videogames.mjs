@@ -55,7 +55,8 @@ class VideoGameQuestions extends Questions {
 		};
 	}
 
-	async preload(progress, cache) {
+	async preload(language, progress, cache) {
+		this._onlyEnglish(language);
 		let token = await this._loadTwitchAccessToken();
 		this._platforms = await this._loadPlatforms(cache, token);
 

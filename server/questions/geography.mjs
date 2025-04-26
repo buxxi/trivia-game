@@ -78,7 +78,8 @@ class GeographyQuestions extends Questions {
 		};
 	}
 
-	async preload(progress, cache) {
+	async preload(language, progress, cache) {
+		this._onlyEnglish(language);
 		progress(0, 2);
 		this._countries = await this._loadCountries(cache);
 		progress(1, 2);

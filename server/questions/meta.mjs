@@ -67,7 +67,8 @@ class CurrentGameQuestions extends Questions {
 		};
 	}
 
-	async preload() {
+	async preload(language) {
+		this._onlyEnglish(language);
 		return this._countQuestions();
 	}
 

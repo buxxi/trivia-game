@@ -40,7 +40,8 @@ class UnitQuestions extends Questions {
 		};
 	}
 
-	async preload(progress) {
+	async preload(language, progress) {
+		this._onlyEnglish(language);
 		progress(1, 1);
 		return this._countQuestions();
     }

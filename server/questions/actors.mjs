@@ -51,7 +51,8 @@ class ActorQuestions extends Questions {
 		};
 	}
 
-	async preload(progress, cache) {
+	async preload(language, progress, cache) {
+		this._onlyEnglish(language);
 		progress(0, ACTOR_COUNT);
 		this._actors = await this._loadActors(progress, cache);
 		return this._countQuestions();

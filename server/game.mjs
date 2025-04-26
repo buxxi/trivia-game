@@ -92,7 +92,8 @@ class Game {
 			},
 			categories : {},
 			fullscreen : false,
-			categorySpinner : true
+			categorySpinner : true,
+			language: "en"
 		};
 
 		this._currentQuestion = {

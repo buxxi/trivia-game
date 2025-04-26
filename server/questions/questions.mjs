@@ -22,7 +22,7 @@ class Questions {
 		};
 	}
 
-	async preload(progress, cache) {
+	async preload(language, progress, cache) {
 		throw new Error("Needs to be implemented by child class");
 	}
 
@@ -62,6 +62,12 @@ class Questions {
 			throw response;
 		}
 		return response.json();
+	}
+
+	_onlyEnglish(language) {
+		if (language !== "en") {
+			throw new Error(`Category doesn't support language ${language}`);
+		}
 	}
 }
 

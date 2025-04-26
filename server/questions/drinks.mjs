@@ -47,7 +47,8 @@ class DrinksQuestions extends Questions {
 		};
 	}
 
-	async preload(progress, cache) {
+	async preload(language, progress, cache) {
+		this._onlyEnglish(language);
 		progress(0, TOTAL_DRINKS);
 		this._drinks = await this._loadDrinks(cache, progress);
 		progress(TOTAL_DRINKS, TOTAL_DRINKS);
