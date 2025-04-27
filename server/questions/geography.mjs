@@ -11,68 +11,66 @@ class GeographyQuestions extends Questions {
         this._countries = [];
 
         this._addQuestion({
-            title: () => "Which country does this flag belong to?",
-            format: (correct) => this._formatName(correct),
+            title: (_, translator) => translator.translate("question.flag"),
+            format: (correct, translator) => this._formatName(correct, translator),
             correct: () => this._randomCountry(),
             similar: (correct) => this._similarCountries(correct),
-            load: (correct) => this._loadFlag(correct),
+            load: (correct, translator) => this._loadFlag(correct, translator),
             weight: 35
         });
         this._addQuestion({
-            title: () => "Which country has this shape?",
-            format: (correct) => this._formatName(correct),
+            title: (_, translator) => translator.translate("question.shape"),
+            format: (correct, translator) => this._formatName(correct, translator),
             correct: () => this._randomCountry(),
             similar: (correct) => this._similarCountries(correct),
-            load: (correct) => this._loadMap(correct),
+            load: (correct, translator) => this._loadMap(correct, translator),
             weight: 15
         });
         this._addQuestion({
-            title: (correct) => "In which country is " + correct.capital + " the capital?",
-            format: (correct) => this._formatName(correct),
+            title: (correct, translator) => translator.translate("question.capital", {capital: correct.capital}),
+            format: (correct, translator) => this._formatName(correct, translator),
             correct: () => this._randomCountryWithCapital(),
             similar: (correct) => this._similarCountries(correct),
-            load: (correct) => this._loadBlank(correct),
+            load: (correct, translator) => this._loadBlank(correct, translator),
             weight: 20
         });
         this._addQuestion({
-            title: () => "Which country has borders to all these countries?",
-            format: (correct) => this._formatName(correct),
+            title: (_, translator) => translator.translate("question.borders"),
+            format: (correct, translator) => this._formatName(correct, translator),
             correct: () => this._randomCountryWith2Neighbours(),
             similar: (correct) => this._similarNeighbouringCountries(correct),
-            load: (correct) => this._loadNeighbours(correct),
+            load: (correct, translator) => this._loadNeighbours(correct, translator),
             weight: 10
         });
         this._addQuestion({
-            title: (correct) => "Where is " + correct.name + " located?",
-            format: (correct) => this._formatRegion(correct),
+            title: (correct, translator) => translator.translate("question.region", {code: correct.code}),
+            format: (correct, translator) => this._formatRegion(correct, translator),
             correct: () => this._randomCountry(),
             similar: (correct) => this._allCountriesRandom(correct),
-            load: (correct) => this._loadBlank(correct),
+            load: (correct, translator) => this._loadBlank(correct, translator),
             weight: 10
         });
         this._addQuestion({
-            title: () => "Which of these countries has the largest land area?",
-            format: (correct) => this._formatName(correct),
+            title: (_, translator) => translator.translate("question.area"),
+            format: (correct, translator) => this._formatName(correct, translator),
             correct: () => this._randomNonMicroCountry(),
             similar: (correct) => this._similarAreaCountries(correct),
-            load: (correct) => this._loadBlank(correct),
+            load: (correct, translator) => this._loadBlank(correct, translator),
             weight: 10
         });
     }
 
-    describe() {
+    describe(language) {
         return {
-            name: 'Geography',
+            name: this._translator.to(language).translate('title'),
             icon: 'fa-globe-europe',
             attribution: [
-                {url: 'https://restcountries.eu', name: 'REST Countries'},
                 {url: 'https://public.opendatasoft.com/', name: 'OpenDataSoft'}
             ]
         };
     }
 
     async preload(language, progress, cache) {
-        this._onlyEnglish(language);
         progress(0, 2);
         this._countries = await this._loadCountries();
         progress(1, 2);
@@ -89,11 +87,10 @@ class GeographyQuestions extends Questions {
         return countryDefs.map((country) => {
             return {
                 code: country.cca2,
-                region: !country.subregion ? country.region : country.subregion,
-                name: country.name.common,
+                region: this._parseRegion(!country.subregion ? country.region : country.subregion),
                 capital: country.capital ? country.capital[0] : undefined,
                 area: country.area,
-                neighbours: (country.borders || []).map((code) => countryDefs.find((c) => code === c.cca3).name.common)
+                neighbours: (country.borders || []).map((code) => countryDefs.find((c) => code === c.cca3).cca2)
             }
         }).filter(country => !!country.region && !!country.capital);
     }
@@ -166,44 +163,60 @@ class GeographyQuestions extends Questions {
         return Generators.inOrder(result);
     }
 
-    _formatName(country) {
-        return country.name;
+    _formatName(country, translator) {
+        return translator.translate('country', { code: country.code });
     }
 
-    _formatRegion(country) {
-        return country.region;
+    _formatRegion(country, translator) {
+        return translator.translate(`region.${country.region}`);
     }
 
-    _loadFlag(country) {
-        return Object.assign(this._loadBlank(country, "Flag"), {
+    _loadFlag(country, translator) {
+        return Object.assign(this._loadBlank(country, translator, "attribution.flag"), {
             player: 'image',
             url: 'https://flagcdn.com/' + country.code.toLowerCase() + '.svg'
         });
     }
 
-    _loadMap(country) {
+    _loadMap(country, translator) {
         let data = new GeoJson2Svg(this._worldMap).convert(country.code);
-        return Object.assign(this._loadBlank(country, "Image of"), {
+        return Object.assign(this._loadBlank(country, translator, "attribution.map"), {
             player: 'image',
             url: 'data:image/svg+xml,' + encodeURIComponent(data).replace(/'/g, '%27').replace(/"/g, '%22')
         });
     }
 
-    _loadNeighbours(country) {
-        return Object.assign(this._loadBlank(country), {
+    _loadNeighbours(country, translator) {
+        return Object.assign(this._loadBlank(country, translator), {
             player: 'list',
-            list: country.neighbours
+            list: country.neighbours.map(n => translator.translate('country', {code: n}))
         });
     }
 
-    _loadBlank(country, title = "Country") {
+    _loadBlank(country, translator, attributionKey = "attribution.name") {
         return {
             attribution: {
-                title: title,
-                name: country.name,
+                title: translator.translate(attributionKey),
+                name: translator.translate('country', { code: country.code }),
                 links: ['https://restcountries.com', 'https://flagpedia.net?q=' + country.code]
             }
         };
+    }
+
+    _parseRegion(str) {
+        return str
+            .replace(/\s(.)/g, function (m) {
+                return m.toUpperCase();
+            })
+            .replace(/\s/g, '')
+            .replace(/^(.)/, function (m) {
+                return m.toLowerCase();
+            })
+            .replace('southern', 'south')
+            .replace('northern', 'north')
+            .replace('western', 'west')
+            .replace(/-?[E|e]astern/g, 'east')
+            .replace('middle', 'central');
     }
 }
 

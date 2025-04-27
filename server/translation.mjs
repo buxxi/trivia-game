@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import countryDefs from "world-countries";
 
 var i18n = undefined;
 
@@ -19,7 +20,31 @@ class Translator {
         key = this._base ? `${this._base}.${key}` : key;
         variables = Object.assign({lng: this._language}, variables);
 
-        return i18n(key, variables);
+        let result = i18n(key, variables);
+        if (key === result) { //TODO: only temp before translating
+            return key + ":" + JSON.stringify(variables);
+        }
+        return result;
+    }
+}
+
+async function initFromPaths(paths, languages, resources) {
+    for (let path of paths) {
+        for (let language of languages) {
+            let p = path.replace("{language}", language);
+            let data = await import(p);
+            resources[language].translation = Object.assign(resources[language].translation, data.default);
+        }
+    }
+}
+
+async function initCountries(languages, resources) {
+    for (let language of languages) {
+        let countryNames = {};
+        for (let country of countryDefs) {
+            countryNames[country.cca2] = language === 'en' ? country.name.common : country.translations["swe"].common;
+        }
+        resources[language].translation = Object.assign(resources[language].translation, { country: countryNames });
     }
 }
 
@@ -28,18 +53,18 @@ export async function init(config) {
     let paths = ['./translations/{language}.mjs'];
 
     let resources = Object.fromEntries(languages.map(l => [l, { translation: {}}]));
-
-    for (let path of paths) {
-        for (let language of languages) {
-            let p = path.replace("{language}", language);
-            let data = await import(p);
-            resources[language].translation = Object.assign(resources[language].translation, data.default);
-        }
-    }
+    await initFromPaths(paths, languages, resources);
+    await initCountries(languages, resources);
 
     i18n = await i18next.init({
         lng: 'en',
-        resources: resources
+        resources: resources,
+        interpolation: {
+            prefix: '{',
+            suffix: '}',
+            nestingPrefix: '$(',
+            nestingSuffix: ')'
+        }
     });
 }
 

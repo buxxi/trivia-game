@@ -37,7 +37,7 @@ class MathQuestions extends Questions {
             )
         ];
         this._addQuestion({
-			title : (correct, translator) => translator.translate("calculate"),
+			title : (correct, translator) => translator.translate("question.calculate"),
 			correct : () => Random.fromArray(this._expressions).generate(),
 			similar : (correct) => correct.alternativeValues(),
 			load : (correct, translator) => this._loadQuote(correct, translator),
