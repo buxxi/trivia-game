@@ -1,18 +1,22 @@
 import Random from '../random.mjs';
+import Translator from "#translation";
 
 class Questions {
-    constructor() {
+	constructor(config, categoryName) {
         this._types = {};
+		this._translator = new Translator(`category.${categoryName}`);
     }
 
     async nextQuestion(game) {
 		let type = Random.fromWeightedObject(this._types);
 
+		let translator = this._translator.to(game.language());
+
 		let correct = await type.correct(game);
 		let similar = await type.similar(correct, game);
-		let title = type.title(correct);
-		let view = type.load(correct);
-		let format = (answer) => `${type.format(answer)}`;
+		let title = type.title(correct, translator);
+		let view = type.load(correct, translator);
+		let format = (answer) => `${type.format(answer, translator)}`;
 		
 		return {
 			text : title,
@@ -26,7 +30,7 @@ class Questions {
 		throw new Error("Needs to be implemented by child class");
 	}
 
-    describe() {
+    describe(language) {
         throw new Error("Needs to be implemented by child class");
     }
 

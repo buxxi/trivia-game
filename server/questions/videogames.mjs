@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import YoutubeLoader from '../youtubeloader.mjs';
 import Questions from './questions.mjs';
 import Selector from '../selector.mjs';
 import Generators from '../generators.mjs';
@@ -9,8 +8,8 @@ const GAMES_PER_PLATFORM = 100;
 const PAGINATE_COUNT = 100;
 
 class VideoGameQuestions extends Questions {
-	constructor(config) {
-		super();
+	constructor(config, categoryName) {
+		super(config, categoryName);
 		this._games = [];
 		this._platforms = [];
 

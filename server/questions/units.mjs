@@ -4,8 +4,8 @@ import Generators from '../generators.mjs';
 import Random from '../random.mjs';
 
 class UnitQuestions extends Questions {
-    constructor(config) {
-		super();
+	constructor(config, categoryName) {
+		super(config, categoryName);
 		this._addQuestion({
 			title : (correct) => "'" + this._capitalize(correct.singular) + "' is used to measure what?",
 			correct : () => this._randomUnit(),

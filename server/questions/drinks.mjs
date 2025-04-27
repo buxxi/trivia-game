@@ -7,8 +7,8 @@ import Questions from './questions.mjs';
 const TOTAL_DRINKS = 50;
 
 class DrinksQuestions extends Questions {
-	constructor(config) {
-		super();
+	constructor(config, categoryName) {
+		super(config, categoryName);
 		this._drinks = [];
 	
 		this._addQuestion({

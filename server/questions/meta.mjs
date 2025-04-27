@@ -4,8 +4,8 @@ import Generators from '../generators.mjs';
 import Random from '../random.mjs';
 
 class CurrentGameQuestions extends Questions {
-	constructor(config) {
-		super();
+	constructor(config, categoryName) {
+		super(config, categoryName);
 		this._addQuestion({
 			title : (correct) => "Which animal does " + correct.name + " have as avatar?",
 			correct : (game) => this._randomPlayer(game),

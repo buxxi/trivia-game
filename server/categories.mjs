@@ -2,6 +2,7 @@ import Cache from './cache.mjs';
 import Random from './random.mjs';
 import { register } from 'node:module';
 import {customQuestionPath} from "./xdg.mjs";
+import Translator from "./translation.mjs";
 
 class Categories {
 	constructor(config) {
@@ -22,7 +23,7 @@ class Categories {
 	}
 
 	available(game) {
-		return this._localize(Object.entries(this._categories).map(([key, category]) => Object.assign({ type: key}, category.describe())), game);
+		return Object.entries(this._categories).map(([key, category]) => Object.assign({ type: key}, category.describe(game.language())));
 	}
 
 	enabled(game) {
@@ -32,14 +33,14 @@ class Categories {
 	joke(game) {
 		let player = Random.fromWeightedObject(game.players()) ?? {name : ""};
 		let joke = Random.fromArray(this._jokes);
-		return this._localize({
+		return {
 			icon: joke.icon,
-			name: joke.name.replace("{playerName}", player.name)
-		}, game);
+			name: new Translator("jokes").to(game.language()).translate(joke.name, { playerName: player.name })
+		};
 	}
 
 	preload(category, game, progress) {
-		return this._categoryByType(category).preload(game.config().language, progress, new Cache(category));
+		return this._categoryByType(category).preload(game.language(), progress, new Cache(category));
 	}
 
 	async nextQuestion(game, weightedCategories) {
@@ -59,9 +60,9 @@ class Categories {
 		}
 
 		this._shuffleAnswers(question);
-		question.category = Object.assign({type: categoryName}, category.describe());
+		question.category = Object.assign({type: categoryName}, category.describe(game.language()));
 		
-		return this._localize(question, game);
+		return question;
 	}
 
 	clearCache(category) {
@@ -95,30 +96,9 @@ class Categories {
 		return arr.splice(Random.random(arr.length), 1)[0];
 	}
 
-	_localize(obj, game) {
-		if (obj instanceof Translatable) {
-			return obj.toLocaleString(game.config().language);
-		} else if (typeof obj === "object") {
-			if (Array.isArray(obj)) {
-				return obj.map(e => this._localize(e, game));
-			} else {
-				return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, this._localize(value, game)]));
-			}
-		} else {
-			return obj;
-		}
-	}
-
 	async _readCustomCategory(category) {
 		return import(customQuestionPath(`${category}.mjs`));
 	}
 }
 
-//TODO: move this and implement
-class Translatable {
-	toLocaleString(language) {
-
-	}
-}
-
-export default Categories;	
+export default Categories;

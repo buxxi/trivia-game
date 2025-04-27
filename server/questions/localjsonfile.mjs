@@ -3,8 +3,8 @@ import Questions from './questions.mjs';
 import {customDataPath} from "../xdg.mjs";
 
 class LocalJsonFileQuestions extends Questions {
-    constructor(config, categoryName) {
-		super();
+	constructor(config, categoryName) {
+		super(config, categoryName);
         this._path = customDataPath(config.dataPath[categoryName]);
         this._data = [];
     }

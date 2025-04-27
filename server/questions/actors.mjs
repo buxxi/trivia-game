@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import Selector from '../selector.mjs';
 import Generators from '../generators.mjs';
 import Random from '../random.mjs';
 import Questions from './questions.mjs';
@@ -7,8 +6,8 @@ import Questions from './questions.mjs';
 const ACTOR_COUNT = 1000;
 
 class ActorQuestions extends Questions {
-	constructor(config) {
-		super();
+	constructor(config, categoryName) {
+		super(config, categoryName);
 		this._actors = [];
 		this._tmdbApiKey = config.tmdb.clientId;
     

@@ -8,8 +8,8 @@ import Random from '../random.mjs';
 nlp.extend(adjectives);
 
 class QuotesQuestions extends Questions {
-	constructor(config) {
-		super();
+	constructor(config, categoryName) {
+		super(config, categoryName);
 		this._quotes = [];
 		this._addQuestion({
 			title : () => "Who said this famous quote?",

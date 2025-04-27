@@ -26,6 +26,8 @@
     "convert-units": "^2.3.4",
     "express": "^4.21.2",
     "howler": "^2.2.4",
+    "i18n-next": "^0.0.4",
+    "i18next": "^25.0.1",
     "node-fetch": "^3.3.2",
     "qcode-decoder": "^0.1.0",
     "qrcode": "1.5.1",
@@ -43,6 +45,7 @@
     "#questions": "./server/questions/questions.mjs",
     "#random": "./server/random.mjs",
     "#generators": "./server/generators.mjs",
-    "#localjsonfile": "./server/questions/localjsonfile.mjs"
+    "#localjsonfile": "./server/questions/localjsonfile.mjs",
+    "#translation": "./server/translation.mjs"
   }
 }

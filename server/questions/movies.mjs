@@ -5,8 +5,8 @@ import Generators from '../generators.mjs';
 import Random from '../random.mjs';
 
 class MovieQuestions extends Questions {
-	constructor(config) {
-		super();
+	constructor(config, categoryName) {
+		super(config, categoryName);
 		this._movies = [];
 		this._tmdbApiKey = config.tmdb.clientId;
 		this._youtube = new YoutubeLoader('UC3gNmTGu-TTbFPpfSs5kNkg', config.youtube.clientId, config.youtube.region);

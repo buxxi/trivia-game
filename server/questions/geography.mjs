@@ -5,8 +5,8 @@ import Questions from './questions.mjs';
 import GeoJson2Svg from '../geojson2svg.mjs';
 
 class GeographyQuestions extends Questions {
-	constructor(config) {
-		super();
+	constructor(config, categoryName) {
+		super(config, categoryName);
 		this._countries = [];
 
 		this._addQuestion({

@@ -233,6 +233,10 @@ class Game {
 		return this._avatars;
 	}
 
+	language() {
+		return this._config.language;
+	}
+
 	_calculatePoints() {
 		var result = {};
 		Object.keys(this._players).forEach((peerid) => {
