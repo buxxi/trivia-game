@@ -93,7 +93,7 @@ class Game {
 			categories : {},
 			fullscreen : false,
 			categorySpinner : true,
-			language: "en"
+			language: undefined
 		};
 
 		this._currentQuestion = {
@@ -234,6 +234,9 @@ class Game {
 	}
 
 	language() {
+		if (!this._config.language) {
+			throw new Error("No language set yet");
+		}
 		return this._config.language;
 	}
 

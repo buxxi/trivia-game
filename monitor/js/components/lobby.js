@@ -16,7 +16,7 @@ export default {
 			categories : {},
 			fullscreen : false,
 			categorySpinner : true,
-			language: 'en'
+			language: undefined
 		},
 		carouselIndex : 0,
 		i18n: undefined,
@@ -30,14 +30,6 @@ export default {
 	})},
 	props: ['connection', 'sound', 'preferredGameId'],
 	computed: {
-		languageIcon: function () {
-			switch (this.config.language) {
-				case 'en':
-					return '🇬🇧';
-				case 'sv':
-					return '🇸🇪';
-			}
-		},
 		questionCount: function() { 
 			return this.availableCategories.filter(c => this.config.categories[c.type]).map(c => c.questionCount).reduce((a, b) => a + b, 0);
 		},
@@ -78,6 +70,7 @@ export default {
 			this.gameId = await this.connection.connect(this.preferredGameId);
 			let clientUrl = new URL("../client#", document.location) + "?gameId=" + this.gameId; 
 			this.qrUrl = await QRCode.toDataURL(clientUrl, {width: 400, height: 400});
+			await this.connection.changeLanguage(this.i18n.locale);
 			await this.loadCategories();
 		} catch (e) {
 			console.log(e);

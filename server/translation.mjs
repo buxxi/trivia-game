@@ -49,7 +49,7 @@ async function initCountries(languages, resources) {
 }
 
 export async function init(config) {
-    let languages = ['sv', 'en'];
+    let languages = config.languages;
     let paths = ['./translations/{language}.mjs'];
 
     let resources = Object.fromEntries(languages.map(l => [l, { translation: {}}]));
@@ -57,7 +57,6 @@ export async function init(config) {
     await initCountries(languages, resources);
 
     i18n = await i18next.init({
-        lng: 'en',
         resources: resources,
         interpolation: {
             prefix: '{',

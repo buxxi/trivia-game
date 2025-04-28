@@ -61,7 +61,7 @@ async function loadCategories(config) {
 
 function startServer(config, repository) {
 	console.log("Starting server");
-	let server = new TriviaServer(8080, config.avatars, repository);
+	let server = new TriviaServer(8080, config.avatars, config.languages, repository);
 	server.start();
 	return server;
 }

@@ -3,9 +3,10 @@ import * as sass from 'sass';
 import { WebSocketServer } from 'ws';
 
 class TriviaServer {
-	constructor(port, avatars, repository) {
+	constructor(port, avatars, languages, repository) {
 		this._port = port;
 		this._avatars = avatars;
+		this._languages = languages;
 		this._repository = repository;
 	}
 
@@ -55,6 +56,10 @@ class TriviaServer {
 				res.sendStatus(status);
 			}
 		});
+
+		app.use('/trivia/languages', async(req, res) => {
+			res.json(this._languages);
+		})
 
 		//Init regular web server
 		const server = app.listen(this._port, () => {
