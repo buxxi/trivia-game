@@ -11,10 +11,11 @@ class LoadingNextQuestionState {
             return;
         }
         let question = await game.nextQuestion();
+        let language = game.language();
         if (game.config().sound.text2Speech) {
             question.tts = {
-                category : text2Speech.load(question.category.name), //TODO: full name
-                question : text2Speech.load(question.text)
+                category : text2Speech.load(question.category.name, language), //TODO: full name
+                question : text2Speech.load(question.text, language)
             }
         }
         return question;

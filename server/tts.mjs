@@ -6,14 +6,14 @@ class Text2Speech {
         this._requests = {};
     }
 
-    load(text) {
+    load(text, language) {
         let ttsId = crypto.randomUUID();
         if (!this._ttsUrl) {
             this._requests[ttsId] = {response: {ok : false, data: "No TTS server url configured"}};
         } else if (!text) {
             this._requests[ttsId] = {response: {ok : false, data: "No TTS text provided"}};
         } else {
-            let url = this._ttsUrl.replace('{text}', encodeURIComponent(text));
+            let url = this._ttsUrl.replace('{text}', encodeURIComponent(text)).replace("{language}", language);
             this._requests[ttsId] = {response: {ok : undefined, data: undefined}};
             fetch(url)
                 .then(response => response.arrayBuffer())
