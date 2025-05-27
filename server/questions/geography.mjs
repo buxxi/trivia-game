@@ -81,7 +81,6 @@ class GeographyQuestions extends Questions {
     async preload(language, progress, cache) {
         progress(0, 3);
         this._countries = await this._loadCountries();
-        console.log(this._countries);
         progress(1, 3);
         await this._loadPopulation(cache);
         progress(2, 3);
