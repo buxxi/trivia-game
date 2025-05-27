@@ -70,6 +70,29 @@ export default {
                 total_incorrect: 'Total incorrect answers (at that time)',
                 fastest_correct: 'Fastest player (at that time)',
                 slowest_correct: 'Slowest player (at that time)'
+            },
+            avatar: {
+                monkey: 'Monkey',
+                dog: 'Dog',
+                wolf: 'Wolf',
+                cat: 'Cat',
+                lion: 'Lion',
+                tiger: 'Tiger',
+                horse: 'Horse',
+                cow: 'Cow',
+                dragon: 'Dragon',
+                pig: 'Pig',
+                mouse: 'Mouse',
+                hamster: 'Hamster',
+                rabbit: 'Rabbit',
+                bear: 'Bear',
+                panda: 'Panda',
+                frog: 'Frog',
+                octopus: 'Octopus',
+                turtle: 'Turtle',
+                bee: 'Bee',
+                snail: 'Snail',
+                penguin: 'Penguin'
             }
         },
         movies: {

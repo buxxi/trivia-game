@@ -11,7 +11,7 @@ class CurrentGameQuestions extends Questions {
 			title : (correct, translator) => translator.translate("question.animal", {player: correct.name}),
 			correct : (game) => this._randomPlayer(game),
 			similar : (correct, game) => this._otherAvatars(correct, game),
-			format : (correct) => this._resolveAvatar(correct),
+			format : (correct, translator) => this._resolveAvatar(correct, translator),
 			load : (correct, translator) => this._loadBlankAvatar("attribution.avatar", correct, translator)
 		});
 		this._addQuestion({
@@ -40,7 +40,7 @@ class CurrentGameQuestions extends Questions {
 			correct : (game) => this._countTotal(game, (p) => p.wrongGuesses()),
 			similar : (correct, game) => this._numericAlternatives(correct, game),
 			format : (correct) => this._formatValue(correct),
-			load : (correct) => this._loadBlankValue("attribution.total_incorrect", correct, translator)
+			load : (correct, translator) => this._loadBlankValue("attribution.total_incorrect", correct, translator)
 		});
 		this._addQuestion({
 			title : (correct, translator) => translator.translate("question.fastest_correct"),
@@ -73,15 +73,15 @@ class CurrentGameQuestions extends Questions {
 	}
 
 	_loadBlankAvatar(title, correct, translator) {
-		return this._loadBlank(title, this._resolveAvatar(correct));
+		return this._loadBlank(title, this._resolveAvatar(correct, translator), translator);
 	}
 
 	_loadBlankName(title, correct, translator) {
-		return this._loadBlank(title, this._resolveName(correct));
+		return this._loadBlank(title, this._resolveName(correct), translator);
 	}
 
 	_loadBlankValue(title, correct, translator) {
-		return this._loadBlank(title, this._formatValue(correct));
+		return this._loadBlank(title, this._formatValue(correct), translator);
 	}
 
 	_loadBlank(title, name, translator) {
@@ -138,8 +138,8 @@ class CurrentGameQuestions extends Questions {
 		return player.name;
 	}
 
-	_resolveAvatar(player) {
-		return player.avatar.charAt(0).toUpperCase() + player.avatar.slice(1);
+	_resolveAvatar(player, translator) {
+		return translator.translate(`avatar.${player.avatar}`);
 	}
 
 	_formatValue(value) {
