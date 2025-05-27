@@ -16,7 +16,7 @@ class GeographyQuestions extends Questions {
             correct: () => this._randomCountry(),
             similar: (correct) => this._similarCountries(correct),
             load: (correct, translator) => this._loadFlag(correct, translator),
-            weight: 35
+            weight: 30
         });
         this._addQuestion({
             title: (_, translator) => translator.translate("question.shape"),
@@ -27,12 +27,20 @@ class GeographyQuestions extends Questions {
             weight: 15
         });
         this._addQuestion({
+            title : (correct, translator) => translator.translate("question.population"),
+            format : (correct, translator) => this._formatName(correct, translator),
+            correct : () => this._randomNonMicroCountry(),
+            similar : (correct) => this._similarPopulationCountries(correct),
+            load : (correct, translator) => this._loadBlank(correct, translator),
+            weight : 10
+        });
+        this._addQuestion({
             title: (correct, translator) => translator.translate("question.capital", {capital: correct.capital}),
             format: (correct, translator) => this._formatName(correct, translator),
             correct: () => this._randomCountryWithCapital(),
             similar: (correct) => this._similarCountries(correct),
             load: (correct, translator) => this._loadBlank(correct, translator),
-            weight: 20
+            weight: 15
         });
         this._addQuestion({
             title: (_, translator) => translator.translate("question.borders"),
@@ -71,11 +79,14 @@ class GeographyQuestions extends Questions {
     }
 
     async preload(language, progress, cache) {
-        progress(0, 2);
+        progress(0, 3);
         this._countries = await this._loadCountries();
-        progress(1, 2);
+        console.log(this._countries);
+        progress(1, 3);
+        await this._loadPopulation(cache);
+        progress(2, 3);
         this._worldMap = await this._loadWorldMap(cache);
-        progress(2, 2);
+        progress(3, 3);
         return this._countQuestions();
     }
 
@@ -93,6 +104,48 @@ class GeographyQuestions extends Questions {
                 neighbours: (country.borders || []).map((code) => countryDefs.find((c) => code === c.cca3).cca2)
             }
         }).filter(country => !!country.region && !!country.capital);
+    }
+
+    async _loadPopulation(cache) {
+        let countries = this._countries;
+        let data = await cache.get('population', async (resolve, reject) => {
+            try {
+                let url = 'https://ourworldindata.org/grapher/population.csv?v=1&csvType=full&useColumnShortNames=true';
+                let response = await fetch(url);
+                resolve(await response.text());
+            } catch (e) {
+                reject(e);
+            }
+        });
+
+        function addPopulation(countryCode, population) {
+            if (countryCode === 'ANT') {
+                countryCode = 'ATG';
+            }
+            let countryDef = countryDefs.find((country) => country.cca3 === countryCode);
+            let country = countries.find((c) => c.code === countryDef.cca2);
+            if (country) {
+                country.population = population;
+            }
+        }
+
+        data = data.split('\n').slice(1);
+        var previousCountry = "";
+        var previousPopulation = 0;
+        for (let line of data) {
+            let parts = line.split(',');
+            let country = parts[1];
+            if (country !== previousCountry && previousCountry.length === 3) {
+                addPopulation(previousCountry, previousPopulation);
+            }
+            previousCountry = country;
+            previousPopulation = parseInt(parts[3]);
+        }
+        if (previousCountry && previousCountry.length === 3) {
+            addPopulation(previousCountry, previousPopulation);
+        }
+
+        return data;
     }
 
     _loadWorldMap(cache) {
@@ -134,10 +187,6 @@ class GeographyQuestions extends Questions {
         return Random.fromArray(this._countries, c => c.neighbours.length >= 2);
     }
 
-    _allCountries() {
-        return Generators.random(this._countries);
-    }
-
     _allCountriesRandom() {
         return Generators.inOrder(this._countries);
     }
@@ -160,6 +209,15 @@ class GeographyQuestions extends Questions {
         }
 
         let result = this._countries.filter((c) => c.area < country.area).sort((a, b) => areaSort(b) - areaSort(a));
+        return Generators.inOrder(result);
+    }
+
+    _similarPopulationCountries(country) {
+        function populationSort(c) {
+            return Math.floor(Math.log(c.population));
+        }
+
+        let result = this._countries.filter((c) => c.population < country.population).sort((a, b) => populationSort(b) - populationSort(a));
         return Generators.inOrder(result);
     }
 
@@ -206,7 +264,7 @@ class GeographyQuestions extends Questions {
     _parseRegion(str) {
         return str
             .replace(/\s(.)/g, function (m) {
-                return m.toUpperCase();
+                return "_" + m.toLowerCase();
             })
             .replace(/\s/g, '')
             .replace(/^(.)/, function (m) {

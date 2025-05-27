@@ -18,34 +18,34 @@ class VideoGameQuestions extends Questions {
 		this._igdbBaseURL = 'https://api.igdb.com/v4/';
 
 		this._addQuestion({
-			title: () => "Which game is this a screenshot of?",
+			title: (correct, translator) => translator.translate("question.screenshot"),
 			correct: () => this._randomGame(),
 			similar: (correct) => this._similarGames(correct),
-			load: (correct) => this._screenshot(correct),
+			load: (correct, translator) => this._screenshot(correct, translator),
 			format: (correct) => this._gameTitle(correct),
 			weight: 45
 		});
 		this._addQuestion({
-			title: (correct) => "In which year was '" + correct.name + "' first released?",
+			title: (correct, translator) => translator.translate("question.release", { game: correct.name}),
 			correct: () => this._randomGame(),
 			similar: (correct) => this._similarGameYears(correct),
-			load: (correct) => this._blank(correct),
+			load: (correct, translator) => this._blank(correct, translator),
 			format: (correct) => this._gameYear(correct),
 			weight: 10
 		});
 		this._addQuestion({
-			title: (correct) => "'" + correct.name + "' was released to one of these platforms, which one?",
+			title: (correct) => translator.translate("question.platform", {game: correct.name}),
 			correct: () => this._randomGame(),
 			similar: (correct) => this._similarPlatforms(correct),
-			load: (correct) => this._blank(correct),
+			load: (correct, translator) => this._blank(correct, translator),
 			format: (correct) => this._gamePlatform(correct),
 			weight: 10
 		});
 	}
 
-	describe() {
+	describe(language) {
 		return {
-			name: 'Video Games',
+			name : this._translator.to(language).translate('title'),
 			icon: 'fa-gamepad',
 			attribution: [
 				{ url: 'https://youtube.com', name: 'YouTube' },
@@ -55,7 +55,6 @@ class VideoGameQuestions extends Questions {
 	}
 
 	async preload(language, progress, cache) {
-		this._onlyEnglish(language);
 		let token = await this._loadTwitchAccessToken();
 		this._platforms = await this._loadPlatforms(cache, token);
 
@@ -229,22 +228,22 @@ class VideoGameQuestions extends Questions {
 		return Generators.inOrder(result);
 	}
 
-	_screenshot(game) {
+	_screenshot(game, translator) {
 		return {
 			player: 'image',
 			url: 'https://images.igdb.com/igdb/image/upload/t_screenshot_huge/' + Random.fromArray(game.screenshots) + '.jpg',
 			attribution: {
-				title: "Screenshot of",
+				title: translator.translate("attribution.screenshot"),
 				name: this._gameTitle(game) + " (" + this._gameYear(game) + ")",
 				links: [game.attribution]
 			}
 		}
 	}
 
-	_blank(game) {
+	_blank(game, translator) {
 		return {
 			attribution: {
-				title: "Game",
+				title: translator.translate("attribution.game"),
 				name: this._gameTitle(game) + " (" + this._gameYear(game) + ")",
 				links: [game.attribution]
 			}

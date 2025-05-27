@@ -12,28 +12,28 @@ class MovieQuestions extends Questions {
 		this._youtube = new YoutubeLoader('UC3gNmTGu-TTbFPpfSs5kNkg', config.youtube.clientId, config.youtube.region);
 
 		this._addQuestion({
-			title : () => "Which movie is this from?",
+			title : (correct, translator) => translator.translate("question.title"),
 			correct : () => this._randomMovieClip(),
 			similar : (correct) => this._loadSimilarMovies(correct),
 			format : (answer) => this._movieTitle(answer),
-			load : (correct) => this._loadMovieClip(correct),
+			load : (correct, translator) => this._loadMovieClip(correct, translator),
 			count : () => this._countUniqueClips(),
 			weight : 75
 		});
 		this._addQuestion({
-			title : () => "Which year is this movie from?",
+			title : (correct, translator) => translator.translate("question.year"),
 			correct : () => this._randomMovieClip(),
 			similar : (correct) => this._loadSimilarYears(correct),
 			format : (answer) => this._movieYear(answer),
-			load : (correct) => this._loadMovieClip(correct),
+			load : (correct, translator) => this._loadMovieClip(correct, translator),
 			count : () => this._countUniqueClips(),
 			weight : 25
 		});
 	}
 
-	describe() {
+	describe(language) {
 		return {
-			name : 'Movies',
+			name : this._translator.to(language).translate('title'),
 			icon : 'fa-film',
 			attribution : [
 				{ url: 'https://youtube.com', name: 'YouTube' },
@@ -43,7 +43,6 @@ class MovieQuestions extends Questions {
 	}
 
 	async preload(language, progress, cache) {
-		this._onlyEnglish(language);
 		let videos = await this._loadYoutubeVideos(progress, cache);
 		this._movies = this._parseTitles(videos);
 		return this._countQuestions();
@@ -198,12 +197,12 @@ class MovieQuestions extends Questions {
 		return movie.year;
 	}
 
-	_loadMovieClip(correct) {
+	_loadMovieClip(correct, translator) {
 		return {
 			player : 'video',
 			url : `https://www.youtube.com/watch?v=${correct.video}`,
 			attribution : {
-				title : "Clip from",
+				title : translator.translate("attribution.clip"),
 				name : correct.title + " (" + correct.year + ")",
 				links : ["http://www.themoviedb.org/movie/" + correct.tmdbId, "http://www.youtube.com/watch?v=" + correct.video]
 			}

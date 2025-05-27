@@ -2,64 +2,65 @@ import Selector from '../selector.mjs';
 import Questions from './questions.mjs';
 import Generators from '../generators.mjs';
 import Random from '../random.mjs';
+import translation from "#translation";
 
 class CurrentGameQuestions extends Questions {
 	constructor(config, categoryName) {
 		super(config, categoryName);
 		this._addQuestion({
-			title : (correct) => "Which animal does " + correct.name + " have as avatar?",
+			title : (correct, translator) => translator.translate("question.animal", {player: correct.name}),
 			correct : (game) => this._randomPlayer(game),
 			similar : (correct, game) => this._otherAvatars(correct, game),
 			format : (correct) => this._resolveAvatar(correct),
-			load : (correct) => this._loadBlankAvatar("Avatar", correct)
+			load : (correct, translator) => this._loadBlankAvatar("attribution.avatar", correct, translator)
 		});
 		this._addQuestion({
-			title : () => "Who has the most correct answers so far?",
+			title : (correct, translator) => translator.translate("question.most_correct"),
 			correct : (game) => this._playerWithMost(game, (p) => p.correctGuesses()),
 			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.correctGuesses()),
 			format : (correct) => this._resolveName(correct),
-			load : (correct) => this._loadBlankName("Most correct player (at that time)", correct)
+			load : (correct, translator) => this._loadBlankName("attribution.most_correct", correct, translator)
 		});
 		this._addQuestion({
-			title : () => "Who has the most incorrect answers so far?",
+			title : (correct, translator) => translator.translate("question.most_incorrect"),
 			correct : (game) => this._playerWithMost(game, (p) => p.wrongGuesses()),
 			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.wrongGuesses()),
 			format : (correct) => this._resolveName(correct),
-			load : (correct) => this._loadBlankName("Most incorrect player (at that time)", correct)
+			load : (correct, translator) => this._loadBlankName("attribution.most_incorrect", correct, translator)
 		});
 		this._addQuestion({
-			title : () => "What is the total amount of correct answers so far?",
+			title : (correct, translator) => translator.translate("question.total_correct"),
 			correct : (game) => this._countTotal(game, (p) => p.correctGuesses()),
 			similar : (correct, game) => this._numericAlternatives(correct, game),
 			format : (correct) => this._formatValue(correct),
-			load : (correct) => this._loadBlankValue("Total correct answers (at that time)", correct)
+			load : (correct, translator) => this._loadBlankValue("attribution.total_correct", correct, translator)
 		});
 		this._addQuestion({
-			title : () => "What is the total amount of incorrect answers so far?",
+			title : (correct, translator) => translator.translate("question.total_incorrect"),
 			correct : (game) => this._countTotal(game, (p) => p.wrongGuesses()),
 			similar : (correct, game) => this._numericAlternatives(correct, game),
 			format : (correct) => this._formatValue(correct),
-			load : (correct) => this._loadBlankValue("Total incorrect answers (at that time)", correct)
+			load : (correct) => this._loadBlankValue("attribution.total_incorrect", correct, translator)
 		});
 		this._addQuestion({
-			title : () => "Who has made the fastest correct answers so far?",
+			title : (correct, translator) => translator.translate("question.fastest_correct"),
 			correct : (game) => this._playerWithLeast(game, (p) => p.fastestCorrectGuess()),
 			similar : (correct, game) => this._playersWithHigher(correct, game, (p) => p.fastestCorrectGuess()),
 			format : (correct) => this._resolveName(correct),
-			load : (correct) => this._loadBlankName("Fastest player (at that time)", correct)
+			load : (correct, translator) => this._loadBlankName("attribution.fastest_correct", correct, translator)
 		});
 		this._addQuestion({
-			title : () => "Who has made the slowest correct answers so far?",
+			title : (correct, translator) => translator.translate("question.slowest_correct"),
 			correct : (game) => this._playerWithMost(game, (p) => p.slowestCorrectGuess()),
 			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.slowestCorrectGuess()),
 			format : (correct) => this._resolveName(correct),
-			load : (correct) => this._loadBlankName("Slowest player (at that time)", correct)
+			load : (correct, translator) => this._loadBlankName("attribution.slowest_correct", correct, translator)
 		});
 	}
 
-	describe() {
+	describe(language) {
 		return {
-			name : 'Current Game',
+			name : this._translator.to(language).translate('title'),
 			icon : 'fa-history',
 			attribution : [
 				{ url: 'https://github.com/buxxi/trivia-game', name: 'GitHub' }
@@ -68,26 +69,25 @@ class CurrentGameQuestions extends Questions {
 	}
 
 	async preload(language) {
-		this._onlyEnglish(language);
 		return this._countQuestions();
 	}
 
-	_loadBlankAvatar(title, correct) {
+	_loadBlankAvatar(title, correct, translator) {
 		return this._loadBlank(title, this._resolveAvatar(correct));
 	}
 
-	_loadBlankName(title, correct) {
+	_loadBlankName(title, correct, translator) {
 		return this._loadBlank(title, this._resolveName(correct));
 	}
 
-	_loadBlankValue(title, correct) {
+	_loadBlankValue(title, correct, translator) {
 		return this._loadBlank(title, this._formatValue(correct));
 	}
 
-	_loadBlank(title, name) {
+	_loadBlank(title, name, translator) {
 		return {
 			attribution : {
-				title : title,
+				title : translator.translate(title),
 				name : name,
 				links : []
 			}
