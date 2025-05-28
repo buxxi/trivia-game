@@ -116,6 +116,42 @@ export default {
                 screenshot: 'Screenshot of',
                 title: 'Video Game'
             }
+        },
+        units: {
+            title: 'Units',
+            question: {
+                measure: 'What is the unit \'{unit}\' used to measure?',
+                largest: 'Which one of these is the largest?',
+                smallest: 'Which one of these is the smallest?'
+            },
+            attribution: {
+                unit: 'Unit',
+            },
+            measure: {
+                length: 'Length',
+                area: 'Area',
+                mass: 'Mass',
+                volume: 'Volume',
+                each: 'Each',
+                temperature: 'Temperature',
+                time: 'Time',
+                digital: 'Digital',
+                parts_per: 'Parts per',
+                speed: 'Speed',
+                pace: 'Pace',
+                pressure: 'Pressure',
+                current: 'Current',
+                voltage: 'Voltage',
+                power: 'Power',
+                reactive_power: 'Reactive power',
+                apparent_power: 'Apparent power',
+                energy: 'Energy',
+                reactive_energy: 'Reactive energy',
+                volume_flow_rate: 'Volume flow rate',
+                illuminance: 'Illuminance',
+                frequency: 'Frequency',
+                angle: 'Angle'
+            }
         }
     }
 }
