@@ -41,8 +41,6 @@ class UnitQuestions extends Questions {
 	}
 
 	async preload(language, progress) {
-		console.log(new Set(convert().list().map(e => e.measure)));
-		this._onlyEnglish(language);
 		progress(1, 1);
 		return this._countQuestions();
     }
