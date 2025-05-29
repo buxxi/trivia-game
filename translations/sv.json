@@ -69,5 +69,160 @@
     "states": {
         "postQuestion": "Det rätta svaret var",
         "error": "Ett fel uppstod"
+    },
+    "category": {
+        "math": {
+            "title": "Snabb huvudräkning",
+            "question": {
+                "calculate": "Beräkna följande"
+            }
+        },
+        "geography": {
+            "title": "Geografi",
+            "question": {
+                "flag": "Vilket land tillhör denna flagga?",
+                "population": "Vilket av dessa länder har störst befolkning?",
+                "shape": "Vilket land har denna form?",
+                "capital": "I vilket land är {capital} huvudstad?",
+                "borders": "Vilket land gränsar till alla dessa länder?",
+                "region": "Var ligger $(country.{code})?",
+                "area": "Vilket av dessa länder har störst landyta?"
+            },
+            "country": "$(country.{code})",
+            "region": {
+                "caribbean": "Karibien",
+                "east_asia": "Östra Asien",
+                "southeast_asia": "Sydöstra Asien",
+                "south_asia": "Södra Asien",
+                "west_asia": "Västra Asien",
+                "central_asia": "Centrala Asien",
+                "north_africa": "Norra Afrika",
+                "east_africa": "Östra Afrika",
+                "south_africa": "Södra Afrika",
+                "west_africa": "Västra Afrika",
+                "central_africa": "Mellersta Afrika",
+                "north_europe": "Norra Europa",
+                "east_europe": "Östra Europa",
+                "southeast_europe": "Sydöstra Europa",
+                "south_europe": "Södra Europa",
+                "west_europe": "Västra Europa",
+                "central_europe": "Centrala Europa",
+                "north_america": "Nordamerika",
+                "south_america": "Sydamerika",
+                "central_america": "Centralamerika",
+                "polynesia": "Polynesien",
+                "antarctic": "Antarktis",
+                "australia_and_new_zealand": "Australien och Nya Zeeland",
+                "melanesia": "Melanesien",
+                "micronesia": "Mikronesien"
+            },
+            "attribution": {
+                "flag": "Flagga",
+                "map": "Karta över",
+                "name": "Land"
+            }
+        },
+        "meta": {
+            "title": "Nuvarande spel",
+            "question": {
+                "animal": "Vilket djur har {player} som avatar?",
+                "most_correct": "Vem har flest rätta svar hittills?",
+                "most_incorrect": "Vem har flest felaktiga svar hittills?",
+                "total_correct": "Vad är det totala antalet rätta svar hittills?",
+                "total_incorrect": "Vad är det totala antalet felaktiga svar hittills?",
+                "fastest_correct": "Vem har svarat rätt snabbast hittills?",
+                "slowest_correct": "Vem har svarat rätt långsammast hittills?"
+            },
+            "attribution": {
+                "animal": "Avatar",
+                "most_correct": "Mest korrekta spelare (vid den tiden)",
+                "most_incorrect": "Mest felaktiga spelare (vid den tiden)",
+                "total_correct": "Totalt antal rätta svar (vid den tiden)",
+                "total_incorrect": "Totalt antal felaktiga svar (vid den tiden)",
+                "fastest_correct": "Snabbaste spelare (vid den tiden)",
+                "slowest_correct": "Långsammaste spelare (vid den tiden)"
+            },
+            "avatar": {
+                "monkey": "Apa",
+                "dog": "Hund",
+                "wolf": "Varg",
+                "cat": "Katt",
+                "lion": "Lejon",
+                "tiger": "Tiger",
+                "horse": "Häst",
+                "cow": "Ko",
+                "dragon": "Drake",
+                "pig": "Gris",
+                "mouse": "Mus",
+                "hamster": "Hamster",
+                "rabbit": "Kanin",
+                "bear": "Björn",
+                "panda": "Panda",
+                "frog": "Groda",
+                "octopus": "Bläckfisk",
+                "turtle": "Sköldpadda",
+                "bee": "Bi",
+                "snail": "Snigel",
+                "penguin": "Pingvin"
+            }
+        },
+        "movies": {
+            "title": "Filmer",
+            "question": {
+                "title": "Vilken film är detta från?",
+                "year": "Vilket år är denna film från?"
+            },
+            "attribution": {
+                "clip": "Klipp från"
+            }
+        },
+        "videogames": {
+            "title": "TV-spel",
+            "question": {
+                "screenshot": "Vilket spel är detta en skärmdump från?",
+                "release": "Vilket år släpptes '{game}' för första gången?",
+                "platform": "'{game}' släpptes till en av dessa plattformar, vilken?"
+            },
+            "attribution": {
+                "screenshot": "Skärmdump av",
+                "title": "TV-spel"
+            }
+        },
+        "units": {
+            "title": "Enheter",
+            "question": {
+                "measure": "Vad används enheten '{unit}' för att mäta?",
+                "largest": "Vilken av dessa är störst?",
+                "smallest": "Vilken av dessa är minst?"
+            },
+            "attribution": {
+                "unit": "Enhet"
+            },
+            "measure": {
+                "length": "Längd",
+                "area": "Yta",
+                "mass": "Massa",
+                "volume": "Volym",
+                "each": "Varje",
+                "temperature": "Temperatur",
+                "time": "Tid",
+                "digital": "Digital",
+                "parts_per": "Delar per",
+                "speed": "Hastighet",
+                "pace": "Tempo",
+                "pressure": "Tryck",
+                "current": "Ström",
+                "voltage": "Spänning",
+                "power": "Effekt",
+                "reactive_power": "Reaktiv effekt",
+                "apparent_power": "Skenbar effekt",
+                "energy": "Energi",
+                "reactive_energy": "Reaktiv energi",
+                "volume_flow_rate": "Volymflödeshastighet",
+                "illuminance": "Ljusstyrka",
+                "frequency": "Frekvens",
+                "angle": "Vinkel"
+            }
+        }
     }
 }
