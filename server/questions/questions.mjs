@@ -5,6 +5,7 @@ class Questions {
 	constructor(config, categoryName) {
         this._types = {};
 		this._translator = new Translator(`category.${categoryName}`);
+		this._translationBase = `category.${categoryName}`;
     }
 
     async nextQuestion(game) {
@@ -30,7 +31,7 @@ class Questions {
 		throw new Error("Needs to be implemented by child class");
 	}
 
-    describe(language) {
+    describe() {
         throw new Error("Needs to be implemented by child class");
     }
 
@@ -59,6 +60,14 @@ class Questions {
 			}
 		}
 		return result;
+	}
+
+	_translatable(key, params) {
+		if (params) {
+			return `$(${this._translationBase}.${key}, ${JSON.stringify(params)})`;
+		} else {
+			return `$(${this._translationBase}.${key})`;
+		}
 	}
 
 	_toJSON(response) {

@@ -8,59 +8,59 @@ class CurrentGameQuestions extends Questions {
 	constructor(config, categoryName) {
 		super(config, categoryName);
 		this._addQuestion({
-			title : (correct, translator) => translator.translate("question.animal", {player: correct.name}),
+			title : (correct) => this._translatable("question.animal", {player: correct.name}),
 			correct : (game) => this._randomPlayer(game),
 			similar : (correct, game) => this._otherAvatars(correct, game),
-			format : (correct, translator) => this._resolveAvatar(correct, translator),
-			load : (correct, translator) => this._loadBlankAvatar("attribution.avatar", correct, translator)
+			format : (correct) => this._resolveAvatar(correct),
+			load : (correct) => this._loadBlankAvatar("attribution.avatar", correct)
 		});
 		this._addQuestion({
-			title : (correct, translator) => translator.translate("question.most_correct"),
+			title : (_) => this._translatable("question.most_correct"),
 			correct : (game) => this._playerWithMost(game, (p) => p.correctGuesses()),
 			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.correctGuesses()),
 			format : (correct) => this._resolveName(correct),
-			load : (correct, translator) => this._loadBlankName("attribution.most_correct", correct, translator)
+			load : (correct) => this._loadBlankName("attribution.most_correct", correct)
 		});
 		this._addQuestion({
-			title : (correct, translator) => translator.translate("question.most_incorrect"),
+			title : (_) => this._translatable("question.most_incorrect"),
 			correct : (game) => this._playerWithMost(game, (p) => p.wrongGuesses()),
 			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.wrongGuesses()),
 			format : (correct) => this._resolveName(correct),
-			load : (correct, translator) => this._loadBlankName("attribution.most_incorrect", correct, translator)
+			load : (correct) => this._loadBlankName("attribution.most_incorrect", correct)
 		});
 		this._addQuestion({
-			title : (correct, translator) => translator.translate("question.total_correct"),
+			title : (_) => this._translatable("question.total_correct"),
 			correct : (game) => this._countTotal(game, (p) => p.correctGuesses()),
 			similar : (correct, game) => this._numericAlternatives(correct, game),
 			format : (correct) => this._formatValue(correct),
-			load : (correct, translator) => this._loadBlankValue("attribution.total_correct", correct, translator)
+			load : (correct) => this._loadBlankValue("attribution.total_correct", correct)
 		});
 		this._addQuestion({
-			title : (correct, translator) => translator.translate("question.total_incorrect"),
+			title : (_) => this._translatable("question.total_incorrect"),
 			correct : (game) => this._countTotal(game, (p) => p.wrongGuesses()),
 			similar : (correct, game) => this._numericAlternatives(correct, game),
 			format : (correct) => this._formatValue(correct),
-			load : (correct, translator) => this._loadBlankValue("attribution.total_incorrect", correct, translator)
+			load : (correct) => this._loadBlankValue("attribution.total_incorrect", correct)
 		});
 		this._addQuestion({
-			title : (correct, translator) => translator.translate("question.fastest_correct"),
+			title : (_) => this._translatable("question.fastest_correct"),
 			correct : (game) => this._playerWithLeast(game, (p) => p.fastestCorrectGuess()),
 			similar : (correct, game) => this._playersWithHigher(correct, game, (p) => p.fastestCorrectGuess()),
 			format : (correct) => this._resolveName(correct),
-			load : (correct, translator) => this._loadBlankName("attribution.fastest_correct", correct, translator)
+			load : (correct) => this._loadBlankName("attribution.fastest_correct", correct)
 		});
 		this._addQuestion({
-			title : (correct, translator) => translator.translate("question.slowest_correct"),
+			title : (_) => this._translatable("question.slowest_correct"),
 			correct : (game) => this._playerWithMost(game, (p) => p.slowestCorrectGuess()),
 			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.slowestCorrectGuess()),
 			format : (correct) => this._resolveName(correct),
-			load : (correct, translator) => this._loadBlankName("attribution.slowest_correct", correct, translator)
+			load : (correct) => this._loadBlankName("attribution.slowest_correct", correct)
 		});
 	}
 
-	describe(language) {
+	describe() {
 		return {
-			name : this._translator.to(language).translate('title'),
+			name : this._translatable("title"),
 			icon : 'fa-history',
 			attribution : [
 				{ url: 'https://github.com/buxxi/trivia-game', name: 'GitHub' }
@@ -72,22 +72,22 @@ class CurrentGameQuestions extends Questions {
 		return this._countQuestions();
 	}
 
-	_loadBlankAvatar(title, correct, translator) {
-		return this._loadBlank(title, this._resolveAvatar(correct, translator), translator);
+	_loadBlankAvatar(titleKey, correct) {
+		return this._loadBlank(titleKey, this._resolveAvatar(correct));
 	}
 
-	_loadBlankName(title, correct, translator) {
-		return this._loadBlank(title, this._resolveName(correct), translator);
+	_loadBlankName(titleKey, correct) {
+		return this._loadBlank(titleKey, this._resolveName(correct));
 	}
 
-	_loadBlankValue(title, correct, translator) {
-		return this._loadBlank(title, this._formatValue(correct), translator);
+	_loadBlankValue(titleKey, correct) {
+		return this._loadBlank(titleKey, this._formatValue(correct));
 	}
 
-	_loadBlank(title, name, translator) {
+	_loadBlank(titleKey, name) {
 		return {
 			attribution : {
-				title : translator.translate(title),
+				title : this._translatable(titleKey),
 				name : name,
 				links : []
 			}
@@ -138,8 +138,8 @@ class CurrentGameQuestions extends Questions {
 		return player.name;
 	}
 
-	_resolveAvatar(player, translator) {
-		return translator.translate(`avatar.${player.avatar}`);
+	_resolveAvatar(player) {
+		return this._translatable(`avatar.${player.avatar}`);
 	}
 
 	_formatValue(value) {

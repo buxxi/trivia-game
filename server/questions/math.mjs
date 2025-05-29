@@ -37,17 +37,17 @@ class MathQuestions extends Questions {
             )
         ];
         this._addQuestion({
-			title : (correct, translator) => translator.translate("question.calculate"),
+			title : (_) => this._translatable("question.calculate"),
 			correct : () => Random.fromArray(this._expressions).generate(),
-			similar : (correct) => correct.alternativeValues(),
-			load : (correct, translator) => this._loadQuote(correct, translator),
-			format : (answer, _) => this._format(answer)
+			similar : (correct, _) => correct.alternativeValues(),
+			load : (correct) => this._loadQuote(correct),
+			format : (answer) => this._format(answer)
 		});
     }
 
-    describe(language) {
+    describe() {
 		return {
-			name : this._translator.to(language).translate('title'),
+			name : this._translatable('title'),
 			icon : 'fa-calculator',
 			attribution : []
 		};
@@ -58,12 +58,12 @@ class MathQuestions extends Questions {
 		return this._countQuestions();
 	}
 
-    _loadQuote(correct, translator) {
+    _loadQuote(correct) {
         return {
             player : 'quote',
             quote : correct.display(),
             attribution : {
-                title : translator.translate("title"),
+                title : this._translatable("title"),
                 name : correct.display(),
                 links : []
             }

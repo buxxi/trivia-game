@@ -1,5 +1,6 @@
 import randomColor from 'randomcolor';
 import Timer from './timer.mjs';
+import Translator from "#translation";
 
 class Player {
 	constructor(name, color, avatar) {
@@ -219,6 +220,8 @@ class Game {
 
 	async nextQuestion() {
 		let question = await this._categories.nextQuestion(this, this._enabledCategories);
+		let translator = new Translator("", this._config.language);
+		question = translator.translateObject(question);
 		
 		this._checkDuplicateQuestion(question);
 		this._currentQuestion = question;

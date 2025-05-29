@@ -18,26 +18,26 @@ class VideoGameQuestions extends Questions {
 		this._igdbBaseURL = 'https://api.igdb.com/v4/';
 
 		this._addQuestion({
-			title: (correct, translator) => translator.translate("question.screenshot"),
+			title: (_) => this._translatable("question.screenshot"),
 			correct: () => this._randomGame(),
-			similar: (correct) => this._similarGames(correct),
-			load: (correct, translator) => this._screenshot(correct, translator),
+			similar: (correct, _) => this._similarGames(correct),
+			load: (correct) => this._screenshot(correct),
 			format: (correct) => this._gameTitle(correct),
 			weight: 45
 		});
 		this._addQuestion({
-			title: (correct, translator) => translator.translate("question.release", { game: correct.name}),
+			title: (correct) => this._translatable("question.release", { game: correct.name}),
 			correct: () => this._randomGame(),
-			similar: (correct) => this._similarGameYears(correct),
-			load: (correct, translator) => this._blank(correct, translator),
+			similar: (correct, _) => this._similarGameYears(correct),
+			load: (correct) => this._blank(correct),
 			format: (correct) => this._gameYear(correct),
 			weight: 10
 		});
 		this._addQuestion({
-			title: (correct) => translator.translate("question.platform", {game: correct.name}),
+			title: (correct) => this._translatable("question.platform", {game: correct.name}),
 			correct: () => this._randomGame(),
-			similar: (correct) => this._similarPlatforms(correct),
-			load: (correct, translator) => this._blank(correct, translator),
+			similar: (correct, _) => this._similarPlatforms(correct),
+			load: (correct) => this._blank(correct),
 			format: (correct) => this._gamePlatform(correct),
 			weight: 10
 		});
@@ -45,7 +45,7 @@ class VideoGameQuestions extends Questions {
 
 	describe(language) {
 		return {
-			name : this._translator.to(language).translate('title'),
+			name : this._translatable('title'),
 			icon: 'fa-gamepad',
 			attribution: [
 				{ url: 'https://youtube.com', name: 'YouTube' },
@@ -228,22 +228,22 @@ class VideoGameQuestions extends Questions {
 		return Generators.inOrder(result);
 	}
 
-	_screenshot(game, translator) {
+	_screenshot(game) {
 		return {
 			player: 'image',
 			url: 'https://images.igdb.com/igdb/image/upload/t_screenshot_huge/' + Random.fromArray(game.screenshots) + '.jpg',
 			attribution: {
-				title: translator.translate("attribution.screenshot"),
+				title: this._translatable("attribution.screenshot"),
 				name: this._gameTitle(game) + " (" + this._gameYear(game) + ")",
 				links: [game.attribution]
 			}
 		}
 	}
 
-	_blank(game, translator) {
+	_blank(game) {
 		return {
 			attribution: {
-				title: translator.translate("attribution.game"),
+				title: this._translatable("attribution.game"),
 				name: this._gameTitle(game) + " (" + this._gameYear(game) + ")",
 				links: [game.attribution]
 			}

@@ -23,10 +23,28 @@ class Translator {
         variables = Object.assign({lng: this._language}, variables);
 
         let result = i18n(key, variables);
+
         if (key === result) { //TODO: only temp before translating
             return key + ":" + JSON.stringify(variables);
         }
         return result;
+    }
+
+    translateObject(obj) {
+        if (typeof obj === "string") {
+            let m = obj.match(/^\$\(.*\)$/);
+            if (m) {
+                return this.translate(obj);
+            } else {
+                return obj;
+            }
+        } else if (Array.isArray(obj)) {
+            return obj.map(v => this.translateObject(v));
+        } else {
+            return Object.fromEntries(Object.entries(obj).map(([key, value]) => {
+                return [key, this.translateObject(value)];
+            }));
+        }
     }
 }
 

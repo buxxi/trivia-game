@@ -23,7 +23,8 @@ class Categories {
 	}
 
 	available(game) {
-		return Object.entries(this._categories).map(([key, category]) => Object.assign({ type: key}, category.describe(game.language())));
+		let translator = new Translator("", game.language());
+		return Object.entries(this._categories).map(([key, category]) => Object.assign({ type: key}, translator.translateObject(category.describe())));
 	}
 
 	enabled(game) {
@@ -60,7 +61,7 @@ class Categories {
 		}
 
 		this._shuffleAnswers(question);
-		question.category = Object.assign({type: categoryName}, category.describe(game.language()));
+		question.category = Object.assign({type: categoryName}, category.describe());
 		
 		return question;
 	}

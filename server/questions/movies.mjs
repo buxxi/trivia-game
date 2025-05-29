@@ -12,28 +12,28 @@ class MovieQuestions extends Questions {
 		this._youtube = new YoutubeLoader('UC3gNmTGu-TTbFPpfSs5kNkg', config.youtube.clientId, config.youtube.region);
 
 		this._addQuestion({
-			title : (correct, translator) => translator.translate("question.title"),
+			title : (_) => this._translatable("question.title"),
 			correct : () => this._randomMovieClip(),
-			similar : (correct) => this._loadSimilarMovies(correct),
+			similar : (correct, _) => this._loadSimilarMovies(correct),
 			format : (answer) => this._movieTitle(answer),
-			load : (correct, translator) => this._loadMovieClip(correct, translator),
+			load : (correct) => this._loadMovieClip(correct),
 			count : () => this._countUniqueClips(),
 			weight : 75
 		});
 		this._addQuestion({
-			title : (correct, translator) => translator.translate("question.year"),
+			title : (_) => this._translatable("question.year"),
 			correct : () => this._randomMovieClip(),
-			similar : (correct) => this._loadSimilarYears(correct),
+			similar : (correct, _) => this._loadSimilarYears(correct),
 			format : (answer) => this._movieYear(answer),
-			load : (correct, translator) => this._loadMovieClip(correct, translator),
+			load : (correct) => this._loadMovieClip(correct),
 			count : () => this._countUniqueClips(),
 			weight : 25
 		});
 	}
 
-	describe(language) {
+	describe() {
 		return {
-			name : this._translator.to(language).translate('title'),
+			name : this._translatable('title'),
 			icon : 'fa-film',
 			attribution : [
 				{ url: 'https://youtube.com', name: 'YouTube' },
@@ -197,12 +197,12 @@ class MovieQuestions extends Questions {
 		return movie.year;
 	}
 
-	_loadMovieClip(correct, translator) {
+	_loadMovieClip(correct) {
 		return {
 			player : 'video',
 			url : `https://www.youtube.com/watch?v=${correct.video}`,
 			attribution : {
-				title : translator.translate("attribution.clip"),
+				title : this._translatable("attribution.clip"),
 				name : correct.title + " (" + correct.year + ")",
 				links : ["http://www.themoviedb.org/movie/" + correct.tmdbId, "http://www.youtube.com/watch?v=" + correct.video]
 			}
