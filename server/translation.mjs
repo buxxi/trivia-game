@@ -1,5 +1,7 @@
 import i18next from 'i18next';
 import countryDefs from "world-countries";
+import {customTranslationPath} from "./xdg.mjs";
+import fs from "fs/promises";
 
 var i18n = undefined;
 
@@ -32,8 +34,12 @@ async function initFromPaths(paths, languages, resources) {
     for (let path of paths) {
         for (let language of languages) {
             let p = path.replace("{language}", language);
-            let data = await import(p);
-            resources[language].translation = Object.assign(resources[language].translation, data.default);
+            try {
+                let data = JSON.parse(await fs.readFile(p, 'utf8'));
+                resources[language].translation = Object.assign(resources[language].translation, data);
+            } catch (e) {
+                console.warn(e.message);
+            }
         }
     }
 }
@@ -48,9 +54,13 @@ async function initCountries(languages, resources) {
     }
 }
 
+export function getTranslationBundle(language) {
+    return i18next.getResourceBundle(language);
+}
+
 export async function init(config) {
     let languages = config.languages;
-    let paths = ['./translations/{language}.mjs'];
+    let paths = ['./translations/{language}.json', customTranslationPath('{language}.json')];
 
     let resources = Object.fromEntries(languages.map(l => [l, { translation: {}}]));
     await initFromPaths(paths, languages, resources);

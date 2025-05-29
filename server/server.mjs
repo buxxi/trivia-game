@@ -1,6 +1,7 @@
 import express from 'express';
 import * as sass from 'sass';
 import { WebSocketServer } from 'ws';
+import {getTranslationBundle} from "#translation";
 
 class TriviaServer {
 	constructor(port, avatars, languages, repository) {
@@ -24,6 +25,7 @@ class TriviaServer {
 		app.use('/trivia/common', express.static('common'));
 		app.use('/trivia/common/fonts/fontawesome', express.static('node_modules/@fortawesome/fontawesome-free/webfonts'));
 		app.use('/trivia/common/fonts/ubuntu', express.static('node_modules/@fontsource/ubuntu/files'));
+		app.use('/trivia/translation/:language', (req, res) => { res.type("js").send(JSON.stringify(getTranslationBundle(req.params.language))); });
 
 		//Serve files for client
 		app.use('/trivia/client', express.static('client'));

@@ -26,8 +26,9 @@ async function loadLanguages() {
 	let languages = await response.json();
 	let messages = [];
 	for (let language of languages) {
-		let translations = await import(`../translations/${language}.js`);
-		messages.push([language, translations.default]);
+		let translationResponse = await fetch(`/trivia/translation/${language}`);
+		let translations = await translationResponse.json();
+		messages.push([language, translations]);
 	}
 
 	return {

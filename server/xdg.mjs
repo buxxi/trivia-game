@@ -15,6 +15,10 @@ function xdgCache() {
     return path.normalize(path.join(process.env.XDG_CACHE_HOME || path.join(homedir(), ".cache"), APPLICATION_FOLDER));
 }
 
+export function customTranslationPath(file) {
+    return customDataPath("translations/" + file);
+}
+
 export function customQuestionPath(file) {
     return path.resolve(xdgData(), "questions", file);
 }
