@@ -23,7 +23,7 @@ class Categories {
 	}
 
 	available(game) {
-		let translator = new Translator("", game.language());
+		let translator = new Translator(game.language());
 		return Object.entries(this._categories).map(([key, category]) => Object.assign({ type: key}, translator.translateObject(category.describe())));
 	}
 
@@ -36,7 +36,7 @@ class Categories {
 		let joke = Random.fromArray(this._jokes);
 		return {
 			icon: joke.icon,
-			name: new Translator("jokes").to(game.language()).translate(joke.name, { playerName: player.name })
+			name: new Translator(game.language()).translateObject(joke.name.replace("{playerName}", player.name))
 		};
 	}
 

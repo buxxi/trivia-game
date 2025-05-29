@@ -6,27 +6,17 @@ import fs from "fs/promises";
 var i18n = undefined;
 
 class Translator {
-    constructor(base, language) {
-        this._base = base;
+    constructor(language) {
         this._language = language;
     }
 
-    to(language) {
-        return new Translator(this._base, language);
-    }
-
-    translate(key, variables = {}) {
+    translate(key) {
         if (!this._language) {
             throw new Error("No language was provided");
         }
-        key = this._base ? `${this._base}.${key}` : key;
-        variables = Object.assign({lng: this._language}, variables);
 
-        let result = i18n(key, variables);
+        let result = i18n(key, { lng: this._language});
 
-        if (key === result) { //TODO: only temp before translating
-            return key + ":" + JSON.stringify(variables);
-        }
         return result;
     }
 

@@ -2,7 +2,6 @@ import Selector from '../selector.mjs';
 import Questions from './questions.mjs';
 import Generators from '../generators.mjs';
 import Random from '../random.mjs';
-import translation from "#translation";
 
 class CurrentGameQuestions extends Questions {
 	constructor(config, categoryName) {

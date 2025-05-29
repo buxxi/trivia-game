@@ -46,7 +46,6 @@
     "#questions": "./server/questions/questions.mjs",
     "#random": "./server/random.mjs",
     "#generators": "./server/generators.mjs",
-    "#localjsonfile": "./server/questions/localjsonfile.mjs",
-    "#translation": "./server/translation.mjs"
+    "#localjsonfile": "./server/questions/localjsonfile.mjs"
   }
 }

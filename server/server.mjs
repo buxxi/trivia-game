@@ -1,7 +1,7 @@
 import express from 'express';
 import * as sass from 'sass';
 import { WebSocketServer } from 'ws';
-import {getTranslationBundle} from "#translation";
+import {getTranslationBundle} from "./translation.mjs";
 
 class TriviaServer {
 	constructor(port, avatars, languages, repository) {

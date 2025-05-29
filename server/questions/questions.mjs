@@ -1,23 +1,19 @@
 import Random from '../random.mjs';
-import Translator from "#translation";
 
 class Questions {
 	constructor(config, categoryName) {
         this._types = {};
-		this._translator = new Translator(`category.${categoryName}`);
 		this._translationBase = `category.${categoryName}`;
     }
 
     async nextQuestion(game) {
 		let type = Random.fromWeightedObject(this._types);
 
-		let translator = this._translator.to(game.language());
-
 		let correct = await type.correct(game);
 		let similar = await type.similar(correct, game);
-		let title = type.title(correct, translator);
-		let view = type.load(correct, translator);
-		let format = (answer) => `${type.format(answer, translator)}`;
+		let title = type.title(correct);
+		let view = type.load(correct);
+		let format = (answer) => `${type.format(answer)}`;
 		
 		return {
 			text : title,
