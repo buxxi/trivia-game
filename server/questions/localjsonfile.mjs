@@ -7,14 +7,28 @@ class LocalJsonFileQuestions extends Questions {
 		super(config, categoryName);
         this._path = customDataPath(config.dataPath[categoryName]);
         this._data = [];
+		this._clone = () => new this.constructor(config, categoryName);
     }
 
 	async preload(language, progress, cache) {
-		this._onlyEnglish(language);
 		progress(0, 1);
-		this._data = JSON.parse(await fs.readFile(this._path));
+
+		let languageQuestions = await this._loadLanguageQuestions(language);
+		this._data = this._data.filter((item) => item.language !== language);
+		this._data.push({language: language, category: languageQuestions});
+		this.nextQuestion = async (game) => {
+			return this._data.find(item => item.language === game.language()).category.nextQuestion(game);
+		};
+
 		progress(1, 1);
-		return this._countQuestions();
+		return this._data.find(e => e.language === language).category._countQuestions();
+	}
+
+	async _loadLanguageQuestions(language) {
+		let rawData = await fs.readFile(this._path.replace("{language}", language));
+		let languageQuestions = this._clone();
+		languageQuestions._data = JSON.parse(rawData);
+		return languageQuestions;
 	}
 
 	_countQuestions() {
