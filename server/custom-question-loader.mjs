@@ -12,7 +12,7 @@ function isSubPath(parent, dir) {
 
 
 export function resolve(specifier, context, nextResolve) {
-    if (isSubPath(customQuestionPath('.'), fileURLToPath(context.parentURL)) && specifier.startsWith("#")) {
+    if (isSubPath(customQuestionPath('.'), fileURLToPath(context.parentURL)) && (specifier.startsWith("#") || specifier === 'world-countries')) {
         context = Object.assign(Object.assign({}, context), {parentURL: pathToFileURL(import.meta.url)});
     }
     return nextResolve(specifier, context);
