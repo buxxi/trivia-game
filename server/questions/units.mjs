@@ -10,7 +10,7 @@ class UnitQuestions extends Questions {
 			title : (correct) => this._translatable("question.measure", {unit: this._capitalize(correct.singular)}),
 			correct : () => this._randomUnit(),
 			similar : () => this._allUnits(),
-			format : (answer) => this._measure(answer),
+			format : (answer, _) => this._measure(answer),
 			load : (correct) => this._loadBlank(correct),
 			weight : 50
 		});
@@ -18,7 +18,7 @@ class UnitQuestions extends Questions {
 			title : (_) => this._translatable("question.largest"),
 			correct : () => this._randomUnit(),
 			similar : (correct) => this._smallerUnits(correct),
-			format : (answer) => this._formatValueWithUnit(answer),
+			format : (answer, _) => this._formatValueWithUnit(answer),
 			load : (correct) => this._loadBlank(correct),
 			weight : 25
 		});
@@ -26,7 +26,7 @@ class UnitQuestions extends Questions {
 			title : (_) => this._translatable("question.smallest"),
 			correct : () => this._randomUnit(),
 			similar : (correct) => this._largerUnits(correct),
-			format : (answer) => this._formatValueWithUnit(answer),
+			format : (answer, _) => this._formatValueWithUnit(answer),
 			load : (correct) => this._loadBlank(correct),
 			weight : 25
 		});

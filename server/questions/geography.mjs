@@ -12,7 +12,7 @@ class GeographyQuestions extends Questions {
 
         this._addQuestion({
             title: (_) => this._translatable("question.flag"),
-            format: (correct) => this._formatName(correct),
+            format: (answer, _) => this._formatName(answer),
             correct: () => this._randomCountry(),
             similar: (correct, _) => this._similarCountries(correct),
             load: (correct) => this._loadFlag(correct),
@@ -20,7 +20,7 @@ class GeographyQuestions extends Questions {
         });
         this._addQuestion({
             title: (_) => this._translatable("question.shape"),
-            format: (correct) => this._formatName(correct),
+            format: (answer, _) => this._formatName(answer),
             correct: () => this._randomCountry(),
             similar: (correct, _) => this._similarCountries(correct),
             load: (correct) => this._loadMap(correct),
@@ -28,7 +28,7 @@ class GeographyQuestions extends Questions {
         });
         this._addQuestion({
             title : (_) => this._translatable("question.population"),
-            format : (correct) => this._formatName(correct),
+            format : (answer, _) => this._formatName(answer),
             correct : () => this._randomNonMicroCountry(),
             similar : (correct, _) => this._similarPopulationCountries(correct),
             load : (correct) => this._loadBlank(correct),
@@ -36,7 +36,7 @@ class GeographyQuestions extends Questions {
         });
         this._addQuestion({
             title: (correct) => this._translatable("question.capital", {capital: correct.capital}),
-            format: (correct) => this._formatName(correct),
+            format: (answer, _) => this._formatName(answer),
             correct: () => this._randomCountryWithCapital(),
             similar: (correct, _) => this._similarCountries(correct),
             load: (correct) => this._loadBlank(correct),
@@ -44,7 +44,7 @@ class GeographyQuestions extends Questions {
         });
         this._addQuestion({
             title: (_) => this._translatable("question.borders"),
-            format: (correct) => this._formatName(correct),
+            format: (answer, _) => this._formatName(answer),
             correct: () => this._randomCountryWith2Neighbours(),
             similar: (correct, _) => this._similarNeighbouringCountries(correct),
             load: (correct) => this._loadNeighbours(correct),
@@ -52,7 +52,7 @@ class GeographyQuestions extends Questions {
         });
         this._addQuestion({
             title: (correct) => this._translatable("question.region", {code: correct.code}),
-            format: (correct) => this._formatRegion(correct),
+            format: (answer, _) => this._formatRegion(answer),
             correct: () => this._randomCountry(),
             similar: (correct, _) => this._allCountriesRandom(correct),
             load: (correct) => this._loadBlank(correct),
@@ -60,7 +60,7 @@ class GeographyQuestions extends Questions {
         });
         this._addQuestion({
             title: (_) => this._translatable("question.area"),
-            format: (correct) => this._formatName(correct),
+            format: (answer, _) => this._formatName(answer),
             correct: () => this._randomNonMicroCountry(),
             similar: (correct, _) => this._similarAreaCountries(correct),
             load: (correct) => this._loadBlank(correct),

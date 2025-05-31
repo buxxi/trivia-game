@@ -16,7 +16,7 @@ class QuotesQuestions extends Questions {
 			correct : (correct) => this._randomQuote(correct),
 			similar : (correct) => this._similarAuthors(correct),
 			load : (correct) => this._loadQuote(correct),
-			format : (correct) => this._resolveAuthor(correct),
+			format : (answer, _) => this._resolveAuthor(answer),
 			weight : 50
 		});
 		this._addQuestion({
@@ -24,7 +24,7 @@ class QuotesQuestions extends Questions {
 			correct : (correct) => this._randomBlankQuote(correct),
 			similar : (correct) => this._similarWords(correct),
 			load : (correct) => this._loadQuote(correct),
-			format : (correct) => this._formatWord(correct),
+			format : (answer, _) => this._formatWord(answer),
 			weight : 50
 		});
 	}

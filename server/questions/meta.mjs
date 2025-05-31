@@ -10,49 +10,49 @@ class CurrentGameQuestions extends Questions {
 			title : (correct) => this._translatable("question.animal", {player: correct.name}),
 			correct : (game) => this._randomPlayer(game),
 			similar : (correct, game) => this._otherAvatars(correct, game),
-			format : (correct) => this._resolveAvatar(correct),
+			format : (answer, _) => this._resolveAvatar(answer),
 			load : (correct) => this._loadBlankAvatar("attribution.avatar", correct)
 		});
 		this._addQuestion({
 			title : (_) => this._translatable("question.most_correct"),
 			correct : (game) => this._playerWithMost(game, (p) => p.correctGuesses()),
 			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.correctGuesses()),
-			format : (correct) => this._resolveName(correct),
+			format : (answer, _) => this._resolveName(answer),
 			load : (correct) => this._loadBlankName("attribution.most_correct", correct)
 		});
 		this._addQuestion({
 			title : (_) => this._translatable("question.most_incorrect"),
 			correct : (game) => this._playerWithMost(game, (p) => p.wrongGuesses()),
 			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.wrongGuesses()),
-			format : (correct) => this._resolveName(correct),
+			format : (answer, _) => this._resolveName(answer),
 			load : (correct) => this._loadBlankName("attribution.most_incorrect", correct)
 		});
 		this._addQuestion({
 			title : (_) => this._translatable("question.total_correct"),
 			correct : (game) => this._countTotal(game, (p) => p.correctGuesses()),
 			similar : (correct, game) => this._numericAlternatives(correct, game),
-			format : (correct) => this._formatValue(correct),
+			format : (answer, _) => this._formatValue(answer),
 			load : (correct) => this._loadBlankValue("attribution.total_correct", correct)
 		});
 		this._addQuestion({
 			title : (_) => this._translatable("question.total_incorrect"),
 			correct : (game) => this._countTotal(game, (p) => p.wrongGuesses()),
 			similar : (correct, game) => this._numericAlternatives(correct, game),
-			format : (correct) => this._formatValue(correct),
+			format : (answer, _) => this._formatValue(answer),
 			load : (correct) => this._loadBlankValue("attribution.total_incorrect", correct)
 		});
 		this._addQuestion({
 			title : (_) => this._translatable("question.fastest_correct"),
 			correct : (game) => this._playerWithLeast(game, (p) => p.fastestCorrectGuess()),
 			similar : (correct, game) => this._playersWithHigher(correct, game, (p) => p.fastestCorrectGuess()),
-			format : (correct) => this._resolveName(correct),
+			format : (answer, _) => this._resolveName(answer),
 			load : (correct) => this._loadBlankName("attribution.fastest_correct", correct)
 		});
 		this._addQuestion({
 			title : (_) => this._translatable("question.slowest_correct"),
 			correct : (game) => this._playerWithMost(game, (p) => p.slowestCorrectGuess()),
 			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.slowestCorrectGuess()),
-			format : (correct) => this._resolveName(correct),
+			format : (answer, _) => this._resolveName(answer),
 			load : (correct) => this._loadBlankName("attribution.slowest_correct", correct)
 		});
 	}

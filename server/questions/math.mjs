@@ -41,7 +41,7 @@ class MathQuestions extends Questions {
 			correct : () => Random.fromArray(this._expressions).generate(),
 			similar : (correct, _) => correct.alternativeValues(),
 			load : (correct) => this._loadQuote(correct),
-			format : (answer) => this._format(answer)
+			format : (answer, _) => this._format(answer)
 		});
     }
 

@@ -22,7 +22,7 @@ class VideoGameQuestions extends Questions {
 			correct: () => this._randomGame(),
 			similar: (correct, _) => this._similarGames(correct),
 			load: (correct) => this._screenshot(correct),
-			format: (correct) => this._gameTitle(correct),
+			format: (answer, _) => this._gameTitle(answer),
 			weight: 45
 		});
 		this._addQuestion({
@@ -30,7 +30,7 @@ class VideoGameQuestions extends Questions {
 			correct: () => this._randomGame(),
 			similar: (correct, _) => this._similarGameYears(correct),
 			load: (correct) => this._blank(correct),
-			format: (correct) => this._gameYear(correct),
+			format: (answer, _) => this._gameYear(answer),
 			weight: 10
 		});
 		this._addQuestion({
@@ -38,7 +38,7 @@ class VideoGameQuestions extends Questions {
 			correct: () => this._randomGame(),
 			similar: (correct, _) => this._similarPlatforms(correct),
 			load: (correct) => this._blank(correct),
-			format: (correct) => this._gamePlatform(correct),
+			format: (answer, _) => this._gamePlatform(answer),
 			weight: 10
 		});
 	}

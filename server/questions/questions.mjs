@@ -13,12 +13,12 @@ class Questions {
 		let similar = await type.similar(correct, game);
 		let title = type.title(correct);
 		let view = type.load(correct);
-		let format = (answer) => `${type.format(answer)}`;
+		let format = (answer) => `${type.format(answer, correct)}`;
 		
 		return {
 			text : title,
 			answers : this._alternatives(similar, correct, format),
-			correct : format(correct),
+			correct : format(correct, correct),
 			view : view
 		};
 	}

@@ -15,7 +15,7 @@ class MovieQuestions extends Questions {
 			title : (_) => this._translatable("question.title"),
 			correct : () => this._randomMovieClip(),
 			similar : (correct, _) => this._loadSimilarMovies(correct),
-			format : (answer) => this._movieTitle(answer),
+			format : (answer, _) => this._movieTitle(answer),
 			load : (correct) => this._loadMovieClip(correct),
 			count : () => this._countUniqueClips(),
 			weight : 75
@@ -24,7 +24,7 @@ class MovieQuestions extends Questions {
 			title : (_) => this._translatable("question.year"),
 			correct : () => this._randomMovieClip(),
 			similar : (correct, _) => this._loadSimilarYears(correct),
-			format : (answer) => this._movieYear(answer),
+			format : (answer, _) => this._movieYear(answer),
 			load : (correct) => this._loadMovieClip(correct),
 			count : () => this._countUniqueClips(),
 			weight : 25

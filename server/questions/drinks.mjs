@@ -16,7 +16,7 @@ class DrinksQuestions extends Questions {
 			correct : (correct) => this._randomDrink(correct),
 			similar : (correct) => this._similarDrinks(correct),
 			load : (correct) => this._loadList(correct),
-			format : (correct) => this._resolveName(correct),
+			format : (answer, _) => this._resolveName(answer),
 			weight : 50
 		});
 		this._addQuestion({
@@ -24,7 +24,7 @@ class DrinksQuestions extends Questions {
 			correct : (correct) => this._randomIngredient(correct),
 			similar : (correct) => this._differentIngredients(correct),
 			load : (correct) => this._loadBlankIngredient(correct),
-			format : (correct) => this._resolveName(correct),
+			format : (answer, _) => this._resolveName(answer),
 			weight : 25
 		});
 		this._addQuestion({
@@ -32,7 +32,7 @@ class DrinksQuestions extends Questions {
 			correct : (correct) => this._randomDrinkWithGlass(correct),
 			similar : (correct) => this._drinksWithGlass(correct),
 			load : (correct) => this._loadBlankDrink(correct),
-			format : (correct) => this._resolveGlass(correct),
+			format : (answer, _) => this._resolveGlass(answer),
 			weight : 25
 		});
 	}
