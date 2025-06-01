@@ -44,7 +44,7 @@ async function initFromPaths(paths, languages, resources) {
             let p = path.replace("{language}", language);
             try {
                 let data = JSON.parse(await fs.readFile(p, 'utf8'));
-                resources[language].translation = Object.assign(resources[language].translation, data);
+                resources[language].translation = deepMergeObjects(resources[language].translation, data);
             } catch (e) {
                 console.warn(e.message);
             }
@@ -58,8 +58,30 @@ async function initCountries(languages, resources) {
         for (let country of countryDefs) {
             countryNames[country.cca2] = language === 'en' ? country.name.common : country.translations["swe"].common;
         }
-        resources[language].translation = Object.assign(resources[language].translation, { country: countryNames });
+        resources[language].translation = deepMergeObjects(resources[language].translation, { country: countryNames });
     }
+}
+
+function deepMergeObjects(a, b) {
+    let keys = Object.keys(a).concat(Object.keys(b));
+    let result = {};
+    for (let key of keys) {
+        if (key in a && key in b) {
+            if (typeof a[key] === "string" && typeof b[key] === "string") {
+                result[key] = a;
+            } else if (typeof a[key] !== "string" && typeof b[key] !== "string") {
+                result[key] = deepMergeObjects(a[key], b[key]);
+            } else {
+                throw new Error("Value either needs to be an object or a string");
+            }
+        } else if (key in a) {
+            result[key] = a[key];
+        } else if (key in b) {
+            result[key] = b[key];
+        }
+    }
+
+    return result;
 }
 
 export function getTranslationBundle(language) {
@@ -82,6 +104,12 @@ export async function init(config) {
             nestingPrefix: '$(',
             nestingSuffix: ')'
         }
+    });
+    i18next.services.formatter.add('lowercase', (value, lng, options) => {
+        return value.toLowerCase();
+    });
+    i18next.services.formatter.add('article', (value, lng, options) => {
+        return  ['a','e','i','o','u','h'].includes(value.toLowerCase().substring(0, 1)) ? `an ${value}` : `a ${value}`;
     });
 }
 
