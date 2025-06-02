@@ -21,6 +21,9 @@ class Translator {
     }
 
     translateObject(obj) {
+        if (obj === undefined) {
+            return undefined;
+        }
         if (typeof obj === "string") {
             let m = obj.match(/^\$\(.*\)$/);
             if (m) {
@@ -102,7 +105,8 @@ export async function init(config) {
             prefix: '{',
             suffix: '}',
             nestingPrefix: '$(',
-            nestingSuffix: ')'
+            nestingSuffix: ')',
+            escapeValue: false
         }
     });
     i18next.services.formatter.add('lowercase', (value, lng, options) => {
