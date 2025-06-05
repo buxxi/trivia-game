@@ -18,14 +18,16 @@ class CurrentGameQuestions extends Questions {
 			correct : (game) => this._playerWithMost(game, (p) => p.correctGuesses()),
 			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.correctGuesses()),
 			format : (answer, _) => this._resolveName(answer),
-			load : (correct) => this._loadBlankName("attribution.most_correct", correct)
+			load : (correct) => this._loadBlankName("attribution.most_correct", correct),
+			available: (game) => game.players().length > 3
 		});
 		this._addQuestion({
 			title : (_) => this._translatable("question.most_incorrect"),
 			correct : (game) => this._playerWithMost(game, (p) => p.wrongGuesses()),
 			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.wrongGuesses()),
 			format : (answer, _) => this._resolveName(answer),
-			load : (correct) => this._loadBlankName("attribution.most_incorrect", correct)
+			load : (correct) => this._loadBlankName("attribution.most_incorrect", correct),
+			available: (game) => game.players().length > 3
 		});
 		this._addQuestion({
 			title : (_) => this._translatable("question.total_correct"),
@@ -46,14 +48,16 @@ class CurrentGameQuestions extends Questions {
 			correct : (game) => this._playerWithLeast(game, (p) => p.fastestCorrectGuess()),
 			similar : (correct, game) => this._playersWithHigher(correct, game, (p) => p.fastestCorrectGuess()),
 			format : (answer, _) => this._resolveName(answer),
-			load : (correct) => this._loadBlankName("attribution.fastest_correct", correct)
+			load : (correct) => this._loadBlankName("attribution.fastest_correct", correct),
+			available: (game) => game.players().length > 3
 		});
 		this._addQuestion({
 			title : (_) => this._translatable("question.slowest_correct"),
 			correct : (game) => this._playerWithMost(game, (p) => p.slowestCorrectGuess()),
 			similar : (correct, game) => this._playersWithLower(correct, game, (p) => p.slowestCorrectGuess()),
 			format : (answer, _) => this._resolveName(answer),
-			load : (correct) => this._loadBlankName("attribution.slowest_correct", correct)
+			load : (correct) => this._loadBlankName("attribution.slowest_correct", correct),
+			available: (game) => game.players().length > 3
 		});
 	}
 
