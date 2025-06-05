@@ -7,7 +7,7 @@ class Questions {
     }
 
     async nextQuestion(game) {
-		let type = Random.fromWeightedObject(this._types);
+		let type = Random.fromWeightedObject(this._onlyAvailableTypes(game));
 
 		let correct = await type.correct(game);
 		let similar = await type.similar(correct, game);
@@ -35,7 +35,14 @@ class Questions {
         throw new Error("Needs to be implemented by child class");
 	}
 
+	_onlyAvailableTypes(game) {
+		return Object.fromEntries(Object.entries(this._types).filter(([_, value]) => value.available(game)));
+	}
+
     _addQuestion(question) {
+		if (!('available' in question)) {
+			question['available'] = (_) => true;
+		}
         this._types[Object.keys(this._types).length] = question;
     }
 
@@ -47,11 +54,11 @@ class Questions {
 				return result;
 			}
 			var e = toString(value.value);
-			if (e == "") {
+			if (e === "") {
 				throw new Error("Empty alternative returned");
 			}
 
-			if (!result.some(x => e.toLowerCase() == x.toLowerCase())) {
+			if (!result.some(x => e.toLowerCase() === x.toLowerCase())) {
 				result.push(e);
 			}
 		}
