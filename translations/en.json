@@ -176,6 +176,16 @@
                 "clip": "Clip from"
             }
         },
+        "quotes": {
+            "title": "Famous Quotes",
+            "question": {
+                "author": "Who said this famous quote?",
+                "word": "Which word is missing from this quote?"
+            },
+            "attribution": {
+                "quote": "Quoted"
+            }
+        },
         "videogames": {
             "title": "Video Games",
             "question": {

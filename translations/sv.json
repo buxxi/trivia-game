@@ -176,6 +176,16 @@
                 "clip": "Klipp från"
             }
         },
+        "quotes": {
+            "title": "Kända citat",
+            "question": {
+                "author": "Vem sa detta kända citat?",
+                "word": "Bugg om denna kommer på svenska :)"
+            },
+            "attribution": {
+                "quote": "Citerad"
+            }
+        },
         "videogames": {
             "title": "TV-spel",
             "question": {
