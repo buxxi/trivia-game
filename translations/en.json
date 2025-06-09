@@ -18,11 +18,11 @@
         "belowZero": "You can't go below 0 points, make wild guesses if you don't know the correct answer",
         "speed": "You are awarded more points for answering quick",
         "multiplier": {
-            "correct": "A correct answer will increase the points multiplier (up to {maxMultiplier}x) for the next question",
+            "correct": "A correct answer will increase the points multiplier (up to {{maxMultiplier}}x) for the next question",
             "incorrect": "An invalid answer will reset the points multiplier to 1x",
             "unanswered": "Not answering will reset the points multiplier to 1x"
         },
-        "time": "You have {seconds} seconds to answer each question"
+        "time": "You have {{seconds}} seconds to answer each question"
     },
     "poweredBy": "Powered by",
     "settings": {
@@ -44,19 +44,19 @@
     "categories": {
         "header": "Categories",
         "none": "Not enough categories selected",
-        "clearCache": "Clear cache for {category}, this could take a while?",
+        "clearCache": "Clear cache for {{category}}, this could take a while?",
         "stillLoading": "Not all selected categories has preloaded",
         "selectAll": "Select all",
         "selectRandom": "Select 1 random",
-        "questionCount": "{questionCount} possible questions in the selected categories"
+        "questionCount": "{{questionCount}} possible questions in the selected categories"
     },
     "errors": {
-        "initial": "Error when loading initial setup: {message}",
-        "clearCache": "Failed to clear cache: {message}",
-        "startGame": "Failed to start game: {message}"
+        "initial": "Error when loading initial setup: {{message}}",
+        "clearCache": "Failed to clear cache: {{message}}",
+        "startGame": "Failed to start game: {{message}}"
     },
     "credits": {
-        "attribution": "Lookup at {domain}",
+        "attribution": "Lookup at {{domain}}",
         "music": {
             "by": "Music by",
             "spotify": "Play on Spotify"
@@ -83,12 +83,12 @@
                 "flag": "Which country does this flag belong to?",
                 "population": "Which of these countries has the largest population?",
                 "shape": "Which country has this shape?",
-                "capital": "In which country is {capital} the capital?",
+                "capital": "In which country is {{capital}} the capital?",
                 "borders": "Which country has borders to all these countries?",
-                "region": "Where is $(country.{code}) located?",
+                "region": "Where is $t(country.{{code}}) located?",
                 "area": "Which of these countries has the largest land area?"
             },
-            "country": "$(country.{code})",
+            "country": "$t(country.{{code}})",
             "region": {
                 "caribbean": "Caribbean",
                 "east_asia": "Eastern Asia",
@@ -125,7 +125,7 @@
         "meta": {
             "title": "Current Game",
             "question": {
-                "animal": "Which animal does {player} have as avatar?",
+                "animal": "Which animal does {{player}} have as avatar?",
                 "most_correct": "Who has the most correct answers so far?",
                 "most_incorrect": "Who has the most incorrect answers so far?",
                 "total_correct": "What is the total amount of correct answers so far?",
@@ -190,8 +190,8 @@
             "title": "Video Games",
             "question": {
                 "screenshot": "Which game is this a screenshot of?",
-                "release": "In which year was '{game}' first released?",
-                "platform": "'{game}' was released to one of these platforms, which one?"
+                "release": "In which year was '{{game}}' first released?",
+                "platform": "'{{game}}' was released to one of these platforms, which one?"
             },
             "attribution": {
                 "screenshot": "Screenshot of",
@@ -201,7 +201,7 @@
         "units": {
             "title": "Units",
             "question": {
-                "measure": "What is the unit '{unit}' used to measure?",
+                "measure": "What is the unit '{{unit}}' used to measure?",
                 "largest": "Which one of these is the largest?",
                 "smallest": "Which one of these is the smallest?"
             },

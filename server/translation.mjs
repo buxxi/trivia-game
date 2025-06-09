@@ -25,7 +25,7 @@ class Translator {
             return undefined;
         }
         if (typeof obj === "string") {
-            let m = obj.match(/^\$\(.*\)$/);
+            let m = obj.match(/^\$t\(.*\)$/);
             if (m) {
                 return this.translate(obj);
             } else {
@@ -102,10 +102,6 @@ export async function init(config) {
     i18n = await i18next.init({
         resources: resources,
         interpolation: {
-            prefix: '{',
-            suffix: '}',
-            nestingPrefix: '$(',
-            nestingSuffix: ')',
             escapeValue: false
         }
     });

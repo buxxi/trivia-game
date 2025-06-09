@@ -18,11 +18,11 @@
         "belowZero": "Du kan inte hamna under 0 poäng, gissa vilt om du inte vet det rätta svaret",
         "speed": "Du får fler poäng för att svara snabbt",
         "multiplier": {
-            "correct": "Ett rätt svar ökar multiplikatorn (upp till {maxMultiplier}x) för nästa fråga",
+            "correct": "Ett rätt svar ökar multiplikatorn (upp till {{maxMultiplier}}x) för nästa fråga",
             "incorrect": "Ett felaktigt svar återställer multiplikatorn till 1x",
             "unanswered": "Att inte svara återställer multiplikatorn till 1x"
         },
-        "time": "Du har {seconds} sekunder på dig att svara på varje fråga"
+        "time": "Du har {{seconds}} sekunder på dig att svara på varje fråga"
     },
     "poweredBy": "Byggt med hjälp av",
     "settings": {
@@ -44,19 +44,19 @@
     "categories": {
         "header": "Kategorier",
         "none": "Inte tillräckligt med kategorier valda",
-        "clearCache": "Rensa cache för {category}, det kan ta ett tag?",
+        "clearCache": "Rensa cache för {{category}}, det kan ta ett tag?",
         "stillLoading": "Inte alla valda kategorier är förladdade",
         "selectAll": "Välj alla",
         "selectRandom": "Välj 1 slumpmässig",
-        "questionCount": "{questionCount} möjliga frågor i de valda kategorierna"
+        "questionCount": "{{questionCount}} möjliga frågor i de valda kategorierna"
     },
     "errors": {
-        "initial": "Fel vid laddning av spelet: {message}",
-        "clearCache": "Misslyckades med att rensa sparat data: {message}",
-        "startGame": "Misslyckades med att starta spel: {message}"
+        "initial": "Fel vid laddning av spelet: {{message}}",
+        "clearCache": "Misslyckades med att rensa sparat data: {{message}}",
+        "startGame": "Misslyckades med att starta spel: {{message}}"
     },
     "credits": {
-        "attribution": "Läs mer på {domain}",
+        "attribution": "Läs mer på {{domain}}",
         "music": {
             "by": "Musik av",
             "spotify": "Spela på Spotify"
@@ -83,12 +83,12 @@
                 "flag": "Vilket land tillhör denna flagga?",
                 "population": "Vilket av dessa länder har störst befolkning?",
                 "shape": "Vilket land har denna form?",
-                "capital": "I vilket land är {capital} huvudstad?",
+                "capital": "I vilket land är {{capital}} huvudstad?",
                 "borders": "Vilket land gränsar till alla dessa länder?",
-                "region": "Var ligger $(country.{code})?",
+                "region": "Var ligger $t(country.{{code}})?",
                 "area": "Vilket av dessa länder har störst landyta?"
             },
-            "country": "$(country.{code})",
+            "country": "$t(country.{{code}})",
             "region": {
                 "caribbean": "Karibien",
                 "east_asia": "Östra Asien",
@@ -125,7 +125,7 @@
         "meta": {
             "title": "Nuvarande spel",
             "question": {
-                "animal": "Vilket djur har {player} som avatar?",
+                "animal": "Vilket djur har {{player}} som avatar?",
                 "most_correct": "Vem har flest rätta svar hittills?",
                 "most_incorrect": "Vem har flest felaktiga svar hittills?",
                 "total_correct": "Vad är det totala antalet rätta svar hittills?",
@@ -190,8 +190,8 @@
             "title": "TV-spel",
             "question": {
                 "screenshot": "Vilket spel är detta en skärmdump från?",
-                "release": "Vilket år släpptes '{game}' för första gången?",
-                "platform": "'{game}' släpptes till en av dessa plattformar, vilken?"
+                "release": "Vilket år släpptes '{{game}}' för första gången?",
+                "platform": "'{{game}}' släpptes till en av dessa plattformar, vilken?"
             },
             "attribution": {
                 "screenshot": "Skärmdump av",
@@ -201,7 +201,7 @@
         "units": {
             "title": "Enheter",
             "question": {
-                "measure": "Vad används enheten '{unit}' för att mäta?",
+                "measure": "Vad används enheten '{{unit}}' för att mäta?",
                 "largest": "Vilken av dessa är störst?",
                 "smallest": "Vilken av dessa är minst?"
             },

@@ -67,9 +67,9 @@ class Questions {
 
 	_translatable(key, params) {
 		if (params) {
-			return `$(${this._translationBase}.${key}, ${JSON.stringify(params)})`;
+			return `$t(${this._translationBase}.${key}, ${JSON.stringify(params)})`;
 		} else {
-			return `$(${this._translationBase}.${key})`;
+			return `$t(${this._translationBase}.${key})`;
 		}
 	}
 

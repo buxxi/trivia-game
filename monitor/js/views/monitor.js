@@ -42,10 +42,6 @@ async function loadLanguages() {
 		supportedLngs : ['en', 'sv'],
 		resources: resources,
 		interpolation: {
-			prefix: '{',
-			suffix: '}',
-			nestingPrefix: '$(',
-			nestingSuffix: ')',
 			escapeValue: false
 		}
 	};
