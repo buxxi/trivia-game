@@ -1,4 +1,5 @@
 import { useTranslation } from "i18next-vue";
+import {qrcode} from "qrcode-generator";
 
 export default {
 	data: function() { return({
@@ -70,8 +71,11 @@ export default {
 
 		try {
 			this.gameId = await this.connection.connect(this.preferredGameId);
-			let clientUrl = new URL("../client#", document.location) + "?gameId=" + this.gameId; 
-			this.qrUrl = await QRCode.toDataURL(clientUrl, {width: 400, height: 400});
+			let clientUrl = new URL("../client#", document.location) + "?gameId=" + this.gameId;
+			let qr = qrcode(0, 'L');
+			qr.addData(clientUrl);
+			qr.make();
+			this.qrUrl = qr.createDataURL(10, 30);
 			await this.connection.changeLanguage(this.i18n.i18next.language);
 			await this.loadCategories();
 		} catch (e) {
@@ -201,8 +205,8 @@ class PlayerData {
 class CategorySelector {
 	constructor(c) {
 		this.type = c.type;
-		this.name = c.name,
-		this.icon = c.icon,
+		this.name = c.name;
+		this.icon = c.icon;
 		this.attribution = c.attribution;
 		this.questionCount = 0;
 		this.preload = {
