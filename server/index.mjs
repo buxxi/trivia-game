@@ -7,6 +7,7 @@ import ServerConnection from './connection.mjs';
 import Text2Speech from './tts.mjs';
 import GameStatistics from './stats.mjs';
 import {configPath} from "./xdg.mjs";
+import {init as translationInit} from "./translation.mjs";
 
 class GameRepository {
 	constructor(categories, config) {
@@ -46,6 +47,11 @@ async function loadConfig() {
 	return JSON.parse(await fs.readFile(configPath()));
 }
 
+async function loadTranslations(config) {
+	console.log("Loading translations");
+	translationInit(config);
+}
+
 async function loadCategories(config) {
 	console.log("Loading categories");
 	let categories = new Categories(config);
@@ -55,13 +61,14 @@ async function loadCategories(config) {
 
 function startServer(config, repository) {
 	console.log("Starting server");
-	let server = new TriviaServer(8080, config.avatars, repository);
+	let server = new TriviaServer(8080, config.avatars, config.languages, repository);
 	server.start();
 	return server;
 }
 
 async function init() {
 	let config = await loadConfig();
+	await loadTranslations(config);
 	let categories = await loadCategories(config);
 	let repository = new GameRepository(categories, config);
 	let server = startServer(config, repository);

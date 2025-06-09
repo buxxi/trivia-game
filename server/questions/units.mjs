@@ -4,29 +4,29 @@ import Generators from '../generators.mjs';
 import Random from '../random.mjs';
 
 class UnitQuestions extends Questions {
-    constructor(config) {
-		super();
+	constructor(config, categoryName) {
+		super(config, categoryName);
 		this._addQuestion({
-			title : (correct) => "'" + this._capitalize(correct.singular) + "' is used to measure what?",
+			title : (correct) => this._translatable("question.measure", {unit: this._capitalize(correct.singular)}),
 			correct : () => this._randomUnit(),
 			similar : () => this._allUnits(),
-			format : (answer) => this._measure(answer),
+			format : (answer, _) => this._measure(answer),
 			load : (correct) => this._loadBlank(correct),
 			weight : 50
 		});
 		this._addQuestion({
-			title : () => "Which one of these is the largest?",
+			title : (_) => this._translatable("question.largest"),
 			correct : () => this._randomUnit(),
 			similar : (correct) => this._smallerUnits(correct),
-			format : (answer) => this._formatValueWithUnit(answer),
+			format : (answer, _) => this._formatValueWithUnit(answer),
 			load : (correct) => this._loadBlank(correct),
 			weight : 25
 		});
 		this._addQuestion({
-			title : () => "Which one of these is the smallest?",
+			title : (_) => this._translatable("question.smallest"),
 			correct : () => this._randomUnit(),
 			similar : (correct) => this._largerUnits(correct),
-			format : (answer) => this._formatValueWithUnit(answer),
+			format : (answer, _) => this._formatValueWithUnit(answer),
 			load : (correct) => this._loadBlank(correct),
 			weight : 25
 		});
@@ -34,13 +34,13 @@ class UnitQuestions extends Questions {
 
     describe() {
 		return {
-			name : 'Units',
+			name : this._translatable('title'),
 			icon : 'fa-balance-scale',
 			attribution : []
 		};
 	}
 
-	async preload(progress) {
+	async preload(language, progress) {
 		progress(1, 1);
 		return this._countQuestions();
     }
@@ -72,7 +72,8 @@ class UnitQuestions extends Questions {
 	}
 
 	_measure(unit) {
-		return this._capitalize(unit.measure.replace(/([A-Z])/g, ' $1'));
+		let key = unit.measure.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+		return this._translatable(`measure.${key}`);
 	}
 
 	_formatValueWithUnit(unit) {
@@ -86,7 +87,7 @@ class UnitQuestions extends Questions {
 	_loadBlank(unit) {
 		return {
 			attribution : {
-				title : "Unit",
+				title : this._translatable("attribution.unit"),
 				name : this._capitalize(unit.singular),
 				links : []
 			}

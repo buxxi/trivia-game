@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import YoutubeLoader from '../youtubeloader.mjs';
 import Questions from './questions.mjs';
 import Selector from '../selector.mjs';
 import Generators from '../generators.mjs';
@@ -9,8 +8,8 @@ const GAMES_PER_PLATFORM = 100;
 const PAGINATE_COUNT = 100;
 
 class VideoGameQuestions extends Questions {
-	constructor(config) {
-		super();
+	constructor(config, categoryName) {
+		super(config, categoryName);
 		this._games = [];
 		this._platforms = [];
 
@@ -19,34 +18,34 @@ class VideoGameQuestions extends Questions {
 		this._igdbBaseURL = 'https://api.igdb.com/v4/';
 
 		this._addQuestion({
-			title: () => "Which game is this a screenshot of?",
+			title: (_) => this._translatable("question.screenshot"),
 			correct: () => this._randomGame(),
-			similar: (correct) => this._similarGames(correct),
+			similar: (correct, _) => this._similarGames(correct),
 			load: (correct) => this._screenshot(correct),
-			format: (correct) => this._gameTitle(correct),
+			format: (answer, _) => this._gameTitle(answer),
 			weight: 45
 		});
 		this._addQuestion({
-			title: (correct) => "In which year was '" + correct.name + "' first released?",
+			title: (correct) => this._translatable("question.release", { game: correct.name}),
 			correct: () => this._randomGame(),
-			similar: (correct) => this._similarGameYears(correct),
+			similar: (correct, _) => this._similarGameYears(correct),
 			load: (correct) => this._blank(correct),
-			format: (correct) => this._gameYear(correct),
+			format: (answer, _) => this._gameYear(answer),
 			weight: 10
 		});
 		this._addQuestion({
-			title: (correct) => "'" + correct.name + "' was released to one of these platforms, which one?",
+			title: (correct) => this._translatable("question.platform", {game: correct.name}),
 			correct: () => this._randomGame(),
-			similar: (correct) => this._similarPlatforms(correct),
+			similar: (correct, _) => this._similarPlatforms(correct),
 			load: (correct) => this._blank(correct),
-			format: (correct) => this._gamePlatform(correct),
+			format: (answer, _) => this._gamePlatform(answer),
 			weight: 10
 		});
 	}
 
-	describe() {
+	describe(language) {
 		return {
-			name: 'Video Games',
+			name : this._translatable('title'),
 			icon: 'fa-gamepad',
 			attribution: [
 				{ url: 'https://youtube.com', name: 'YouTube' },
@@ -55,7 +54,7 @@ class VideoGameQuestions extends Questions {
 		};
 	}
 
-	async preload(progress, cache) {
+	async preload(language, progress, cache) {
 		let token = await this._loadTwitchAccessToken();
 		this._platforms = await this._loadPlatforms(cache, token);
 
@@ -234,7 +233,7 @@ class VideoGameQuestions extends Questions {
 			player: 'image',
 			url: 'https://images.igdb.com/igdb/image/upload/t_screenshot_huge/' + Random.fromArray(game.screenshots) + '.jpg',
 			attribution: {
-				title: "Screenshot of",
+				title: this._translatable("attribution.screenshot"),
 				name: this._gameTitle(game) + " (" + this._gameYear(game) + ")",
 				links: [game.attribution]
 			}
@@ -244,7 +243,7 @@ class VideoGameQuestions extends Questions {
 	_blank(game) {
 		return {
 			attribution: {
-				title: "Game",
+				title: this._translatable("attribution.game"),
 				name: this._gameTitle(game) + " (" + this._gameYear(game) + ")",
 				links: [game.attribution]
 			}

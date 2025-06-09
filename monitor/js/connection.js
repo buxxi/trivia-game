@@ -27,6 +27,10 @@ class MonitorToServerConnection {
         });
     }
 
+    changeLanguage(language) {
+        return this._pws.send(Protocol.CHANGE_LANGUAGE, language);
+    }
+
     loadCategories() {
         return this._pws.send(Protocol.LOAD_CATEGORIES, {});
     }

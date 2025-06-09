@@ -23,21 +23,6 @@ export default {
 	},
 	props: ['gameId', 'results', 'history'],
 	methods: {
-		ordinal : function(index) {
-			if (((index / 10) % 10) == 1) {
-				return "th";
-			}
-			switch (index % 10) {
-				case 1:
-					return "st";
-				case 2:
-					return "nd";
-				case 3:
-					return "rd";
-				default:
-					return "th";
-			}
-		},
 		domain : function(link) {
 			try {
 				return new URL(link).hostname;

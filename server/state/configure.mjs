@@ -5,12 +5,16 @@ class ConfigureState {
 
     run(game, categories, clientConnections, monitorConnection, text2Speech, stats) {
         return new Promise((stateResolve, stateReject) => {
+            monitorConnection.onChangeLanguage().then(async (language) => {
+                game.config().language = language;
+            });
+
             monitorConnection.onLoadCategories().then(async () => {
-                return categories.available();	
+                return categories.available(game);
             });
     
             monitorConnection.onPreloadCategory().then(async (category) => {
-                let count = await categories.preload(category, (current, total) => {
+                let count = await categories.preload(category, game, (current, total) => {
                     monitorConnection.preloadProgress(category, current, total).catch(e => { console.log("Preload progress failed")}); //TODO: better error handling somehow
                 });
                 return count;

@@ -1,0 +1,244 @@
+{
+    "title": "Trivia-spel",
+    "loading": "Laddar",
+    "ready": "Spelet är redo att starta",
+    "join": {
+        "header": "Spela med hjälp av din Smartphone!",
+        "qrCodeOrUrl": "Via QR-kod eller gå till"
+    },
+    "players": {
+        "header": "Spelare",
+        "none": "Inga spelare har anslutit ännu",
+        "kick": "Uteslut spelare"
+    },
+    "rules": {
+        "header": "Regler",
+        "controller": "Använd din telefon för att välja det svar du tror är rätt",
+        "scoring": "Ett rätt svar ger dig poäng och ett felaktigt svar drar av poäng",
+        "belowZero": "Du kan inte hamna under 0 poäng, gissa vilt om du inte vet det rätta svaret",
+        "speed": "Du får fler poäng för att svara snabbt",
+        "multiplier": {
+            "correct": "Ett rätt svar ökar multiplikatorn (upp till {{maxMultiplier}}x) för nästa fråga",
+            "incorrect": "Ett felaktigt svar återställer multiplikatorn till 1x",
+            "unanswered": "Att inte svara återställer multiplikatorn till 1x"
+        },
+        "time": "Du har {{seconds}} sekunder på dig att svara på varje fråga"
+    },
+    "poweredBy": "Byggt med hjälp av",
+    "settings": {
+        "header": "Inställningar",
+        "questions": "Antal frågor",
+        "time": "Sekunder att svara",
+        "pointsPerRound": "Poäng per fråga",
+        "maxMultiplier": "Maximal multiplikator",
+        "stopOnAnswers": "Stoppa efter alla har svarat",
+        "allowMultiplier": "Använd multiplikator",
+        "backgroundMusic": "Spela bakgrundsmusik",
+        "text2Speech": "Text-till-tal för frågor",
+        "soundEffects": "Ljudeffekter",
+        "categorySpinner": "Kategori-snurr",
+        "saveStatistics": "Spara statistik",
+        "fullscreen": "Slå på/av helskärm",
+        "language": "Språk"
+    },
+    "categories": {
+        "header": "Kategorier",
+        "none": "Inte tillräckligt med kategorier valda",
+        "clearCache": "Rensa cache för {{category}}, det kan ta ett tag?",
+        "stillLoading": "Inte alla valda kategorier är förladdade",
+        "selectAll": "Välj alla",
+        "selectRandom": "Välj 1 slumpmässig",
+        "questionCount": "{{questionCount}} möjliga frågor i de valda kategorierna"
+    },
+    "errors": {
+        "initial": "Fel vid laddning av spelet: {{message}}",
+        "clearCache": "Misslyckades med att rensa sparat data: {{message}}",
+        "startGame": "Misslyckades med att starta spel: {{message}}"
+    },
+    "credits": {
+        "attribution": "Läs mer på {{domain}}",
+        "music": {
+            "by": "Musik av",
+            "spotify": "Spela på Spotify"
+        },
+        "game": {
+            "by": "Ett spel gjort av",
+            "source": "Källkod på github.com"
+        },
+        "winner": "Vinnare",
+        "place": "$t(order, {\"count\": {{count}}, \"ordinal\": true}) plats"
+    },
+    "states": {
+        "postQuestion": "Det rätta svaret var",
+        "error": "Ett fel uppstod"
+    },
+    "order_ordinal_one": "{{count}}a",
+    "order_ordinal_two": "{{count}}a",
+    "order_ordinal_few": "{{count}}e",
+    "order_ordinal_other": "{{count}}e",
+    "category": {
+        "math": {
+            "title": "Snabb huvudräkning",
+            "question": {
+                "calculate": "Beräkna följande"
+            }
+        },
+        "geography": {
+            "title": "Geografi",
+            "question": {
+                "flag": "Vilket land tillhör denna flagga?",
+                "population": "Vilket av dessa länder har störst befolkning?",
+                "shape": "Vilket land har denna form?",
+                "capital": "I vilket land är {{capital}} huvudstad?",
+                "borders": "Vilket land gränsar till alla dessa länder?",
+                "region": "Var ligger $t(country.{{code}})?",
+                "area": "Vilket av dessa länder har störst landyta?"
+            },
+            "country": "$t(country.{{code}})",
+            "region": {
+                "caribbean": "Karibien",
+                "east_asia": "Östra Asien",
+                "southeast_asia": "Sydöstra Asien",
+                "south_asia": "Södra Asien",
+                "west_asia": "Västra Asien",
+                "central_asia": "Centrala Asien",
+                "north_africa": "Norra Afrika",
+                "east_africa": "Östra Afrika",
+                "south_africa": "Södra Afrika",
+                "west_africa": "Västra Afrika",
+                "central_africa": "Mellersta Afrika",
+                "north_europe": "Norra Europa",
+                "east_europe": "Östra Europa",
+                "southeast_europe": "Sydöstra Europa",
+                "south_europe": "Södra Europa",
+                "west_europe": "Västra Europa",
+                "central_europe": "Centrala Europa",
+                "north_america": "Nordamerika",
+                "south_america": "Sydamerika",
+                "central_america": "Centralamerika",
+                "polynesia": "Polynesien",
+                "antarctic": "Antarktis",
+                "australia_and_new_zealand": "Australien och Nya Zeeland",
+                "melanesia": "Melanesien",
+                "micronesia": "Mikronesien"
+            },
+            "attribution": {
+                "flag": "Flagga",
+                "map": "Karta över",
+                "name": "Land"
+            }
+        },
+        "meta": {
+            "title": "Nuvarande spel",
+            "question": {
+                "animal": "Vilket djur har {{player}} som avatar?",
+                "most_correct": "Vem har flest rätta svar hittills?",
+                "most_incorrect": "Vem har flest felaktiga svar hittills?",
+                "total_correct": "Vad är det totala antalet rätta svar hittills?",
+                "total_incorrect": "Vad är det totala antalet felaktiga svar hittills?",
+                "fastest_correct": "Vem har svarat rätt snabbast hittills?",
+                "slowest_correct": "Vem har svarat rätt långsammast hittills?"
+            },
+            "attribution": {
+                "animal": "Avatar",
+                "most_correct": "Mest korrekta spelare (vid den tiden)",
+                "most_incorrect": "Mest felaktiga spelare (vid den tiden)",
+                "total_correct": "Totalt antal rätta svar (vid den tiden)",
+                "total_incorrect": "Totalt antal felaktiga svar (vid den tiden)",
+                "fastest_correct": "Snabbaste spelare (vid den tiden)",
+                "slowest_correct": "Långsammaste spelare (vid den tiden)"
+            },
+            "avatar": {
+                "monkey": "Apa",
+                "dog": "Hund",
+                "wolf": "Varg",
+                "cat": "Katt",
+                "lion": "Lejon",
+                "tiger": "Tiger",
+                "horse": "Häst",
+                "cow": "Ko",
+                "dragon": "Drake",
+                "pig": "Gris",
+                "mouse": "Mus",
+                "hamster": "Hamster",
+                "rabbit": "Kanin",
+                "bear": "Björn",
+                "panda": "Panda",
+                "frog": "Groda",
+                "octopus": "Bläckfisk",
+                "turtle": "Sköldpadda",
+                "bee": "Bi",
+                "snail": "Snigel",
+                "penguin": "Pingvin"
+            }
+        },
+        "movies": {
+            "title": "Filmer",
+            "question": {
+                "title": "Vilken film är detta från?",
+                "year": "Vilket år är denna film från?"
+            },
+            "attribution": {
+                "clip": "Klipp från"
+            }
+        },
+        "quotes": {
+            "title": "Kända citat",
+            "question": {
+                "author": "Vem sa detta kända citat?",
+                "word": "Bugg om denna kommer på svenska :)"
+            },
+            "attribution": {
+                "quote": "Citerad"
+            }
+        },
+        "videogames": {
+            "title": "TV-spel",
+            "question": {
+                "screenshot": "Vilket spel är detta en skärmdump från?",
+                "release": "Vilket år släpptes '{{game}}' för första gången?",
+                "platform": "'{{game}}' släpptes till en av dessa plattformar, vilken?"
+            },
+            "attribution": {
+                "screenshot": "Skärmdump av",
+                "title": "TV-spel"
+            }
+        },
+        "units": {
+            "title": "Enheter",
+            "question": {
+                "measure": "Vad används enheten '{{unit}}' för att mäta?",
+                "largest": "Vilken av dessa är störst?",
+                "smallest": "Vilken av dessa är minst?"
+            },
+            "attribution": {
+                "unit": "Enhet"
+            },
+            "measure": {
+                "length": "Längd",
+                "area": "Yta",
+                "mass": "Massa",
+                "volume": "Volym",
+                "each": "Varje",
+                "temperature": "Temperatur",
+                "time": "Tid",
+                "digital": "Digital",
+                "parts_per": "Delar per",
+                "speed": "Hastighet",
+                "pace": "Tempo",
+                "pressure": "Tryck",
+                "current": "Ström",
+                "voltage": "Spänning",
+                "power": "Effekt",
+                "reactive_power": "Reaktiv effekt",
+                "apparent_power": "Skenbar effekt",
+                "energy": "Energi",
+                "reactive_energy": "Reaktiv energi",
+                "volume_flow_rate": "Volymflödeshastighet",
+                "illuminance": "Ljusstyrka",
+                "frequency": "Frekvens",
+                "angle": "Vinkel"
+            }
+        }
+    }
+}

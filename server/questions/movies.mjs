@@ -5,26 +5,26 @@ import Generators from '../generators.mjs';
 import Random from '../random.mjs';
 
 class MovieQuestions extends Questions {
-	constructor(config) {
-		super();
+	constructor(config, categoryName) {
+		super(config, categoryName);
 		this._movies = [];
 		this._tmdbApiKey = config.tmdb.clientId;
 		this._youtube = new YoutubeLoader('UC3gNmTGu-TTbFPpfSs5kNkg', config.youtube.clientId, config.youtube.region);
 
 		this._addQuestion({
-			title : () => "Which movie is this from?",
+			title : (_) => this._translatable("question.title"),
 			correct : () => this._randomMovieClip(),
-			similar : (correct) => this._loadSimilarMovies(correct),
-			format : (answer) => this._movieTitle(answer),
+			similar : (correct, _) => this._loadSimilarMovies(correct),
+			format : (answer, _) => this._movieTitle(answer),
 			load : (correct) => this._loadMovieClip(correct),
 			count : () => this._countUniqueClips(),
 			weight : 75
 		});
 		this._addQuestion({
-			title : () => "Which year is this movie from?",
+			title : (_) => this._translatable("question.year"),
 			correct : () => this._randomMovieClip(),
-			similar : (correct) => this._loadSimilarYears(correct),
-			format : (answer) => this._movieYear(answer),
+			similar : (correct, _) => this._loadSimilarYears(correct),
+			format : (answer, _) => this._movieYear(answer),
 			load : (correct) => this._loadMovieClip(correct),
 			count : () => this._countUniqueClips(),
 			weight : 25
@@ -33,7 +33,7 @@ class MovieQuestions extends Questions {
 
 	describe() {
 		return {
-			name : 'Movies',
+			name : this._translatable('title'),
 			icon : 'fa-film',
 			attribution : [
 				{ url: 'https://youtube.com', name: 'YouTube' },
@@ -42,7 +42,7 @@ class MovieQuestions extends Questions {
 		};
 	}
 
-	async preload(progress, cache) {
+	async preload(language, progress, cache) {
 		let videos = await this._loadYoutubeVideos(progress, cache);
 		this._movies = this._parseTitles(videos);
 		return this._countQuestions();
@@ -202,7 +202,7 @@ class MovieQuestions extends Questions {
 			player : 'video',
 			url : `https://www.youtube.com/watch?v=${correct.video}`,
 			attribution : {
-				title : "Clip from",
+				title : this._translatable("attribution.clip"),
 				name : correct.title + " (" + correct.year + ")",
 				links : ["http://www.themoviedb.org/movie/" + correct.tmdbId, "http://www.youtube.com/watch?v=" + correct.video]
 			}

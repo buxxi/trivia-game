@@ -40,13 +40,10 @@ sudo docker run -d -p 8080:8080 --volume ~/.local/share/trivia-game:/opt/trivia/
 ### API's used:
 - Youtube: https://developers.google.com/youtube/v3
 - The movie database: http://docs.themoviedb.apiary.io
-- REST Countries: https://restcountries.eu
 - IGDB: https://www.igdb.com/api
-- The Cocktail DB: http://www.thecocktaildb.com/api/json/v1/1/random.php
 
 ### Clips from:
 - https://www.youtube.com/user/movieclips/videos
-- https://www.youtube.com/user/SupraDarky/videos
 
 ### Music & sound from:
 - http://soundbible.com/tags-beep.html

@@ -1,3 +1,5 @@
+import WaveSurfer from 'wavesurfer';
+
 export default {
     data: function() { return {
         player: {},

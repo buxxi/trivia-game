@@ -2,6 +2,7 @@ import Cache from './cache.mjs';
 import Random from './random.mjs';
 import { register } from 'node:module';
 import {customQuestionPath} from "./xdg.mjs";
+import Translator from "./translation.mjs";
 
 class Categories {
 	constructor(config) {
@@ -21,25 +22,26 @@ class Categories {
 		this._jokes = this._config.jokes;
 	}
 
-	available() {
-		return Object.entries(this._categories).map(([key, category]) => Object.assign({ type: key}, category.describe()));
+	available(game) {
+		let translator = new Translator(game.language());
+		return Object.entries(this._categories).map(([key, category]) => Object.assign({ type: key}, translator.translateObject(category.describe())));
 	}
 
 	enabled(game) {
-		return this.available().filter((category) => game.categoryEnabled(category.type));
+		return this.available(game).filter((category) => game.categoryEnabled(category.type));
 	}
 
-	joke(players) {
-		let player = Random.fromWeightedObject(players) ?? {name : ""};
+	joke(game) {
+		let player = Random.fromWeightedObject(game.players()) ?? {name : ""};
 		let joke = Random.fromArray(this._jokes);
 		return {
 			icon: joke.icon,
-			name: joke.name.replace("{playerName}", player.name)
-		}
+			name: new Translator(game.language()).translateObject(joke.name.replace("{playerName}", player.name))
+		};
 	}
 
-	preload(category, progress) {
-		return this._categoryByType(category).preload(progress, new Cache(category));
+	preload(category, game, progress) {
+		return this._categoryByType(category).preload(game.language(), progress, new Cache(category));
 	}
 
 	async nextQuestion(game, weightedCategories) {
@@ -100,4 +102,4 @@ class Categories {
 	}
 }
 
-export default Categories;	
+export default Categories;

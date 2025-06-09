@@ -4,11 +4,19 @@
 		<link rel="stylesheet" href="css/monitor.css"/>
 		<link rel="icon" type="image/x-icon" href="../common/img/favicon.ico">
 
-		<script src="js/ext/vue.min.js"></script>
-		<script src="js/ext/vue-router.min.js"></script>
-		<script src="js/ext/howler.min.js"></script>
-		<script src="js/ext/wavesurfer.min.js"></script>
-		<script src="js/ext/qrcode.min.js"></script>
+        <script type="importmap">
+            {
+                "imports": {
+                    "i18next": "./js/ext/i18next.js",
+                    "i18next-vue": "./js/ext/i18next-vue.js",
+                    "vue": "./js/ext/vue.js",
+                    "vue-router": "./js/ext/vue-router.js",
+                    "howler": "./js/ext/howler.js",
+                    "wavesurfer": "./js/ext/wavesurfer.js",
+                    "qrcode-generator": "./js/ext/qrcode-generator.js"
+                }
+            }
+        </script>
 
 		<title>Trivia Server</title>
 

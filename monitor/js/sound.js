@@ -1,5 +1,8 @@
+import * as h from 'howler';
+
 class SoundController {
 	constructor() {
+		this._ = h; //No ESM module, keeping reference to avoid auto import to remove it
 		this._config = {
 			backgroundMusic : true,
 			soundEffects : true,

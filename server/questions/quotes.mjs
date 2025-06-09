@@ -8,30 +8,31 @@ import Random from '../random.mjs';
 nlp.extend(adjectives);
 
 class QuotesQuestions extends Questions {
-	constructor(config) {
-		super();
+	constructor(config, categoryName) {
+		super(config, categoryName);
 		this._quotes = [];
 		this._addQuestion({
-			title : () => "Who said this famous quote?",
-			correct : (correct) => this._randomQuote(correct),
+			title : () => this._translatable("question.author"),
+			correct : (_) => this._randomQuote(),
 			similar : (correct) => this._similarAuthors(correct),
 			load : (correct) => this._loadQuote(correct),
-			format : (correct) => this._resolveAuthor(correct),
+			format : (answer, _) => this._resolveAuthor(answer),
 			weight : 50
 		});
 		this._addQuestion({
-			title : () => "Which word is missing from this quote?",
-			correct : (correct) => this._randomBlankQuote(correct),
+			title : () => this._translatable("question.word"),
+			correct : (_) => this._randomBlankQuote(),
 			similar : (correct) => this._similarWords(correct),
 			load : (correct) => this._loadQuote(correct),
-			format : (correct) => this._formatWord(correct),
-			weight : 50
+			format : (answer, _) => this._formatWord(answer),
+			weight : 50,
+			available: (game) => game.language() === 'en'
 		});
 	}
 
 	describe() {
 		return {
-			name : 'Famous Quotes',
+			name : this._translatable("title"),
 			icon : 'fa-quote-right',
 			attribution : [
 				{ url: 'https://github.com/dwyl/quotes', name: 'Quotesy' }
@@ -39,7 +40,7 @@ class QuotesQuestions extends Questions {
 		};
 	}
 
-	async preload(progress, cache) {
+	async preload(language, progress, cache) {
 		progress(0, 1);
 		this._quotes = await this._loadQuotes(cache, progress);
 		progress(1, 1);
@@ -160,7 +161,7 @@ class QuotesQuestions extends Questions {
 			player : 'quote',
 			quote : quote.text,
 			attribution : {
-				title : "Quoted",
+				title : this._translatable("attribution.quote"),
 				name : quote.author,
 				links : []
 			}

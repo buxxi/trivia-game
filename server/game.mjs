@@ -1,5 +1,6 @@
 import randomColor from 'randomcolor';
 import Timer from './timer.mjs';
+import Translator from "./translation.mjs";
 
 class Player {
 	constructor(name, color, avatar) {
@@ -92,7 +93,8 @@ class Game {
 			},
 			categories : {},
 			fullscreen : false,
-			categorySpinner : true
+			categorySpinner : true,
+			language: undefined
 		};
 
 		this._currentQuestion = {
@@ -218,6 +220,8 @@ class Game {
 
 	async nextQuestion() {
 		let question = await this._categories.nextQuestion(this, this._enabledCategories);
+		let translator = new Translator(this._config.language);
+		question = translator.translateObject(question);
 		
 		this._checkDuplicateQuestion(question);
 		this._currentQuestion = question;
@@ -230,6 +234,13 @@ class Game {
 
 	avatars() {
 		return this._avatars;
+	}
+
+	language() {
+		if (!this._config.language) {
+			throw new Error("No language set yet");
+		}
+		return this._config.language;
 	}
 
 	_calculatePoints() {

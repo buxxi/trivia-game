@@ -35,7 +35,7 @@ class PresentCategoryState {
         var insertJoke = Math.random() >= JOKE_CHANCE;
 		while (result.length < MINIMUM_CATEGORIES_COUNT || insertJoke) {
 			if (insertJoke) {
-				result.push(this._toSpinnerCategory(categories.joke(game.players())));
+				result.push(this._toSpinnerCategory(categories.joke(game)));
 			}
 			result = result.concat(enabledCategories);
 			insertJoke = Math.random() >= JOKE_CHANCE;

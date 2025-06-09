@@ -37,7 +37,6 @@ function displayError(app, message) {
 		app.playback.view = {};
 		app.error = message;
 		app.state = 'error';
-		app.title = 'An error occured';
 		resolve();
 	});
 }
@@ -80,7 +79,6 @@ function playbackEnd(app, pointsThisRound, correct) {
 			app.sound.applauds();
 		}
 
-		app.title = "The correct answer was";
 		app.correct = correct;
 		app.state = 'post-question';
 		

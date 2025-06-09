@@ -58,6 +58,10 @@ class ServerToMonitorConnection {
         return this._pws.send(Protocol.GAME_END, { history: history, results: results }); 
     }
 
+    onChangeLanguage() {
+        return this._pws.on(Protocol.CHANGE_LANGUAGE);
+    }
+
     onLoadCategories() {
         return this._pws.on(Protocol.LOAD_CATEGORIES);
     }

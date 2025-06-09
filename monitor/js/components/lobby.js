@@ -1,3 +1,6 @@
+import { useTranslation } from "i18next-vue";
+import {qrcode} from "qrcode-generator";
+
 export default {
 	data: function() { return({
 		config: {
@@ -15,9 +18,11 @@ export default {
 			},
 			categories : {},
 			fullscreen : false,
-			categorySpinner : true
+			categorySpinner : true,
+			language: undefined
 		},
 		carouselIndex : 0,
+		i18n: undefined,
 		gameId: undefined,
 		availableCategories: [],
 		serverUrl: new URL("..", document.location).toString(),
@@ -33,18 +38,18 @@ export default {
 		},
 		startMessage: function() {
 			if (Object.keys(this.players).length == 0) {
-				return "Not enough players";
+				return "players.none";
 			}
 	
 			var enabledCategories = Object.keys(this.config.categories).filter((cat) => this.config.categories[cat]);
 			if (enabledCategories.length == 0) {
-				return "Not enough categories selected";
+				return "categories.none";
 			}
 
 			var allPreloaded = this.availableCategories.filter(c => c.type in enabledCategories).map((cat) => cat.preload.done).reduce((pre, cur) => pre && cur, true);
 	
 			if (!allPreloaded) {
-				return "Not all selected categories has preloaded";
+				return "categories.stillLoading";
 			} else {
 				return undefined;
 			}
@@ -53,6 +58,8 @@ export default {
 	created: async function() {
 		let app = this;
 		app.carouselTimeout = 0;
+		app.i18n = useTranslation();
+		app.config.language = app.i18n.i18next.language;
 
 		function moveCarousel() {
 			app.carouselTimeout = setInterval(() => {
@@ -64,14 +71,16 @@ export default {
 
 		try {
 			this.gameId = await this.connection.connect(this.preferredGameId);
-			let clientUrl = new URL("../client#", document.location) + "?gameId=" + this.gameId; 
-			this.qrUrl = await QRCode.toDataURL(clientUrl, {width: 400, height: 400});
-			let categories = await this.connection.loadCategories();
-			this.availableCategories = categories.map(c => new CategorySelector(c));
-			this.poweredBy = categories.flatMap(c => c.attribution);
+			let clientUrl = new URL("../client#", document.location) + "?gameId=" + this.gameId;
+			let qr = qrcode(0, 'L');
+			qr.addData(clientUrl);
+			qr.make();
+			this.qrUrl = qr.createDataURL(10, 30);
+			await this.connection.changeLanguage(this.i18n.i18next.language);
+			await this.loadCategories();
 		} catch (e) {
 			console.log(e);
-			this.message = "Error when loading initial setup: " + e.message;
+			this.message = this.i18n.t("errors.initial", {message: e.message});
 		}
 
 		this.connection.onPlayersChange().then(async newPlayers => {
@@ -87,6 +96,22 @@ export default {
 		moveCarousel();
 	},
 	methods: {
+		nextLanguage: async function() {
+			let languages = Object.keys(this.i18n.i18next.store.data);
+			let i = (languages.indexOf(this.config.language) + 1) % languages.length;
+			this.config.language = languages[i];
+			this.i18n.i18next.changeLanguage(this.config.language);
+			await this.connection.changeLanguage(this.config.language);
+			await this.loadCategories();
+		},
+
+		loadCategories: async function() {
+			let categories = await this.connection.loadCategories(this.config.language);
+			this.availableCategories = categories.map(c => new CategorySelector(c));
+			this.poweredBy = categories.flatMap(c => c.attribution);
+			this.config.categories = {};
+		},
+
 		kickPlayer: async function(id) {
 			await this.connection.removePlayer(id);
 			delete this.players[id];
@@ -124,6 +149,7 @@ export default {
 			} catch (e) {
 				console.log(e);
 				preload.failed = true;
+				delete this.config.categories[type];
 			}
 			preload.running = false;
 		},
@@ -142,14 +168,14 @@ export default {
 
 
 		clearCache: async function(category) {
-			if (!confirm(`Clear cache for ${category}, this could take a while?`)) {
+			if (!confirm(this.i18n.t('categories.clearCache', {category : category}))) {
 				return;
 			}
 			try {
 				this.config.categories[category] = false;
 				await this.connection.clearCache(category);
 			} catch (e) {
-				this.message = "Failed to clear cache: " + e.message;
+				this.message = this.i18n.t('errors.clearCache', {message: e.message});
 			}
 		},
 		startGame: async function() {
@@ -162,7 +188,7 @@ export default {
 				await this.$router.push({name: 'game', query: { gameId: this.gameId, }, state: { players: JSON.stringify(this.players) }});
 				this.connection.startGame(this.config);
 			} catch (e) {
-				this.message = "Failed to start game: " + e.message;
+				this.message = this.i18n.t('errors.startGame', {message: e.message});
 			}
 		}
 	}
@@ -179,8 +205,8 @@ class PlayerData {
 class CategorySelector {
 	constructor(c) {
 		this.type = c.type;
-		this.name = c.name,
-		this.icon = c.icon,
+		this.name = c.name;
+		this.icon = c.icon;
 		this.attribution = c.attribution;
 		this.questionCount = 0;
 		this.preload = {

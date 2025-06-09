@@ -2,8 +2,8 @@ import Random from '../random.mjs';
 import Questions from './questions.mjs';
 
 class MathQuestions extends Questions {
-    constructor(config) {
-        super();
+    constructor(config, categoryName) {
+        super(config, categoryName);
         this._expressions = [
             new ExpressionCategory([ { from: 1, to: 20 } ], 
                 (values) => new Exponent(new Constant(values[0]), 2)
@@ -37,23 +37,23 @@ class MathQuestions extends Questions {
             )
         ];
         this._addQuestion({
-			title : () => "Calculate the following",
+			title : (_) => this._translatable("question.calculate"),
 			correct : () => Random.fromArray(this._expressions).generate(),
-			similar : (correct) => correct.alternativeValues(),
+			similar : (correct, _) => correct.alternativeValues(),
 			load : (correct) => this._loadQuote(correct),
-			format : (answer) => this._format(answer)
+			format : (answer, _) => this._format(answer)
 		});
     }
 
     describe() {
 		return {
-			name : 'Quick maths',
+			name : this._translatable('title'),
 			icon : 'fa-calculator',
 			attribution : []
 		};
 	}
 
-	async preload(progress) {
+	async preload(language, progress) {
         progress(1, 1);
 		return this._countQuestions();
 	}
@@ -63,7 +63,7 @@ class MathQuestions extends Questions {
             player : 'quote',
             quote : correct.display(),
             attribution : {
-                title : "Quick maths",
+                title : this._translatable("title"),
                 name : correct.display(),
                 links : []
             }

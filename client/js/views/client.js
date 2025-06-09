@@ -2,6 +2,8 @@ import Join from '../components/join.js';
 import Answer from '../components/answer.js';
 import ClientToServerConnection from '../connection.mjs';
 import WakeLock from '../wakelock.mjs';
+import {createRouter, createWebHashHistory} from 'vue-router';
+import {createApp} from 'vue';
 
 function uuidPolyfill() {
 	let crypto = window.crypto;
@@ -64,12 +66,12 @@ const routes = [
 	}
 ];
 
-const router = VueRouter.createRouter({
-	history : VueRouter.createWebHashHistory(),
+const router = createRouter({
+	history : createWebHashHistory(),
 	routes 
 });
 
-const app = Vue.createApp({});
+const app = createApp({});
 
 app.use(router);
 
