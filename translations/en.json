@@ -64,12 +64,18 @@
         "game": {
             "by": "A game made by",
             "source": "Lookup at github.com"
-        }
+        },
+        "winner": "Winner",
+        "place": "$t(order, {\"count\": {{count}}, \"ordinal\": true}) place"
     },
     "states": {
         "postQuestion": "The correct answer was",
         "error": "An error occured"
     },
+    "order_ordinal_one": "{{count}}st",
+    "order_ordinal_two": "{{count}}nd",
+    "order_ordinal_few": "{{count}}rd",
+    "order_ordinal_other": "{{count}}th",
     "category": {
         "math": {
             "title": "Quick maths",

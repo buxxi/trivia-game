@@ -64,12 +64,18 @@
         "game": {
             "by": "Ett spel gjort av",
             "source": "Källkod på github.com"
-        }
+        },
+        "winner": "Vinnare",
+        "place": "$t(order, {\"count\": {{count}}, \"ordinal\": true}) plats"
     },
     "states": {
         "postQuestion": "Det rätta svaret var",
         "error": "Ett fel uppstod"
     },
+    "order_ordinal_one": "{{count}}a",
+    "order_ordinal_two": "{{count}}a",
+    "order_ordinal_few": "{{count}}e",
+    "order_ordinal_other": "{{count}}e",
     "category": {
         "math": {
             "title": "Snabb huvudräkning",
