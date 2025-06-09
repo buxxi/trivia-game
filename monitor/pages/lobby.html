@@ -38,9 +38,11 @@
 				<li v-if="config.allowMultiplier">{{ $t('rules.multiplier.correct', {maxMultiplier: config.maxMultiplier }) }}</li>
 				<li v-if="config.allowMultiplier">{{ $t('rules.multiplier.incorrect') }}</li>
 				<li v-if="config.allowMultiplier">{{ $t('rules.multiplier.unanswered') }}</li>
-                <i18n-t keypath="rules.time" tag="li" scope="global">
-                    <template v-slot:seconds><b>{{config.time}}</b></template>
-                </i18n-t>
+                <li>
+                    <i18next :translation="$t('rules.time')" >
+                        <template #seconds><b>{{config.time}}</b></template>
+                    </i18next>
+                </li>
 			</ol>
 
 			<h1><i class="fas fa-fw fa-heart" style="color : #aa0000"></i>{{ $t('poweredBy') }}</h1>
@@ -124,9 +126,11 @@
 					</div>
 
 					<div class="questionCount">
-                        <i18n-t keypath="categories.questionCount" tag="span" scope="global">
-                            <template v-slot:questionCount><b>{{questionCount}}</b></template>
-                        </i18n-t>
+                        <span>
+                            <i18next :translation="$t('categories.questionCount')">
+                                <template #questionCount><b>{{questionCount}}</b></template>
+                            </i18next>
+                        </span>
 					</div>
 				</div>
 			</form>

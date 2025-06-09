@@ -4,9 +4,17 @@
 		<link rel="stylesheet" href="css/monitor.css"/>
 		<link rel="icon" type="image/x-icon" href="../common/img/favicon.ico">
 
-		<script src="js/ext/vue.min.js"></script>
-		<script src="js/ext/vue-router.min.js"></script>
-        <script src="js/ext/vue-i18n.min.js"></script>
+        <script type="importmap">
+            {
+                "imports": {
+                    "i18next": "./js/ext/i18next.min.js",
+                    "i18next-vue": "./js/ext/i18next-vue.min.js",
+                    "vue": "./js/ext/vue.min.js",
+                    "vue-router": "./js/ext/vue-router.min.js"
+                }
+            }
+        </script>
+
 		<script src="js/ext/howler.min.js"></script>
 		<script src="js/ext/wavesurfer.min.js"></script>
 		<script src="js/ext/qrcode.min.js"></script>

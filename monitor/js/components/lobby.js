@@ -1,3 +1,5 @@
+import { useTranslation } from "i18next-vue";
+
 export default {
 	data: function() { return({
 		config: {
@@ -55,8 +57,8 @@ export default {
 	created: async function() {
 		let app = this;
 		app.carouselTimeout = 0;
-		app.i18n = VueI18n.useI18n();
-		app.config.language = app.i18n.locale;
+		app.i18n = useTranslation();
+		app.config.language = app.i18n.i18next.language;
 
 		function moveCarousel() {
 			app.carouselTimeout = setInterval(() => {
@@ -70,7 +72,7 @@ export default {
 			this.gameId = await this.connection.connect(this.preferredGameId);
 			let clientUrl = new URL("../client#", document.location) + "?gameId=" + this.gameId; 
 			this.qrUrl = await QRCode.toDataURL(clientUrl, {width: 400, height: 400});
-			await this.connection.changeLanguage(this.i18n.locale);
+			await this.connection.changeLanguage(this.i18n.i18next.language);
 			await this.loadCategories();
 		} catch (e) {
 			console.log(e);
@@ -91,9 +93,10 @@ export default {
 	},
 	methods: {
 		nextLanguage: async function() {
-			let i = (this.i18n.availableLocales.indexOf(this.config.language) + 1) % this.i18n.availableLocales.length;
-			this.config.language = this.i18n.availableLocales[i];
-			this.i18n.locale = this.config.language;
+			let languages = Object.keys(this.i18n.i18next.store.data);
+			let i = (languages.indexOf(this.config.language) + 1) % languages.length;
+			this.config.language = languages[i];
+			this.i18n.i18next.changeLanguage(this.config.language);
 			await this.connection.changeLanguage(this.config.language);
 			await this.loadCategories();
 		},

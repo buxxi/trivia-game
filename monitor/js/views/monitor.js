@@ -12,6 +12,11 @@ import AudioPlayer from '../components/playback/audio.js';
 import VideoPlayer from '../components/playback/video.js';
 import CategorySpinner from '../components/spinner.js';
 
+import i18next from 'i18next';
+import I18NextVue from 'i18next-vue';
+import {createRouter, createWebHashHistory} from 'vue-router';
+import {createApp, defineAsyncComponent} from 'vue';
+
 function loadTemplate(url, component) {
 	return () => {
 		return fetch(url).then((response) => response.text()).then((data) => {
@@ -31,10 +36,20 @@ async function loadLanguages() {
 		messages.push([language, translations]);
 	}
 
-	return {
-		locale: languages[0],
-		messages: Object.fromEntries(messages)
-	}
+	let resources = Object.fromEntries(messages.map(([language, translations]) => [language, {translation: translations}]));
+	let options = {
+		lng: 'en',
+		supportedLngs : ['en', 'sv'],
+		resources: resources,
+		interpolation: {
+			prefix: '{',
+			suffix: '}',
+			nestingPrefix: '$(',
+			nestingSuffix: ')',
+			escapeValue: false
+		}
+	};
+	return options;
 }
 
 function getState(key, defaultValue) {
@@ -80,26 +95,26 @@ const routes = [
 	},
 ];
 
-const router = VueRouter.createRouter({
-	history : VueRouter.createWebHashHistory(),
+const router = createRouter({
+	history : createWebHashHistory(),
 	routes 
 });
 
 loadLanguages().then((options) => {
-	const i18n = VueI18n.createI18n(options);
-	const app = Vue.createApp({});
+	i18next.init(options);
+	const app = createApp({});
 
+	app.use(I18NextVue, { i18next });
 	app.use(router);
-	app.use(i18n);
 
-	app.component('blank-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/blank.html', BlankPlayer)));
-	app.component('image-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/image.html', ImagePlayer)));
-	app.component('quote-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/quote.html', QuotePlayer)));
-	app.component('list-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/list.html', ListPlayer)));
-	app.component('answers-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/answers.html', AnswersPlayer)));
-	app.component('audio-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/audio.html', AudioPlayer)));
-	app.component('video-player', Vue.defineAsyncComponent(loadTemplate('./pages/playback/video.html', VideoPlayer)));
-	app.component('category-spinner', Vue.defineAsyncComponent(loadTemplate('./pages/spinner.html', CategorySpinner)));
+	app.component('blank-player', defineAsyncComponent(loadTemplate('./pages/playback/blank.html', BlankPlayer)));
+	app.component('image-player', defineAsyncComponent(loadTemplate('./pages/playback/image.html', ImagePlayer)));
+	app.component('quote-player', defineAsyncComponent(loadTemplate('./pages/playback/quote.html', QuotePlayer)));
+	app.component('list-player', defineAsyncComponent(loadTemplate('./pages/playback/list.html', ListPlayer)));
+	app.component('answers-player', defineAsyncComponent(loadTemplate('./pages/playback/answers.html', AnswersPlayer)));
+	app.component('audio-player', defineAsyncComponent(loadTemplate('./pages/playback/audio.html', AudioPlayer)));
+	app.component('video-player', defineAsyncComponent(loadTemplate('./pages/playback/video.html', VideoPlayer)));
+	app.component('category-spinner', defineAsyncComponent(loadTemplate('./pages/spinner.html', CategorySpinner)));
 
 	app.mount('#main');
 });
