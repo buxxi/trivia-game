@@ -19,7 +19,7 @@
 	</div>
 	<div class="players">
 		<h1><i class="fas fa-fw fa-users"></i>{{ $t('players.header') }}</h1>
-		<p v-if="Object.entries(players).length == 0">{{ $t('players.none')}}</p>
+		<p v-if="Object.entries(players).length === 0">{{ $t('players.none')}}</p>
 		<ul class="playerlist" v-if="Object.entries(players).length > 0">
 			<li v-for="(player, id) in players">
 				<a v-on:click="kickPlayer(id)" class="kick" v-bind:title="$t('players.kick')">
@@ -47,7 +47,7 @@
 
 			<h1><i class="fas fa-fw fa-heart" style="color : #aa0000"></i>{{ $t('poweredBy') }}</h1>
 			<ul class="carousel">
-				<li v-for="(site, index) in poweredBy" v-bind:class="{show : index == carouselIndex}"><a v-bind:href="site.url">{{ site.name }}</a></li>
+				<li v-for="(site, index) in poweredBy" v-bind:class="{show : index === carouselIndex}"><a v-bind:href="site.url">{{ site.name }}</a></li>
 			</ul>
 		</div>
 	</div>
@@ -113,8 +113,8 @@
 						<li v-bind:class="{'selected' : config.categories[category.type] && category.preload.done, 'loaded' : !config.categories[category.type] && category.preload.done, 'failed' : category.preload.failed}" v-for="category in availableCategories">
 							<label v-bind:title="category.name" v-on:contextmenu.prevent="clearCache(category.type)">
 								<input type="checkbox" v-bind:id="category.type" v-model="config.categories[category.type]" v-on:change="preload(category.type)">
-								<i v-if="category.icon.indexOf('url:') == -1" v-bind:class="['fa',category.icon]"></i>
-								<img v-if="category.icon.indexOf('url:') == 0" v-bind:src="category.icon.substr(4)"/>
+								<i v-if="category.icon.indexOf('url:') === -1" v-bind:class="['fa',category.icon]"></i>
+								<img v-if="category.icon.indexOf('url:') === 0" v-bind:src="category.icon.substr(4)"/>
 							</label>
 							<div class="progress" v-if="config.categories[category.type] && !category.preload.done && !category.preload.failed">{{ category.preloadPercentage() }}%</div>
 						</li>
@@ -141,6 +141,6 @@
 		<div class="message">{{ message }}</div>
 	</div>
 	<div id="start">
-		<a v-on:click="startGame()" v-bind:disabled="startMessage != undefined ? 'disabled' : undefined" v-bind:title="startMessage != undefined ? $t(startMessage) : $t('ready')"><i class="fas fa-fw fa-play"></i></a>
+		<a v-on:click="startGame()" v-bind:disabled="startMessage !== undefined ? 'disabled' : undefined" v-bind:title="startMessage !== undefined ? $t(startMessage) : $t('ready')"><i class="fas fa-fw fa-play"></i></a>
 	</div>
 </div>
