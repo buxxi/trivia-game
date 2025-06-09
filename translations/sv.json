@@ -22,7 +22,7 @@
             "incorrect": "Ett felaktigt svar återställer multiplikatorn till 1x",
             "unanswered": "Att inte svara återställer multiplikatorn till 1x"
         },
-        "time": "Du har {{seconds}} sekunder på dig att svara på varje fråga"
+        "time": "Du har {seconds} sekunder på dig att svara på varje fråga"
     },
     "poweredBy": "Byggt med hjälp av",
     "settings": {
@@ -48,7 +48,7 @@
         "stillLoading": "Inte alla valda kategorier är förladdade",
         "selectAll": "Välj alla",
         "selectRandom": "Välj 1 slumpmässig",
-        "questionCount": "{{questionCount}} möjliga frågor i de valda kategorierna"
+        "questionCount": "{questionCount} möjliga frågor i de valda kategorierna"
     },
     "errors": {
         "initial": "Fel vid laddning av spelet: {{message}}",

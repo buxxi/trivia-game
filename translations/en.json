@@ -22,7 +22,7 @@
             "incorrect": "An invalid answer will reset the points multiplier to 1x",
             "unanswered": "Not answering will reset the points multiplier to 1x"
         },
-        "time": "You have {{seconds}} seconds to answer each question"
+        "time": "You have {seconds} seconds to answer each question"
     },
     "poweredBy": "Powered by",
     "settings": {
@@ -48,7 +48,7 @@
         "stillLoading": "Not all selected categories has preloaded",
         "selectAll": "Select all",
         "selectRandom": "Select 1 random",
-        "questionCount": "{{questionCount}} possible questions in the selected categories"
+        "questionCount": "{questionCount} possible questions in the selected categories"
     },
     "errors": {
         "initial": "Error when loading initial setup: {{message}}",
