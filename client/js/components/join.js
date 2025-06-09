@@ -1,5 +1,3 @@
-import WakeLock from "../wakelock.mjs";
-
 async function resolveBackCamera() {
 	let sources = await navigator.mediaDevices.enumerateDevices();
 	let backCamera = sources.find((source) => {

@@ -4,9 +4,15 @@
 		<link rel="stylesheet" href="css/client.css"/>
 		<link rel="icon" type="image/x-icon" href="../common/img/favicon.ico">
 
-		<script src="js/ext/vue.min.js"></script>
-		<script src="js/ext/vue-router.min.js"></script>
-		<script src="js/ext/qcode-decoder.min.js"></script>
+		<script type="importmap">
+			{
+                "imports": {
+                    "vue": "./js/ext/vue.js",
+                    "vue-router": "./js/ext/vue-router.js"
+                }
+            }
+		</script>
+        <script src="js/ext/qcode-decoder.js"></script>
 
 		<title>Trivia Client</title>
 
