@@ -26,7 +26,7 @@ class GameRepository {
 	startGame(gameId, monitorConnection) {
 		let game = new Game(this._categories, this._config.avatars);
 		let stats = new GameStatistics(this._config.statsPath, gameId);
-		let tts = new Text2Speech(this._config.ttsUrl);
+		let tts = new Text2Speech(this._config.tts);
 		let loop = new GameLoop(game, gameId, this._categories, monitorConnection, tts, stats);
 		
 		

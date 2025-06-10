@@ -1,13 +1,16 @@
 import fetch from 'node-fetch';
 
 class Text2Speech {
-    constructor(ttsUrl) {
-        this._ttsUrl = ttsUrl;
+    constructor(config) {
+        this._ttsUrl = config.url;
+        this._skipWords = config.skipWords || [];
         this._requests = {};
     }
 
     load(text, language) {
         let ttsId = crypto.randomUUID();
+        text = this._skipWords.reduce((acc, word) => acc.replaceAll(word, ''), text);
+
         if (!this._ttsUrl) {
             this._requests[ttsId] = {response: {ok : false, data: "No TTS server url configured"}};
         } else if (!text) {

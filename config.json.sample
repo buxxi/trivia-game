@@ -17,5 +17,8 @@
 	"jokes": [
 		{ "icon" : "fa-comments", "name" : "Internal Jokes" }
 	],
-	"ttsUrl": "http://local.tts.service:9999/?text={text}"
+	"tts":{
+	    "url": "http://local.tts.service:9999/?text={text}",
+	    "skipWords" : ["$"]
+	}
 }
