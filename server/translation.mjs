@@ -21,8 +21,8 @@ class Translator {
     }
 
     translateObject(obj) {
-        if (obj === undefined) {
-            return undefined;
+        if (obj === undefined || typeof obj === "number" || typeof obj === "boolean") {
+            return obj;
         }
         if (typeof obj === "string") {
             let m = obj.match(/^\$t\(.*\)$/);

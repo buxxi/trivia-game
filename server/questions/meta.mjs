@@ -147,7 +147,7 @@ class CurrentGameQuestions extends Questions {
 	}
 
 	_formatValue(value) {
-		return value;
+		return value.toString();
 	}
 
 	_players(game) {
