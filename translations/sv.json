@@ -70,7 +70,8 @@
     },
     "states": {
         "postQuestion": "Det rätta svaret var",
-        "error": "Ett fel uppstod"
+        "error": "Ett fel uppstod",
+        "question": "Fråga {{index}}"
     },
     "order_ordinal_one": "{{count}}a",
     "order_ordinal_two": "{{count}}a",

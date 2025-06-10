@@ -70,7 +70,8 @@
     },
     "states": {
         "postQuestion": "The correct answer was",
-        "error": "An error occured"
+        "error": "An error occured",
+        "question": "Question {{index}}"
     },
     "order_ordinal_one": "{{count}}st",
     "order_ordinal_two": "{{count}}nd",
