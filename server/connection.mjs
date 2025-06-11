@@ -58,6 +58,10 @@ class ServerToMonitorConnection {
         return this._pws.send(Protocol.GAME_END, { history: history, results: results }); 
     }
 
+    ping(pings) {
+        return this._pws.send(Protocol.PING, pings);
+    }
+
     onChangeLanguage() {
         return this._pws.on(Protocol.CHANGE_LANGUAGE);
     }
@@ -96,7 +100,6 @@ class ServerToMonitorConnection {
 
     clearSetupListeners() {
         this._pws.remove(Protocol.LOAD_CATEGORIES);
-        this._pws.remove(Protocol.LOAD_AVATARS);
         this._pws.remove(Protocol.PRELOAD_CATEGORY);
         this._pws.remove(Protocol.REMOVE_PLAYER);
         this._pws.remove(Protocol.CLEAR_CACHE);

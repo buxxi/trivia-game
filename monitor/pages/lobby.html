@@ -23,7 +23,9 @@
 		<ul class="playerlist" v-if="Object.entries(players).length > 0">
 			<li v-for="(player, id) in players">
 				<a v-on:click="kickPlayer(id)" class="kick" v-bind:title="$t('players.kick')">
-					<div class="avatar" v-bind:data-score="player.name" v-bind:style="{'background-color': player.color, 'border-color': player.color}"><img v-bind:src="'../common/img/avatars/' + player.avatar + '.png'"/></div>
+					<div class="avatar" v-bind:data-ping="player.ping" v-bind:data-score="player.name" v-bind:style="{'background-color': player.color, 'border-color': player.color}">
+                        <img v-bind:src="'../common/img/avatars/' + player.avatar + '.png'"/>
+                    </div>
 				</a>
 			</li>
 		</ul>
@@ -121,8 +123,8 @@
 					</ul>
 
 					<div class="buttons">
-						<button v-on:click="loadAll()"><i class="fas fa-spinner"></i> {{ $t('categories.selectAll') }}</button>
-						<button v-on:click="loadRandom()"><i class="fas fa-random"></i> {{ $t('categories.selectRandom') }}</button>
+						<button v-on:click.prevent="loadAll()"><i class="fas fa-spinner"></i> {{ $t('categories.selectAll') }}</button>
+						<button v-on:click.prevent="loadRandom()"><i class="fas fa-random"></i> {{ $t('categories.selectRandom') }}</button>
 					</div>
 
 					<div class="questionCount">

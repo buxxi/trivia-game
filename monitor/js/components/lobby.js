@@ -93,6 +93,10 @@ export default {
 			}	
 		});
 
+		this.connection.onPing().then(async pings => {
+			Object.entries(pings).forEach(([id, ping]) => {this.players[id].ping = ping;});
+		})
+
 		moveCarousel();
 	},
 	methods: {
@@ -154,9 +158,13 @@ export default {
 			preload.running = false;
 		},
 		loadAll: async function() {
-			for (let type of this.availableCategories.map(c => c.type)) {
-				this.config.categories[type] = true;
-				await this.preload(type);
+			try {
+				for (let type of this.availableCategories.map(c => c.type)) {
+					this.config.categories[type] = true;
+					await this.preload(type);
+				}
+			} catch (e) {
+				console.log(e);
 			}
 		},
 		loadRandom: async function() {
@@ -199,6 +207,7 @@ class PlayerData {
 		this.name = player.name;
 		this.color = player.color;
 		this.avatar = player.avatar;
+		this.ping = 0;
 	}
 }
 

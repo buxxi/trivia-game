@@ -260,6 +260,9 @@
 			opacity : 0.5;
 		}
 	}
+	.avatar[data-ping]:hover:after {
+		content: "ping " attr(data-ping) "ms";
+	}
 }
 
 .index {

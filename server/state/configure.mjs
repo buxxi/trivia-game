@@ -22,13 +22,17 @@ class ConfigureState {
     
             monitorConnection.onRemovePlayer().then(async (playerId) => {
                 game.removePlayer(playerId);
+                clientConnections[playerId].close();
             });
     
             monitorConnection.onClearCache().then(async (category) => {
                 categories.clearCache(category);
             });
+
+            let pingInterval = setInterval(() => this._pingClients(clientConnections, monitorConnection), 10000);
     
             monitorConnection.onStartGame().then(async (config) => {
+                clearInterval(pingInterval);
                 monitorConnection.clearSetupListeners();
                 game.start(config);
                 stats.start(game);
@@ -42,6 +46,15 @@ class ConfigureState {
 
     errorState(err) {
         return this;
+    }
+
+    async _pingClients(clientConnections, monitorConnection) {
+        try {
+            let pings = Object.fromEntries(await Promise.all(Object.entries(clientConnections).map(([id, client]) => client.ping().then((ping) => [id, ping]))));
+            monitorConnection.ping(pings);
+        } catch (e) {
+            console.error(e);
+        }
     }
 }
 

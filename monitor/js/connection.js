@@ -96,6 +96,10 @@ class MonitorToServerConnection {
         return this._pws.on(Protocol.GAME_END);
     }
 
+    onPing() {
+        return this._pws.on(Protocol.PING);
+    }
+
     clearListeners() {
         this._pws.removeAll();
     }
