@@ -25,15 +25,17 @@ class Generators {
 		function* generator() {
 			while (copy.length > 0) {
 				var maxValue = -Infinity;
-				var maxIndex = -1;
+				var indexes = [];
 				for (var i in copy) {
 					let compareValue = (asc ? -1 : 1) * compare(correct, copy[i], mapping);
-					if (compareValue > maxValue) {
-						maxIndex = i;
+					if (compareValue === maxValue) {
+						indexes.push(i);
+					} else if (compareValue > maxValue) {
+						indexes = [i];
 						maxValue = compareValue;
 					}
 				}
-				let element = copy.splice(maxIndex, 1);
+				let element = copy.splice(Random.fromArray(indexes), 1);
 				yield element[0];
 			}
 		};
