@@ -53,7 +53,7 @@ class GameStatistics {
     _createQuestions(history, players) {
         return history.map((question, i) => {
             return ({
-                category: question.category.name,
+                category: question.category.type,
                 question: question.text,
                 answers: question.answers,
                 correct: question.correct,
