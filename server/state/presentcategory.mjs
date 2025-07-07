@@ -2,7 +2,7 @@ import PresentQuestionState from './presentquestion.mjs';
 import QuestionErrorState from './questionerror.mjs';
 import Random from '../random.mjs';
 
-const JOKE_CHANCE = 0.5;
+const FAKE_CATEGORY_CHANCE = 0.5;
 const MINIMUM_CATEGORIES_COUNT = 8;
 
 class PresentCategoryState {
@@ -32,18 +32,19 @@ class PresentCategoryState {
     _makeCategoryList(categories, game) {
         let enabledCategories = categories.enabled(game).map(this._toSpinnerCategory);
         var result = [];
-        var insertJoke = Math.random() >= JOKE_CHANCE;
-		while (result.length < MINIMUM_CATEGORIES_COUNT || insertJoke) {
-			if (insertJoke) {
-				result.push(this._toSpinnerCategory(categories.joke(game)));
+        var insertFakeCategory = Math.random() >= FAKE_CATEGORY_CHANCE;
+		while (result.length < MINIMUM_CATEGORIES_COUNT || insertFakeCategory) {
+			if (insertFakeCategory) {
+				result.push(this._toSpinnerCategory(categories.fakeCategory(game)));
 			}
 			result = result.concat(enabledCategories);
-			insertJoke = Math.random() >= JOKE_CHANCE;
+			insertFakeCategory = Math.random() >= FAKE_CATEGORY_CHANCE;
 		}
         return this._shuffle(result);
     }
 
     _toSpinnerCategory(c) {
+        console.log(c);
         return ({ name: c.name, icon: c.icon, fullName: c.name });
     }
 

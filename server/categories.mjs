@@ -8,7 +8,7 @@ class Categories {
 	constructor(config) {
 		this._categories = {};
 		this._config = config;
-		this._jokes = [];
+		this._fakeCategories = [];
 	}
 
 	async init() {
@@ -19,7 +19,7 @@ class Categories {
 			this._categories[category] = new categoryModule.default(this._config, category);
 		}
 
-		this._jokes = this._config.jokes;
+		this._fakeCategories = this._config.fake_categories;
 	}
 
 	available(game) {
@@ -31,12 +31,13 @@ class Categories {
 		return this.available(game).filter((category) => game.categoryEnabled(category.type));
 	}
 
-	joke(game) {
+	fakeCategory(game) {
 		let player = Random.fromWeightedObject(game.players()) ?? {name : ""};
-		let joke = Random.fromArray(this._jokes);
+		let fakeCategory = Random.fromArray(this._fakeCategories);
+		let title = fakeCategory.name.replace("{{playerName}}", player.name);
 		return {
-			icon: joke.icon,
-			name: new Translator(game.language()).translateObject(joke.name.replace("{playerName}", player.name))
+			icon: fakeCategory.icon,
+			name: new Translator(game.language()).translateObject(title)
 		};
 	}
 

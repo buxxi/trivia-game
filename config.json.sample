@@ -14,7 +14,7 @@
 	"categories": [
 		"movies"
 	],
-	"jokes": [
+	"fake_categories": [
 		{ "icon" : "fa-comments", "name" : "Internal Jokes" }
 	],
 	"tts":{
