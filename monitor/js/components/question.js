@@ -26,9 +26,10 @@ async function showCategorySpinner(app, categories, correct, index, total, ttsId
 	return app.sound.speak(app.gameId, ttsId, 1500, 250);
 }
 
-async function displayQuestion(app, text, ttsId) {
+async function displayQuestion(app, text, view, ttsId) {
 	app.state = 'pre-question';
 	app.title = text;
+	app.playback.view = view;
 	await app.sound.speak(app.gameId, ttsId, 3000, 0);
 }
 
@@ -158,7 +159,7 @@ export default {
 		});
 
 		this.connection.onQuestion().then(data => {
-			return displayQuestion(this, data.text, data.ttsId);
+			return displayQuestion(this, data.text, data.view, data.ttsId);
 		});
 
 		this.connection.onQuestionError().then(message => {

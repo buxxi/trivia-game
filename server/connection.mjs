@@ -23,9 +23,10 @@ class ServerToMonitorConnection {
         });
     }
 
-    showQuestion(text, ttsId) {
+    showQuestion(text, view, ttsId) {
         return this._pws.send(Protocol.SHOW_QUESTION, {
             text: text,
+            view: view,
             ttsId:  ttsId
         });
     }

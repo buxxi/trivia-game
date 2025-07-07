@@ -8,7 +8,7 @@ class PresentQuestionState {
 
 	async run(game, categories, clientConnections, monitorConnection, text2Speech, stats) {
         let ttsId = this._question.tts ? this._question.tts.question : null;
-        await monitorConnection.showQuestion(this._question.text, ttsId);
+        await monitorConnection.showQuestion(this._question.text, this._question.view, ttsId);
 	}
 
 	nextState() {
