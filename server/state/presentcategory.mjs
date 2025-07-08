@@ -44,7 +44,6 @@ class PresentCategoryState {
     }
 
     _toSpinnerCategory(c) {
-        console.log(c);
         return ({ name: c.name, icon: c.icon, fullName: c.name });
     }
 
