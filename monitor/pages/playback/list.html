@@ -1,5 +1,5 @@
 <div class="list" id="player">
-    <ol>
+    <ol v-if="playing">
         <li v-for="item in list">{{ item }}</li>
     </ol>
 </div>

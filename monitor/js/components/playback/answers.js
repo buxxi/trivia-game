@@ -2,6 +2,7 @@ export default {
     data: function() { return {
         pauseMusic: false,
         minimizeQuestion: true,
+        playing: false
     }},
     props: ['view'],
     computed: {
@@ -10,8 +11,12 @@ export default {
         }
     },
     methods: {
-        start: async function() {},
+        start: async function() {
+            this.playing = true;
+        },
         
-        stop: async function() {}
+        stop: async function() {
+            this.playing = false;
+        }
     }
 }

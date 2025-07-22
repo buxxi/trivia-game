@@ -1,5 +1,5 @@
 <div class="quote" id="player">
-    <i class="fas fa-fw fa-quote-left"></i>
-    <p>{{ quote }}</p>
-    <i class="fas fa-fw fa-quote-right"></i>
+    <i class="fas fa-fw fa-quote-left" v-if="playing"></i>
+    <p v-if="playing">{{ quote }}</p>
+    <i class="fas fa-fw fa-quote-right" v-if="playing"></i>
 </div>
