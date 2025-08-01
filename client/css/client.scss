@@ -110,7 +110,7 @@ button {
 		border-color: triviacolors.$correct_border;
 		&:before {
 			content: "\f00c";
-			font-family: 'Font Awesome 6 Free';
+			font-family: 'Font Awesome 7 Free';
 			color: triviacolors.$correct;
 			background-color : triviacolors.$correct_border !important;
 			border-color : triviacolors.$correct !important;
@@ -122,7 +122,7 @@ button {
 		border-color: triviacolors.$incorrect_border;
 		&:before {
 			content: "\f00d";
-			font-family: 'Font Awesome 6 Free';
+			font-family: 'Font Awesome 7 Free';
 			color: triviacolors.$incorrect;
 			background-color : triviacolors.$incorrect_border !important;
 			border-color : triviacolors.$incorrect !important;
@@ -136,7 +136,7 @@ button {
 
 	&.selected:before {
 		content: "\f023";
-		font-family: 'Font Awesome 6 Free';
+		font-family: 'Font Awesome 7 Free';
 		background-color: color.adjust($color, $lightness: -20%, $space: hsl);
 		margin-left: 0.5em;	
 	}
