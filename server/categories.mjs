@@ -46,8 +46,8 @@ class Categories {
 	}
 
 	async nextQuestion(game, weightedCategories) {
-		let selected = Random.fromWeightedObject(weightedCategories);
-		let categoryName = Object.entries(weightedCategories).find(([key, value]) => value == selected)[0];
+		let selected = Random.fromWeightedObject(Object.fromEntries(Object.entries(weightedCategories).map(([key, value]) => [key, { weight: value.weight, category: key}])));
+		let categoryName = selected.category;
 		let category = this._categoryByType(categoryName);
 
 		let question = await category.nextQuestion(game);

@@ -25,7 +25,7 @@ class Random {
 			randomWeight -= obj[keys[index]].weight||1;
 			index++;
 		}
-		if (randomWeight < 0) {
+		if (randomWeight < 0 && index > 0) {
 			index--;
 		}
 
