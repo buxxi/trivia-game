@@ -44,7 +44,7 @@ class TriviaServer {
 		app.use('/trivia/monitor/js/ext/i18next-vue.js', express.static('node_modules/i18next-vue/dist/index.js'));
 		app.use('/trivia/monitor/js/ext/howler.js', express.static('node_modules/howler/dist/howler.min.js'));
 		app.use('/trivia/monitor/js/ext/wavesurfer.js', express.static('node_modules/wavesurfer.js/dist/wavesurfer.esm.js'));
-		app.use('/trivia/monitor/js/ext/qrcode-generator.js', express.static('node_modules/qrcode-generator/qrcode.mjs'));
+		app.use('/trivia/monitor/js/ext/qrcode-generator.js', express.static('node_modules/qrcode-generator/dist/qrcode.mjs'));
 		
 		app.get('/trivia/tts', async (req, res) => {
 			try {
