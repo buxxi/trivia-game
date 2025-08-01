@@ -64,7 +64,7 @@ class MathQuestions extends Questions {
             quote : correct.display(),
             attribution : {
                 title : this._translatable("title"),
-                name : correct.display(),
+                name : "" + correct.eval(),
                 links : []
             }
         };
