@@ -22,7 +22,7 @@
     "@fontsource/ubuntu": "^5.2.6",
     "@fortawesome/fontawesome-free": "^7.0.0",
     "commander": "^13.0.0",
-    "compromise": "^14.14.3",
+    "compromise": "^14.14.4",
     "compromise-adjectives": "^0.0.7",
     "convert-units": "^2.3.4",
     "express": "^5.1.0",
@@ -37,7 +37,7 @@
     "sass": "^1.89.2",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1",
-    "wavesurfer.js": "^7.8.15",
+    "wavesurfer.js": "^7.10.1",
     "world-countries": "^5.1.0",
     "ws": "^8.18.3"
   },
