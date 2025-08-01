@@ -222,11 +222,13 @@ class Game {
 		let question = await this._categories.nextQuestion(this, this._enabledCategories);
 		let translator = new Translator(this._config.language);
 		question = translator.translateObject(question);
-		
+
 		this._checkDuplicateQuestion(question);
 		this._currentQuestion = question;
 
-		Object.values(this._enabledCategories).forEach((value) => { value.weight *= 2; });
+		Object.values(this._enabledCategories).forEach((value) => {
+			value.weight = Math.min(value.weight * 2, Math.pow(2, Object.values(this._enabledCategories).length));
+		});
 		this._enabledCategories[this._currentQuestion.category.type].weight = 2;
 		
 		return question;
