@@ -1,14 +1,18 @@
 @use "sass:color";
 @use "colors.scss" as triviacolors;
 
-@use "../../node_modules/@fontsource/ubuntu/scss/mixins.scss" as ubuntu;
 
-//This deprecation will be fixed in FontAwesome 7, use whatever is suggested then
-$fa-font-path: "../../common/fonts/fontawesome";
-@import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
-@import "../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+@use "../../node_modules/@fontsource/ubuntu/scss/metadata.scss" as ubuntu;
+@use "../../node_modules/@fontsource-utils/scss/src/mixins.scss" as fontsource;
 
-@include ubuntu.faces(
+@use "../../node_modules/@fortawesome/fontawesome-free/scss/_variables.scss" with (
+	$font-path: "../../common/fonts/fontawesome"
+);
+@use "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@use "../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+
+@include fontsource.faces(
+  $metadata: ubuntu.$metadata,
   $weights: (400),
   $styles: all,
   $directory: "../../common/fonts/ubuntu"
