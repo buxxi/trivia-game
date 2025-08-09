@@ -20,7 +20,12 @@ class Selector {
 	}
 
 	static unique(arr) {
-		return arr.filter((value, index, array) => array.indexOf(value) == index);
+		return arr.filter((value, index, array) => {
+			if (Array.isArray(value)) {
+				return array.findIndex((v) => Array.isArray(v) && v.length === value.length && v.every((el, idx) => el === value[idx])) === index;
+			}
+			return array.indexOf(value) === index;
+		});
 	}
 
 	static hasAllCommon(o1, o2, mapping = i => i) {
