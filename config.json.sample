@@ -1,12 +1,5 @@
 {
 	"avatars": ["monkey","dog","wolf","cat","lion","tiger","horse","cow","dragon","pig","mouse","hamster","rabbit","bear","panda","frog","octopus","turtle","bee","snail","penguin"],
-	"youtube": {
-		"clientId": "<clientId from YouTube>",
-        "region": "SE"
-	},
-	"tmdb": {
-		"clientId": "<clientId from The Movie Database>"
-	},
 	"igdb": {
 		"clientId": "<clientId from Internet Game Database>",
 		"clientSecret" : "<clientSecret from Internet Game Database>"

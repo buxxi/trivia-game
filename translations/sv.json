@@ -173,16 +173,6 @@
                 "penguin": "Pingvin"
             }
         },
-        "movies": {
-            "title": "Filmer",
-            "question": {
-                "title": "Vilken film är detta från?",
-                "year": "Vilket år är denna film från?"
-            },
-            "attribution": {
-                "clip": "Klipp från"
-            }
-        },
         "quotes": {
             "title": "Kända citat",
             "question": {

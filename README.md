@@ -38,12 +38,7 @@ sudo docker run -d -p 8080:8080 --volume ~/.local/share/trivia-game:/opt/trivia/
 - Compromise: https://github.com/nlp-compromise/compromise
 
 ### API's used:
-- Youtube: https://developers.google.com/youtube/v3
-- The movie database: http://docs.themoviedb.apiary.io
 - IGDB: https://www.igdb.com/api
-
-### Clips from:
-- https://www.youtube.com/user/movieclips/videos
 
 ### Music & sound from:
 - http://soundbible.com/tags-beep.html

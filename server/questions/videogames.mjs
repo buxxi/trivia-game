@@ -48,7 +48,6 @@ class VideoGameQuestions extends Questions {
 			name : this._translatable('title'),
 			icon: 'fa-gamepad',
 			attribution: [
-				{ url: 'https://youtube.com', name: 'YouTube' },
 				{ url: 'https://www.igdb.com', name: 'IGDB' }
 			]
 		};

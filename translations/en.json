@@ -173,16 +173,6 @@
                 "penguin": "Penguin"
             }
         },
-        "movies": {
-            "title": "Movies",
-            "question": {
-                "title": "Which movie is this from?",
-                "year": "Which year is this movie from?"
-            },
-            "attribution": {
-                "clip": "Clip from"
-            }
-        },
         "quotes": {
             "title": "Famous Quotes",
             "question": {
