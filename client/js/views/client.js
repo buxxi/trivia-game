@@ -2,6 +2,7 @@ import Join from '../components/join.js';
 import Answer from '../components/answer.js';
 import ClientToServerConnection from '../connection.mjs';
 import WakeLock from '../wakelock.mjs';
+import ClientState from '../clientstate.mjs';
 import {createRouter, createWebHashHistory} from 'vue-router';
 import {createApp} from 'vue';
 
@@ -38,6 +39,7 @@ uuidPolyfill();
 
 const connection = new ClientToServerConnection(new URL("..", document.location), () => crypto.randomUUID());
 const wakelock = new WakeLock();
+const clientState = new ClientState();
 
 const routes = [
 	{
@@ -48,6 +50,7 @@ const routes = [
 			gameId: route.query.gameId,
 			connection: connection,
 			wakelock: wakelock,
+			clientState: clientState,
 			name: route.query.name,
 			preferredAvatar: route.query.preferredAvatar
 		})
@@ -61,6 +64,7 @@ const routes = [
 			clientId: route.query.clientId,
 			connection: connection,
 			wakelock: wakelock,
+			clientState: clientState,
 			stats: getState('stats', {})
 		})
 	}

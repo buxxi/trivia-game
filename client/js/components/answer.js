@@ -25,8 +25,12 @@ function showClosed(app) {
 	app.connected = false;
 }
 
-function redirectToJoin(app) {
-	app.$router.push({ name: "join", query : { gameId: app.gameId, preferredAvatar: app.stats.avatar, name: app.stats.name } });
+async function redirectToJoin(app) {
+	await app.wakelock.release();
+	let gameId = app.clientState.getInProgressGameId();
+	app.clientState.clearInProgressGameId();
+	app.clientState.clearInProgressClientId();
+	app.$router.push({ name: "join", query : { gameId: gameId, preferredAvatar: app.stats.avatar, name: app.stats.name } });
 }
 
 export default {
@@ -39,7 +43,7 @@ export default {
 		correct: undefined,
 		guess: undefined
 	})},
-	props: ['connection', 'wakelock', 'gameId', 'clientId', 'stats'],
+	props: ['connection', 'wakelock', 'clientState', 'stats'],
 	created: function() {
 		if (!this.connection.connected()) {
 			return;
@@ -49,7 +53,7 @@ export default {
 	methods: {
 		reconnect: async function() {
 			try {
-				let data = await this.connection.reconnect(this.gameId, this.clientId);
+				let data = await this.connection.reconnect(this.clientState.getInProgressGameId(), this.clientState.getInProgressClientId());
 				for (let key in data.stats) {
 					this.stats[key] = data.stats[key];
 				}
@@ -62,6 +66,8 @@ export default {
 		},
 
 		returnToLobby: function() {
+			this.clientState.clearInProgressGameId();
+			this.clientState.clearInProgressClientId();
 			this.$router.push({ name: "join" });
 		},
 
@@ -95,10 +101,7 @@ export default {
 			this.connection.onQuestionStart().then(async answers => showAnswers(this, answers));
 			this.connection.onQuestionEnd().then(async (data) => showCorrect(this, data.pointsThisRound, data.correct));
 			this.connection.onClose().catch(() => showClosed(this));
-			this.connection.onGameEnd().then(async () => { 
-				await this.wakelock.release();
-				redirectToJoin(this);
-			});
+			this.connection.onGameEnd().then(async () => redirectToJoin(this));
 		}
 	}
 };
