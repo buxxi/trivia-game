@@ -37,9 +37,6 @@ sudo docker run -d -p 8080:8080 --volume ~/.local/share/trivia-game:/opt/trivia/
 - randomColor: https://github.com/davidmerfield/randomColor
 - Compromise: https://github.com/nlp-compromise/compromise
 
-### API's used:
-- IGDB: https://www.igdb.com/api
-
 ### Music & sound from:
 - http://soundbible.com/tags-beep.html
 - https://soundbible.com/1830-Sad-Trombone.html

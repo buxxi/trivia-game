@@ -183,18 +183,6 @@
                 "quote": "Quoted"
             }
         },
-        "videogames": {
-            "title": "Video Games",
-            "question": {
-                "screenshot": "Which game is this a screenshot of?",
-                "release": "In which year was '{{game}}' first released?",
-                "platform": "'{{game}}' was released to one of these platforms, which one?"
-            },
-            "attribution": {
-                "screenshot": "Screenshot of",
-                "game": "Video Game"
-            }
-        },
         "units": {
             "title": "Units",
             "question": {

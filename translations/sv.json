@@ -183,18 +183,6 @@
                 "quote": "Citerad"
             }
         },
-        "videogames": {
-            "title": "TV-spel",
-            "question": {
-                "screenshot": "Vilket spel är detta en skärmdump från?",
-                "release": "Vilket år släpptes '{{game}}' för första gången?",
-                "platform": "'{{game}}' släpptes till en av dessa plattformar, vilken?"
-            },
-            "attribution": {
-                "screenshot": "Skärmdump av",
-                "game": "TV-spel"
-            }
-        },
         "units": {
             "title": "Enheter",
             "question": {

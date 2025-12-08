@@ -84,8 +84,13 @@ class Selector {
 		return s.split(/[^a-zA-Z0-9]/).filter((s) => s.length > 0).map((s) => s.toLowerCase());
 	}
 
+    static yearDistance(a, b) {
+        var dist = Math.abs(a - b);
+        return Math.floor(Math.log(Math.max(dist, 1)));
+    }
+
 	static dateDistance(a, b) {
-		var dist = Math.abs(new Date(Date.parse(a)).getFullYear() - new Date(Date.parse(b)).getFullYear());
+		var dist = Selector.yearDistance(new Date(Date.parse(a)).getFullYear(), new Date(Date.parse(b)).getFullYear());
 		return Math.floor(Math.log(Math.max(dist, 1)));
 	}
 
