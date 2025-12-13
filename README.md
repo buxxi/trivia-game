@@ -5,7 +5,7 @@ This project previously used WebRTC and tried to use do everything in the browse
 
 ### Build instructions:
 with node (tested on node20):
-```shell
+```sh
 git clone https://github.com/buxxi/trivia-game.git
 cd trivia-game
 npm install
@@ -14,7 +14,7 @@ cp config.json.sample ~/.config/trivia-game/config.json
 npm run start
 ```
 or with Docker:
-```shell
+```sh
 git clone https://github.com/buxxi/trivia-game.git
 cd trivia-game
 sudo docker build -t buxxi/trivia .
