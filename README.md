@@ -1,11 +1,11 @@
 # Trivia Game
-A couch trivia game with multiple possible categories where the players use their smart phone as a controller and a browser in fullscreen for the game.
+A couch trivia game with multiple possible categories where the players use their smartphone as a controller and a browser in fullscreen for the game.
 Accompanying the question a movie clip, music or an image could be played with 4 possible answers.
 This project previously used WebRTC and tried to use do everything in the browser which made a nightmare to support.
 
 ### Build instructions:
 with node (tested on node20):
-```
+```shell
 git clone https://github.com/buxxi/trivia-game.git
 cd trivia-game
 npm install
@@ -14,7 +14,7 @@ cp config.json.sample ~/.config/trivia-game/config.json
 npm run start
 ```
 or with Docker:
-```
+```shell
 git clone https://github.com/buxxi/trivia-game.git
 cd trivia-game
 sudo docker build -t buxxi/trivia .
@@ -24,7 +24,6 @@ sudo docker run -d -p 8080:8080 --volume ~/.local/share/trivia-game:/opt/trivia/
 ```
 
 ### Sample screenshot:
-(a bit outdated)
 ![Trivia Screenshot][screenshot]
 
 ### Notable libraries used:
