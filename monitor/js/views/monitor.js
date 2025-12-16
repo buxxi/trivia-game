@@ -86,7 +86,8 @@ const routes = [
 		props: (route) => ({ 
 			gameId: route.query.gameId,
 			results: getState('results', {}),
-			history: getState('history', [])
+			history: getState('history', []),
+			sound: sound
 		})		 
 	},
 ];

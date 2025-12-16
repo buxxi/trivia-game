@@ -19,9 +19,24 @@ export default {
 				return [];
 			}
 			return this.history.map((question) => question.view.attribution);
+		},
+
+		resultsClass: function() {
+			return this.minimizedResults ? 'minimize' : '';
+		},
+
+		creditsClass: function() {
+			return this.minimizedResults ? 'scrolling' : '';
 		}
 	},
-	props: ['gameId', 'results', 'history'],
+	data: function() {
+		return {
+			showPlaceAbove: 0,
+			celebrate: false,
+			minimizedResults: false
+		}
+	},
+	props: ['gameId', 'results', 'history', 'sound'],
 	methods: {
 		domain : function(link) {
 			try {
@@ -39,6 +54,44 @@ export default {
 			} else {
 				return time.toFixed(2) + "s";
 			}
+		},
+		podiumClass: function(index) {
+			let classList = ['medalist'];
+			classList.push(['gold', 'silver', 'bronze'][index]);
+			if (index >= this.showPlaceAbove) {
+				classList.push('show');
+			}
+			if (index === 0 && this.celebrate) {
+				classList.push('celebrate');
+			}
+			return classList;
+		},
+
+		loserClass: function(index) {
+			let classList = ['loser'];
+			if (index >= this.showPlaceAbove) {
+				classList.push('show');
+			}
+			return classList;
+		},
+
+		showNextScore() {
+			this.showPlaceAbove--;
+			if (this.showPlaceAbove > 0) {
+				setTimeout(() => this.showNextScore(), 1000)
+			} else {
+				setTimeout(() => this.celebrateVictory(), 1000);
+				setTimeout(() => this.minimizeResults(), 5000);
+			}
+		},
+
+		celebrateVictory() {
+			this.celebrate = true;
+			this.sound.applauds();
+		},
+
+		minimizeResults: function() {
+			this.minimizedResults = true;
 		}
 	},
 	created: function() {
@@ -46,5 +99,7 @@ export default {
 			this.$router.push({ path: "/", query : { gameId: this.gameId } });
 			return;
 		}
+		this.showPlaceAbove = this.scores.length;
+		this.showNextScore();
 	}
 };

@@ -1,27 +1,51 @@
 @use "../../common/css/colors.scss" as triviacolors;
+@use "sass:math";
+@use "sass:color";
 
-.credits {
-	animation : 1s scroll linear infinite;
+@mixin podium($color, $height) {
+	background: white;
+	width: 3em;
+	font-size: 2.5em;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center;
+	padding: 0.1em;
+	color: $color;
+	height: $height;
+	border-top: 0.25em solid $color;
+
+	.place {
+		font-weight: 900;
+		font-size: 1.25em;
+		-webkit-text-stroke: 0.05em color.adjust($color, $lightness: -10%);
+	}
+
+	.score {
+		-webkit-text-stroke: 2px color.adjust($color, $lightness: -10%);
+		font-size: 0.75em;
+		display: inline-block;
+		&:after {
+			content: "-";
+		}
+	}
+}
+
+#credits {
 	color : triviacolors.$font;
 	position : relative;
 	text-align: center;
-	width : 100%;
-	&:hover {
-		animation-play-state: paused;
-	}
-	.winner {
-		h1 {
-			font-size: 6em;
-			i {
-				animation: gold 4s linear infinite;
-			}
+	width : 50%;
+	left: 0;
+	top: 100vh;
+
+	&.scrolling {
+		animation : 1s scroll linear infinite;
+		&:hover {
+			animation-play-state: paused;
 		}
 	}
-	.loser {
-		h1 {
-			font-size: 4em;
-		}
-	}
+
 	.attribution {
 		h1 {
 			font-size: 4em;
@@ -48,29 +72,7 @@
 		font-size: 2em;
 		margin : 1em;
 	}
-	.summary {
-		display : inline-block;
-		font-size: 2em;
-		padding-bottom: 1em;
-		position: relative;
-		top : -2em;
-		span {
-			padding-right : 0.5em;
-			font-size: 1.5em;
-		}
-		.correct i {
-			color : triviacolors.$correct;
-			text-shadow : 0.05em 0.05em 0.1em triviacolors.$correct_border;
-		}
-		.failed i {
-			color : triviacolors.$incorrect;
-			text-shadow : 0.05em 0.05em 0.1em triviacolors.$incorrect_border;
-		}
-		.fastest i,.slowest i {
-			color : triviacolors.$primary;
-			text-shadow : 0.05em 0.05em 0.1em triviacolors.$primary_border;
-		}
-	}
+
 	h2 {
 		font-size: 2em;
 		text-align : left;
@@ -80,15 +82,208 @@
 	& > div {
 		height : 50vh;
 	}
+
+
 }
- 
+
+#results {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	transition: left 3s linear;
+
+	&.minimize {
+		left: 50%
+	}
+
+	.top-3 {
+		display: flex;
+		flex-direction: row;
+		font-size: 2em;
+		align-items: flex-end;
+		justify-content: center;
+		margin-top: 3em;
+
+		.avatar {
+			font-size: 0.75em;
+		}
+
+		.silver {
+			order: 1;
+			.podium {
+				border-top-left-radius: 0.25em;
+				@include podium(silver, 2.5em);
+				.place {
+					font-size: 1.5em;
+				}
+			}
+		}
+
+		.gold {
+			order: 2;
+			.podium {
+				@include podium(gold, 3em);
+				border-top-left-radius: 0.25em;
+				border-top-right-radius: 0.25em;
+				.place {
+					font-size: 2em;
+					animation: gold 4s linear infinite;
+				}
+			}
+			&.celebrate .avatar-wrapper {
+				animation: jump 1s ease-in-out infinite;
+			}
+		}
+
+		.bronze {
+			order: 3;
+			.podium {
+				@include podium(#CD7F32, 2em);
+				border-top-right-radius: 0.25em;
+			}
+		}
+
+		.medalist {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		.summary {
+			border: 1px solid triviacolors.$primary_border;
+		}
+	}
+	.others {
+		display : flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		.loser {
+			display : flex;
+			flex-direction: column;
+			justify-content: center;
+			margin: 1.5em;
+			align-items: center;
+			width: 8em;
+		}
+		.place {
+			font-size: 3em;
+		}
+		.score {
+			width: 100%;
+			font-size: 2.5em;
+			background: white;
+			border-top: 0.25em solid triviacolors.$primary;
+			border-top-left-radius: 0.25em;
+			border-top-right-radius: 0.25em;
+			color: triviacolors.$primary_border;
+			text-align: center;
+			&:after {
+				content: "-";
+			}
+		}
+	}
+
+	.avatar {
+		opacity: 0;
+	}
+
+	.show .score:after, .show .correct:after, .show .failed:after {
+		--counter: var(--total-count);
+		animation: counter-increase 1s ease-out;
+		counter-reset: counter var(--counter);
+		content: counter(counter) !important;
+	}
+
+	.show .avatar {
+		opacity: 1;
+		animation: rotate-avatar 1s ease-out;
+		&:after {
+			animation: reveal-name 1s ease-out;
+		}
+	}
+}
+
+.summary {
+	width: calc(100% - 1em);
+	display: flex;
+	flex-direction: row;
+	padding: 0.25em 0.5em;
+	background: triviacolors.$font;
+	color: triviacolors.$primary_border;
+	justify-content: space-around;
+
+	span {
+		font-size: 2em;
+	}
+
+	.correct {
+		color: triviacolors.$correct_border;
+		i {
+			color: triviacolors.$correct;
+			-webkit-text-stroke: 0.2em triviacolors.$correct;
+			font-size: 0.5em;
+			position: relative;
+			top: -0.25em;
+		}
+		&:after {
+			content: "-";
+		}
+	}
+
+	.failed {
+		color: triviacolors.$incorrect_border;
+		i {
+			color: triviacolors.$correct;
+			-webkit-text-stroke: 0.2em triviacolors.$incorrect;
+			font-size: 0.5em;
+			position: relative;
+			top: -0.25em;
+		}
+		&:after {
+			content: "-";
+		}
+	}
+}
+
 @keyframes gold {
-    0% { text-shadow: 0 0 0.1em white; color : #907900; }
-   50% { text-shadow : 0 0 0.75em #FFD700; color : #FFD700; }
-   100% { text-shadow: 0 0 0.1em white; color : #907900; }
+    0% { text-shadow: 0 0 0.1em white; -webkit-text-stroke: 0.05em color.adjust(gold, $lightness: -10%); }
+   50% { text-shadow : 0 0 0.75em #FFD700; -webkit-text-stroke: 0.05em gold; }
+   100% { text-shadow: 0 0 0.1em white; -webkit-text-stroke: 0.05em color.adjust(gold, $lightness: -10%); }
  }
 
 @keyframes scroll {
     0% { top : 100vh; transform : translateY(0) }
     100% { top : 0; transform : translateY(-100%) }
+}
+
+@keyframes counter-increase {
+	@for $i from 0 through 100 {
+		#{math.round($i * 1%)} {
+			--counter: calc(var(--total-count) * #{$i} / 100);
+		}
+	}
+}
+
+@keyframes rotate-avatar {
+	0% { transform: rotateY(0deg) scale(0) }
+	25% { transform: rotateY(360deg) scale(0.25) }
+	50% { transform: rotateY(720deg) scale(0.5) }
+	75% { transform: rotateY(900deg) scale(0.75) }
+	100% { transform: rotateY(1080deg) scale(1) }
+}
+
+@keyframes jump {
+	0% { transform: translateY(0) scaleY(75%) scaleX(100%) }
+	10% { transform: translateY(0) scaleY(100%) scaleX(75%) }
+	50% { transform: translateY(-50%) scaleY(100%) scaleX(75%) }
+	80% { transform: translateY(0) scaleY(100%) scaleX(100%) }
+	100% { transform: translateY(0) scaleY(100%) scaleX(100%) }
+}
+
+@keyframes reveal-name {
+	0% { opacity: 0; }
+	99% { opacity: 0; }
+	100% { opacity: 1; }
 }

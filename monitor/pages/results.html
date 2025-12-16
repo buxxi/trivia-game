@@ -1,51 +1,72 @@
 <div>
-	<div class="credits" v-bind:style="{'animation-duration': duration + 's'}">
-		<div v-for="(score, index) in scores" v-bind:class="{'winner' : index === 0, 'loser' : index !== 0}">
-			<h1 v-if="index === 0"><i class="fas fa-fw fa-trophy"></i> {{ $t('credits.winner') }}</h1>
-			<h1 v-if="index !== 0">{{ $t('credits.place', {count: index + 1}) }}</h1>
-			<div class="avatar" v-bind:data-score="score.score" v-bind:style="{'background-color': score.color, 'border-color': score.color}">
-				<img v-bind:src="'../common/img/avatars/' + score.avatar + '.png'"/>
-			</div>
-			<div class="summary">
-				<h2>{{ score.name }}</h2>
-				<span class="correct"><i class="fas fa-fw fa-check"></i>{{ score.correct }}</span>
-				<span class="failed"><i class="fas fa-fw fa-times"></i>{{ score.wrong }}</span>
-				<span class="fastest" v-if="score.fastest > -1"><i class="fas fa-fw fa-person-running"></i>{{ formatTime(score.fastest) }}</span>
-				<span class="slowest" v-if="score.slowest > -1"><i class="fas fa-fw fa-person-cane"></i>{{ formatTime(score.slowest) }}</span>
-			</div>
-		</div>
+    <div id="results" v-bind:class="resultsClass">
+        <div class="top-3">
+            <div v-for="(score, index) in scores.slice(0, 3)" v-bind:class="podiumClass(index)">
+                <div class="avatar-wrapper">
+                    <div class="avatar" v-bind:style="{'background-color': score.color, 'border-color': score.color}"  v-bind:data-score="score.name">
+                        <img v-bind:src="'../common/img/avatars/' + score.avatar + '.png'"/>
+                    </div>
+                </div>
+                <div class="podium">
+                    <span class="place">{{ index + 1}}</span>
+                    <span class="score" v-bind:style="'--total-count:' + score.score"></span>
+                </div>
+                <div class="summary">
+                    <span class="correct" v-bind:style="'--total-count:' + score.correct"><i class="fas fa-fw fa-check"></i></span>
+                    <span class="failed" v-bind:style="'--total-count:' + score.wrong"><i class="fas fa-fw fa-times"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="others">
+            <div v-for="(score, index) in scores.slice(3)" v-bind:class="loserClass(index + 3)">
+                <span class="place">{{ $t('credits.place', {count: index + 4}) }}</span>
+                <div>
+                    <div class="avatar" v-bind:style="{'background-color': score.color, 'border-color': score.color}"
+                         v-bind:data-score="score.name">
+                        <img v-bind:src="'../common/img/avatars/' + score.avatar + '.png'"/>
+                    </div>
+                </div>
+                <span class="score" v-bind:style="'--total-count:' + score.score"></span>
+                <div class="summary">
+                    <span class="correct" v-bind:style="'--total-count:' + score.correct"><i class="fas fa-fw fa-check"></i></span>
+                    <span class="failed" v-bind:style="'--total-count:' + score.wrong"><i class="fas fa-fw fa-times"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="credits" v-bind:style="{'animation-duration': duration + 's'}" v-bind:class="creditsClass">
+        <div v-for="attr in attribution" class="attribution">
+            <h1>{{ attr.title }}</h1>
+            <span>{{ attr.name }}</span>
+            <ul>
+                <li v-for="link in attr.links">
+                    <a v-bind:href="link">{{ $t('credits.attribution', {domain: domain(link)}) }} <i class="fas fa-fw fa-external-link-alt"></i></a>
+                </li>
+            </ul>
+        </div>
 
-		<div v-for="attr in attribution" class="attribution">
-			<h1>{{ attr.title }}</h1>
-			<span>{{ attr.name }}</span>
-			<ul>
-				<li v-for="link in attr.links">
-					<a v-bind:href="link">{{ $t('credits.attribution', {domain: domain(link)}) }} <i class="fas fa-fw fa-external-link-alt"></i></a>
-				</li>
-			</ul>
-		</div>
+        <div class="attribution">
+            <h1>{{ $t('credits.music.by') }}</h1>
+            <span>Last Haze</span>
+            <ul>
+                <li>
+                    <a href="https://open.spotify.com/track/4fMVIYFWlSXxXQowcB8csH?si=9562dc0736ce4a9f">{{ $t('credits.music.spotify') }} <i class="fas fa-fw fa-external-link-alt"></i></a>
+                </li>
+            </ul>
+        </div>
 
-		<div class="attribution">
-			<h1>{{ $t('credits.music.by') }}</h1>
-			<span>Last Haze</span>
-			<ul>
-				<li>
-					<a href="https://open.spotify.com/track/4fMVIYFWlSXxXQowcB8csH?si=9562dc0736ce4a9f">{{ $t('credits.music.spotify') }} <i class="fas fa-fw fa-external-link-alt"></i></a>
-				</li>
-			</ul>
-		</div>	
+        <div class="attribution">
+            <h1>{{ $t('credits.game.by') }}</h1>
+            <span>BuXXi</span>
+            <ul>
+                <li>
+                    <a href="https://github.com/buxxi/trivia-game">{{ $t('credits.game.source') }} <i class="fas fa-fw fa-external-link-alt"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
 
-		<div class="attribution">
-			<h1>{{ $t('credits.game.by') }}</h1>
-			<span>BuXXi</span>
-			<ul>
-				<li>
-					<a href="https://github.com/buxxi/trivia-game">{{ $t('credits.game.source') }} <i class="fas fa-fw fa-external-link-alt"></i></a>
-				</li>
-			</ul>
-		</div>	
-	</div>
-	<div id="start">
-		<a v-on:click="restart"><i class="fas fa-fw fa-redo"></i></a>
-	</div>	
+    <div id="start">
+        <a v-on:click="restart"><i class="fas fa-fw fa-redo"></i></a>
+    </div>
 </div>
