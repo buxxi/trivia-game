@@ -2,8 +2,13 @@
 @use "sass:math";
 @use "sass:color";
 
+$results_slide_duration: 3s;
+$gold_glimmer_duration: 4s;
+$jump_duration: 1s;
+$reveal_duration: 1s;
+
 @mixin podium($color, $height) {
-	background: white;
+	background: triviacolors.$secondary;
 	width: 3em;
 	font-size: 2.5em;
 	display: flex;
@@ -28,6 +33,21 @@
 		&:after {
 			content: "-";
 		}
+	}
+}
+
+@mixin summary-icon($icon_color, $text_color) {
+	color: $text_color;
+	i {
+		color: $icon_color;
+		-webkit-text-stroke: 0.2em $icon_color;
+		font-size: 0.5em;
+		position: relative;
+		top: -0.25em;
+		padding-right: 0.25em;
+	}
+	&:after {
+		content: "-";
 	}
 }
 
@@ -68,10 +88,6 @@
 			font-size: 6em;
 		}
 	}
-	.avatar {
-		font-size: 2em;
-		margin : 1em;
-	}
 
 	h2 {
 		font-size: 2em;
@@ -92,10 +108,12 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
-	transition: left 3s linear;
+	font-size: 1em;
+	transition: left $results_slide_duration linear, font-size $results_slide_duration linear;
 
 	&.minimize {
-		left: 50%
+		left: 50%;
+		font-size: 0.8em;
 	}
 
 	.top-3 {
@@ -114,7 +132,7 @@
 			order: 1;
 			.podium {
 				border-top-left-radius: 0.25em;
-				@include podium(silver, 2.5em);
+				@include podium(triviacolors.$second_place, 2.5em);
 				.place {
 					font-size: 1.5em;
 				}
@@ -124,23 +142,23 @@
 		.gold {
 			order: 2;
 			.podium {
-				@include podium(gold, 3em);
+				@include podium(triviacolors.$first_place, 3em);
 				border-top-left-radius: 0.25em;
 				border-top-right-radius: 0.25em;
 				.place {
 					font-size: 2em;
-					animation: gold 4s linear infinite;
+					animation: gold $gold_glimmer_duration linear infinite;
 				}
 			}
 			&.celebrate .avatar-wrapper {
-				animation: jump 1s ease-in-out infinite;
+				animation: jump $jump_duration ease-in-out infinite;
 			}
 		}
 
 		.bronze {
 			order: 3;
 			.podium {
-				@include podium(#CD7F32, 2em);
+				@include podium(triviacolors.$third_place, 2em);
 				border-top-right-radius: 0.25em;
 			}
 		}
@@ -149,10 +167,6 @@
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-		}
-
-		.summary {
-			border: 1px solid triviacolors.$primary_border;
 		}
 	}
 	.others {
@@ -173,7 +187,7 @@
 		.score {
 			width: 100%;
 			font-size: 2.5em;
-			background: white;
+			background: triviacolors.$secondary;
 			border-top: 0.25em solid triviacolors.$primary;
 			border-top-left-radius: 0.25em;
 			border-top-right-radius: 0.25em;
@@ -191,16 +205,16 @@
 
 	.show .score:after, .show .correct:after, .show .failed:after {
 		--counter: var(--total-count);
-		animation: counter-increase 1s ease-out;
+		animation: counter-increase $reveal_duration ease-out;
 		counter-reset: counter var(--counter);
 		content: counter(counter) !important;
 	}
 
 	.show .avatar {
 		opacity: 1;
-		animation: rotate-avatar 1s ease-out;
+		animation: rotate-avatar $reveal_duration ease-out;
 		&:after {
-			animation: reveal-name 1s ease-out;
+			animation: reveal-name $reveal_duration ease-out;
 		}
 	}
 }
@@ -219,38 +233,18 @@
 	}
 
 	.correct {
-		color: triviacolors.$correct_border;
-		i {
-			color: triviacolors.$correct;
-			-webkit-text-stroke: 0.2em triviacolors.$correct;
-			font-size: 0.5em;
-			position: relative;
-			top: -0.25em;
-		}
-		&:after {
-			content: "-";
-		}
+		@include summary-icon(triviacolors.$correct, triviacolors.$correct_border);
 	}
 
 	.failed {
-		color: triviacolors.$incorrect_border;
-		i {
-			color: triviacolors.$correct;
-			-webkit-text-stroke: 0.2em triviacolors.$incorrect;
-			font-size: 0.5em;
-			position: relative;
-			top: -0.25em;
-		}
-		&:after {
-			content: "-";
-		}
+		@include summary-icon(triviacolors.$incorrect, triviacolors.$incorrect_border);
 	}
 }
 
 @keyframes gold {
-    0% { text-shadow: 0 0 0.1em white; -webkit-text-stroke: 0.05em color.adjust(gold, $lightness: -10%); }
-   50% { text-shadow : 0 0 0.75em #FFD700; -webkit-text-stroke: 0.05em gold; }
-   100% { text-shadow: 0 0 0.1em white; -webkit-text-stroke: 0.05em color.adjust(gold, $lightness: -10%); }
+    0% { text-shadow: 0 0 0.1em triviacolors.$secondary; -webkit-text-stroke: 0.05em color.adjust(triviacolors.$first_place, $lightness: -10%); }
+   50% { text-shadow : 0 0 0.75em triviacolors.$first_place; -webkit-text-stroke: 0.05em triviacolors.$first_place; }
+   100% { text-shadow: 0 0 0.1em triviacolors.$secondary; -webkit-text-stroke: 0.05em color.adjust(triviacolors.$first_place, $lightness: -10%); }
  }
 
 @keyframes scroll {

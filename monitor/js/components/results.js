@@ -4,7 +4,7 @@ export default {
 			if (!this.history || !this.history) {
 				return 0;
 			}
-			return (this.scores.length + this.history.length + 2) * 5;
+			return (this.history.length + 2) * 5;
 		},
 
 		scores: function() {
@@ -76,6 +76,7 @@ export default {
 		},
 
 		showNextScore() {
+			//TODO: these timeout should only have one place where it's defined or listen to animation end event
 			this.showPlaceAbove--;
 			if (this.showPlaceAbove > 0) {
 				setTimeout(() => this.showNextScore(), 1000)
