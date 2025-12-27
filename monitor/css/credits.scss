@@ -9,7 +9,7 @@ $reveal_duration: 1s;
 
 @mixin podium($color, $height) {
 	background: triviacolors.$secondary;
-	width: 3em;
+	width: 3.5em;
 	font-size: 2.5em;
 	display: flex;
 	flex-direction: column;
@@ -179,7 +179,7 @@ $reveal_duration: 1s;
 			justify-content: center;
 			margin: 1.5em;
 			align-items: center;
-			width: 8em;
+			width: 9em;
 		}
 		.place {
 			font-size: 3em;
@@ -227,6 +227,7 @@ $reveal_duration: 1s;
 	background: triviacolors.$font;
 	color: triviacolors.$primary_border;
 	justify-content: space-around;
+	white-space: nowrap;
 
 	span {
 		font-size: 2em;
