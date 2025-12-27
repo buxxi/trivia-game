@@ -4,6 +4,7 @@ import Random from '../random.mjs';
 import Questions from './questions.mjs';
 import GeoJson2Svg from '../geojson2svg.mjs';
 import countryDefs from 'world-countries';
+import Selector from "#selector";
 
 class GeographyQuestions extends Questions {
     constructor(config, categoryName) {
@@ -187,19 +188,21 @@ class GeographyQuestions extends Questions {
     }
 
     _allCountriesRandom() {
-        return Generators.inOrder(this._countries);
+        return Generators.random(this._countries);
     }
 
     _similarNeighbouringCountries(country) {
-        let result = this._countries.filter(c => country.region === c.region && !country.neighbours.includes(c)).filter(c => !country.neighbours.every((o) => c.neighbours.includes(o)));
-        return Generators.inOrder(result);
+        let result = this._countries
+            .filter(c => !country.neighbours.includes(c.code)) //The current alternative can't be one of the one presented
+            .filter(c => !country.neighbours.every((o) => c.neighbours.includes(o))); //Can't have the same answer as the correct one
+        return Generators.sortedCompareCorrect(result, Selector.levenshteinDistance, country, o => o.region.split(""), true);
     }
 
     _similarCountries(country) {
         let result = this._countries.filter(function (c) {
             return country.region === c.region;
         });
-        return Generators.inOrder(result);
+        return Generators.random(result);
     }
 
     _similarAreaCountries(country) {
