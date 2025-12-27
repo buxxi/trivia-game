@@ -109,7 +109,14 @@ export async function init(config) {
         return value.toLowerCase();
     });
     i18next.services.formatter.add('article', (value, lng, options) => {
-        return  ['a','e','i','o','u','h'].includes(value.toLowerCase().substring(0, 1)) ? `an ${value}` : `a ${value}`;
+        if (lng === 'en') {
+            return ['a', 'e', 'i', 'o', 'u', 'h'].includes(value.toLowerCase().substring(0, 1)) ? `an ${value}` : `a ${value}`;
+        } else if (lng === 'sv') {
+            // There's no fixed rule for swedish, but ~80% is 'en' and words ending with these are 'ett'
+            return ['um', 'ment', 'skap', 'döme', 'at', 'on', 'gram', 'huvud', 'mang'].some(v => value.toLowerCase().endsWith(v)) ? `ett ${value}` : `en ${value}`;
+        } else {
+            return value;
+        }
     });
 }
 
