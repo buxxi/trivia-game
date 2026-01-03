@@ -67,7 +67,7 @@ export default {
 			}, 5000);
 		}
 		
-		this.sound.pause();
+		this.sound.pauseBackgroundMusic();
 
 		try {
 			this.gameId = await this.connection.connect(this.preferredGameId);
@@ -190,7 +190,7 @@ export default {
 			try {
 				this.sound.config(this.config.sound);
 				clearInterval(this.carouselTimeout);
-				this.sound.play();
+				this.sound.resumeBackgroundMusic();
 				this.connection.clearListeners();
 
 				await this.$router.push({name: 'game', query: { gameId: this.gameId, }, state: { players: JSON.stringify(this.players) }});

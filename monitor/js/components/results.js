@@ -88,7 +88,7 @@ export default {
 
 		celebrateVictory() {
 			this.celebrate = true;
-			this.sound.applauds();
+			this.sound.celebrateVictory();
 		},
 
 		minimizeResults: function() {

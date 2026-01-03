@@ -30,24 +30,40 @@ class SoundController {
 			volume: 0.5
 		});
 
+		let ticktock = new Howl({
+			src: ['sound/ticktock.mp3'],
+			volume: 0.5,
+			loop: true
+		});
+
 		this._backgroundMusic = backgroundMusic;
 		this._click = click;
 		this._trombone = trombone;
 		this._applauds = applauds;
+		this._ticktock = ticktock;
+		this._rateEffectsIntervals = [];
 	}
 
 	config(config) {
 		this._config = config;
 	}
 
-	play() {
+	resumeBackgroundMusic() {
+		if (this._config.soundEffects) {
+			this._ticktock.stop();
+		}
+		if (this._config.backgroundMusic) {
+			this._backgroundMusic.rate(1);
+			this._rateEffectsIntervals.forEach(clearInterval);
+			this._rateEffectsIntervals = [];
+		}
 		if (!this._config.backgroundMusic || this._backgroundMusic.playing()) {
 			return;
 		}
 		this._backgroundMusic.play();
 	}
 
-	pause() {
+	pauseBackgroundMusic() {
 		if (!this._config.backgroundMusic || !this._backgroundMusic.playing()) {
 			return;
 		}
@@ -55,13 +71,13 @@ class SoundController {
 		this._backgroundMusic.pause();
 	}
 
-	click() {
+	spinnerClick() {
 		if (this._config.soundEffects) {
 			this._click.play();
 		}
 	}
 
-	beep(count) {
+	playerGuessed(count) {
 		if (this._config.soundEffects) {
 			new Howl({
 				src: ['sound/beep.mp3'], 
@@ -71,16 +87,36 @@ class SoundController {
 		}
 	}
 
-	trombone() {
+	maxMultiplierLost() {
 		if (this._config.soundEffects) {
 			this._trombone.play();
 		}
 	}
 
-	applauds() {
+	allGuessedCorrect() {
 		if (this._config.soundEffects) {
 			this._applauds.play();
 		}		
+	}
+
+	celebrateVictory() {
+		if (this._config.soundEffects) {
+			this._applauds.play();
+		}
+	}
+
+	timerWarning() {
+		if (this._config.backgroundMusic) {
+			let rateValues = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5];
+			for (let rate of rateValues) {
+				this._rateEffectsIntervals.push(setTimeout(() => {
+					this._backgroundMusic.rate(rate);
+				}, (1 - rate) * 1000));
+			}
+		}
+		if (this._config.soundEffects) {
+			this._ticktock.play();
+		}
 	}
 
 	speak(gameId, ttsId, minimumTime, silenceAfterTime) {

@@ -40,6 +40,7 @@ sudo docker run -d -p 8080:8080 --volume ~/.local/share/trivia-game:/opt/trivia/
 - http://soundbible.com/tags-beep.html
 - https://soundbible.com/1830-Sad-Trombone.html
 - https://soundbible.com/1964-Small-Crowd-Applause.html
+- https://samplefocus.com/samples/tick-tock-clock
 - Last Haze - https://open.spotify.com/track/4fMVIYFWlSXxXQowcB8csH?si=9562dc0736ce4a9f
 
 ### Background pattern from:

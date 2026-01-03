@@ -1,4 +1,4 @@
-<div class="question">
+<div class="question" v-bind:class="{'timer-warning': timer.warning}">
 	<div class="top">
 			<div class="index">
 				<div class="infobox" v-if="session.currentCategory && state != 'loading'">
@@ -29,7 +29,7 @@
 	<div id="correct" v-if="state == 'post-question'" v-bind:class="'button-icon-' + correct['key']">{{ correct['answer'] }}</div>
 	<div id="round" v-if="state == 'loading'" v-bind:data-round="$t('states.question', {index:session.index})"></div>
 	<div id="category-spinner" v-if="state == 'loading'">
-		<category-spinner ref="spinner" v-on:flip="sound.click()" v-bind:categories="spinner.categories" v-bind:correct="session.currentCategory.name"/>
+		<category-spinner ref="spinner" v-on:flip="sound.spinnerClick()" v-bind:categories="spinner.categories" v-bind:correct="session.currentCategory.name"/>
 	</div>
 	<div class="bottom">
 		<transition-group name="playerposition" tag="ul" class="playerlist">

@@ -283,26 +283,38 @@
 	border-radius: 0 0.6em 0.6em 0;
 }
 
+.timer-warning {
+	.timer-score {
+		color : triviacolors.$incorrect;
+	}
+	.timer-counter {
+		color : triviacolors.$incorrect;
+		&:before {
+			transform: scale(0.5, 0.5);
+			animation: timer-pulse 1s linear infinite;
+		}
+		svg #bar {
+			stroke : triviacolors.$incorrect;
+		}
+	}
+	&:before {
+		--timer-warning-width: 0em;
+		content: "";
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		z-index: -2;
+		animation: timer-bg-pulse 1s ease-in-out infinite;
+	}
+}
+
 .timer-score {
 	float: left;
 	left: 2em;
 	padding: 0.5em 2.5em 0.5em 1em;
 	position: relative;
-}
-
-@mixin timer-counter-loop {
-    @for $i from 10 to 0 {
-        &[data-percentage="#{$i}"] {
-            color : triviacolors.$incorrect;
-            &:before {
-                transform: scale(0.5, 0.5);
-                animation: timer-pulse 1s linear infinite;
-            }
-            svg #bar {
-                stroke : triviacolors.$incorrect;
-            }
-        }
-    }
 }
 
 .timer-counter {
@@ -312,7 +324,6 @@
 	top : -0.5em;
 	float : right;
 	color : triviacolors.$primary;
-	@include timer-counter-loop;
 
 	svg {
 		transform : rotate(90deg) scaleX(-1);
@@ -390,7 +401,7 @@ h1 {
 	img {
 		filter: grayscale(100%);
 	}
-	
+
 	&::after {
 		background-color: triviacolors.$incorrect;
 		border-color: triviacolors.$incorrect_border;
@@ -426,17 +437,23 @@ h1 {
    90% { transform : scale(1) translateY(-50%); }
    100% { transform : scale(1) translateY(-50%); }
  }
- 
+
  @keyframes resize-correct {
 	0% { transform: translateY(-50%) translateX(250%) skew(-45deg, 0deg); }
 	75% { transform: translateY(-50%) translateX(0) skew(-20deg, 0deg); }
-	100% { transform: translateY(-50%) translateX(0) skew(0); } 
+	100% { transform: translateY(-50%) translateX(0) skew(0); }
  }
- 
+
  @keyframes timer-pulse {
     0% { transform : scale(0.5); }
    50% { transform : scale(2); }
    100% { transform : scale(1); }
+ }
+
+ @keyframes timer-bg-pulse {
+	0% { box-shadow: inset 0 0 1em triviacolors.$incorrect; }
+	50% { box-shadow: inset 0 0 15em triviacolors.$incorrect; }
+	100% { box-shadow: inset 0 0 1em triviacolors.$incorrect; }
  }
 
  @keyframes glow-negative {
@@ -444,7 +461,7 @@ h1 {
      50% { box-shadow : 0 0 6em triviacolors.$incorrect, 0 0 3em triviacolors.$incorrect }
      100% { box-shadow : 0 0 3em triviacolors.$incorrect, 0 0 1.5em triviacolors.$incorrect }
  }
- 
+
  @keyframes glow-positive {
      0% { box-shadow : 0 0 0 triviacolors.$correct, 0 0 0 triviacolors.$correct }
      50% { box-shadow : 0 0 6em triviacolors.$correct, 0 0 3em triviacolors.$correct }

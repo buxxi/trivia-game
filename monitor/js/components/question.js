@@ -57,7 +57,7 @@ async function playbackStart(app, view, answers) {
 	app.minimizeQuestion = playback.minimizeQuestion;
 
 	if (playback.pauseMusic) {
-		app.sound.pause();
+		app.sound.pauseBackgroundMusic();
 	}
 }
 
@@ -68,16 +68,16 @@ function playbackEnd(app, pointsThisRound, correct) {
 		playback.stop();
 	
 		app.timer.stop();
-		app.sound.play();
+		app.sound.resumeBackgroundMusic();
 
 		// Someone lost their multiplier
 		if (Object.values(pointsThisRound).some(p => p.multiplier <= -4)) {
-			app.sound.trombone();
+			app.sound.maxMultiplierLost();
 		}
 
 		// All correct
 		if (Object.values(pointsThisRound).filter(p => p.points > 0).length == app.players.length) {
-			app.sound.applauds();
+			app.sound.allGuessedCorrect();
 		}
 
 		app.correct = correct;
@@ -97,12 +97,12 @@ function playbackEnd(app, pointsThisRound, correct) {
 }
 
 async function timerTicked(app, timeLeft, percentageLeft, currentScore) {
-	app.timer.update(timeLeft, percentageLeft, currentScore);
+	app.timer.update(timeLeft, percentageLeft, currentScore, app.sound);
 }
 
 async function playerGuessed(app, id) {
 	app.players.find(p => p.id == id).guessed = true;
-	app.sound.beep(app.players.filter((p) => p.guessed).length);
+	app.sound.playerGuessed(app.players.filter((p) => p.guessed).length);
 }
 
 async function playerConnected(app, newPlayers) {
@@ -258,19 +258,26 @@ class SessionData {
 class TimerData {
 	constructor() {
 		this.running = false;
+		this.warning = false;
 		this.score = 0;
 		this.timeLeft = 0;
 		this.percentageLeft = 0;
 	}
 	
-	update(timeLeft, percentageLeft, currentScore) {
+	update(timeLeft, percentageLeft, currentScore, sound) {
+		let previousWarning = this.warning;
 		this.running = true;
 		this.score = currentScore;
 		this.timeLeft = timeLeft;
 		this.percentageLeft = percentageLeft;
+		this.warning = timeLeft <= 5;
+		if (!previousWarning && this.warning) {
+			sound.timerWarning();
+		}
 	}
 
 	stop() {
 		this.running = false;
+		this.warning = false;
 	}
 }
