@@ -1,5 +1,7 @@
 import * as h from 'howler';
 
+const RATE_STEPS = [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5];
+
 class SoundController {
 	constructor() {
 		this._ = h; //No ESM module, keeping reference to avoid auto import to remove it
@@ -52,10 +54,8 @@ class SoundController {
 		if (this._config.soundEffects) {
 			this._ticktock.stop();
 		}
-		if (this._config.backgroundMusic) {
-			this._backgroundMusic.rate(1);
-			this._rateEffectsIntervals.forEach(clearInterval);
-			this._rateEffectsIntervals = [];
+		if (this._config.backgroundMusic && this._backgroundMusic.rate() < 1) {
+			this._stepBackgroundMusicRate(RATE_STEPS.slice().reverse());
 		}
 		if (!this._config.backgroundMusic || this._backgroundMusic.playing()) {
 			return;
@@ -107,16 +107,21 @@ class SoundController {
 
 	timerWarning() {
 		if (this._config.backgroundMusic) {
-			let rateValues = [0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5];
-			for (let rate of rateValues) {
-				this._rateEffectsIntervals.push(setTimeout(() => {
-					this._backgroundMusic.rate(rate);
-				}, (1 - rate) * 1000));
-			}
+			this._stepBackgroundMusicRate(RATE_STEPS);
 		}
 		if (this._config.soundEffects) {
 			this._ticktock.play();
 		}
+	}
+
+	_stepBackgroundMusicRate(rateValues) {
+		this._rateEffectsIntervals.forEach(clearInterval);
+		this._rateEffectsIntervals = [];
+		rateValues.forEach((rate, i) => {
+			this._rateEffectsIntervals.push(setTimeout(() => {
+				this._backgroundMusic.rate(rate);
+			}, i * 100));
+		});
 	}
 
 	speak(gameId, ttsId, minimumTime, silenceAfterTime) {
