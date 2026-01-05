@@ -51,7 +51,7 @@ class ConfigureState {
     async _pingClients(clientConnections, monitorConnection) {
         try {
             let pings = Object.fromEntries(await Promise.all(Object.entries(clientConnections).map(([id, client]) => client.ping().then((ping) => [id, ping]))));
-            monitorConnection.ping(pings);
+            await monitorConnection.ping(pings);
         } catch (e) {
             console.error(e);
         }
