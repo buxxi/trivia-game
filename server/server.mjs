@@ -3,6 +3,7 @@ import * as sass from 'sass';
 import { WebSocketServer } from 'ws';
 import {getTranslationBundle} from "./translation.mjs";
 import logger from "./logger.mjs";
+import {deprecations} from "sass";
 
 class TriviaServer {
 	constructor(port, avatars, languages, repository) {
@@ -15,8 +16,8 @@ class TriviaServer {
 	start() {
 		const app = express();
 
-		let clientStyle = sass.compile('client/css/client.scss').css;
-		let monitorStyle = sass.compile('monitor/css/monitor.scss').css;
+		let clientStyle = sass.compile('client/css/client.scss', { silenceDeprecations: [deprecations["if-function"]]}).css;
+		let monitorStyle = sass.compile('monitor/css/monitor.scss', { silenceDeprecations: [deprecations["if-function"]]}).css;
 		
 		app.get('/trivia', (req, res) => {
 			let isClient = !!req.headers['user-agent'].match(/Mobi/);
@@ -42,7 +43,7 @@ class TriviaServer {
 		app.use('/trivia/monitor/js/ext/vue.js', express.static('node_modules/vue/dist/vue.esm-browser.prod.js'));
 		app.use('/trivia/monitor/js/ext/vue-router.js', express.static('node_modules/vue-router/dist/vue-router.esm-browser.prod.js'));
 		app.use('/trivia/monitor/js/ext/i18next.js', express.static('node_modules/i18next/dist/esm/i18next.js'));
-		app.use('/trivia/monitor/js/ext/i18next-vue.js', express.static('node_modules/i18next-vue/dist/index.js'));
+		app.use('/trivia/monitor/js/ext/i18next-vue.js', express.static('node_modules/i18next-vue/dist/index.mjs'));
 		app.use('/trivia/monitor/js/ext/howler.js', express.static('node_modules/howler/dist/howler.min.js'));
 		app.use('/trivia/monitor/js/ext/wavesurfer.js', express.static('node_modules/wavesurfer.js/dist/wavesurfer.esm.js'));
 		app.use('/trivia/monitor/js/ext/qrcode-generator.js', express.static('node_modules/qrcode-generator/dist/qrcode.mjs'));
