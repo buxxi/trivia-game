@@ -1,4 +1,5 @@
 import {Protocol, PromisifiedWebSocket} from '../../common/js/protocol.mjs';
+import logger from '../../common/js/browser-logger.mjs';
 
 class ClientToServerConnection {
     constructor(url, uuidGenerator) {
@@ -54,7 +55,7 @@ class ClientToServerConnection {
         return new Promise((resolve, reject) => {
             let ws = new WebSocket(this._url);
             ws.onopen = () => {
-                let pws = new PromisifiedWebSocket(ws, this._uuidGenerator);
+                let pws = new PromisifiedWebSocket(ws, this._uuidGenerator, logger);
                 pws.send(Protocol.JOIN_CLIENT, payload).then((data) => {
                     this._pws = pws;
                     this._pws.on(Protocol.PING).then(async () => "pong");

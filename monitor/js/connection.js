@@ -1,4 +1,5 @@
 import {Protocol, PromisifiedWebSocket} from '../../common/js/protocol.mjs';
+import logger from '../../common/js/browser-logger.mjs';
 
 class MonitorToServerConnection {
     constructor(url, uuidGenerator) {
@@ -18,7 +19,7 @@ class MonitorToServerConnection {
         return new Promise((resolve, reject) => {
             let ws = new WebSocket(this._url);
             ws.onopen = () => {
-                let pws = new PromisifiedWebSocket(ws, this._uuidGenerator);
+                let pws = new PromisifiedWebSocket(ws, this._uuidGenerator, logger);
                 pws.send(Protocol.JOIN_MONITOR, forceGameId).then(gameId => {
                     this._pws = pws;
                     resolve(gameId);

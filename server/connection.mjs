@@ -1,4 +1,5 @@
 import {Protocol, PromisifiedWebSocket} from '../common/js/protocol.mjs';
+import logger from './logger.mjs';
 
 class ServerToMonitorConnection {
     constructor(pws) {
@@ -148,7 +149,7 @@ class ServerToClientConnection {
 
 class ServerConnection {
     constructor(ws) {
-        this._pws = new PromisifiedWebSocket(ws, () => crypto.randomUUID());
+        this._pws = new PromisifiedWebSocket(ws, () => crypto.randomUUID(), logger);
     }
 
     onMonitorJoin() {

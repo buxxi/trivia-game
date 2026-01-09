@@ -67,11 +67,12 @@ class RequestListener {
 }
 
 class PromisifiedWebSocket {
-    constructor(ws, uuidGenerator) {
+    constructor(ws, uuidGenerator, logger) {
 		this._uuidGenerator = uuidGenerator;
         this._ws = ws;
         this._listeners = [];
 		this._isClosing = false;
+		this._logger = logger;
 
 		this._ws.onmessage = (message) => {
 			this._processListeners(message);
@@ -146,7 +147,7 @@ class PromisifiedWebSocket {
 							if (propagateError) {
 								reject(e);
 							} else {
-								console.log("Event " + event + " got: " + e.message);
+								self._logger.error("Event " + event + " got: " + e.message);
 							}
 						});
 					});

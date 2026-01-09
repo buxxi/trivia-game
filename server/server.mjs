@@ -2,6 +2,7 @@ import express from 'express';
 import * as sass from 'sass';
 import { WebSocketServer } from 'ws';
 import {getTranslationBundle} from "./translation.mjs";
+import logger from "./logger.mjs";
 
 class TriviaServer {
 	constructor(port, avatars, languages, repository) {
@@ -54,7 +55,7 @@ class TriviaServer {
 				let intArray = await tts.get(ttsId);
 				res.send(Buffer.from(intArray));
 			} catch (e) {
-				console.log(e);
+				logger.error(e);
 				let status = typeof e == 'number' ? e : 500;
 				res.sendStatus(status);
 			}
@@ -66,7 +67,7 @@ class TriviaServer {
 
 		//Init regular web server
 		const server = app.listen(this._port, () => {
-			console.log(`Listening on ${this._port}!`)
+			logger.info(`Listening on ${this._port}!`)
 		});
 		
 		//Init websocket server

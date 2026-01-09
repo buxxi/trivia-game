@@ -1,5 +1,6 @@
 import { useTranslation } from "i18next-vue";
 import {qrcode} from "qrcode-generator";
+import logger from '../../../common/js/browser-logger.mjs';
 
 export default {
 	data: function() { return({
@@ -79,7 +80,7 @@ export default {
 			await this.connection.changeLanguage(this.i18n.i18next.language);
 			await this.loadCategories();
 		} catch (e) {
-			console.log(e);
+			logger.error(e);
 			this.message = this.i18n.t("errors.initial", {message: e.message});
 		}
 
@@ -151,7 +152,7 @@ export default {
 				category.questionCount = await this.connection.preloadCategory(type, updateProgress);
 				preload.done = true;
 			} catch (e) {
-				console.log(e);
+				logger.error(e);
 				preload.failed = true;
 				delete this.config.categories[type];
 			}
@@ -164,7 +165,7 @@ export default {
 					await this.preload(type);
 				}
 			} catch (e) {
-				console.log(e);
+				logger.error(e);
 			}
 		},
 		loadRandom: async function() {

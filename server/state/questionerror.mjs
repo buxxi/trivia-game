@@ -1,4 +1,5 @@
 import LoadingNextQuestionState from "./loadquestion.mjs";
+import logger from "../logger.mjs";
 
 class QuestionErrorState {
     constructor(error) {
@@ -6,14 +7,14 @@ class QuestionErrorState {
     }
 
 	async run(game, categories, clientConnections, monitorConnection, text2Speech, stats) {
-        console.log(this._error);
+        logger.error(this._error);
 
         monitorConnection.questionError(this._error.message);
 
         let clients = Object.values(clientConnections);
         let pings = await Promise.all(clients.map(client => client.ping().catch(err => -1 )));
     
-        console.log("Player pings: " + pings);
+        logger.info("Player pings: " + pings);
 
         if (pings.includes(-1)) {
             this._disconnectHangedClients(pings, clients);

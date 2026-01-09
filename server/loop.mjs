@@ -1,4 +1,5 @@
 import ConfigureState from './state/configure.mjs';
+import logger from './logger.mjs';
 
 class GameLoop {
     constructor(game, id, categories, monitorConnection, text2Speech, stats) {
@@ -14,25 +15,25 @@ class GameLoop {
     
     async run() {
         let gameStart = new Date().getTime();
-        console.log(`Game ${this._id} started`);
+        logger.info(`Game ${this._id} started`);
         this._monitorConnection.onClose().catch(() => this._disconnectClients());
         while (this._state && this._monitorConnection.connected()) {
             try {
                 let stateStart = new Date().getTime();
-                console.log(`Game ${this._id} - Starting state: ${this._state.constructor.name}`);
+                logger.info(`Game ${this._id} - Starting state: ${this._state.constructor.name}`);
                 let result = await this._state.run(this._game, this._categories, this._clientConnections, this._monitorConnection, this._text2Speech, this._stats);
                 let stateEnd = new Date().getTime();
-                console.log(`Game ${this._id} - Finished state: ${this._state.constructor.name} in ${(stateEnd - stateStart) / 1000}s`);
+                logger.info(`Game ${this._id} - Finished state: ${this._state.constructor.name} in ${(stateEnd - stateStart) / 1000}s`);
                 this._state = this._state.nextState(result);
             } catch (e) {
                 if (e) {
-                    console.log(`Game ${this._id} - Error in state: ${this._state.constructor.name}: ${e.message}`);
+                    logger.error(`Game ${this._id} - Error in state: ${this._state.constructor.name}: ${e.message}`);
                 }
                 this._state = this._state.errorState(e);
             }
         }
         let gameEnd = new Date().getTime();
-        console.log(`Game ${this._id} ended in ${(gameEnd - gameStart) / 1000}s`);
+        logger.info(`Game ${this._id} ended in ${(gameEnd - gameStart) / 1000}s`);
     }
 
     addClient(connection, clientId, userName, preferredAvatar) {
@@ -40,15 +41,15 @@ class GameLoop {
             throw new Error(`${clientId} is already connected`);
         }
         if (clientId in this._game.players()) {
-            console.log(`Game ${this._id} - ${clientId} has reconnected`);
+            logger.info(`Game ${this._id} - ${clientId} has reconnected`);
         } else {
             this._game.addPlayer(clientId, userName, preferredAvatar);
-            console.log(`Game ${this._id} - ${clientId} has joined`);
+            logger.info(`Game ${this._id} - ${clientId} has joined`);
         }
 
         this._clientConnections[clientId] = connection;
         connection.onClose().catch(() => {
-            console.log(`Game ${this._id} - ${clientId} has disconnected`);
+            logger.warn(`Game ${this._id} - ${clientId} has disconnected`);
             delete this._clientConnections[clientId];
             this._sendPlayerChanges();
             try { this._game.removePlayer(clientId) } catch (e) {};
@@ -81,7 +82,7 @@ class GameLoop {
         } 
 
         this._monitorConnection.playersChanged(result).catch(e => {
-            console.log(`Game ${this._id} - error sending playersChanged: ${e.message}`);
+            logger.error(`Game ${this._id} - error sending playersChanged: ${e.message}`);
         });
     }
     

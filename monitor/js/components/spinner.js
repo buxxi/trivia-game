@@ -1,3 +1,5 @@
+import logger from '../../../common/js/browser-logger.mjs';
+
 const MIN_SPINS = 15;
 const MAX_SPINS = 50;
 const RAMPDOWN_DURATIONS = [75, 100, 125, 175, 225, 300, 400, 600, 900, 1500];
@@ -72,7 +74,7 @@ export default {
                     return false;
                 }
             } catch (ex) {
-                console.log(ex);
+                logger.error(ex);
                 this.duration = 0;
                 while (this.stepsLeft > 0) {
                     this.categories.unshift(this.categories.pop());

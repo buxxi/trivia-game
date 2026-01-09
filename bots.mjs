@@ -1,6 +1,25 @@
 import {Command, Option} from 'commander';
 import ClientToServerConnection from './client/js/connection.mjs';
 import ws from 'ws';
+import winston from "winston";
+
+//Don't want to depend on the server, so copy logger setup
+const myFormat = winston.format.printf(({ level, message, timestamp }) => {
+    return `${timestamp} [${level}]: ${message}`;
+});
+
+const logger = winston.createLogger({
+    'level': 'info',
+    'format': winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.cli(),
+        myFormat,
+    ),
+    'transports': [
+        new winston.transports.Console({})
+    ]
+});
+
 
 global.WebSocket = ws;
 const program = new Command();
@@ -44,7 +63,7 @@ class Bot {
         try {
             if (this._connection.connected()) {
                 this._connection.close();
-                console.log(`${this._name} disconnected`);
+                logger.info(`${this._name} disconnected`);
             } else {
                 if (this._gameStarted) {
                     await this._connection.reconnect(this._gameId, this._clientId);
@@ -52,11 +71,11 @@ class Bot {
                     let result = await this._connection.connect(this._gameId, this._name);
                     this._clientId = result.clientId;
                 }
-                console.log(`${this._name} connected`);
+                logger.info(`${this._name} connected`);
                 this._listen();   
             }
         } catch (e) {
-            console.log(`${this._name} failed to reconnect: ${e.message}`);
+            logger.error(`${this._name} failed to reconnect: ${e.message}`);
         }
         setTimeout(() => this._reconnect(), this._randomDelay() * 2);
     }
@@ -68,7 +87,7 @@ class Bot {
 
         setTimeout(() => {
             let guess = ['A', 'B', 'C', 'D'][Math.floor(Math.random() * 4)];
-            this._connection.guess(guess).then(() => console.log(`${this._name} guessed ${guess}`)).catch((e) => {});
+            this._connection.guess(guess).then(() => logger.info(`${this._name} guessed ${guess}`)).catch((e) => {});
         }, this._randomDelay());
     }
 
