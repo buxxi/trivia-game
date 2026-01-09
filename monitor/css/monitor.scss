@@ -7,12 +7,12 @@
 
 .question {
 	#content, #category-spinner {
-		bottom : 8em;
+		bottom : 10em;
 		left : 2em;
 		position : fixed;
 		right : 2em;
 		text-align : center;
-		top : 5em;
+		top : 6em;
 	}
 	#content.pre-question {
 		iframe {
@@ -67,11 +67,13 @@
 		left: 0.5em;
 		position: fixed;
 		top: 0.75em;
+		font-size: 1.35em;
 	}
 	.timer {
 		position : fixed;
 		right : 0.5em;
 		top : 0.75em;
+		font-size: 1.35em;
 	}
 	.top {
 		position : fixed;
@@ -246,6 +248,7 @@
 
 .playerlist {
 	margin-bottom : 0;
+	font-size: 1.35em;
 	li {
 		display: inline-block;
 		list-style : none;
@@ -332,7 +335,7 @@
 		circle {
 			transition: stroke-dashoffset 0.1s linear;
 			stroke: triviacolors.$secondary_border;
-			stroke-width: 0.35em;
+			stroke-width: 0.25em;
 			fill: triviacolors.$secondary;
 		}
 		#bar {
