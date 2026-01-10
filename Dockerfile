@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:24-alpine
 
 # Where the project is run
 WORKDIR /opt/trivia
@@ -15,4 +15,4 @@ EXPOSE 8080
 ENV XDG_DATA_HOME=/opt/trivia/data
 ENV XDG_CONFIG_HOME=/opt/trivia/conf
 ENV XDG_CACHE_HOME=/opt/trivia/cache
-ENTRYPOINT npm run start
+ENTRYPOINT ["npm", "run", "start"]
