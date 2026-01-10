@@ -1,11 +1,7 @@
 {
 	"avatars": ["monkey","dog","wolf","cat","lion","tiger","horse","cow","dragon","pig","mouse","hamster","rabbit","bear","panda","frog","octopus","turtle","bee","snail","penguin"],
-	"igdb": {
-		"clientId": "<clientId from Internet Game Database>",
-		"clientSecret" : "<clientSecret from Internet Game Database>"
-	},
 	"categories": [
-		"movies"
+		"geography"
 	],
 	"fake_categories": [
 		{ "icon" : "fa-comments", "name" : "Internal Jokes" }

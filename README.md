@@ -20,7 +20,7 @@ cd trivia-game
 sudo docker build -t buxxi/trivia .
 mkdir ~/.config/trivia-game
 cp config.json.sample ~/.config/trivia-game/config.json
-sudo docker run -d -p 8080:8080 --volume ~/.local/share/trivia-game:/opt/trivia/data/trivia-game --volume ~/.config/trivia-game:/opt/trivia/conf/trivia-game --volume ~/.cache/trivia-game:/opt/trivia/cache/trivia-game --name trivia buxxi/trivia
+sudo docker run -d -p 8080:8080 --volume ~/.config/trivia-game:/opt/trivia/conf/trivia-game --name trivia buxxi/trivia
 ```
 
 ### Sample screenshot:

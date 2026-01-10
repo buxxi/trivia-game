@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import countryDefs from "world-countries";
 import {customTranslationPath} from "./xdg.mjs";
 import fs from "fs/promises";
+import logger from "./logger.mjs";
 
 var i18n = undefined;
 
@@ -42,15 +43,20 @@ class Translator {
 }
 
 async function initFromPaths(paths, languages, resources) {
-    for (let path of paths) {
-        for (let language of languages) {
+    for (let language of languages) {
+        var loadSuccess = false;
+        for (let path of paths) {
             let p = path.replace("{language}", language);
             try {
                 let data = JSON.parse(await fs.readFile(p, 'utf8'));
                 resources[language].translation = deepMergeObjects(resources[language].translation, data);
+                loadSuccess = true;
             } catch (e) {
-                console.warn(e.message);
+                logger.debug(e.message);
             }
+        }
+        if (!loadSuccess) {
+            throw new Error(`None of the translation files where loaded for language: ${language}`);
         }
     }
 }

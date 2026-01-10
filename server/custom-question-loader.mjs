@@ -4,10 +4,19 @@ import {customQuestionPath} from "./xdg.mjs";
 import {realpathSync} from "fs";
 
 function isSubPath(parent, dir) {
-    parent = realpathSync(parent);
-    dir = realpathSync(dir);
-    const relative = path.relative(parent, dir);
-    return relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+    try {
+        parent = realpathSync(parent);
+        dir = realpathSync(dir);
+        const relative = path.relative(parent, dir);
+        return relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+    } catch (e) {
+        // If any of the paths doesn't exist, treat it as not sub path
+        if (e.code === 'ENOENT') {
+            return false;
+        } else {
+            throw e;
+        }
+    }
 }
 
 
