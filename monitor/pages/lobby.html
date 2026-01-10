@@ -80,43 +80,45 @@
 
 					<ul class="circle-checkboxes">
 						<li v-bind:class="{'selected' : config.stopOnAnswers}">
-							<label for="stop" v-bind:title="$t('settings.stopOnAnswers')"><input type="checkbox" id="stop" v-model="config.stopOnAnswers"><i class="fas fa-stop"></i></label>
+							<label for="stop" v-bind:title="$t('settings.stopOnAnswers')"><input type="checkbox" id="stop" v-model="config.stopOnAnswers"><span class="icon"><i class="fas fa-stop"></i></span></label>
 						</li>
 						<li v-bind:class="{'selected' : config.allowMultiplier}">
-							<label for="multiplier" v-bind:title="$t('settings.allowMultiplier')"><input type="checkbox" id="multiplier" v-model="config.allowMultiplier"><i class="fas fa-times"></i></label>
+							<label for="multiplier" v-bind:title="$t('settings.allowMultiplier')"><input type="checkbox" id="multiplier" v-model="config.allowMultiplier"><span class="icon"><i class="fas fa-times"></i></span></label>
 						</li>
 						<li v-bind:class="{'selected' : config.sound.backgroundMusic}">
-							<label for="backgroundMusic" v-bind:title="$t('settings.backgroundMusic')"><input type="checkbox" id="backgroundMusic" v-model="config.sound.backgroundMusic"><i class="fas fa-music"></i></label>
+							<label for="backgroundMusic" v-bind:title="$t('settings.backgroundMusic')"><input type="checkbox" id="backgroundMusic" v-model="config.sound.backgroundMusic"><span class="icon"><i class="fas fa-music"></i></span></label>
 						</li>
 						<li v-bind:class="{'selected' : config.sound.text2Speech}">
-							<label for="text2Speech" v-bind:title="$t('settings.text2Speech')"><input type="checkbox" id="text2Speech" v-model="config.sound.text2Speech"><i class="fas fa-comment"></i></label>
+							<label for="text2Speech" v-bind:title="$t('settings.text2Speech')"><input type="checkbox" id="text2Speech" v-model="config.sound.text2Speech"><span class="icon"><i class="fas fa-comment"></i></span></label>
 						</li>
 						<li v-bind:class="{'selected' : config.sound.soundEffects}">
-							<label for="soundEffects" v-bind:title="$t('settings.soundEffects')"><input type="checkbox" id="soundEffects" v-model="config.sound.soundEffects"><i class="fas fa-exclamation"></i></label>
+							<label for="soundEffects" v-bind:title="$t('settings.soundEffects')"><input type="checkbox" id="soundEffects" v-model="config.sound.soundEffects"><span class="icon"><i class="fas fa-exclamation"></i></span></label>
 						</li>
 						<li v-bind:class="{'selected' : config.categorySpinner}">
-							<label for="spinner" v-bind:title="$t('settings.categorySpinner')"><input type="checkbox" id="spinner" v-model="config.categorySpinner"><i class="fas fa-spinner"></i></label>
+							<label for="spinner" v-bind:title="$t('settings.categorySpinner')"><input type="checkbox" id="spinner" v-model="config.categorySpinner"><span class="icon"><i class="fas fa-spinner"></i></span></label>
 						</li>
 						<li v-bind:class="{'selected' : config.saveStatistics}">
-							<label for="statistics" v-bind:title="$t('settings.saveStatistics')"><input type="checkbox" id="statistics" v-model="config.saveStatistics"><i class="fas fa-chart-simple"></i></label>
+							<label for="statistics" v-bind:title="$t('settings.saveStatistics')"><input type="checkbox" id="statistics" v-model="config.saveStatistics"><span class="icon"><i class="fas fa-chart-simple"></i></span></label>
 						</li>
 						<li v-bind:class="{'selected' : config.fullscreen}">
-							<label for="fullscreen" v-bind:title="$t('settings.fullscreen')"><input type="checkbox" id="fullscreen" v-model="config.fullscreen" v-on:change="toggleFullScreen()"><i class="fas fa-window-maximize"></i></label>
+							<label for="fullscreen" v-bind:title="$t('settings.fullscreen')"><input type="checkbox" id="fullscreen" v-model="config.fullscreen" v-on:change="toggleFullScreen()"><span class="icon"><i class="fas fa-window-maximize"></i></span></label>
 						</li>
                         <li class="selected">
-                            <label for="language" v-bind:title="$t('settings.language')"><input type="checkbox" id="language" v-on:click="nextLanguage()">{{config.language.toUpperCase()}}</label>
+                            <label for="language" v-bind:title="$t('settings.language')"><input type="checkbox" id="language" v-on:click="nextLanguage()"><span class="icon"><i>{{config.language.toUpperCase()}}</i></span></label>
                         </li>
 					</ul>
 				</div>
 
 				<div id="categories">
 					<h1><i class="fas fa-fw fa-list-ul"></i>{{ $t('categories.header') }}</h1>
-					<ul class="circle-checkboxes">
-						<li v-bind:class="{'selected' : config.categories[category.type] && category.preload.done, 'loaded' : !config.categories[category.type] && category.preload.done, 'failed' : category.preload.failed}" v-for="category in availableCategories">
+					<ul class="circle-checkboxes" v-bind:class="{'list-view': listView}">
+						<li v-bind:class="{'selected' : config.categories[category.type] && category.preload.done, 'loaded' : !config.categories[category.type] && category.preload.done, 'failed' : category.preload.failed}" v-for="category in sortedCategories">
 							<label v-bind:title="category.name" v-on:contextmenu.prevent="clearCache(category.type)">
 								<input type="checkbox" v-bind:id="category.type" v-model="config.categories[category.type]" v-on:change="preload(category.type)">
-								<i v-if="category.icon.indexOf('url:') === -1" v-bind:class="['fa',category.icon]"></i>
-								<img v-if="category.icon.indexOf('url:') === 0" v-bind:src="category.icon.substr(4)"/>
+								<span class="icon">
+                                    <i v-if="category.icon.indexOf('url:') === -1" v-bind:class="['fa',category.icon]"></i>
+                                    <img v-if="category.icon.indexOf('url:') === 0" v-bind:src="category.icon.substr(4)"/>
+                                </span>
 							</label>
 							<div class="progress" v-if="config.categories[category.type] && !category.preload.done && !category.preload.failed">{{ category.preloadPercentage() }}%</div>
 						</li>
@@ -125,6 +127,7 @@
 					<div class="buttons">
 						<button v-on:click.prevent="loadAll()"><i class="fas fa-spinner"></i> {{ $t('categories.selectAll') }}</button>
 						<button v-on:click.prevent="loadRandom()"><i class="fas fa-random"></i> {{ $t('categories.selectRandom') }}</button>
+                        <button v-on:click.prevent="toggleListView()"><i class="fas fa-list"></i> {{ $t('categories.toggleListView') }}</button>
 					</div>
 
 					<div class="questionCount">

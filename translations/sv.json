@@ -48,6 +48,7 @@
         "stillLoading": "Inte alla valda kategorier är förladdade",
         "selectAll": "Välj alla",
         "selectRandom": "Välj 1 slumpmässig",
+        "toggleListView": "Visa/Dölj kategorinamn",
         "questionCount": "{questionCount} möjliga frågor i de valda kategorierna"
     },
     "errors": {

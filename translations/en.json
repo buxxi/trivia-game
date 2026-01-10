@@ -48,6 +48,7 @@
         "stillLoading": "Not all selected categories has preloaded",
         "selectAll": "Select all",
         "selectRandom": "Select 1 random",
+        "toggleListView": "Show/Hide category names",
         "questionCount": "{questionCount} possible questions in the selected categories"
     },
     "errors": {

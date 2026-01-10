@@ -30,7 +30,8 @@ export default {
 		poweredBy: [],
 		message : undefined,
 		players: {},
-		qrUrl: undefined
+		qrUrl: undefined,
+		listView: false
 	})},
 	props: ['connection', 'sound', 'preferredGameId'],
 	computed: {
@@ -53,6 +54,13 @@ export default {
 				return "categories.stillLoading";
 			} else {
 				return undefined;
+			}
+		},
+		sortedCategories: function() {
+			if (this.listView) {
+				return this.availableCategories.toSorted((a, b) => a.name.localeCompare(b.name));
+			} else {
+				return this.availableCategories;
 			}
 		}
 	},
@@ -175,6 +183,9 @@ export default {
 			await this.preload(possible[rnd].type);
 		},
 
+		toggleListView: function() {
+			this.listView = !this.listView;
+		},
 
 		clearCache: async function(category) {
 			if (!confirm(this.i18n.t('categories.clearCache', {category : category}))) {
