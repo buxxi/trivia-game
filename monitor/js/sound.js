@@ -13,7 +13,7 @@ class SoundController {
 
 		let backgroundMusic = new Howl({
 			src: ['sound/background.mp3'], 
-			volume: 0.10,
+			volume: 0.20,
 			loop: true
 		});
 

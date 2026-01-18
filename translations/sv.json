@@ -60,7 +60,7 @@
         "attribution": "Läs mer på {{domain}}",
         "music": {
             "by": "Musik av",
-            "spotify": "Spela på Spotify"
+            "suno": "Spela på Suno"
         },
         "game": {
             "by": "Ett spel gjort av",

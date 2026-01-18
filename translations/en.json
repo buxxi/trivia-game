@@ -60,7 +60,7 @@
         "attribution": "Lookup at {{domain}}",
         "music": {
             "by": "Music by",
-            "spotify": "Play on Spotify"
+            "suno": "Play on Suno"
         },
         "game": {
             "by": "A game made by",
