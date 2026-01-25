@@ -43,9 +43,6 @@ sudo docker run -d -p 8080:8080 --volume ~/.config/trivia-game:/opt/trivia/conf/
 - https://samplefocus.com/samples/tick-tock-clock
 - Suno - https://suno.com/s/FnM53Cv3rCqP0xfp
 
-### Background pattern from:
-- http://subtlepatterns.com/
-
  [screenshot]: https://github.com/buxxi/trivia-game/blob/master/trivia_screenshot.gif
 
 ### Avatars from:

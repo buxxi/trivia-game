@@ -19,9 +19,12 @@
 );
 
 html {
-   background: linear-gradient(290deg, triviacolors.$background, color.adjust(triviacolors.$background, $hue: -20deg, $space: hsl)), url('../../common/img/simple_dashed.png');
-   background-size: cover, 2em;
-   background-blend-mode: screen;
+	$gradient_background: color.adjust(triviacolors.$background, $alpha: -0.8, $space: hsl);
+	$gradient_background_secondary: color.adjust(triviacolors.$background_secondary, $alpha: -0.6, $space: hsl);
+   background:
+		   radial-gradient(triviacolors.$background_secondary 0%, $gradient_background_secondary 20%, $gradient_background 100%),
+		   repeating-conic-gradient($gradient_background 0deg, $gradient_background_secondary 20deg, $gradient_background 40deg),
+			black;
    height : 100%;
 }
 
