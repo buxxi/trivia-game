@@ -93,6 +93,9 @@ export default {
 		if (!this.wakelock.supported()) {
 			this.message = "Keeping the screen awake not supported on this device";
 		}
+		if (!!this.gameId) {
+			this.clientState.clearInProgressClientId();
+		}
 		if (!!this.clientState.getInProgressGameId() && !!this.clientState.getInProgressClientId()) {
 			this.$router.push({ name: "game", query : { gameId: this.clientState.getInProgressGameId(), clientId: this.clientState.getInProgressClientId() } });
 		}
