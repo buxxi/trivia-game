@@ -3,6 +3,13 @@
 @use "../../common/css/colors.scss" as triviacolors;
 @use "../../common/css/trivia.scss" as *;
 
+html {
+	$gradient_background: color.adjust(triviacolors.$background, $alpha: -0.8, $space: hsl);
+	background:
+			linear-gradient(triviacolors.$background_secondary 0%, $gradient_background 100%),
+			black;
+}
+
 .join {
 	font-size: 0.75em;
 

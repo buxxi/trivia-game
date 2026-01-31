@@ -5,6 +5,15 @@
 @use "./lobby.scss" as *;
 @use "./credits.scss" as *;
 
+html {
+	$gradient_background: color.adjust(triviacolors.$background, $alpha: -0.8, $space: hsl);
+	$gradient_background_secondary: color.adjust(triviacolors.$background_secondary, $alpha: -0.6, $space: hsl);
+	background:
+			radial-gradient(triviacolors.$background_secondary 0%, $gradient_background_secondary 20%, $gradient_background 100%),
+			repeating-conic-gradient($gradient_background 0deg, $gradient_background_secondary 20deg, $gradient_background 40deg),
+			black;
+}
+
 .question {
 	#content, #category-spinner {
 		bottom : 10em;
@@ -358,10 +367,12 @@
 }
 
 h1 {
-	color : triviacolors.$secondary_border;
+	color : triviacolors.$secondary;
 
 	i {
 		color : triviacolors.$primary;
+		padding-right: 0.5em;
+		font-size: 0.8em;
 	}
 
 	&::after {
