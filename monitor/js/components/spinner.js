@@ -1,14 +1,13 @@
 import logger from '../../../common/js/browser-logger.mjs';
 
 const MIN_SPINS = 15;
-const MAX_SPINS = 50;
 const RAMPDOWN_DURATIONS = [75, 100, 125, 175, 225, 300, 400, 600, 900, 1500];
 const NORMAL_DURATION = 50;
 
 class TransitionCounter {
     constructor() {
         this._count = 0;
-        this._promise = new Promise((resolve, reject) => {
+        this._promise = new Promise((resolve, _) => {
             this._resolvePromise = resolve;
         });
     }
@@ -87,13 +86,13 @@ export default {
         }, 
 
         transitionStart: function(event) {
-            if (event.propertyName == 'transform') {
+            if (event.propertyName === 'transform') {
                 this.transitionCounter.countUp();
             }
         },
 
         transitionEnd: function(event) {
-            if (event.propertyName == 'transform') {
+            if (event.propertyName === 'transform') {
                 this.transitionCounter.countDown();
             }
         },
@@ -111,26 +110,22 @@ export default {
         },
 
         _calculateSteps: function() {
+            let max_spins = this.categories.length + MIN_SPINS - 1;
             let indexesOfChosen = this.categories.map((current, index) => {
-                if (current.name == this.correct) {
+                if (current.name === this.correct) {
                     return index;
                 } else {
                     return -1;
                 }
             }).filter(index => index > -1);
 
-            // Create an array of possible amount of laps with a minimum of [0]
-            let possibleLaps = [...Array(Math.ceil((MAX_SPINS - MIN_SPINS) / this.categories.length)).keys()];
+            // Make it possible to spin zero or two complete laps, will be filtered out later if it's too much
+            let possibleLaps = [0, 1];
 
             // Multiply each lap with the amount of categories for each index and make sure it's in the range of the minimum and maximum
             let possibleSpins = indexesOfChosen.flatMap(index => {
                 return possibleLaps.map(laps => (laps * this.categories.length) + (this.categories.length - index + 3));
-            }).filter(spins => spins >= MIN_SPINS && spins <= MAX_SPINS);
-
-            // If we somehow got no result that matches just use a basic spin
-            if (possibleSpins.length == 0) {
-                return this.categories.length - indexesOfChosen[0] + 3;
-            }
+            }).filter(spins => spins >= MIN_SPINS && spins <= max_spins);
 
             return possibleSpins[(possibleSpins.length * Math.random() << 0)];
         },

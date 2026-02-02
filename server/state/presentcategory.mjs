@@ -31,13 +31,14 @@ class PresentCategoryState {
 
     _makeCategoryList(categories, game) {
         let enabledCategories = categories.enabled(game).map(this._toSpinnerCategory);
-        var result = [];
+        var result = enabledCategories.slice();
         var insertFakeCategory = Math.random() >= FAKE_CATEGORY_CHANCE;
 		while (result.length < MINIMUM_CATEGORIES_COUNT || insertFakeCategory) {
 			if (insertFakeCategory) {
 				result.push(this._toSpinnerCategory(categories.fakeCategory(game)));
-			}
-			result = result.concat(enabledCategories);
+			} else {
+                result.push(this._toSpinnerCategory(Random.fromArray(enabledCategories)));
+            }
 			insertFakeCategory = Math.random() >= FAKE_CATEGORY_CHANCE;
 		}
         return this._shuffle(result);
