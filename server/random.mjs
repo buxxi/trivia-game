@@ -5,7 +5,7 @@ class Random {
 	}
 
     static random(max) {
-		return max * Math.random() << 0;
+		return Math.floor(max * Math.random());
 	}
 
 	static fromArray(arr, filter) {
