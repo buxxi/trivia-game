@@ -16,3 +16,5 @@ ENV XDG_DATA_HOME=/opt/trivia/data
 ENV XDG_CONFIG_HOME=/opt/trivia/conf
 ENV XDG_CACHE_HOME=/opt/trivia/cache
 ENTRYPOINT ["npm", "run", "start"]
+
+HEALTHCHECK --interval=300s --timeout=3s CMD wget --quiet --tries=1 --spider http://localhost:8080/trivia/actuator/health || exit 1

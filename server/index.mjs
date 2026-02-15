@@ -9,6 +9,7 @@ import GameStatistics from './stats.mjs';
 import {configPath} from "./xdg.mjs";
 import {init as translationInit} from "./translation.mjs";
 import logger from "./logger.mjs";
+import HealthCheck from "./healthcheck.mjs";
 
 class GameRepository {
 	constructor(categories, config) {
@@ -62,7 +63,7 @@ async function loadCategories(config) {
 
 function startServer(config, repository) {
 	logger.info("Starting server");
-	let server = new TriviaServer(8080, config.avatars, config.languages, repository);
+	let server = new TriviaServer(8080, config.avatars, config.languages, repository, new HealthCheck(config));
 	server.start();
 	return server;
 }

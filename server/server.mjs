@@ -6,11 +6,12 @@ import logger from "./logger.mjs";
 import {deprecations} from "sass";
 
 class TriviaServer {
-	constructor(port, avatars, languages, repository) {
+	constructor(port, avatars, languages, repository, healthCheck) {
 		this._port = port;
 		this._avatars = avatars;
 		this._languages = languages;
 		this._repository = repository;
+		this._healthCheck = healthCheck;
 	}
 
 	start() {
@@ -65,6 +66,16 @@ class TriviaServer {
 		app.use('/trivia/languages', async(req, res) => {
 			res.json(this._languages);
 		})
+
+		app.use('/trivia/actuator/health', async(req, res) => {
+			try {
+				await this._healthCheck.check();
+				res.send("{\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}")
+			} catch (e) {
+				logger.error(e);
+				res.status(503).send("{\"groups\":[\"liveness\",\"readiness\"],\"status\":\"DOWN\"}")
+			}
+		});
 
 		//Init regular web server
 		const server = app.listen(this._port, () => {
