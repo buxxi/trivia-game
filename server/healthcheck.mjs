@@ -17,9 +17,19 @@ class HealthCheck {
             return;
         }
 
-        let res = await fetch(this._config.tts.url, { method: 'OPTIONS' });
-        if (!res || !res.ok) {
-            throw new Error(`TTS URL did not respond with a successful status: ${res ? res.status : 'no response'}`);
+        let languages = this._config.languages;
+
+        for (let lang of languages) {
+            let url = this._config.tts.url.replace('{language}', lang);
+            let res;
+            try {
+                res = await fetch(url, {method: 'OPTIONS'});
+            } catch (e) {
+                throw new Error(`TTS URL got error: ${url} (language: ${lang})`);
+            }
+            if (!res || !res.ok) {
+                throw new Error(`TTS URL did not respond with a successful status: ${res ? res.status : 'no response'}`);
+            }
         }
     }
 
