@@ -130,7 +130,7 @@ class CurrentGameQuestions extends Questions {
 
 	_numericAlternatives(number, game) {
 		var index = game.currentQuestionIndex();
-		return Generators.numeric(number, index);
+		return Generators.numeric(number, 1, index);
 	}
 
 	_otherAvatars(player, game) {

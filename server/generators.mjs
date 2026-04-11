@@ -38,21 +38,25 @@ class Generators {
 				let element = copy.splice(Random.fromArray(indexes), 1);
 				yield element[0];
 			}
-		};
+		}
 		return generator();
 	}
 
 	static years(correct, mapping = (year) => year) {
 		let maxJump = Math.floor((new Date().getFullYear() - correct) / 5) + 5;
-		return Generators.numeric(correct, maxJump, new Date().getFullYear(), mapping);
+		return Generators.numeric(correct, 1, maxJump, new Date().getFullYear(), mapping);
 	}
 
-	static numeric(year, maxJump, maxAllowedValue = Infinity, mapping = (num) => num) {
+	static numeric(initial, minJump, maxJump, maxAllowedValue = Infinity, mapping = (num) => num) {
 		function* generator() {
-			var min = year;
+			var min = initial;
 			var max = min;
-			while (true) {
-				var diff = Math.floor(Math.random() * ((maxJump * 2) + 1)) - maxJump;
+			while (!Number.isNaN(initial)) {
+				let sign = Math.random() > 0.5 ? 1 : -1;
+				let diff = sign * ((Math.random() * (maxJump - minJump)) + minJump);
+				if (Number.isInteger(initial)) {
+					diff = Math.round(diff);
+				}
 				if (diff < 0 && (min + diff) > 0) {
 					min = min + diff;
 					yield mapping(min);
@@ -61,7 +65,7 @@ class Generators {
 					yield mapping(max);
 				}
 			}
-		};
+		}
 		return generator();
 	}
 }
