@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 import countryDefs from "world-countries";
+import convert from 'convert-units';
 import {customTranslationPath} from "./xdg.mjs";
 import fs from "fs/promises";
 import logger from "./logger.mjs";
@@ -123,6 +124,19 @@ export async function init(config) {
         } else {
             return value;
         }
+    });
+    i18next.services.formatter.add('duration', (value, lng, options) => {
+        let units = ["year", "d", "h", "min", "s", "ms"];
+        let duration = {};
+        var secondsLeft = value;
+        for (let unit of units) {
+            let converted = Math.floor(convert(secondsLeft).from("s").to(unit));
+            if (converted >= 1) {
+                duration[convert().describe(unit).plural.toLowerCase()] = converted;
+                secondsLeft -= convert(converted).from(unit).to("s");
+            }
+        }
+        return new Intl.DurationFormat(lng, { style: "short" }).format(duration);
     });
 }
 
