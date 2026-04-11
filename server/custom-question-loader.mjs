@@ -3,6 +3,8 @@ import {fileURLToPath, pathToFileURL} from 'url';
 import {customQuestionPath} from "./xdg.mjs";
 import {realpathSync} from "fs";
 
+const ALLOWED_DEPENDENCIES = ['world-countries', 'convert-units'];
+
 function isSubPath(parent, dir) {
     try {
         parent = realpathSync(parent);
@@ -19,9 +21,8 @@ function isSubPath(parent, dir) {
     }
 }
 
-
 export function resolve(specifier, context, nextResolve) {
-    if (isSubPath(customQuestionPath('.'), fileURLToPath(context.parentURL)) && (specifier.startsWith("#") || specifier === 'world-countries')) {
+    if (isSubPath(customQuestionPath('.'), fileURLToPath(context.parentURL)) && (specifier.startsWith("#") || ALLOWED_DEPENDENCIES.includes(specifier))) {
         context = Object.assign(Object.assign({}, context), {parentURL: pathToFileURL(import.meta.url)});
     }
     return nextResolve(specifier, context);
