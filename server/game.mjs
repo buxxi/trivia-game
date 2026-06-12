@@ -85,6 +85,7 @@ class Game {
 			stopOnAnswers : true,
 			allowMultiplier : true,
 			maxMultiplier : 5,
+			lossPercentage: 100,
 			saveStatistics: true,
 			sound : {
 				backgroundMusic : true,
@@ -262,7 +263,7 @@ class Game {
 				if (answer == this.correctAnswer()['key']) {
 					player._updateScore(timerScore, timeUsed, maxMultiplier, answer);
 				} else {
-					player._updateScore(-timerScore, timeUsed, 1, answer);
+					player._updateScore(-Math.floor(timerScore * (this._config.lossPercentage / 100)), timeUsed, 1, answer);
 				}
 			} else {
 				player._updateScore(0, 0, 1, null);

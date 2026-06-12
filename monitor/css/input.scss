@@ -1,14 +1,16 @@
 @use "../../common/css/colors.scss" as triviacolors;
 
 .numeric-input {
-	color : triviacolors.$primary;
-	font-size: 1.5em;
+	color : triviacolors.$font;
+	font-size: 1.4em;
 	display : inline-flex;
 	border: 0.2em solid triviacolors.$primary;
 	border-radius: 1em;
 	overflow: hidden;
 	margin: 0.25em;
 	background-color: triviacolors.$primary_border;
+	padding-right: 0.25em;
+	align-items: center;
 
 	label {
 		display : inline-block;
@@ -26,7 +28,7 @@
 		color : triviacolors.$font;
 		font-size: 1em;
 		font-weight: bold;
-		width : 2.75em;
+		width : 2.5em;
 		text-align: center;
 		outline : none;
 

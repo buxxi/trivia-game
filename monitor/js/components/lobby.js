@@ -11,6 +11,7 @@ export default {
 			stopOnAnswers : true,
 			allowMultiplier : true,
 			maxMultiplier : 5,
+			lossPercentage: 100,
 			saveStatistics: true,
 			sound : {
 				backgroundMusic : true,

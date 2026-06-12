@@ -14,7 +14,7 @@
     "rules": {
         "header": "Rules",
         "controller": "Use your phone to select the answer you think is correct",
-        "scoring": "A correct answer awards you points and an incorrect removes points",
+        "scoring": "A correct answer awards you points and an incorrect removes {{lossPercentage}}% of the points you would have gained",
         "belowZero": "You can't go below 0 points, make wild guesses if you don't know the correct answer",
         "speed": "You are awarded more points for answering quick",
         "multiplier": {
@@ -39,7 +39,8 @@
         "categorySpinner": "Categories spinner",
         "saveStatistics": "Save statistics",
         "fullscreen": "Toggle fullscreen",
-        "language": "Language"
+        "language": "Language",
+        "lossPercentage": "Percentage of points lost for incorrect answers"
     },
     "categories": {
         "header": "Categories",

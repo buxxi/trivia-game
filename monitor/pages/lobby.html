@@ -34,7 +34,7 @@
 			<h1><i class="fas fa-fw fa-gavel"></i>{{ $t('rules.header') }}</h1>
 			<ol>
 				<li>{{ $t('rules.controller') }}</li>
-				<li>{{ $t('rules.scoring') }}</li>
+				<li>{{ $t('rules.scoring', {lossPercentage: config.lossPercentage}) }}</li>
 				<li>{{ $t('rules.belowZero') }}</li>
 				<li>{{ $t('rules.speed') }}</li>
 				<li v-if="config.allowMultiplier">{{ $t('rules.multiplier.correct', {maxMultiplier: config.maxMultiplier }) }}</li>
@@ -77,6 +77,11 @@
 						<label for="maxMultiplier" v-bind:title="$t('settings.maxMultiplier')"><i class="fas fa-fw fa-times"></i></label>
 						<input type="number" id="maxMultiplier" step="1" min="1" v-model="config.maxMultiplier">
 					</div>
+
+                    <div class="numeric-input">
+                        <label for="lossPercentage" v-bind:title="$t('settings.lossPercentage')"><i class="fas fa-fw fa-arrow-trend-down"></i></label>
+                        <input type="number" id="lossPercentage" step="10" min="0" max="100" v-model="config.lossPercentage">%
+                    </div>
 
 					<ul class="circle-checkboxes">
 						<li v-bind:class="{'selected' : config.stopOnAnswers}">
