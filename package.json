@@ -21,7 +21,7 @@
     "@fontsource-utils/scss": "^0.2.4",
     "@fontsource/ubuntu": "^5.3.0",
     "@fortawesome/fontawesome-free": "^7.3.1",
-    "commander": "^14.0.2",
+    "commander": "^15.0.0",
     "compromise": "^14.16.0",
     "compromise-adjectives": "^0.0.7",
     "convert-units": "^2.3.4",
