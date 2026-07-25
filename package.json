@@ -18,9 +18,9 @@
   },
   "homepage": "https://github.com/buxxi/trivia-game#readme",
   "dependencies": {
-    "@fontsource-utils/scss": "^0.2.2",
-    "@fontsource/ubuntu": "^5.2.8",
-    "@fortawesome/fontawesome-free": "^7.1.0",
+    "@fontsource-utils/scss": "^0.2.4",
+    "@fontsource/ubuntu": "^5.3.0",
+    "@fortawesome/fontawesome-free": "^7.3.1",
     "commander": "^14.0.2",
     "compromise": "^14.14.5",
     "compromise-adjectives": "^0.0.7",
