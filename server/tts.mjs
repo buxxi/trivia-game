@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 class Text2Speech {
     constructor(config) {
         this._ttsUrl = config.url;

@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import Generators from '../generators.mjs';
 import Random from '../random.mjs';
 import Questions from './questions.mjs';
