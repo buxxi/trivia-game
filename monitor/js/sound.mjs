@@ -139,13 +139,13 @@ class SoundController {
 			}
 
 			let url = new URL("../tts", document.location).toString() + "?gameId=" + gameId + "&ttsId=" + ttsId;
-			
-			let speak = new Howl({
+
+			new Howl({
 				src: [url],
 				format: ['wav'],
 				autoplay: true,
 				onloaderror: () => {
-					reject(new Error("Failed to load text2speech for: " + ttsId));	
+					reject(new Error("Failed to load text2speech for: " + ttsId));
 				},
 				onend: () => {
 					let elapsedTime = new Date().getTime() - startTime;

@@ -7,21 +7,7 @@ import WakeLock from '../wakelock.mjs';
 import ClientState from '../clientstate.mjs';
 import {createRouter, createWebHashHistory} from 'vue-router';
 import {createApp} from 'vue';
-import logger from '../../../common/js/browser-logger.mjs';
-
-function uuidPolyfill() {
-	let crypto = window.crypto;
-
-	if (!('randomUUID' in crypto)) {
-		logger.warn("No randomUUID available, using polyfill");
-		crypto.randomUUID = () => {
-			return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
-				(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-			);
-		}
-	}
-}
-
+import {uuidPolyfill} from "../uuidpolyfill.mjs";
 
 function getState(key, defaultValue) {
 	if (key in window.history.state) {
@@ -30,50 +16,51 @@ function getState(key, defaultValue) {
 	return defaultValue;
 }
 
-uuidPolyfill();
+(async () => {
+	uuidPolyfill();
 
-const connection = new ClientToServerConnection(new URL("..", document.location), () => crypto.randomUUID());
-const wakelock = new WakeLock();
-const clientState = new ClientState();
+	const connection = new ClientToServerConnection(new URL("..", document.location), () => crypto.randomUUID());
+	const wakelock = new WakeLock();
+	const clientState = new ClientState();
 
-const routes = [
-	{
-		path: '/',
-		name: 'join',
-		component: Join,
-		props: (route) => ({
-			gameId: route.query.gameId,
-			connection: connection,
-			wakelock: wakelock,
-			clientState: clientState,
-			name: route.query.name,
-			preferredAvatar: route.query.preferredAvatar
-		})
-	},
-	{
-		name: 'game',
-		path: '/game',
-		component: Answer,
-		props: (route) => ({
-			gameId: route.query.gameId,
-			clientId: route.query.clientId,
-			connection: connection,
-			wakelock: wakelock,
-			clientState: clientState,
-			stats: getState('stats', {})
-		})
-	}
-];
+	const routes = [
+		{
+			path: '/',
+			name: 'join',
+			component: Join,
+			props: (route) => ({
+				gameId: route.query.gameId,
+				connection: connection,
+				wakelock: wakelock,
+				clientState: clientState,
+				name: route.query.name,
+				preferredAvatar: route.query.preferredAvatar
+			})
+		},
+		{
+			name: 'game',
+			path: '/game',
+			component: Answer,
+			props: (route) => ({
+				gameId: route.query.gameId,
+				clientId: route.query.clientId,
+				connection: connection,
+				wakelock: wakelock,
+				clientState: clientState,
+				stats: getState('stats', {})
+			})
+		}
+	];
 
-const router = createRouter({
-	history : createWebHashHistory('/trivia/'),
-	routes
-});
+	const router = createRouter({
+		history: createWebHashHistory('/trivia/'),
+		routes
+	});
 
-const app = createApp(Client);
+	const app = createApp(Client);
 
-app.use(router);
+	app.use(router);
 
-router.isReady().then(() => {
+	await router.isReady();
 	app.mount('#main');
-});
+})();

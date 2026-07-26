@@ -3,7 +3,7 @@ class WakeLock {
         this.lock = new UnlockedWakeLock();
     }
 
-    async aquire() {
+    async acquire() {
         if (this.supported()) {
             this.lock = await navigator.wakeLock.request("screen");
         }

@@ -21,15 +21,14 @@ async function loadLanguages() {
 	}
 
 	let resources = Object.fromEntries(messages.map(([language, translations]) => [language, {translation: translations}]));
-	let options = {
+	return {
 		lng: 'en',
-		supportedLngs : ['en', 'sv'],
+		supportedLngs: ['en', 'sv'],
 		resources: resources,
 		interpolation: {
 			escapeValue: false
 		}
 	};
-	return options;
 }
 
 function getState(key, defaultValue) {
@@ -39,57 +38,56 @@ function getState(key, defaultValue) {
 	return defaultValue;
 }
 
-const sound = new SoundController();
-const connection = new MonitorToServerConnection(new URL("..", document.location), () => crypto.randomUUID());
+(async () => {
+	const sound = new SoundController();
+	const connection = new MonitorToServerConnection(new URL("..", document.location), () => crypto.randomUUID());
 
-const routes = [
-  	{ 
-		path: '/',
-		component: Lobby,
-		props: (route) => ({
+	const routes = [
+		{
+			path: '/',
+			component: Lobby,
+			props: (route) => ({
 				connection: connection,
 				sound: sound,
-				preferredGameId : route.query.gameId
-		})
-	},
-	{
-		name: 'game',
-		path: '/game',
-		component: Question,
-		props: (route) => ({
+				preferredGameId: route.query.gameId
+			})
+		},
+		{
+			name: 'game',
+			path: '/game',
+			component: Question,
+			props: (route) => ({
 				connection: connection,
 				gameId: route.query.gameId,
 				lobbyPlayers: getState('players', {}),
 				sound: sound
-		})
-	},
-	{
-		name: 'results',
-		path: '/results',
-		component: Results,
-		props: (route) => ({
-			gameId: route.query.gameId,
-			results: getState('results', {}),
-			history: getState('history', []),
-			sound: sound
-		})
-	},
-];
+			})
+		},
+		{
+			name: 'results',
+			path: '/results',
+			component: Results,
+			props: (route) => ({
+				gameId: route.query.gameId,
+				results: getState('results', {}),
+				history: getState('history', []),
+				sound: sound
+			})
+		},
+	];
 
-const router = createRouter({
-	history : createWebHashHistory('/trivia'),
-	routes 
-});
+	const router = createRouter({
+		history: createWebHashHistory('/trivia'),
+		routes
+	});
 
-loadLanguages().then((options) => {
-	i18next.init(options);
+	let translationOptions = await loadLanguages();
+	await i18next.init(translationOptions);
 
 	const app = createApp(Monitor);
 
-	app.use(I18NextVue, { i18next });
+	app.use(I18NextVue, {i18next});
 	app.use(router);
-
-	router.isReady().then(() => {
-		app.mount('#main');
-	});
-});
+	await router.isReady();
+	app.mount('#main');
+})();

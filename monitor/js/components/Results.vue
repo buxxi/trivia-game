@@ -5,7 +5,7 @@
             <div v-for="(score, index) in scores.slice(0, 3)" v-bind:class="podiumClass(index)">
                 <div class="avatar-wrapper">
                     <div class="avatar" v-bind:style="{'background-color': score.color, 'border-color': score.color}"  v-bind:data-score="score.name">
-                        <img v-bind:src="'../common/img/avatars/' + score.avatar + '.png'"/>
+                        <img v-bind:src="'../common/img/avatars/' + score.avatar + '.png'" alt=""/>
                     </div>
                 </div>
                 <div class="podium">
@@ -24,7 +24,7 @@
                 <div>
                     <div class="avatar" v-bind:style="{'background-color': score.color, 'border-color': score.color}"
                          v-bind:data-score="score.name">
-                        <img v-bind:src="'../common/img/avatars/' + score.avatar + '.png'"/>
+                        <img v-bind:src="'../common/img/avatars/' + score.avatar + '.png'" alt=""/>
                     </div>
                 </div>
                 <span class="score" v-bind:style="'--total-count:' + score.score"></span>
@@ -123,13 +123,6 @@ export default {
 		},
 		restart : function() {
 			this.$router.push({ path: "/", query : { gameId: this.gameId } });
-		},
-		formatTime : function(time) {
-			if (!time) {
-				return "-";
-			} else {
-				return time.toFixed(2) + "s";
-			}
 		},
 		podiumClass: function(index) {
 			let classList = ['medalist'];

@@ -50,7 +50,7 @@ class MonitorToServerConnection {
 
     preloadCategory(type, progress) {
         this._pws.on(Protocol.PRELOAD_CATEGORY_PROGRESS(type)).then(data => {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve, _) => {
                 progress(data.current, data.total);
                 resolve(true);
             });

@@ -17,7 +17,7 @@ class YoutubeVideoPlayer {
 
         await this._loadIframeAPI();
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _) => {
             self._youtube = new YT.Player('video', {
                 height: '100%',
                 width: '100%',
@@ -29,7 +29,7 @@ class YoutubeVideoPlayer {
                 },
                 events: {
                     onStateChange: (state) => {
-                        if (state.data == 1) {
+                        if (state.data === 1) {
                             this._delegate.playing = true;
                             resolve();
                         }
@@ -50,7 +50,7 @@ class YoutubeVideoPlayer {
         if (node) {
             return Promise.resolve(true);
         } else {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve, _) => {
                 window.onYouTubeIframeAPIReady = () => resolve(true);
                 let script = document.createElement('script');
                 script.type = 'text/javascript';
@@ -115,17 +115,17 @@ export default {
             try {
                 await Promise.race([this._player.start(), this._timeout()]);
             } catch (e) {
-                this.stop();
+                await this.stop();
                 throw e;
             }
         },
 
         stop: async function() {
-            this._player.stop();
+            await this._player.stop();
         },
 
         _timeout() {
-            return new Promise((resolve, reject) => {
+            return new Promise((_, reject) => {
                 setTimeout(() => {
                     reject(new Error("Didn't start playback before timeout"));
                 }, 5000);

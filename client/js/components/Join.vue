@@ -2,7 +2,7 @@
 async function resolveBackCamera() {
   let sources = await navigator.mediaDevices.enumerateDevices();
   let backCamera = sources.find((source) => {
-    return source.kind == "videoinput" && source.label.toLowerCase().indexOf('back') != -1;
+    return source.kind === "videoinput" && source.label.toLowerCase().indexOf('back') !== -1;
   });
   if (backCamera) {
     return navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: backCamera.deviceId } } });
@@ -12,7 +12,7 @@ async function resolveBackCamera() {
 }
 
 export default {
-  data: function() { return({
+  data: function() { return {
     config: {
       gameId : this.gameId,
       name : this.name,
@@ -21,7 +21,7 @@ export default {
     supportsCamera: QCodeDecoder().hasGetUserMedia(),
     avatars: [],
     message : undefined
-  })},
+  }},
   computed: {
     validated: function() {
       return this.config.gameId && this.config.name;
@@ -32,7 +32,7 @@ export default {
     join: async function() {
       try {
         let data = await this.connection.connect(this.config.gameId, this.config.name, this.config.avatar);
-        await this.wakelock.aquire();
+        await this.wakelock.acquire();
         this.clientState.setInProgressGameId(this.config.gameId);
         this.clientState.setInProgressClientId(data.clientId);
         this.$router.push({ name: "game", query : { gameId: this.config.gameId, clientId: data.clientId }, state: { stats: JSON.stringify(data.stats) } });
@@ -61,7 +61,7 @@ export default {
 
         video.addEventListener('click', stop);
 
-        decoder.decodeFromVideo(video, (err, res) => {
+        decoder.decodeFromVideo(video, (_, res) => {
           if (res) {
             config.gameId = /.*\?gameId=(.*)/.exec(res)[1];
 
@@ -119,7 +119,7 @@ export default {
           <div>
             <input type="text" id="gameId" style="text-transform : uppercase" v-model="config.gameId">
           </div>
-          <video id="camera" autoplay="true"></video>
+          <video id="camera" autoplay="autoplay"></video>
         </div>
         <div>
           <label for="avatar-selector">Preferred avatar</label>
@@ -128,7 +128,7 @@ export default {
             <div>
               <label v-for="avatar in avatars">
                 <input type="radio" name="avatar" v-model="config.avatar" v-bind:value="avatar"/>
-                <div class="avatar"><img v-bind:src="'../common/img/avatars/' + avatar + '.png'"/></div>
+                <div class="avatar"><img v-bind:src="'../common/img/avatars/' + avatar + '.png'" alt=""/></div>
               </label>
             </div>
             <button v-on:click.prevent="scrollAvatarsRight"><i class="fa-solid fa-arrow-right"></i></button>

@@ -1,7 +1,7 @@
 <template>
   <div class="answer">
     <div class="stats" v-bind:style="{'background-color': stats.color}">
-      <img v-bind:src="'../common/img/avatars/' + stats.avatar + '.png'"/>
+      <img v-bind:src="'../common/img/avatars/' + stats.avatar + '.png'" alt=""/>
       <div><i class="fas fa-fw fa-star"></i>{{stats.score}}</div>
       <div><i class="fas fa-fw fa-times"></i>{{stats.multiplier}}</div>
     </div>
@@ -61,7 +61,7 @@ async function redirectToJoin(app) {
 }
 
 export default {
-  data: function() { return({
+  data: function() { return{
     connected: this.connection.connected(),
     waiting: true,
     hasGuessed: false,
@@ -69,7 +69,7 @@ export default {
     answers: {},
     correct: undefined,
     guess: undefined
-  })},
+  }},
   props: ['connection', 'wakelock', 'clientState', 'stats'],
   created: function() {
     if (!this.connection.connected()) {
@@ -109,13 +109,13 @@ export default {
       }
     },
     buttonClass: function(answer) {
-      if (this.correct && this.correct == answer) {
+      if (this.correct && this.correct === answer) {
         return "correct";
-      } else if (this.correct && answer == this.guess && this.correct != this.guess) {
+      } else if (this.correct && answer === this.guess && this.correct !== this.guess) {
         return "incorrect";
-      } else if (this.correct && this.correct != answer) {
+      } else if (this.correct && this.correct !== answer) {
         return "unused"
-      } else if (!this.correct && answer == this.guess) {
+      } else if (!this.correct && answer === this.guess) {
         return "selected";
       } else if (!this.correct && this.guess) {
         return "unused";

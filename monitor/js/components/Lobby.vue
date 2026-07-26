@@ -4,7 +4,7 @@
 		<h1>{{ $t('title') }}</h1>
 		<div>
 			<div class="qr">
-				<img v-if="gameId != null" v-bind:src="qrUrl"/>
+				<img v-if="gameId != null" v-bind:src="qrUrl" alt=""/>
 				<i v-if="gameId == null" class="fas fa-cog fa-spin fa-fw"></i>
 			</div>
 			<div class="code" v-if="gameId != null">{{ gameId }}</div>
@@ -25,8 +25,8 @@
 			<li v-for="(player, id) in players">
 				<a v-on:click="kickPlayer(id)" class="kick" v-bind:title="$t('players.kick')">
 					<div class="avatar" v-bind:data-ping="player.ping" v-bind:data-score="player.name" v-bind:style="{'background-color': player.color, 'border-color': player.color}">
-                        <img v-bind:src="'../common/img/avatars/' + player.avatar + '.png'"/>
-                    </div>
+            <img v-bind:src="'../common/img/avatars/' + player.avatar + '.png'" alt=""/>
+          </div>
 				</a>
 			</li>
 		</ul>
@@ -41,11 +41,11 @@
 				<li v-if="config.allowMultiplier">{{ $t('rules.multiplier.correct', {maxMultiplier: config.maxMultiplier }) }}</li>
 				<li v-if="config.allowMultiplier">{{ $t('rules.multiplier.incorrect') }}</li>
 				<li v-if="config.allowMultiplier">{{ $t('rules.multiplier.unanswered') }}</li>
-                <li>
-                    <i18next :translation="$t('rules.time')" >
-                        <template #seconds><b>{{config.time}}</b></template>
-                    </i18next>
-                </li>
+        <li>
+            <i18next :translation="$t('rules.time')" >
+                <template #seconds><b>{{config.time}}</b></template>
+            </i18next>
+        </li>
 			</ol>
 
 			<h1><i class="fas fa-fw fa-heart" style="color : #aa0000"></i>{{ $t('poweredBy') }}</h1>
@@ -79,10 +79,10 @@
 						<input type="number" id="maxMultiplier" step="1" min="1" v-model="config.maxMultiplier">
 					</div>
 
-                    <div class="numeric-input">
-                        <label for="lossPercentage" v-bind:title="$t('settings.lossPercentage')"><i class="fas fa-fw fa-arrow-trend-down"></i></label>
-                        <input type="number" id="lossPercentage" step="10" min="0" max="100" v-model="config.lossPercentage">%
-                    </div>
+          <div class="numeric-input">
+              <label for="lossPercentage" v-bind:title="$t('settings.lossPercentage')"><i class="fas fa-fw fa-arrow-trend-down"></i></label>
+              <input type="number" id="lossPercentage" step="10" min="0" max="100" v-model="config.lossPercentage">%
+          </div>
 
 					<ul class="circle-checkboxes">
 						<li v-bind:class="{'selected' : config.stopOnAnswers}">
@@ -109,9 +109,9 @@
 						<li v-bind:class="{'selected' : config.fullscreen}">
 							<label for="fullscreen" v-bind:title="$t('settings.fullscreen')"><input type="checkbox" id="fullscreen" v-model="config.fullscreen" v-on:change="toggleFullScreen()"><span class="icon"><i class="fas fa-window-maximize"></i></span></label>
 						</li>
-                        <li class="selected">
-                            <label for="language" v-bind:title="$t('settings.language')"><input type="checkbox" id="language" v-on:click="nextLanguage()"><span class="icon"><i>{{config.language.toUpperCase()}}</i></span></label>
-                        </li>
+            <li class="selected">
+                <label for="language" v-bind:title="$t('settings.language')"><input type="checkbox" id="language" v-on:click="nextLanguage()"><span class="icon"><i>{{config.language.toUpperCase()}}</i></span></label>
+            </li>
 					</ul>
 				</div>
 
@@ -122,9 +122,9 @@
 							<label v-bind:title="category.name" v-on:contextmenu.prevent="clearCache(category.type)">
 								<input type="checkbox" v-bind:id="category.type" v-model="config.categories[category.type]" v-on:change="preload(category.type)">
 								<span class="icon">
-                                    <i v-if="category.icon.indexOf('url:') === -1" v-bind:class="['fa',category.icon]"></i>
-                                    <img v-if="category.icon.indexOf('url:') === 0" v-bind:src="category.icon.substr(4)"/>
-                                </span>
+                    <i v-if="category.icon.indexOf('url:') === -1" v-bind:class="['fa',category.icon]"></i>
+                    <img v-if="category.icon.indexOf('url:') === 0" v-bind:src="category.icon.substring(4)" alt=""/>
+                </span>
 							</label>
 							<div class="progress" v-if="config.categories[category.type] && !category.preload.done && !category.preload.failed">{{ category.preloadPercentage() }}%</div>
 						</li>
@@ -133,15 +133,15 @@
 					<div class="buttons">
 						<button v-on:click.prevent="loadAll()"><i class="fas fa-spinner"></i> {{ $t('categories.selectAll') }}</button>
 						<button v-on:click.prevent="loadRandom()"><i class="fas fa-random"></i> {{ $t('categories.selectRandom') }}</button>
-                        <button v-on:click.prevent="toggleListView()"><i class="fas fa-list"></i> {{ $t('categories.toggleListView') }}</button>
+            <button v-on:click.prevent="toggleListView()"><i class="fas fa-list"></i> {{ $t('categories.toggleListView') }}</button>
 					</div>
 
 					<div class="questionCount">
-                        <span>
-                            <i18next :translation="$t('categories.questionCount')">
-                                <template #questionCount><b>{{questionCount}}</b></template>
-                            </i18next>
-                        </span>
+              <span>
+                  <i18next :translation="$t('categories.questionCount')">
+                      <template #questionCount><b>{{questionCount}}</b></template>
+                  </i18next>
+              </span>
 					</div>
 				</div>
 			</form>
@@ -152,7 +152,7 @@
 		<div class="message">{{ message }}</div>
 	</div>
 	<div id="start">
-		<a v-on:click="startGame()" v-bind:disabled="startMessage !== undefined ? 'disabled' : undefined" v-bind:title="startMessage !== undefined ? $t(startMessage) : $t('ready')"><i class="fas fa-fw fa-play"></i></a>
+		<a v-on:click="startGame()" v-bind:class="startMessage !== undefined ? 'disabled' : undefined" v-bind:title="startMessage !== undefined ? $t(startMessage) : $t('ready')"><i class="fas fa-fw fa-play"></i></a>
 	</div>
 </div>
 </template>
@@ -193,7 +193,7 @@ class CategorySelector {
 }
 
 export default {
-	data: function() { return({
+	data: function() { return {
 		config: {
 			questions : 25,
 			time : 30,
@@ -223,19 +223,19 @@ export default {
 		players: {},
 		qrUrl: undefined,
 		listView: false
-	})},
+	}},
 	props: ['connection', 'sound', 'preferredGameId'],
 	computed: {
 		questionCount: function() {
 			return this.availableCategories.filter(c => this.config.categories[c.type]).map(c => c.questionCount).reduce((a, b) => a + b, 0);
 		},
 		startMessage: function() {
-			if (Object.keys(this.players).length == 0) {
+			if (Object.keys(this.players).length === 0) {
 				return "players.none";
 			}
 
 			var enabledCategories = Object.keys(this.config.categories).filter((cat) => this.config.categories[cat]);
-			if (enabledCategories.length == 0) {
+			if (enabledCategories.length === 0) {
 				return "categories.none";
 			}
 
@@ -333,7 +333,7 @@ export default {
 			}
 		},
 		preload: async function(type) {
-			let category = this.availableCategories.find(c => c.type == type);
+			let category = this.availableCategories.find(c => c.type === type);
 			let preload = category.preload;
 
 			if (preload.running || !this.config.categories[type]) {

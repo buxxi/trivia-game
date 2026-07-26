@@ -191,7 +191,7 @@ ol {
 	right : 0;
 	bottom : 0;
 
-	&[disabled] {
+	&.disabled {
 		background-color : triviacolors.$incorrect;
 		border : 0.1em solid triviacolors.$incorrect_border;
 		cursor : not-allowed;

@@ -2,15 +2,15 @@
 <div class="question" v-bind:class="{'timer-warning': timer.warning}">
 	<div class="top">
 			<div class="index">
-				<div class="infobox" v-if="session.currentCategory && state != 'loading'">
+				<div class="infobox" v-if="session.currentCategory && state !== 'loading'">
 					<span class="current">{{ session.index }}</span>
 					<span class="total">{{ session.total }}</span>
 				</div>
-				<div class="category infobox" v-if="session.currentCategory && state != 'loading'">{{ session.currentCategory.fullName }}</div>
+				<div class="category infobox" v-if="session.currentCategory && state !== 'loading'">{{ session.currentCategory.fullName }}</div>
 			</div>
-			<div class="title" v-bind:class="{'full-animation' : state == 'pre-question', 'full-static' : (state == 'question' && !minimizeQuestion)}">
-                <span v-if="state == 'post-question'">{{ $t('states.postQuestion') }}</span>
-                <span v-else-if="state == 'error'">{{ $t('states.error') }}</span>
+			<div class="title" v-bind:class="{'full-animation' : state === 'pre-question', 'full-static' : (state === 'question' && !minimizeQuestion)}">
+                <span v-if="state === 'post-question'">{{ $t('states.postQuestion') }}</span>
+                <span v-else-if="state === 'error'">{{ $t('states.error') }}</span>
                 <span v-else>{{ title }}</span>
             </div>
 			<div class="timer" v-if="timer.running">
@@ -25,19 +25,19 @@
 	</div>
 	<div id="content" v-bind:class="state">
 		<component v-bind:is="playbackPlayer" v-bind:view="playback.view" ref="playback"></component>
-		<div class="message" v-if="state == 'error'">{{ error }}</div>
+		<div class="message" v-if="state === 'error'">{{ error }}</div>
 	</div>
-	<div id="correct" v-if="state == 'post-question'" v-bind:class="'button-icon-' + correct['key']">{{ correct['answer'] }}</div>
-	<div id="round" v-if="state == 'loading'" v-bind:data-round="$t('states.question', {index:session.index})"></div>
-	<div id="category-spinner" v-if="state == 'loading'">
+	<div id="correct" v-if="state === 'post-question'" v-bind:class="'button-icon-' + correct['key']">{{ correct['answer'] }}</div>
+	<div id="round" v-if="state === 'loading'" v-bind:data-round="$t('states.question', {index:session.index})"></div>
+	<div id="category-spinner" v-if="state === 'loading'">
 		<category-spinner ref="spinner" v-on:flip="sound.spinnerClick()" v-bind:categories="spinner.categories" v-bind:correct="session.currentCategory.name"/>
 	</div>
 	<div class="bottom">
-		<transition-group name="playerposition" tag="ul" class="playerlist">
+		<transition-group name="playerPosition" tag="ul" class="playerlist">
 			<li v-for="player in players" :key="player.id" v-bind:class="{'guessed' : player.guessed, 'score-change-positive': achievedPoints(player), 'score-change-negative': lostPoints(player)}">
-				<img src="../../img/crown.png" class="leader" v-if="isLeadingPlayer(player)"/>
+				<img src="../../img/crown.png" class="leader" v-if="isLeadingPlayer(player)" alt=""/>
 				<div class="avatar" v-bind:data-score="playerNameOrPoints(player)" v-bind:data-multiplier="player.multiplier" v-bind:style="{'background-color': player.color, 'border-color': player.color}">
-					<img v-if="player.connected && !hidePlayers" v-bind:src="'../common/img/avatars/' + player.avatar + '.png'"/>
+					<img v-if="player.connected && !hidePlayers" v-bind:src="'../common/img/avatars/' + player.avatar + '.png'" alt=""/>
 					<i v-if="player.connected && hidePlayers" class="fa-solid fa-question"></i>
 					<i v-if="!player.connected" class="fa-solid fa-bolt"></i>
 				</div>
@@ -58,7 +58,7 @@ import QuotePlayer from "./playback/QuotePlayer.vue";
 import VideoPlayer from "./playback/VideoPlayer.vue";
 
 function resolveRef(app, ref) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve, _) => {
 		let i = setInterval(() => {
 			if (app.$refs[ref]) {
 				clearInterval(i);
@@ -75,7 +75,7 @@ async function showCategorySpinner(app, categories, correct, index, total, ttsId
 
 	if (categories.length > 0) {
 		app.spinner.categories = categories;
-		for (var i = 0; i < categories.length; i++) {
+		for (let i = 0; i < categories.length; i++) {
 			categories[i].index = i;
 		}
 		let spinner = await resolveRef(app, 'spinner');
@@ -93,7 +93,7 @@ async function displayQuestion(app, text, view, ttsId) {
 }
 
 function displayError(app, message) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve, _) => {
 		app.playback.view = {};
 		app.error = message;
 		app.state = 'error';
@@ -121,7 +121,7 @@ async function playbackStart(app, view, answers) {
 }
 
 function playbackEnd(app, pointsThisRound, correct) {
-	return new Promise(async (resolve, reject) => {
+	return new Promise(async (resolve, _) => {
 		let playback = await resolveRef(app, 'playback');
 		app.playback.view = {};
 		playback.stop();
@@ -135,7 +135,7 @@ function playbackEnd(app, pointsThisRound, correct) {
 		}
 
 		// All correct
-		if (Object.values(pointsThisRound).filter(p => p.points > 0).length == app.players.length) {
+		if (Object.values(pointsThisRound).filter(p => p.points > 0).length === app.players.length) {
 			app.sound.allGuessedCorrect();
 		}
 
@@ -160,7 +160,7 @@ async function timerTicked(app, timeLeft, percentageLeft, currentScore) {
 }
 
 async function playerGuessed(app, id) {
-	app.players.find(p => p.id == id).guessed = true;
+	app.players.find(p => p.id === id).guessed = true;
 	app.sound.playerGuessed(app.players.filter((p) => p.guessed).length);
 }
 
@@ -244,7 +244,7 @@ class TimerData {
 }
 
 export default {
-	data: function() { return({
+	data: function() { return{
 		spinner : {
 			categories: []
 		},
@@ -257,12 +257,13 @@ export default {
 		state: 'loading',
 		error: undefined,
 		minimizeQuestion: false,
-		players: []
-	})},
+		players: [],
+    correct: undefined
+	}},
 	props: ['gameId', 'connection', 'sound', 'lobbyPlayers'],
 	computed: {
 		hidePlayers: function() {
-			return (this.state == 'pre-question' || this.state == 'question') && this.playback.view.hidePlayers;
+			return (this.state === 'pre-question' || this.state === 'question') && this.playback.view.hidePlayers;
 		 },
 		playbackPlayer: function() {
 			if (!this.playback.view.player) {
@@ -328,7 +329,7 @@ export default {
 	methods: {
 		isLeadingPlayer: function (player) {
 			let playerScoreCount = this.players.filter((p) => p.totalPoints >= player.totalPoints).length;
-			return playerScoreCount == 1;
+			return playerScoreCount === 1;
 		},
 		achievedPoints: function (player) {
 			return player.pointChange > 0;
