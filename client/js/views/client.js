@@ -1,10 +1,11 @@
-import Join from '../components/join.js';
-import Answer from '../components/answer.js';
+import Join from '../components/Join.vue';
+import Answer from '../components/Answer.vue';
+import Client from '../components/Client.vue';
 import ClientToServerConnection from '../connection.mjs';
 import WakeLock from '../wakelock.mjs';
 import ClientState from '../clientstate.mjs';
 import {createRouter, createWebHashHistory} from 'vue-router';
-import {createApp} from 'vue';
+import {createApp, defineComponent} from 'vue';
 import logger from '../../../common/js/browser-logger.mjs';
 
 function uuidPolyfill() {
@@ -20,14 +21,6 @@ function uuidPolyfill() {
 	}
 }
 
-function loadTemplate(url, component) {
-	return () => {
-		return fetch(url).then((response) => response.text()).then((data) => {
-			component.template = data;
-			return component;
-		});
-	}
-}
 
 function getState(key, defaultValue) {
 	if (key in window.history.state) {
@@ -46,7 +39,7 @@ const routes = [
 	{
 		path: '/',
 		name: 'join',
-		component: loadTemplate('./pages/join.html', Join),
+		component: Join,
 		props: (route) => ({
 			gameId: route.query.gameId,
 			connection: connection,
@@ -59,7 +52,7 @@ const routes = [
 	{
 		name: 'game',
 		path: '/game',
-		component: loadTemplate('./pages/game-client.html', Answer),
+		component: Answer,
 		props: (route) => ({
 			gameId: route.query.gameId,
 			clientId: route.query.clientId,
@@ -72,12 +65,14 @@ const routes = [
 ];
 
 const router = createRouter({
-	history : createWebHashHistory(),
-	routes 
+	history : createWebHashHistory('/trivia/'),
+	routes
 });
 
-const app = createApp({});
+const app = createApp(Client);
 
 app.use(router);
 
-app.mount('#main');
+router.isReady().then(() => {
+	app.mount('#main');
+});

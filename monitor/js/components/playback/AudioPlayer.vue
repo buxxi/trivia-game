@@ -1,4 +1,9 @@
-import WaveSurfer from 'wavesurfer';
+<template>
+<div class="wavesurfer" id="player"></div>
+</template>
+
+<script>
+import WaveSurfer from 'wavesurfer.js';
 
 export default {
     data: function() { return {
@@ -17,7 +22,7 @@ export default {
         start: async function() {
             let self = this;
             self.timeout = -1;
-        
+
             return new Promise(async (resolve, reject) => {
                 self.player = WaveSurfer.create({
                     container: '#player',
@@ -48,13 +53,15 @@ export default {
                 }
             });
         },
-        
+
         stop: async function() {
-            if (self.timeout) {
-                clearTimeout(self.timeout);
+            if (this.timeout) {
+                clearTimeout(this.timeout);
             }
             this.player.stop();
             this.player.destroy();
         }
     }
 }
+</script>
+

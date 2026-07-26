@@ -1,3 +1,12 @@
+<template>
+<div class="list" id="player">
+    <ol v-if="playing">
+        <li v-for="item in list">{{ item }}</li>
+    </ol>
+</div>
+</template>
+
+<script>
 export default {
     data: function() { return {
         pauseMusic: false,
@@ -6,8 +15,8 @@ export default {
     }},
     props: ['view'],
     computed: {
-        quote: function() {
-            return this.view.quote;
+        list: function() {
+            return this.view.list;
         }
     },
     methods: {
@@ -20,3 +29,5 @@ export default {
         }
     }
 }
+</script>
+

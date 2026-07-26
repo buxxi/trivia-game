@@ -1,3 +1,10 @@
+<template>
+<div id="player" v-bind:class="[className, playing ? 'playing' : '']">
+    <div id="video"></div>
+</div>
+</template>
+
+<script>
 class YoutubeVideoPlayer {
     constructor(delegate, videoId) {
         this._delegate = delegate;
@@ -126,3 +133,5 @@ export default {
         }
     }
 }
+</script>
+

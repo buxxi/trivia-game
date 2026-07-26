@@ -1,3 +1,10 @@
+<template>
+<div class="image" id="player">
+    <img v-bind:src="src" v-if="playing"/>
+</div>
+</template>
+
+<script>
 export default {
     data: function() { return {
         player: {},
@@ -14,7 +21,7 @@ export default {
     methods: {
         start: async function() {
             let self = this;
-            
+
             return new Promise((resolve, reject) => {
                 let img = new Image();
                 img.onload = () => {
@@ -33,3 +40,5 @@ export default {
         }
     }
 }
+</script>
+

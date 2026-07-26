@@ -1,3 +1,14 @@
+<template>
+<transition-group tag="ul" v-if="categories.length != 0" v-bind:class="{'spinner' : true, 'highlight' : done}" v-bind:style="{'transition-duration' : duration + 'ms'}">
+    <li v-for="cat in categories" v-bind:key="cat.index" v-on:transitionstart="transitionStart" v-on:transitionend="transitionEnd">
+        <i v-if="cat.icon.indexOf('url:') == -1" v-bind:class="['fa','fa-fw',cat.icon]"></i>
+        <img v-if="cat.icon.indexOf('url:') == 0" v-bind:src="cat.icon.substr(4)"/>
+        <span>{{cat.name}}</span>
+    </li>
+</transition-group>
+</template>
+
+<script>
 import logger from '../../../common/js/browser-logger.mjs';
 
 const MIN_SPINS = 15;
@@ -83,7 +94,7 @@ export default {
             }
 
             return true;
-        }, 
+        },
 
         transitionStart: function(event) {
             if (event.propertyName === 'transform') {
@@ -139,3 +150,5 @@ export default {
 
     }
 }
+</script>
+

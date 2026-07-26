@@ -1,3 +1,8 @@
+<template>
+<div id="player"></div>
+</template>
+
+<script>
 export default {
     data: function() { return {
 		pauseMusic: false,
@@ -6,7 +11,9 @@ export default {
     props: ['view'],
     methods: {
         start: async function() {},
-        
+
         stop: async function() {}
     }
 }
+</script>
+

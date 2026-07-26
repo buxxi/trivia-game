@@ -4,28 +4,12 @@
 		<link rel="stylesheet" href="css/monitor.css"/>
 		<link rel="icon" type="image/x-icon" href="../common/img/favicon.ico">
 
-        <script type="importmap">
-            {
-                "imports": {
-                    "i18next": "./js/ext/i18next.js",
-                    "i18next-vue": "./js/ext/i18next-vue.js",
-                    "vue": "./js/ext/vue.js",
-                    "vue-router": "./js/ext/vue-router.js",
-                    "howler": "./js/ext/howler.js",
-                    "wavesurfer": "./js/ext/wavesurfer.js",
-                    "qrcode-generator": "./js/ext/qrcode-generator.js"
-                }
-            }
-        </script>
-
 		<title>Trivia Server</title>
 
-		<meta content='width=device-width, target-densitydpi=device-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=1' name='viewport' />
+        <meta content='width=device-width, target-densitydpi=device-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=1' name='viewport' />
 	</head>
 	<body id="server">
-		<div id="main">
-			<router-view></router-view>
-		</div>
+		<div id="main"></div>
 		<script type="module" src="js/views/monitor.js"></script>
 	</body>
 </html>

@@ -1,3 +1,62 @@
+<template>
+<div class="question" v-bind:class="{'timer-warning': timer.warning}">
+	<div class="top">
+			<div class="index">
+				<div class="infobox" v-if="session.currentCategory && state != 'loading'">
+					<span class="current">{{ session.index }}</span>
+					<span class="total">{{ session.total }}</span>
+				</div>
+				<div class="category infobox" v-if="session.currentCategory && state != 'loading'">{{ session.currentCategory.fullName }}</div>
+			</div>
+			<div class="title" v-bind:class="{'full-animation' : state == 'pre-question', 'full-static' : (state == 'question' && !minimizeQuestion)}">
+                <span v-if="state == 'post-question'">{{ $t('states.postQuestion') }}</span>
+                <span v-else-if="state == 'error'">{{ $t('states.error') }}</span>
+                <span v-else>{{ title }}</span>
+            </div>
+			<div class="timer" v-if="timer.running">
+				<div class="timer-score infobox"><i class="fas fa-fw fa-star"></i>{{ timer.score }}</div>
+				<div class="timer-counter" v-bind:data-seconds="timer.timeLeft" v-bind:data-percentage="timer.percentageLeft">
+					<svg viewBox="0 0 38 38">
+					  <circle id="border" r="15.9155" cx="19" cy="19"></circle>
+					  <circle id="bar" r="15.9155" cx="19" cy="19" stroke-dasharray="100" v-bind:stroke-dashoffset="(100 - timer.percentageLeft )"></circle>
+					</svg>
+				</div>
+			</div>
+	</div>
+	<div id="content" v-bind:class="state">
+		<component v-bind:is="playbackPlayer" v-bind:view="playback.view" ref="playback"></component>
+		<div class="message" v-if="state == 'error'">{{ error }}</div>
+	</div>
+	<div id="correct" v-if="state == 'post-question'" v-bind:class="'button-icon-' + correct['key']">{{ correct['answer'] }}</div>
+	<div id="round" v-if="state == 'loading'" v-bind:data-round="$t('states.question', {index:session.index})"></div>
+	<div id="category-spinner" v-if="state == 'loading'">
+		<category-spinner ref="spinner" v-on:flip="sound.spinnerClick()" v-bind:categories="spinner.categories" v-bind:correct="session.currentCategory.name"/>
+	</div>
+	<div class="bottom">
+		<transition-group name="playerposition" tag="ul" class="playerlist">
+			<li v-for="player in players" :key="player.id" v-bind:class="{'guessed' : player.guessed, 'score-change-positive': achievedPoints(player), 'score-change-negative': lostPoints(player)}">
+				<img src="../../img/crown.png" class="leader" v-if="isLeadingPlayer(player)"/>
+				<div class="avatar" v-bind:data-score="playerNameOrPoints(player)" v-bind:data-multiplier="player.multiplier" v-bind:style="{'background-color': player.color, 'border-color': player.color}">
+					<img v-if="player.connected && !hidePlayers" v-bind:src="'../common/img/avatars/' + player.avatar + '.png'"/>
+					<i v-if="player.connected && hidePlayers" class="fa-solid fa-question"></i>
+					<i v-if="!player.connected" class="fa-solid fa-bolt"></i>
+				</div>
+			</li>
+		</transition-group>
+	</div>
+</div>
+</template>
+
+<script>
+import CategorySpinner from "./CategorySpinner.vue";
+import AnswersPlayer from "./playback/AnswersPlayer.vue";
+import AudioPlayer from "./playback/AudioPlayer.vue";
+import BlankPlayer from "./playback/BlankPlayer.vue";
+import ImagePlayer from "./playback/ImagePlayer.vue";
+import ListPlayer from "./playback/ListPlayer.vue";
+import QuotePlayer from "./playback/QuotePlayer.vue";
+import VideoPlayer from "./playback/VideoPlayer.vue";
+
 function resolveRef(app, ref) {
 	return new Promise((resolve, reject) => {
 		let i = setInterval(() => {
@@ -66,7 +125,7 @@ function playbackEnd(app, pointsThisRound, correct) {
 		let playback = await resolveRef(app, 'playback');
 		app.playback.view = {};
 		playback.stop();
-	
+
 		app.timer.stop();
 		app.sound.resumeBackgroundMusic();
 
@@ -82,7 +141,7 @@ function playbackEnd(app, pointsThisRound, correct) {
 
 		app.correct = correct;
 		app.state = 'post-question';
-		
+
 		app.players.forEach(player => {
 			player.updatePoints(pointsThisRound[player.id]);
 		});
@@ -113,7 +172,75 @@ async function playerConnected(app, newPlayers) {
 
 async function gameEnded(app, history, results) {
 	app.connection.clearListeners();
-	app.$router.push({ name: 'results', query: { gameId: app.gameId }, state: { results: JSON.stringify(results), history: JSON.stringify(history) } });	
+	app.$router.push({ name: 'results', query: { gameId: app.gameId }, state: { results: JSON.stringify(results), history: JSON.stringify(history) } });
+}
+
+class PlayerData {
+	constructor(id, player) {
+		this.id = id;
+		this.name = player.name;
+		this.color = player.color;
+		this.avatar = player.avatar;
+		this.totalPoints = 0;
+		this.pointChange = 0;
+		this.multiplier = 1;
+		this.guessed = false;
+		this.connected = true;
+	}
+
+	updatePoints(pointChanges) {
+		this.pointChange = pointChanges.points;
+		this.multiplier += pointChanges.multiplier;
+		this.guessed = false;
+		this.totalPoints += pointChanges.points;
+	}
+
+	clearChanges() {
+		this.pointChange = 0;
+	}
+}
+
+class SessionData {
+	constructor() {
+		this.index = 0;
+		this.total = 0;
+		this.currentCategory = {
+			name : undefined
+		};
+	}
+
+	update(index, total, currentCategory) {
+		this.index = index;
+		this.total = total;
+		this.currentCategory = currentCategory;
+	}
+}
+
+class TimerData {
+	constructor() {
+		this.running = false;
+		this.warning = false;
+		this.score = 0;
+		this.timeLeft = 0;
+		this.percentageLeft = 0;
+	}
+
+	update(timeLeft, percentageLeft, currentScore, sound) {
+		let previousWarning = this.warning;
+		this.running = true;
+		this.score = currentScore;
+		this.timeLeft = timeLeft;
+		this.percentageLeft = percentageLeft;
+		this.warning = timeLeft <= 5;
+		if (!previousWarning && this.warning) {
+			sound.timerWarning();
+		}
+	}
+
+	stop() {
+		this.running = false;
+		this.warning = false;
+	}
 }
 
 export default {
@@ -134,7 +261,7 @@ export default {
 	})},
 	props: ['gameId', 'connection', 'sound', 'lobbyPlayers'],
 	computed: {
-		hidePlayers: function() { 
+		hidePlayers: function() {
 			return (this.state == 'pre-question' || this.state == 'question') && this.playback.view.hidePlayers;
 		 },
 		playbackPlayer: function() {
@@ -144,6 +271,16 @@ export default {
 			return this.playback.view.player + "-player";
 		}
 	},
+  components: {
+    CategorySpinner,
+    AnswersPlayer,
+    AudioPlayer,
+    BlankPlayer,
+    ImagePlayer,
+    ListPlayer,
+    QuotePlayer,
+    VideoPlayer
+  },
 	created: function() {
 		if (!this.connection.connected()) {
 			this.$router.push({ path: "/", query: { gameId: this.gameId } });
@@ -213,71 +350,5 @@ export default {
 		}
 	}
 };
+</script>
 
-class PlayerData {
-	constructor(id, player) {
-		this.id = id;
-		this.name = player.name;
-		this.color = player.color;
-		this.avatar = player.avatar;
-		this.totalPoints = 0;
-		this.pointChange = 0;
-		this.multiplier = 1;
-		this.guessed = false;
-		this.connected = true;
-	}
-
-	updatePoints(pointChanges) {
-		this.pointChange = pointChanges.points;
-		this.multiplier += pointChanges.multiplier;
-		this.guessed = false;
-		this.totalPoints += pointChanges.points;
-	}
-
-	clearChanges() {
-		this.pointChange = 0;
-	}
-}
-
-class SessionData {
-	constructor() {
-		this.index = 0;
-		this.total = 0;
-		this.currentCategory = {
-			name : undefined
-		};
-	}
-
-	update(index, total, currentCategory) {
-		this.index = index;
-		this.total = total;
-		this.currentCategory = currentCategory;
-	}
-}
-
-class TimerData {
-	constructor() {
-		this.running = false;
-		this.warning = false;
-		this.score = 0;
-		this.timeLeft = 0;
-		this.percentageLeft = 0;
-	}
-	
-	update(timeLeft, percentageLeft, currentScore, sound) {
-		let previousWarning = this.warning;
-		this.running = true;
-		this.score = currentScore;
-		this.timeLeft = timeLeft;
-		this.percentageLeft = percentageLeft;
-		this.warning = timeLeft <= 5;
-		if (!previousWarning && this.warning) {
-			sound.timerWarning();
-		}
-	}
-
-	stop() {
-		this.running = false;
-		this.warning = false;
-	}
-}

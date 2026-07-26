@@ -1,4 +1,10 @@
 import * as h from 'howler';
+import backgroundMusicFile from '../sound/background.mp3';
+import clickFile from '../sound/click.mp3';
+import tromboneFile from '../sound/sad.mp3';
+import applaudsFile from '../sound/applauds.mp3';
+import ticktockFile from '../sound/ticktock.mp3';
+import beepFile from '../sound/beep.mp3';
 
 const RATE_STEPS = [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5];
 
@@ -12,28 +18,28 @@ class SoundController {
 		};
 
 		let backgroundMusic = new Howl({
-			src: ['sound/background.mp3'], 
+			src: [backgroundMusicFile],
 			volume: 0.20,
 			loop: true
 		});
 
 		let click = new Howl({
-			src: ['sound/click.mp3'],
+			src: [clickFile],
 			volume: 0.2
 		});
 
 		let trombone = new Howl({
-			src: ['sound/sad.mp3'],
+			src: [tromboneFile],
 			volume: 0.5
 		});
 
 		let applauds = new Howl({
-			src: ['sound/applauds.mp3'], 
+			src: [applaudsFile],
 			volume: 0.5
 		});
 
 		let ticktock = new Howl({
-			src: ['sound/ticktock.mp3'],
+			src: [ticktockFile],
 			volume: 0.5,
 			loop: true
 		});
@@ -80,7 +86,7 @@ class SoundController {
 	playerGuessed(count) {
 		if (this._config.soundEffects) {
 			new Howl({
-				src: ['sound/beep.mp3'], 
+				src: [beepFile],
 				autoplay: true,
 				rate: 1.5 + (0.5 * count)
 			});

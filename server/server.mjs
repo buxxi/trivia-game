@@ -30,24 +30,18 @@ class TriviaServer {
 		app.use('/trivia/common/fonts/ubuntu', express.static('node_modules/@fontsource/ubuntu/files'));
 		app.use('/trivia/translation/:language', (req, res) => { res.type("js").send(JSON.stringify(getTranslationBundle(req.params.language))); });
 
+		app.use('/trivia/assets', express.static('dist/assets'));
+
 		//Serve files for client
-		app.use('/trivia/client', express.static('client'));
+		app.use('/trivia/client', express.static('dist/client'));
 		app.get('/trivia/client/css/client.css', (req, res) => { res.type("css").send(clientStyle); });
-		app.use('/trivia/client/js/ext/vue.js', express.static('node_modules/vue/dist/vue.esm-browser.prod.js'));
-		app.use('/trivia/client/js/ext/vue-router.js', express.static('node_modules/vue-router/dist/vue-router.esm-browser.prod.js'));
-		app.use('/trivia/client/js/ext/qcode-decoder.js', express.static('node_modules/qcode-decoder/build/qcode-decoder.min.js'));
 		app.use('/trivia/client/avatars.json', (req, res) => { res.type("js").send(JSON.stringify(this._avatars)); });
-		
+		app.use('/trivia/client/js/ext/qcode-decoder.js', express.static('node_modules/qcode-decoder/build/qcode-decoder.min.js'));
+
 		//Serve files for monitor
-		app.use('/trivia/monitor', express.static('monitor'));
+		app.use('/trivia/monitor', express.static('dist/monitor'));
+		app.use('/trivia/monitor/img', express.static('monitor/img'));
 		app.get('/trivia/monitor/css/monitor.css', (req, res) => { res.type("css").send(monitorStyle); });
-		app.use('/trivia/monitor/js/ext/vue.js', express.static('node_modules/vue/dist/vue.esm-browser.prod.js'));
-		app.use('/trivia/monitor/js/ext/vue-router.js', express.static('node_modules/vue-router/dist/vue-router.esm-browser.prod.js'));
-		app.use('/trivia/monitor/js/ext/i18next.js', express.static('node_modules/i18next/dist/esm/i18next.js'));
-		app.use('/trivia/monitor/js/ext/i18next-vue.js', express.static('node_modules/i18next-vue/dist/index.mjs'));
-		app.use('/trivia/monitor/js/ext/howler.js', express.static('node_modules/howler/dist/howler.min.js'));
-		app.use('/trivia/monitor/js/ext/wavesurfer.js', express.static('node_modules/wavesurfer.js/dist/wavesurfer.esm.js'));
-		app.use('/trivia/monitor/js/ext/qrcode-generator.js', express.static('node_modules/qrcode-generator/dist/qrcode.mjs'));
 		
 		app.get('/trivia/tts', async (req, res) => {
 			try {
