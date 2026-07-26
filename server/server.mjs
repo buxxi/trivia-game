@@ -1,9 +1,7 @@
 import express from 'express';
-import * as sass from 'sass';
 import { WebSocketServer } from 'ws';
 import {getTranslationBundle} from "./translation.mjs";
 import logger from "./logger.mjs";
-import {deprecations} from "sass";
 
 class TriviaServer {
 	constructor(port, avatars, languages, repository, healthCheck) {
@@ -17,31 +15,24 @@ class TriviaServer {
 	start() {
 		const app = express();
 
-		let clientStyle = sass.compile('client/css/client.scss', { silenceDeprecations: [deprecations["if-function"]]}).css;
-		let monitorStyle = sass.compile('monitor/css/monitor.scss', { silenceDeprecations: [deprecations["if-function"]]}).css;
-		
 		app.get('/trivia', (req, res) => {
 			let isClient = !!req.headers['user-agent'].match(/Mobi/);
 			res.redirect(isClient ? '/trivia/client' : '/trivia/monitor');
 		});
 		
 		app.use('/trivia/common', express.static('common'));
-		app.use('/trivia/common/fonts/fontawesome', express.static('node_modules/@fortawesome/fontawesome-free/webfonts'));
-		app.use('/trivia/common/fonts/ubuntu', express.static('node_modules/@fontsource/ubuntu/files'));
 		app.use('/trivia/translation/:language', (req, res) => { res.type("js").send(JSON.stringify(getTranslationBundle(req.params.language))); });
 
 		app.use('/trivia/assets', express.static('dist/assets'));
 
 		//Serve files for client
 		app.use('/trivia/client', express.static('dist/client'));
-		app.get('/trivia/client/css/client.css', (req, res) => { res.type("css").send(clientStyle); });
 		app.use('/trivia/client/avatars.json', (req, res) => { res.type("js").send(JSON.stringify(this._avatars)); });
 		app.use('/trivia/client/js/ext/qcode-decoder.js', express.static('node_modules/qcode-decoder/build/qcode-decoder.min.js'));
 
 		//Serve files for monitor
 		app.use('/trivia/monitor', express.static('dist/monitor'));
 		app.use('/trivia/monitor/img', express.static('monitor/img'));
-		app.get('/trivia/monitor/css/monitor.css', (req, res) => { res.type("css").send(monitorStyle); });
 		
 		app.get('/trivia/tts', async (req, res) => {
 			try {

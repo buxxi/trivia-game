@@ -1,3 +1,4 @@
+import '../../css/monitor.scss';
 import Lobby from '../components/Lobby.vue';
 import Question from '../components/Question.vue';
 import Results from '../components/Results.vue';
