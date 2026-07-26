@@ -6,7 +6,7 @@ import ClientToServerConnection from '../connection.mjs';
 import WakeLock from '../wakelock.mjs';
 import ClientState from '../clientstate.mjs';
 import {createRouter, createWebHashHistory} from 'vue-router';
-import {createApp, defineComponent} from 'vue';
+import {createApp} from 'vue';
 import logger from '../../../common/js/browser-logger.mjs';
 
 function uuidPolyfill() {
