@@ -1,7 +1,7 @@
 import '../../css/monitor.scss';
 import Lobby from '../components/lobby/Lobby.vue';
 import Question from '../components/Question.vue';
-import Results from '../components/Results.vue';
+import Results from '../components/results/Results.vue';
 import SoundController from '../sound.mjs';
 import MonitorToServerConnection from '../connection.mjs';
 import Monitor from '../components/Monitor.vue';
