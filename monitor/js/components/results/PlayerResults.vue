@@ -45,7 +45,7 @@ export default {
     }
   },
   props: ['results', 'minimized'],
-  emits: ['completed', 'celebrateVictory'],
+  emits: ['celebrateVictory'],
 
   computed: {
     resultsClass: function() {
@@ -81,28 +81,22 @@ export default {
       return classList;
     },
 
-    showScores() {
-      this.showNextScore();
+    async revealAllScores() {
+      while (await this.revealNextScore()) {
+        //Wait until all scores revealed
+      }
     },
 
-    showNextScore() {
-      //TODO: these timeout should only have one place where it's defined or listen to animation end event
-      this.showPlaceAbove--;
-      if (this.showPlaceAbove > 0) {
-        setTimeout(() => this.showNextScore(), 1000)
-      } else {
-        setTimeout(() => this.celebrateVictory(), 1000);
-        setTimeout(() => this.emitCompleted(), 5000);
-      }
+    revealNextScore() {
+      return new Promise((resolve, _) => {
+        this.showPlaceAbove--;
+        setTimeout(() => resolve(this.showPlaceAbove > 0), 1000);
+      });
     },
 
     celebrateVictory() {
       this.celebrate = true;
       this.$emit('celebrateVictory');
-    },
-
-    emitCompleted: function() {
-      this.$emit('completed');
     }
   },
 

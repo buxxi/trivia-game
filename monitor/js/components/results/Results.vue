@@ -1,6 +1,6 @@
 <template>
 <div>
-    <PlayerResults ref="playerResults" :results="results" :minimized="minimizedResults" v-on:completed="minimizeResults" v-on:celebrateVictory="celebrateVictory"/>
+    <PlayerResults ref="playerResults" :results="results" :minimized="minimizedResults"/>
     <Credits :scrolling="minimizedResults" :history="history"/>
 
     <div id="start">
@@ -24,19 +24,16 @@ export default {
 	methods: {
 		restart: function() {
 			this.$router.push({ path: "/", query : { gameId: this.gameId } });
-		},
-    celebrateVictory: function() {
-      this.sound.celebrateVictory();
-    },
-    minimizeResults: function() {
-      this.minimizedResults = true;
-    }
+		}
 	},
-	mounted: function() {
+	mounted: async function() {
 		if (!this.results && !this.history) {
 			this.$router.push({ path: "/", query : { gameId: this.gameId } });
 		}
-    this.$refs.playerResults.showScores();
+    await this.$refs.playerResults.revealAllScores();
+    this.sound.celebrateVictory();
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    this.minimizedResults = true;
 	}
 };
 </script>
