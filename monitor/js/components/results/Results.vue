@@ -1,6 +1,6 @@
 <template>
 <div>
-    <PlayerResults :results="results" :minimized="minimizedResults" v-on:completed="minimizeResults" v-on:celebrateVictory="celebrateVictory"/>
+    <PlayerResults ref="playerResults" :results="results" :minimized="minimizedResults" v-on:completed="minimizeResults" v-on:celebrateVictory="celebrateVictory"/>
     <Credits :scrolling="minimizedResults" :history="history"/>
 
     <div id="start">
@@ -22,20 +22,21 @@ export default {
 	},
 	props: ['gameId', 'results', 'history', 'sound'],
 	methods: {
-		restart : function() {
+		restart: function() {
 			this.$router.push({ path: "/", query : { gameId: this.gameId } });
 		},
-    celebrateVictory : function() {
+    celebrateVictory: function() {
       this.sound.celebrateVictory();
     },
     minimizeResults: function() {
       this.minimizedResults = true;
     }
 	},
-	created: function() {
+	mounted: function() {
 		if (!this.results && !this.history) {
 			this.$router.push({ path: "/", query : { gameId: this.gameId } });
 		}
+    this.$refs.playerResults.showScores();
 	}
 };
 </script>

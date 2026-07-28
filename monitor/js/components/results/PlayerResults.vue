@@ -81,6 +81,10 @@ export default {
       return classList;
     },
 
+    showScores() {
+      this.showNextScore();
+    },
+
     showNextScore() {
       //TODO: these timeout should only have one place where it's defined or listen to animation end event
       this.showPlaceAbove--;
@@ -104,7 +108,6 @@ export default {
 
   created() {
     this.showPlaceAbove = this.scores.length;
-    this.showNextScore();
   }
 }
 </script>
