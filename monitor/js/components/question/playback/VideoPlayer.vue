@@ -96,21 +96,20 @@ export default {
         minimizeQuestion: true,
         playing : false
     }},
-    props: ['view'],
     computed: {
         className() {
             return this._player.className;
         }
     },
     methods: {
-        start: async function() {
-            let url = new URL(this.view.url);
+        async start(view, _) {
+            let url = new URL(view.url);
 
             if (url.hostname === 'www.youtube.com') {
                 let videoId = url.searchParams.get('v');
                 this._player = new YoutubeVideoPlayer(this, videoId);
             } else {
-                this._player = new NormalVideoPlayer(this, this.view.url);
+                this._player = new NormalVideoPlayer(this, view.url);
             }
             try {
                 await Promise.race([this._player.start(), this._timeout()]);
@@ -120,8 +119,9 @@ export default {
             }
         },
 
-        stop: async function() {
+        async stop() {
             await this._player.stop();
+			this._player = {};
         },
 
         _timeout() {

@@ -12,14 +12,8 @@ export default {
         minimizeQuestion: true,
         timeout: 0
     }},
-    props: ['view'],
-    computed: {
-        src: function() {
-            return this.view.url;
-        }
-    },
     methods: {
-        start: async function() {
+        async start(view, _) {
             let self = this;
             self.timeout = -1;
 
@@ -47,15 +41,15 @@ export default {
                 });
 
                 try {
-                    await self.player.load(self.src);
+                    await self.player.load(view.url);
                 } catch (e) {
-                    reject(new Error(e + ": " + self.src));
+                    reject(new Error(e + ": " + view.url));
                 }
             });
         },
 
-        stop: async function() {
-            if (this.timeout) {
+        async stop() {
+			if (this.timeout) {
                 clearTimeout(this.timeout);
             }
             this.player.stop();

@@ -1,15 +1,15 @@
 <template>
-<transition-group tag="ul" v-if="categories.length !== 0" v-bind:class="{'spinner' : true, 'highlight' : done}" v-bind:style="{'transition-duration' : duration + 'ms'}">
-    <li v-for="cat in categories" v-bind:key="cat.index" v-on:transitionstart="transitionStart" v-on:transitionend="transitionEnd">
-        <i v-if="cat.icon.indexOf('url:') === -1" v-bind:class="['fa','fa-fw',cat.icon]"></i>
-        <img v-if="cat.icon.indexOf('url:') === 0" v-bind:src="cat.icon.substring(4)" alt=""/>
+<transition-group tag="ul" v-if="categories.length !== 0" :class="{'spinner' : true, 'highlight' : done}" :style="{'transition-duration' : duration + 'ms'}">
+    <li v-for="cat in categories" :key="cat.index" @transitionstart="transitionStart" @transitionend="transitionEnd">
+        <i v-if="cat.icon.indexOf('url:') === -1" :class="['fa','fa-fw',cat.icon]"></i>
+        <img v-if="cat.icon.indexOf('url:') === 0" :src="cat.icon.substring(4)" alt=""/>
         <span>{{cat.name}}</span>
     </li>
 </transition-group>
 </template>
 
 <script>
-import logger from '../../../common/js/browser-logger.mjs';
+import logger from '../../../../common/js/browser-logger.mjs';
 
 const MIN_SPINS = 15;
 const RAMPDOWN_DURATIONS = [75, 100, 125, 175, 225, 300, 400, 600, 900, 1500];
@@ -41,32 +41,26 @@ class TransitionCounter {
 
 export default {
     data: function() { return {
-		duration: NORMAL_DURATION,
-        done: false,
-        stepsLeft: -1,
-        totalSteps: -1
+		  duration: NORMAL_DURATION,
+      done: false,
+      stepsLeft: -1,
+      totalSteps: -1,
+      categories: []
     } },
-    props: ['categories', 'correct'],
     methods: {
-        start: function() {
-            return new Promise(async (resolve, reject) => {
-                this.totalSteps = this._calculateSteps();
-                this.stepsLeft = this.totalSteps;
+        async start(categories, correct) {
+            this.categories = categories.map((category, index) => Object.assign( { index, ...category }));
+            this.totalSteps = this._calculateSteps(correct);
+            this.stepsLeft = this.totalSteps;
 
-                while (!this.done) {
-                    try {
-                        this.done = await this.flip();
-                        if (this.done) {
-                            resolve();
-                        }
-                    } catch (e) {
-                        reject(e);
-                    }
-                }
-            });
+            await this.$nextTick();
+
+            while (!this.done) {
+              this.done = await this.flip();
+            }
         },
 
-        flip: async function() {
+        async flip() {
             this.$emit('flip');
 
             this.duration = this._calculateDuration();
@@ -96,19 +90,19 @@ export default {
             return true;
         },
 
-        transitionStart: function(event) {
+        transitionStart(event) {
             if (event.propertyName === 'transform') {
                 this.transitionCounter.countUp();
             }
         },
 
-        transitionEnd: function(event) {
+        transitionEnd(event) {
             if (event.propertyName === 'transform') {
                 this.transitionCounter.countDown();
             }
         },
 
-        _detectStuck: function() {
+        _detectStuck() {
             return new Promise((_, reject) => {
                 let checkDuration = this.duration * 2;
                 if (checkDuration < 250) {
@@ -120,10 +114,10 @@ export default {
             });
         },
 
-        _calculateSteps: function() {
+        _calculateSteps(correct) {
             let max_spins = this.categories.length + MIN_SPINS - 1;
             let indexesOfChosen = this.categories.map((current, index) => {
-                if (current.name === this.correct) {
+                if (current.name === correct.name) {
                     return index;
                 } else {
                     return -1;
@@ -141,13 +135,12 @@ export default {
             return possibleSpins[(possibleSpins.length * Math.random() << 0)];
         },
 
-        _calculateDuration: function() {
+        _calculateDuration() {
             if (this.stepsLeft < RAMPDOWN_DURATIONS.length) {
                 return RAMPDOWN_DURATIONS[RAMPDOWN_DURATIONS.length - this.stepsLeft];
             }
             return NORMAL_DURATION;
-        },
-
+        }
     }
 }
 </script>

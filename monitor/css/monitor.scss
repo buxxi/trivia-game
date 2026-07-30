@@ -309,7 +309,7 @@ html {
 			stroke : triviacolors.$incorrect;
 		}
 	}
-	&:before {
+	.question:has(&):before {
 		--timer-warning-width: 0em;
 		content: "";
 		position: fixed;
