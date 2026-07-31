@@ -2,7 +2,7 @@
   <div class="attribution">
     <h1><i class="fas fa-fw fa-heart" style="color : #aa0000"></i>{{ $t('poweredBy') }}</h1>
     <ul class="carousel">
-      <li v-for="(site, index) in attributions" v-bind:class="{show : index === carouselIndex}"><a v-bind:href="site.url">{{ site.name }}</a></li>
+      <li v-for="(site, index) in attributions" :class="{show : index === carouselIndex}"><a :href="site.url">{{ site.name }}</a></li>
     </ul>
   </div>
 </template>

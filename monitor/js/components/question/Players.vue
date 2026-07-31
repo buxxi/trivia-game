@@ -2,16 +2,14 @@
 	<transition-group name="playerposition" tag="ul" class="playerlist">
 		<li v-for="player in players" :key="player.id" :class="{'guessed' : player.guessed, 'score-change-positive': player.achievedPoints, 'score-change-negative': player.lostPoints}">
 			<img src="../../../img/crown.png" class="leader" v-if="isLeadingPlayer(player)" alt=""/>
-			<div class="avatar" :data-score="playerNameOrPoints(player)" :data-multiplier="player.multiplier" :style="{'background-color': player.color, 'border-color': player.color}">
-				<img v-if="player.connected && !hidden" :src="'../common/img/avatars/' + player.avatar + '.png'" alt=""/>
-				<i v-if="player.connected && hidden" class="fa-solid fa-question"></i>
-				<i v-if="!player.connected" class="fa-solid fa-bolt"></i>
-			</div>
+			<Avatar :score="playerNameOrPoints(player)" :multiplier="player.multiplier" :color="player.color" :avatar="player.avatarOrIcon"/>
 		</li>
 	</transition-group>
 </template>
 
 <script>
+import Avatar from "../Avatar.vue";
+
 class PlayerData {
 	constructor(id, player) {
 		this.id = id;
@@ -36,6 +34,16 @@ class PlayerData {
 		this.pointChange = 0;
 	}
 
+	get avatarOrIcon() {
+		if (this.connected && !this.hidden) {
+			return this.avatar;
+		} else if (this.connected && this.hidden) {
+			return 'fa-question';
+		} else {
+			return 'fa-bolt';
+		}
+	}
+
 	get achievedPoints() {
 		return this.pointChange > 0;
 	}
@@ -46,6 +54,7 @@ class PlayerData {
 }
 
 export default {
+	components: {Avatar},
 	data: function () {
 		return {
 			showNames: false,

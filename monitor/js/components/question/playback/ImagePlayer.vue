@@ -1,6 +1,6 @@
 <template>
 	<div class="image" id="player">
-		<img v-bind:src="img.src" v-if="playing" alt=""/>
+		<img :src="img.src" v-if="playing" alt=""/>
 	</div>
 </template>
 

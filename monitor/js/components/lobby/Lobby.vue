@@ -20,7 +20,7 @@
 		<div class="message">{{ message }}</div>
 	</div>
 	<div id="start">
-		<a v-on:click="startGame()" v-bind:class="startMessage !== undefined ? 'disabled' : undefined" v-bind:title="startMessage !== undefined ? $t(startMessage) : $t('ready')"><i class="fas fa-fw fa-play"></i></a>
+		<a v-on:click="startGame()" :class="startMessage !== undefined ? 'disabled' : undefined" :title="startMessage !== undefined ? $t(startMessage) : $t('ready')"><i class="fas fa-fw fa-play"></i></a>
 	</div>
 </div>
 </template>
@@ -30,13 +30,13 @@ import { useTranslation } from "i18next-vue";
 import logger from '../../../../common/js/browser-logger.mjs';
 import Connect from './Connect.vue';
 import Rules from "./Rules.vue";
-import Attribution from "./Attribution.vue";
+import AttributionCarousel from "./AttributionCarousel.vue";
 import PlayersJoined from "./PlayersJoined.vue";
 import GeneralSettings from "./GeneralSettings.vue";
 import CategorySettings from "./CategorySettings.vue";
 
 export default {
-  components: {CategorySettings, GeneralSettings, PlayersJoined, Attribution, Rules, Connect},
+  components: {CategorySettings, GeneralSettings, PlayersJoined, Attribution: AttributionCarousel, Rules, Connect},
 	data: function() { return {
 		config: {
 			questions : 25,

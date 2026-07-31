@@ -1,15 +1,15 @@
 <template>
 <transition-group tag="ul" v-if="categories.length !== 0" :class="{'spinner' : true, 'highlight' : done}" :style="{'transition-duration' : duration + 'ms'}">
     <li v-for="cat in categories" :key="cat.index" @transitionstart="transitionStart" @transitionend="transitionEnd">
-        <i v-if="cat.icon.indexOf('url:') === -1" :class="['fa','fa-fw',cat.icon]"></i>
-        <img v-if="cat.icon.indexOf('url:') === 0" :src="cat.icon.substring(4)" alt=""/>
-        <span>{{cat.name}}</span>
+		<CategoryIcon :icon="cat.icon" />
+        <span class="text">{{cat.name}}</span>
     </li>
 </transition-group>
 </template>
 
 <script>
 import logger from '../../../../common/js/browser-logger.mjs';
+import CategoryIcon from "../CategoryIcon.vue";
 
 const MIN_SPINS = 15;
 const RAMPDOWN_DURATIONS = [75, 100, 125, 175, 225, 300, 400, 600, 900, 1500];
@@ -40,6 +40,7 @@ class TransitionCounter {
 }
 
 export default {
+	components: {CategoryIcon},
     data: function() { return {
 		  duration: NORMAL_DURATION,
       done: false,

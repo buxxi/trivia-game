@@ -248,7 +248,7 @@ html {
 	&.highlight li:nth-child(4) {
 		background-color : triviacolors.$correct !important;
 		transition-duration: 0.1s !important;
-		* {
+		span {
 			transition: font-size 0.5s linear;
 			font-size : 1.75em;
 		}
