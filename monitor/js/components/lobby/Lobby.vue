@@ -17,7 +17,7 @@
 		</div>
 
 		<div v-if="message">
-			<div class="message">{{ message }}</div>
+			<ErrorMessage>{{ message }}</ErrorMessage>
 		</div>
 		<div id="start">
 			<a v-on:click="startGame()" :class="startMessage !== undefined ? 'disabled' : undefined" :title="startMessage !== undefined ? $t(startMessage) : $t('ready')"><i class="fas fa-fw fa-play"></i></a>
@@ -34,9 +34,10 @@ import AttributionCarousel from "./AttributionCarousel.vue";
 import PlayersJoined from "./PlayersJoined.vue";
 import GeneralSettings from "./GeneralSettings.vue";
 import CategorySettings from "./CategorySettings.vue";
+import ErrorMessage from "../ErrorMessage.vue";
 
 export default {
-	components: {CategorySettings, GeneralSettings, PlayersJoined, Attribution: AttributionCarousel, Rules, Connect},
+	components: {ErrorMessage, CategorySettings, GeneralSettings, PlayersJoined, Attribution: AttributionCarousel, Rules, Connect},
 	data: function () {
 		return {
 			config: {
@@ -173,3 +174,70 @@ export default {
 };
 </script>
 
+<style lang="scss">
+@use "../../../../common/css/colors.scss" as triviacolors;
+
+.lobby {
+	color: triviacolors.$font;
+
+	.settings {
+		float: left;
+		text-align: center;
+		width: 33%;
+	}
+
+	.middle {
+		float: left;
+		text-align: center;
+		width: 42%;
+
+		.playerlist {
+			min-height: 9em;
+		}
+
+		p {
+			font-size: 2em;
+			min-height: 4.5em;
+		}
+	}
+
+	.questionCount {
+		background-color: triviacolors.$primary_border;
+		border: 0.2em solid triviacolors.$primary;
+		color: triviacolors.$font;
+		padding: 0.5em;
+		margin: 0.5em 0;
+		border-radius: 1em;
+	}
+
+	.message {
+		position: absolute;
+		bottom: 2em;
+		left: 30%;
+		right: 30%;
+		white-space: nowrap;
+		text-align: center;
+	}
+}
+
+#start a {
+	background-color: triviacolors.$primary;
+	border-radius: 1em;
+	border: 0.1em solid triviacolors.$primary_border;
+	color: triviacolors.$font;
+	cursor: pointer;
+	font-size: 2em;
+	margin: 1em;
+	padding: 1em;
+	position: fixed;
+	right: 0;
+	bottom: 0;
+
+	&.disabled {
+		background-color: triviacolors.$incorrect;
+		border: 0.1em solid triviacolors.$incorrect_border;
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+}
+</style>

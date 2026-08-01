@@ -3,15 +3,15 @@
 		<h1><i class="fas fa-fw fa-list-ul"></i>{{ $t('categories.header') }}</h1>
 		<ul class="circle-checkboxes" :class="{'list-view': listView}">
 			<CircleCheckbox v-for="category in sortedCategories"
-				:key="category.type"
-				:id="category.type"
-				v-model="config.categories[category.type]"
-				:title="category.name"
-				:class="{'loaded': !config.categories[category.type] && category.preload.done, 'failed': category.preload.failed}"
-				:isLoaded="category.preload.done"
-				:isFailed="category.preload.failed"
-				@change="preload(category.type)"
-				@contextmenu="clearCache(category.type)"
+			                :key="category.type"
+			                :id="category.type"
+			                v-model="config.categories[category.type]"
+			                :title="category.name"
+			                :class="{'loaded': !config.categories[category.type] && category.preload.done, 'failed': category.preload.failed}"
+			                :isLoaded="category.preload.done"
+			                :isFailed="category.preload.failed"
+			                @change="preload(category.type)"
+			                @contextmenu="clearCache(category.type)"
 			>
 				<CategoryIcon :icon="category.icon"/>
 
@@ -160,3 +160,57 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+@use "../../../../common/css/colors.scss" as triviacolors;
+
+.circle-checkboxes.list-view {
+	font-size: 0.75em;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	align-items: self-start;
+	max-height: 50vh;
+	overflow: auto;
+	padding-bottom: 1em;
+	scrollbar-width: auto;
+	scrollbar-color: triviacolors.$primary transparent;
+	scrollbar-gutter: stable;
+
+	.circle-checkbox {
+		flex: 1 1;
+		display: block;
+
+		label:after {
+			padding: 0 0.5em;
+			content: attr(title);
+		}
+	}
+}
+
+button {
+	align-items: center;
+	background-color: triviacolors.$primary;
+	border: 0.2em solid triviacolors.$primary_border;
+	border-radius: 0.5em;
+	cursor: pointer;
+	font-weight: bold;
+	line-height: 1em;
+	margin: 0.5em;
+	padding: 0.5em;
+	color: white;
+	text-decoration: none;
+	overflow: hidden;
+	outline: none;
+
+	&:active {
+		border-color: triviacolors.$secondary_border;
+	}
+
+	&[disabled=""] {
+		background-color: triviacolors.$incorrect;
+		border-color: triviacolors.$incorrect_border;
+		cursor: not-allowed;
+	}
+}
+</style>

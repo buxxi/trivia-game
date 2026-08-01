@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import BlankPlayer from "./BlankPlayer.vue";
+
 class YoutubeVideoPlayer {
 	constructor(delegate, videoId) {
 		this._delegate = delegate;
@@ -98,6 +100,7 @@ export default {
 			playing: false
 		}
 	},
+	extends: BlankPlayer,
 	computed: {
 		className() {
 			return this._player.className;
@@ -137,3 +140,40 @@ export default {
 }
 </script>
 
+<style lang="scss">
+#player {
+	&.youtube {
+		&.playing:before {
+			content: "";
+			display: block;
+			width: 100%;
+			position: absolute;
+			background-color: black;
+			height: 3.75em;
+			top: 0;
+		}
+
+		&.playing:after {
+			content: "";
+			display: block;
+			width: 100%;
+			position: absolute;
+			background-color: black;
+			height: 3.75em;
+			bottom: 0;
+		}
+	}
+
+	&.html5video {
+		#video {
+			width: 100%;
+			height: 100%;
+
+			video {
+				width: 100%;
+				height: 100%;
+			}
+		}
+	}
+}
+</style>

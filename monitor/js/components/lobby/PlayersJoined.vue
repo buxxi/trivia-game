@@ -27,3 +27,15 @@ export default {
 }
 </script>
 
+<style lang="scss">
+
+.playerlist {
+	.kick {
+		&:hover {
+			cursor: not-allowed;
+			opacity : 0.5;
+		}
+	}
+}
+</style>
+

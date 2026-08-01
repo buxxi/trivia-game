@@ -5,16 +5,18 @@
 </template>
 
 <script>
+import BlankPlayer from "./BlankPlayer.vue";
+
 export default {
 	data: function () {
 		return {
 			player: {},
-			pauseMusic: false,
 			minimizeQuestion: true,
 			playing: false,
 			img: undefined
 		}
 	},
+	extends: BlankPlayer,
 	methods: {
 		async start(view, _) {
 			let self = this;
@@ -41,3 +43,11 @@ export default {
 }
 </script>
 
+<style lang="scss">
+#player.image {
+	img {
+		max-height: 100%;
+		min-height: 30em;
+	}
+}
+</style>

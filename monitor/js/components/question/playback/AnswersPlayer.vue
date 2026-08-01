@@ -1,24 +1,27 @@
 <template>
 	<div class="list-answers" id="player">
 		<ol v-if="playing">
-			<li class="button-icon-A">{{ answers.A }}</li>
-			<li class="button-icon-B">{{ answers.B }}</li>
-			<li class="button-icon-C">{{ answers.C }}</li>
-			<li class="button-icon-D">{{ answers.D }}</li>
+			<AnswerButton v-for="answer in ['A', 'B', 'C', 'D']" tag="li" :answer="answer">
+				{{ answers[answer] }}
+			</AnswerButton>
 		</ol>
 	</div>
 </template>
 
 <script>
+import BlankPlayer from "./BlankPlayer.vue";
+import AnswerButton from "../../../../../common/js/components/AnswerButton.vue";
+
 export default {
+	components: {AnswerButton},
 	data: function () {
 		return {
-			pauseMusic: false,
 			minimizeQuestion: true,
 			playing: false,
 			answers: {}
 		}
 	},
+	extends: BlankPlayer,
 	methods: {
 		async start(_, answers) {
 			this.answers = answers;
@@ -32,4 +35,21 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+#player.list-answers ol {
+	font-size: 2em;
+
+	li {
+		margin-bottom: 2em;
+		line-height: 2em;
+
+		&:before {
+			margin-left: -4em;
+			padding: 1em;
+			font-size: 0.75em;
+		}
+	}
+}
+</style>
 

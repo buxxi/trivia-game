@@ -1,0 +1,22 @@
+@use "/node_modules/@fontsource/ubuntu/scss/metadata.scss" as ubuntu;
+@use "/node_modules/@fontsource-utils/scss/src/mixins.scss" as fontsource;
+
+@use "/node_modules/@fortawesome/fontawesome-free/scss/_variables.scss" with (
+	$font-path: "/node_modules/@fortawesome/fontawesome-free/webfonts"
+);
+@use "/node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@use "/node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+
+@include fontsource.faces(
+		$metadata: ubuntu.$metadata,
+		$weights: (400),
+		$styles: all
+);
+
+body {
+	font-family: 'Ubuntu' !important;
+}
+
+button {
+	font-family: 'Ubuntu' !important;
+}

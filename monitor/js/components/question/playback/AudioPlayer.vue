@@ -4,6 +4,7 @@
 
 <script>
 import WaveSurfer from 'wavesurfer.js';
+import BlankPlayer from "./BlankPlayer.vue";
 
 export default {
 	data: function () {
@@ -14,6 +15,7 @@ export default {
 			timeout: 0
 		}
 	},
+	extends: BlankPlayer,
 	methods: {
 		async start(view, _) {
 			let self = this;
@@ -61,3 +63,11 @@ export default {
 }
 </script>
 
+<style lang="scss">
+#player.wavesurfer {
+	display : block !important;
+	position : absolute;
+	top : 50%;
+	transform : scaleY(1.5);
+}
+</style>

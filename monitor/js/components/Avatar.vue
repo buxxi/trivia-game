@@ -17,3 +17,70 @@ export default {
 }
 </script>
 
+<style lang="scss">
+@use "../../../common/css/colors.scss" as triviacolors;
+.avatar {
+	border-radius: 5em;
+	display: inline-block;
+	overflow: hidden;
+	padding: 0.9em;
+	img {
+		height: 4em;
+		width: 4em;
+	}
+
+	&[data-multiplier]::before {
+		background-color : inherit;
+		border-radius: 2em;
+		color: triviacolors.$font;
+		content: attr(data-multiplier) "x";
+		font-weight: bold;
+		margin-left: -1em;
+		margin-top: -0.8em;
+		padding: 0.25em;
+		position: absolute;
+		text-align : center;
+		text-shadow: 0 0 0.2em black;
+		width: 1.2em;
+	}
+
+	&[data-score]::after {
+		background-color : triviacolors.$secondary;
+		border-color : inherit;
+		border-style : solid;
+		border-width : 0.25em;
+		border-radius: 0.5em;
+		color: triviacolors.$primary;
+		content: attr(data-score);
+		display: block;
+		font-weight: bold;
+		margin-left: -1em;
+		margin-top: -0.25em;
+		overflow : hidden;
+		position: absolute;
+		text-align: center;
+		width: 5.5em;
+	}
+
+	&[data-ping]:hover:after {
+		content: "ping " attr(data-ping) "ms";
+	}
+
+	i {
+		display : inline-block;
+		width : 1em;
+		font-size: 3em;
+		padding : 0.2em;
+	}
+
+	.guessed & {
+		img:first-of-type {
+			filter: invert(100%);
+		}
+		&::after {
+			background-color : triviacolors.$primary;
+			color : triviacolors.$font;
+		}
+	}
+}
+</style>

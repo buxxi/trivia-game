@@ -7,15 +7,17 @@
 </template>
 
 <script>
+import BlankPlayer from "./BlankPlayer.vue";
+
 export default {
 	data: function () {
 		return {
-			pauseMusic: false,
 			minimizeQuestion: true,
 			playing: false,
-			list : []
+			list: []
 		}
 	},
+	extends: BlankPlayer,
 	methods: {
 		async start(view, _) {
 			this.list = view.list;
@@ -29,4 +31,10 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+#player.list ol {
+	font-size: 2em;
+}
+</style>
 

@@ -7,15 +7,17 @@
 </template>
 
 <script>
+import BlankPlayer from "./BlankPlayer.vue";
+
 export default {
 	data: function () {
 		return {
-			pauseMusic: false,
 			minimizeQuestion: true,
 			playing: false,
 			quote: undefined
 		}
 	},
+	extends: BlankPlayer,
 	methods: {
 		async start(view, _) {
 			this.quote = view.quote;
@@ -29,4 +31,31 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+@use "../../../../../common/css/colors.scss" as triviacolors;
+
+#player.quote {
+	color: triviacolors.$font;
+
+	.fa-quote-left {
+		float: left;
+		font-size: 4em;
+		left: -1em;
+		position: relative;
+	}
+
+	p {
+		clear: both;
+		font-size: 3em;
+	}
+
+	.fa-quote-right {
+		float: right;
+		font-size: 4em;
+		position: relative;
+		right: -1em;
+	}
+}
+</style>
 

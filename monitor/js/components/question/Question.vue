@@ -11,7 +11,7 @@
 		</div>
 		<div id="content" :class="state">
 			<component :is="playbackPlayer" ref="playback"/>
-			<div class="message" v-if="state === 'error'">{{ error }}</div>
+			<ErrorMessage v-if="state === 'error'">{{ error }}</ErrorMessage>
 		</div>
 		<div id="correct" v-if="state === 'post-question'" :class="'button-icon-' + correct['key']">{{ correct['answer'] }}</div>
 		<div id="round" v-if="state === 'loading'" :data-round="$t('states.question', {index:questionIndex})"></div>
@@ -36,6 +36,7 @@ import VideoPlayer from "./playback/VideoPlayer.vue";
 import Players from "./Players.vue";
 import GameProgress from "./GameProgress.vue";
 import Timer from "./Timer.vue";
+import ErrorMessage from "../ErrorMessage.vue";
 
 function resolveRef(app, ref) {
 	return new Promise((resolve, _) => {
@@ -162,6 +163,7 @@ export default {
 	},
 	props: ['gameId', 'connection', 'sound', 'lobbyPlayers'],
 	components: {
+		ErrorMessage,
 		Timer,
 		GameProgress,
 		Players,
@@ -231,3 +233,221 @@ export default {
 };
 </script>
 
+<style lang="scss">
+@use "../../../../common/css/colors.scss" as triviacolors;
+
+.question {
+	#content, #category-spinner {
+		bottom: 10em;
+		left: 2em;
+		position: fixed;
+		right: 2em;
+		text-align: center;
+		top: 6em;
+	}
+
+	#content.pre-question {
+		iframe {
+			opacity: 0;
+		}
+	}
+
+	.title {
+		color: triviacolors.$font;
+		font-size: 3em;
+		font-size: 6em;
+		font-weight: bold;
+		text-align: center;
+		text-shadow: 0.025em 0.025em 0.025em grey;
+		transform: scale(0.5) translateY(-50%);
+
+		&.full-animation {
+			animation: resize-title 3s linear normal forwards;
+			display: block;
+			opacity: 1;
+			position: fixed;
+			top: 50%;
+			transform: scale(2) translateY(-50%);
+			width: 100%;
+		}
+
+		&.full-static {
+			display: block;
+			opacity: 1;
+			position: fixed;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 100%;
+		}
+	}
+
+	#correct {
+		animation: resize-correct 1s linear normal;
+		color: triviacolors.$font;
+		font-size: 3em;
+		font-size: 6em;
+		font-weight: bold;
+		position: fixed;
+		text-align: center;
+		text-align: center;
+		text-shadow: 0.025em 0.025em 0.025em grey;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 100%;
+		z-index: 3;
+		vertical-align: middle;
+	}
+
+	.index {
+		left: 0.5em;
+		position: fixed;
+		top: 0.75em;
+		font-size: 1.35em;
+	}
+
+	.timer {
+		position: fixed;
+		right: 0.5em;
+		top: 0.75em;
+		font-size: 1.35em;
+	}
+
+	.top {
+		position: fixed;
+		width: 100%;
+		z-index: 2;
+	}
+
+	.bottom {
+		bottom: 0;
+		position: fixed;
+		text-align: center;
+		width: 100%;
+	}
+
+	.error .message {
+		font-size: 2em;
+	}
+
+	#round {
+		position: fixed;
+		background-color: triviacolors.$primary_border;
+		left: 0;
+		top: 40%;
+		width: 100%;
+		z-index: 2;
+		font-size: 10em;
+		bottom: 40%;
+		border-style: solid;
+		border-width: 5px 0;
+		border-color: triviacolors.$primary;
+		box-shadow: 0 0 50px triviacolors.$primary;
+		opacity: 0;
+		animation: round 3s linear;
+
+		&:before {
+			content: attr(data-round);
+			-webkit-background-clip: text;
+			background-clip: text;
+			color: rgba(0, 0, 0, 0);
+			position: absolute;
+			top: 0.1em;
+			left: 0;
+			width: 100%;
+			text-align: center;
+			background-image: linear-gradient(triviacolors.$font 55%, rgba(0, 0, 0, 0) 0%);
+			animation: round-from-left 3s linear;
+		}
+
+		&:after {
+			content: attr(data-round);
+			-webkit-background-clip: text;
+			background-clip: text;
+			color: rgba(0, 0, 0, 0);
+			position: absolute;
+			top: 0.1em;
+			left: 0;
+			width: 100%;
+			text-align: center;
+			background-image: linear-gradient(rgba(0, 0, 0, 0) 55%, triviacolors.$font 0%);
+			animation: round-from-right 3s linear;
+		}
+	}
+}
+
+@keyframes resize-title {
+	0% {
+		transform: scale(0.5) translateY(-50%);
+	}
+	10% {
+		transform: scale(2) translateY(-50%);
+	}
+	20% {
+		transform: scale(1) translateY(-50%);
+	}
+	90% {
+		transform: scale(1) translateY(-50%);
+	}
+	100% {
+		transform: scale(1) translateY(-50%);
+	}
+}
+
+@keyframes resize-correct {
+	0% {
+		transform: translateY(-50%) translateX(250%) skew(-45deg, 0deg);
+	}
+	75% {
+		transform: translateY(-50%) translateX(0) skew(-20deg, 0deg);
+	}
+	100% {
+		transform: translateY(-50%) translateX(0) skew(0);
+	}
+}
+
+@keyframes round {
+	0% {
+		opacity: 0
+	}
+	10% {
+		opacity: 1
+	}
+	70% {
+		opacity: 1
+	}
+	80% {
+		opacity: 0
+	}
+}
+
+@keyframes round-from-left {
+	0% {
+		margin-left: -150vw
+	}
+	20% {
+		margin-left: 0
+	}
+	70% {
+		margin-left: 0
+	}
+	100% {
+		margin-left: 150vw
+	}
+}
+
+@keyframes round-from-right {
+	0% {
+		margin-left: 150vw
+	}
+	20% {
+		margin-left: 0
+	}
+	70% {
+		margin-left: 0
+	}
+	100% {
+		margin-left: -150vw
+	}
+}
+
+</style>

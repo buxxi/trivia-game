@@ -1,13 +1,19 @@
 @use "sass:color";
 
 @use "../../common/css/colors.scss" as triviacolors;
-@use "../../common/css/trivia.scss" as *;
+@use "../../common/css/fonts.scss" as fonts;
 
 html {
 	$gradient_background: color.adjust(triviacolors.$background, $alpha: -0.8, $space: hsl);
 	background:
 			linear-gradient(triviacolors.$background_secondary 0%, $gradient_background 100%),
 			black;
+	height : 100%;
+}
+
+body {
+	color : triviacolors.$font;
+	overflow : hidden;
 }
 
 .join {
@@ -207,4 +213,52 @@ button {
 	h3 {
 		font-size: 2em;
 	}
+}
+
+/* TODO: use the custom components instead for everything below */
+@mixin button-icon($color, $text) {
+	$border: color.adjust($color, $lightness: -10%, $space: hsl);
+	&:before {
+		background-color : $color;
+		border-color : $border;
+		border-radius: 1.5em;
+		border-style : solid;
+		border-width: 0.1em;
+		color : triviacolors.$font;
+		content : $text;
+		display : inline-block;
+		font-weight: bold;
+		margin-right : 0.2em;
+		padding : 0.2em;
+		font-size: 1.5em;
+		line-height: 1em;
+		width: 1em;
+		text-align: center;
+		flex-shrink: 0;
+	}
+}
+
+.button-icon-A {
+	@include button-icon(triviacolors.$A_color, "A");
+}
+
+.button-icon-B {
+	@include button-icon(triviacolors.$B_color, "B");
+}
+
+.button-icon-C {
+	@include button-icon(triviacolors.$C_color, "C");
+}
+
+.button-icon-D {
+	@include button-icon(triviacolors.$D_color, "D");
+}
+
+.message {
+	background-color: triviacolors.$incorrect;
+	border: 0.2em solid triviacolors.$incorrect_border;
+	color: triviacolors.$font;
+	padding: 0.5em;
+	margin: 0.5em 0;
+	border-radius: 1em;
 }

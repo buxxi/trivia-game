@@ -128,3 +128,86 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+@use "../../../../common/css/colors.scss" as triviacolors;
+
+.playerlist {
+	li {
+		&.playerposition-move {
+			transition: transform 1s ease;
+		}
+	}
+}
+
+.score-change-positive .avatar {
+	animation: glow-positive 1s linear normal;
+	box-shadow: 0 0 3em triviacolors.$correct, 0 0 1.5em triviacolors.$correct;
+
+	img {
+		filter: contrast(200%);
+	}
+
+	&::after {
+		background-color: triviacolors.$correct;
+		border-color: triviacolors.$correct_border;
+		color: triviacolors.$font;
+	}
+}
+
+.score-change-negative .avatar {
+	animation: glow-negative 1s linear normal;
+	box-shadow: 0 0 3em triviacolors.$incorrect, 0 0 1.5em triviacolors.$incorrect;
+
+	img {
+		filter: grayscale(100%);
+	}
+
+	&::after {
+		background-color: triviacolors.$incorrect;
+		border-color: triviacolors.$incorrect_border;
+		color: triviacolors.$font;
+	}
+}
+
+.score-change-negative ~ .score {
+	color: triviacolors.$font;
+}
+
+.score-change-positive ~ .score {
+	color: triviacolors.$font;
+}
+
+.leader {
+	position: absolute;
+	z-index: 2;
+	margin-left: 1.35em;
+	margin-top: -1em;
+	width: 3em;
+	height: 3em;
+}
+
+@keyframes glow-negative {
+	0% {
+		box-shadow: 0 0 0 triviacolors.$incorrect, 0 0 0 triviacolors.$incorrect
+	}
+	50% {
+		box-shadow: 0 0 6em triviacolors.$incorrect, 0 0 3em triviacolors.$incorrect
+	}
+	100% {
+		box-shadow: 0 0 3em triviacolors.$incorrect, 0 0 1.5em triviacolors.$incorrect
+	}
+}
+
+@keyframes glow-positive {
+	0% {
+		box-shadow: 0 0 0 triviacolors.$correct, 0 0 0 triviacolors.$correct
+	}
+	50% {
+		box-shadow: 0 0 6em triviacolors.$correct, 0 0 3em triviacolors.$correct
+	}
+	100% {
+		box-shadow: 0 0 3em triviacolors.$correct, 0 0 1.5em triviacolors.$correct
+	}
+}
+</style>

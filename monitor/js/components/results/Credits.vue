@@ -36,3 +36,72 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+@use "../../../../common/css/colors.scss" as triviacolors;
+
+#credits {
+	color: triviacolors.$font;
+	position: relative;
+	text-align: center;
+	width: 50%;
+	left: 0;
+	top: 100vh;
+
+	&.scrolling {
+		animation: 1s scroll linear infinite;
+
+		&:hover {
+			animation-play-state: paused;
+		}
+	}
+
+	.attribution {
+		h1 {
+			font-size: 4em;
+		}
+
+		a {
+			color: triviacolors.$primary;
+			font-weight: bold;
+			text-decoration: none;
+		}
+
+		&:hover {
+			ul {
+				visibility: visible;
+			}
+		}
+
+		ul {
+			list-style: none;
+			visibility: hidden;
+		}
+
+		span {
+			font-size: 6em;
+		}
+	}
+
+	h2 {
+		font-size: 2em;
+		text-align: left;
+		margin: 0.5em 0;
+	}
+
+	& > div {
+		height: 50vh;
+	}
+}
+
+@keyframes scroll {
+	0% {
+		top: 100vh;
+		transform: translateY(0)
+	}
+	100% {
+		top: 0;
+		transform: translateY(-100%)
+	}
+}
+</style>

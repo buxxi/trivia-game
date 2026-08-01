@@ -1,4 +1,3 @@
-import '../../css/monitor.scss';
 import Lobby from '../components/lobby/Lobby.vue';
 import Question from '../components/question/Question.vue';
 import Results from '../components/results/Results.vue';
