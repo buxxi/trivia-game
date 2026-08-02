@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import logger from "../../../../common/js/browser-logger.mjs";
+import logger from "../../../common/js/browser-logger.mjs";
 import {useTranslation} from "i18next-vue";
 import CategoryIcon from "../CategoryIcon.vue";
 import CircleCheckbox from "./CircleCheckbox.vue";
@@ -162,7 +162,7 @@ export default {
 </script>
 
 <style lang="scss">
-@use "../../../../common/css/colors.scss" as triviacolors;
+@use "../../../common/css/colors" as triviacolors;
 
 .circle-checkboxes.list-view {
 	font-size: 0.75em;

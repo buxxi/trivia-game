@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import avatars from '../avatars.mjs';
+import avatars from '../js/avatars.mjs';
 let urls = {};
 for (const avatar of avatars) {
 	urls[avatar] = new URL(`../../img/avatars/${avatar}.png`, import.meta.url).href;
@@ -28,7 +28,7 @@ export default {
 </script>
 
 <style lang="scss">
-@use "../../css/colors" as triviacolors;
+@use "../css/colors" as triviacolors;
 .avatar {
 	border-radius: 5em;
 	display: inline-block;

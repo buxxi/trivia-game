@@ -5,8 +5,8 @@
 <style lang="scss">
 @use "sass:color";
 
-@use "../../../common/css/colors.scss" as triviacolors;
-@use "../../../common/css/fonts.scss" as fonts;
+@use "../../common/css/colors" as triviacolors;
+@use "../../common/css/fonts" as fonts;
 
 
 html {

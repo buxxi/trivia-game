@@ -42,7 +42,7 @@ export default {
 </script>
 
 <style lang="scss">
-@use "../../../../common/css/colors.scss" as triviacolors;
+@use "../../../common/css/colors" as triviacolors;
 
 .timer-warning {
 	.timer-score {

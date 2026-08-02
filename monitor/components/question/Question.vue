@@ -36,7 +36,7 @@ import VideoPlayer from "./playback/VideoPlayer.vue";
 import Players from "./Players.vue";
 import GameProgress from "./GameProgress.vue";
 import Timer from "./Timer.vue";
-import ErrorMessage from "../../../../common/js/components/ErrorMessage.vue";
+import ErrorMessage from "../../../common/components/ErrorMessage.vue";
 
 function resolveRef(app, ref) {
 	return new Promise((resolve, _) => {
@@ -234,7 +234,7 @@ export default {
 </script>
 
 <style lang="scss">
-@use "../../../../common/css/colors.scss" as triviacolors;
+@use "../../../common/css/colors" as triviacolors;
 
 .question {
 	#content, #category-spinner {

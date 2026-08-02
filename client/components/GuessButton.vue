@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import AnswerIcon from "../../../common/js/components/AnswerIcon.vue";
+import AnswerIcon from "../../common/components/AnswerIcon.vue";
 
 export default {
 	components: {AnswerIcon},
@@ -35,7 +35,7 @@ export default {
 
 <style lang="scss">
 @use "sass:color";
-@use "../../../common/css/colors.scss" as triviacolors;
+@use "../../common/css/colors" as triviacolors;
 
 @mixin guess-button($color) {
 	background-color: color.adjust($color, $lightness: -20%, $space: hsl);

@@ -41,9 +41,9 @@
 </template>
 
 <script>
-import ErrorMessage from "../../../common/js/components/ErrorMessage.vue";
-import Avatar from "../../../common/js/components/Avatar.vue";
-import avatars from "../../../common/js/avatars.mjs";
+import ErrorMessage from "../../common/components/ErrorMessage.vue";
+import Avatar from "../../common/components/Avatar.vue";
+import avatars from "../../common/js/avatars.mjs";
 
 async function resolveBackCamera() {
 	let sources = await navigator.mediaDevices.enumerateDevices();
@@ -151,7 +151,7 @@ export default {
 </script>
 
 <style lang="scss">
-@use "../../../common/css/colors.scss" as triviacolors;
+@use "../../common/css/colors" as triviacolors;
 .join {
 	font-size: 0.75em;
 

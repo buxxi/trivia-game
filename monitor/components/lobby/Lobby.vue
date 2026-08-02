@@ -27,14 +27,14 @@
 
 <script>
 import {useTranslation} from "i18next-vue";
-import logger from '../../../../common/js/browser-logger.mjs';
+import logger from '../../../common/js/browser-logger.mjs';
 import Connect from './Connect.vue';
 import Rules from "./Rules.vue";
 import AttributionCarousel from "./AttributionCarousel.vue";
 import PlayersJoined from "./PlayersJoined.vue";
 import GeneralSettings from "./GeneralSettings.vue";
 import CategorySettings from "./CategorySettings.vue";
-import ErrorMessage from "../../../../common/js/components/ErrorMessage.vue";
+import ErrorMessage from "../../../common/components/ErrorMessage.vue";
 
 export default {
 	components: {ErrorMessage, CategorySettings, GeneralSettings, PlayersJoined, Attribution: AttributionCarousel, Rules, Connect},
@@ -175,7 +175,7 @@ export default {
 </script>
 
 <style lang="scss">
-@use "../../../../common/css/colors.scss" as triviacolors;
+@use "../../../common/css/colors" as triviacolors;
 
 .lobby {
 	color: triviacolors.$font;

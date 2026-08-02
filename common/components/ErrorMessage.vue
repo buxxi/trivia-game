@@ -10,7 +10,7 @@ export default {
 </script>
 
 <style lang="scss">
-@use "../../css/colors" as triviacolors;
+@use "../css/colors" as triviacolors;
 
 .message {
 	background-color: triviacolors.$incorrect;

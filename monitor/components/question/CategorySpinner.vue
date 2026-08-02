@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import logger from '../../../../common/js/browser-logger.mjs';
+import logger from '../../../common/js/browser-logger.mjs';
 import CategoryIcon from "../CategoryIcon.vue";
 
 const MIN_SPINS = 15;
@@ -150,7 +150,7 @@ export default {
 
 <style lang="scss">
 @use "sass:color";
-@use "../../../../common/css/colors.scss" as triviacolors;
+@use "../../../common/css/colors" as triviacolors;
 
 .spinner {
 	position: relative;

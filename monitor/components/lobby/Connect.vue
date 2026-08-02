@@ -44,7 +44,7 @@ export default {
 </script>
 
 <style lang="scss">
-@use "../../../../common/css/colors.scss" as triviacolors;
+@use "../../../common/css/colors" as triviacolors;
 
 .connect {
 	float: left;
@@ -90,7 +90,7 @@ export default {
 		height: 50em;
 
 		font-family: Arial;
-		background-image: url('../../../img/phone.png');
+		background-image: url('../../img/phone.png');
 		background-size: contain;
 		padding-top: 8.25em;
 		padding-left: 1.2em;

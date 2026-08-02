@@ -10,7 +10,7 @@
 
 <script>
 import BlankPlayer from "./BlankPlayer.vue";
-import AnswerIcon from "../../../../../common/js/components/AnswerIcon.vue";
+import AnswerIcon from "../../../../common/components/AnswerIcon.vue";
 
 export default {
 	components: {AnswerIcon},

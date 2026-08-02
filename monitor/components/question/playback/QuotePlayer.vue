@@ -33,7 +33,7 @@ export default {
 </script>
 
 <style lang="scss">
-@use "../../../../../common/css/colors.scss" as triviacolors;
+@use "../../../../common/css/colors" as triviacolors;
 
 #player.quote {
 	color: triviacolors.$font;

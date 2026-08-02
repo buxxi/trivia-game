@@ -1,14 +1,14 @@
 <template>
 	<transition-group name="playerposition" tag="ul" class="playerlist">
 		<li v-for="player in players" :key="player.id" :class="{'guessed' : player.guessed, 'score-change-positive': player.achievedPoints, 'score-change-negative': player.lostPoints}">
-			<img src="../../../img/crown.png" class="leader" v-if="isLeadingPlayer(player)" alt=""/>
+			<img src="../../img/crown.png" class="leader" v-if="isLeadingPlayer(player)" alt=""/>
 			<Avatar :score="playerNameOrPoints(player)" :multiplier="player.multiplier" :color="player.color" :avatar="player.avatarOrIcon"/>
 		</li>
 	</transition-group>
 </template>
 
 <script>
-import Avatar from "../../../../common/js/components/Avatar.vue";
+import Avatar from "../../../common/components/Avatar.vue";
 
 class PlayerData {
 	constructor(id, player) {
@@ -130,7 +130,7 @@ export default {
 </script>
 
 <style lang="scss">
-@use "../../../../common/css/colors.scss" as triviacolors;
+@use "../../../common/css/colors" as triviacolors;
 
 .playerlist {
 	li {

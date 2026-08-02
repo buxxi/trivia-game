@@ -4,8 +4,8 @@
 
 <style lang="scss">
 @use "sass:color";
-@use "../../../common/css/colors.scss" as triviacolors;
-@use "../../../common/css/fonts.scss" as *;
+@use "../../common/css/colors" as triviacolors;
+@use "../../common/css/fonts" as *;
 
 html {
 	$gradient_background: color.adjust(triviacolors.$background, $alpha: -0.8, $space: hsl);

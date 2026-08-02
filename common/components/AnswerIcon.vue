@@ -12,7 +12,7 @@ export default {
 
 <style lang="scss">
 @use "sass:color";
-@use "../../css/colors.scss" as triviacolors;
+@use "../css/colors" as triviacolors;
 
 @mixin button-icon($color, $text) {
 	$border: color.adjust($color, $lightness: -10%, $space: hsl);
