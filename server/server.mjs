@@ -18,8 +18,7 @@ class TriviaServer {
 			let isClient = !!req.headers['user-agent'].match(/Mobi/);
 			res.redirect(isClient ? '/trivia/client' : '/trivia/monitor');
 		});
-		
-		app.use('/trivia/common', express.static('common'));
+
 		app.use('/trivia/translation/:language', (req, res) => { res.type("js").send(JSON.stringify(getTranslationBundle(req.params.language))); });
 
 		app.use('/trivia/assets', express.static('dist/assets'));

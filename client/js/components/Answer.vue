@@ -1,7 +1,7 @@
 <template>
 	<div class="answer">
 		<div class="stats" :style="{'background-color': stats.color}">
-			<img :src="'../common/img/avatars/' + stats.avatar + '.png'" alt=""/>
+			<Avatar :avatar="stats.avatar"/>
 			<div><i class="fas fa-fw fa-star"></i>{{ stats.score }}</div>
 			<div><i class="fas fa-fw fa-times"></i>{{ stats.multiplier }}</div>
 		</div>
@@ -27,6 +27,7 @@
 <script>
 import AnswerIcon from "../../../common/js/components/AnswerIcon.vue";
 import GuessButton from "./GuessButton.vue";
+import Avatar from "../../../common/js/components/Avatar.vue";
 
 function showAnswers(app, answers) {
 	app.answers = answers;
@@ -63,7 +64,7 @@ async function redirectToJoin(app) {
 }
 
 export default {
-	components: {GuessButton, AnswerIcon},
+	components: {Avatar, GuessButton, AnswerIcon},
 	data: function () {
 		return {
 			connected: this.connection.connected(),
@@ -145,6 +146,9 @@ export default {
 		align-items: center;
 		border-bottom : 0.1em solid triviacolors.$primary;
 		text-shadow : 0.05em 0.05em 0 triviacolors.$primary;
+		.avatar {
+			font-size: 0.5em !important;
+		}
 	}
 
 	button {
