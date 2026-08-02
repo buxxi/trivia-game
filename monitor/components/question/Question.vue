@@ -13,7 +13,7 @@
 			<component :is="playbackPlayer" ref="playback"/>
 			<ErrorMessage v-if="state === 'error'">{{ error }}</ErrorMessage>
 		</div>
-		<div id="correct" v-if="state === 'post-question'" :class="'button-icon-' + correct['key']">{{ correct['answer'] }}</div>
+		<AnswerIcon tag="div" id="correct" v-if="state === 'post-question'" :answer="correct['key']">{{ correct['answer'] }}</AnswerIcon>
 		<RoundBanner ref="round"/>
 		<div id="category-spinner" v-if="state === 'loading'">
 			<CategorySpinner ref="spinner" @flip="sound.spinnerClick()"/>
@@ -38,6 +38,7 @@ import GameProgress from "./GameProgress.vue";
 import Timer from "./Timer.vue";
 import ErrorMessage from "../../../common/components/ErrorMessage.vue";
 import RoundBanner from "./RoundBanner.vue";
+import AnswerIcon from "../../../common/components/AnswerIcon.vue";
 
 function resolveRef(app, ref) {
 	return new Promise((resolve, _) => {
@@ -165,6 +166,7 @@ export default {
 	},
 	props: ['gameId', 'connection', 'sound', 'lobbyPlayers'],
 	components: {
+		AnswerIcon,
 		RoundBanner,
 		ErrorMessage,
 		Timer,
