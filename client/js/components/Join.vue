@@ -43,6 +43,7 @@
 <script>
 import ErrorMessage from "../../../common/js/components/ErrorMessage.vue";
 import Avatar from "../../../common/js/components/Avatar.vue";
+import avatars from "../../../common/js/avatars.mjs";
 
 async function resolveBackCamera() {
 	let sources = await navigator.mediaDevices.enumerateDevices();
@@ -66,7 +67,7 @@ export default {
 				avatar: this.preferredAvatar
 			},
 			supportsCamera: QCodeDecoder().hasGetUserMedia(),
-			avatars: [],
+			avatars: avatars,
 			message: undefined
 		}
 	},
@@ -136,9 +137,6 @@ export default {
 		}
 	},
 	created: async function () {
-		let request = await fetch("avatars.json");
-		let avatars = await request.json();
-		avatars.forEach((avatar) => this.avatars.push(avatar));
 		if (!this.wakelock.supported()) {
 			this.message = "Keeping the screen awake not supported on this device";
 		}

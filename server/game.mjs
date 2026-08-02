@@ -1,6 +1,7 @@
 import randomColor from 'randomcolor';
 import Timer from './timer.mjs';
 import Translator from "./translation.mjs";
+import avatars from "../common/js/avatars.mjs";
 
 class Player {
 	constructor(name, color, avatar) {
@@ -71,10 +72,9 @@ class PlayerGuess {
 }
 
 class Game {
-	constructor(categories, avatars) {
+	constructor(categories) {
 		this._started = false;
 		this._categories = categories;
-		this._avatars = avatars;
 		this._players = {};
 		this._guesses = {};
 		this._timer = {};
@@ -236,7 +236,7 @@ class Game {
 	}
 
 	avatars() {
-		return this._avatars;
+		return avatars;
 	}
 
 	language() {
@@ -275,7 +275,7 @@ class Game {
 	}
 
 	_selectAvatar(preferred) {
-		let unusedAvatars = this._avatars.filter((avatar) => {
+		let unusedAvatars = this.avatars().filter((avatar) => {
 			return Object.values(this._players).map((player) => {
 				return player.avatar;
 			}).indexOf(avatar) == -1;

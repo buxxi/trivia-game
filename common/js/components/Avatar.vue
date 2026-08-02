@@ -1,15 +1,25 @@
 <template>
 	<div class="avatar" :style="{'background-color': color, 'border-color': color}" :data-score="score" :data-multiplier="multiplier" :data-ping="ping">
-		<img v-if="!isIcon" :src="'../common/img/avatars/' + avatar + '.png'" alt=""/>
+		<img v-if="!isIcon" :src="src" alt=""/>
 		<i v-if="isIcon" :class="['fa-solid', avatar]"></i>
 	</div>
 </template>
 
 <script>
+import avatars from '../avatars.mjs';
+let urls = {};
+for (const avatar of avatars) {
+	urls[avatar] = new URL(`../../img/avatars/${avatar}.png`, import.meta.url).href;
+}
+
 export default {
 	props: ['color', 'score', 'avatar', 'multiplier', 'ping'],
 
 	computed: {
+		src() {
+			return urls[this.avatar];
+		},
+
 		isIcon() {
 			return this.avatar.startsWith('fa-');
 		}

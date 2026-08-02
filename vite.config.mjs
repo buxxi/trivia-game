@@ -18,7 +18,8 @@ export default defineConfig({
         'client/index': resolve(__dirname, 'client/index.html'),
         'monitor/index': resolve(__dirname, 'monitor/index.html')
       }
-    }
+    },
+    assetsInlineLimit: 0
   }
 })
 

@@ -4,9 +4,8 @@ import {getTranslationBundle} from "./translation.mjs";
 import logger from "./logger.mjs";
 
 class TriviaServer {
-	constructor(port, avatars, languages, repository, healthCheck) {
+	constructor(port, languages, repository, healthCheck) {
 		this._port = port;
-		this._avatars = avatars;
 		this._languages = languages;
 		this._repository = repository;
 		this._healthCheck = healthCheck;
@@ -27,7 +26,6 @@ class TriviaServer {
 
 		//Serve files for client
 		app.use('/trivia/client', express.static('dist/client'));
-		app.use('/trivia/client/avatars.json', (req, res) => { res.type("js").send(JSON.stringify(this._avatars)); });
 		app.use('/trivia/client/js/ext/qcode-decoder.js', express.static('node_modules/qcode-decoder/build/qcode-decoder.min.js'));
 
 		//Serve files for monitor
