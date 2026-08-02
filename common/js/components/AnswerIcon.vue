@@ -1,5 +1,5 @@
 <template>
-	<component :is="tag" :class="`button-icon-${answer}`">
+	<component :is="tag" :class="`button-icon-${answer}`" v-bind="$attrs">
 		<slot></slot>
 	</component>
 </template>

@@ -34,7 +34,7 @@ import AttributionCarousel from "./AttributionCarousel.vue";
 import PlayersJoined from "./PlayersJoined.vue";
 import GeneralSettings from "./GeneralSettings.vue";
 import CategorySettings from "./CategorySettings.vue";
-import ErrorMessage from "../ErrorMessage.vue";
+import ErrorMessage from "../../../../common/js/components/ErrorMessage.vue";
 
 export default {
 	components: {ErrorMessage, CategorySettings, GeneralSettings, PlayersJoined, Attribution: AttributionCarousel, Rules, Connect},

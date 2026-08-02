@@ -36,7 +36,7 @@ import VideoPlayer from "./playback/VideoPlayer.vue";
 import Players from "./Players.vue";
 import GameProgress from "./GameProgress.vue";
 import Timer from "./Timer.vue";
-import ErrorMessage from "../ErrorMessage.vue";
+import ErrorMessage from "../../../../common/js/components/ErrorMessage.vue";
 
 function resolveRef(app, ref) {
 	return new Promise((resolve, _) => {

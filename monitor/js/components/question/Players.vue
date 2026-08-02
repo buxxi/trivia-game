@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import Avatar from "../Avatar.vue";
+import Avatar from "../../../../common/js/components/Avatar.vue";
 
 class PlayerData {
 	constructor(id, player) {

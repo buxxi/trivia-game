@@ -17,20 +17,22 @@
 			</div>
 		</div>
 
-		<button class="button-icon-A" v-if="!waiting && answers.A" v-on:click.prevent="makeGuess('A')" :class="buttonClass('A')" :disabled="hasGuessed">{{ answers.A }}</button>
-		<button class="button-icon-B" v-if="!waiting && answers.B" v-on:click.prevent="makeGuess('B')" :class="buttonClass('B')" :disabled="hasGuessed">{{ answers.B }}</button>
-		<button class="button-icon-C" v-if="!waiting && answers.C" v-on:click.prevent="makeGuess('C')" :class="buttonClass('C')" :disabled="hasGuessed">{{ answers.C }}</button>
-		<button class="button-icon-D" v-if="!waiting && answers.D" v-on:click.prevent="makeGuess('D')" :class="buttonClass('D')" :disabled="hasGuessed">{{ answers.D }}</button>
+		<GuessButton answer="A" :correct="correct" :guess="guess" v-if="!waiting && answers.A" v-on:click.prevent="makeGuess('A')">{{ answers.A }}</GuessButton>
+		<GuessButton answer="B" :correct="correct" :guess="guess" v-if="!waiting && answers.B" v-on:click.prevent="makeGuess('B')">{{ answers.B }}</GuessButton>
+		<GuessButton answer="C" :correct="correct" :guess="guess" v-if="!waiting && answers.C" v-on:click.prevent="makeGuess('C')">{{ answers.C }}</GuessButton>
+		<GuessButton answer="D" :correct="correct" :guess="guess" v-if="!waiting && answers.D" v-on:click.prevent="makeGuess('D')">{{ answers.D }}</GuessButton>
 	</div>
 </template>
 
 <script>
+import AnswerIcon from "../../../common/js/components/AnswerIcon.vue";
+import GuessButton from "./GuessButton.vue";
+
 function showAnswers(app, answers) {
 	app.answers = answers;
 	app.waiting = false;
 	app.correct = null;
 	app.guess = null;
-	app.hasGuessed = false;
 }
 
 function showCorrect(app, pointsThisRound, correct) {
@@ -61,11 +63,11 @@ async function redirectToJoin(app) {
 }
 
 export default {
+	components: {GuessButton, AnswerIcon},
 	data: function () {
 		return {
 			connected: this.connection.connected(),
 			waiting: true,
-			hasGuessed: false,
 			message: this.connection.connected() ? 'Waiting for the game to start' : 'Not connected',
 			answers: {},
 			correct: undefined,
@@ -102,27 +104,10 @@ export default {
 
 		makeGuess: async function (answer) {
 			try {
-				this.hasGuessed = true;
 				await this.connection.guess(answer);
 				this.guess = answer;
 			} catch (e) {
-				this.hasGuessed = false;
 				this.guess = null;
-			}
-		},
-		buttonClass: function (answer) {
-			if (this.correct && this.correct === answer) {
-				return "correct";
-			} else if (this.correct && answer === this.guess && this.correct !== this.guess) {
-				return "incorrect";
-			} else if (this.correct && this.correct !== answer) {
-				return "unused"
-			} else if (!this.correct && answer === this.guess) {
-				return "selected";
-			} else if (!this.correct && this.guess) {
-				return "unused";
-			} else {
-				return "";
 			}
 		},
 
@@ -136,3 +121,50 @@ export default {
 };
 
 </script>
+
+<style lang="scss">
+@use "../../../common/css/colors.scss" as triviacolors;
+.answer {
+	height : 100%;
+	left : 0;
+	margin : 0;
+	padding : 0;
+	position: absolute;
+	text-align: center;
+	top : 0;
+	width : 100%;
+	display : flex;
+	flex-direction: column;
+
+	.stats {
+		height: 20%;
+		font-weight: bold;
+		font-size: 3em;
+		display: flex;
+		justify-content: space-around;
+		align-items: center;
+		border-bottom : 0.1em solid triviacolors.$primary;
+		text-shadow : 0.05em 0.05em 0 triviacolors.$primary;
+	}
+
+	button {
+		font-size: 1.5em !important;
+		text-align: left;
+		flex: 1;
+	}
+
+	.fa-stack {
+		margin-top : 1em;
+	}
+	.fa-stack-2x {
+		color: triviacolors.$primary;
+	}
+	.fa-stack-1x {
+		animation: splash 0.5s linear normal;
+		line-height: 1.75em;
+	}
+	h3 {
+		font-size: 2em;
+	}
+}
+</style>

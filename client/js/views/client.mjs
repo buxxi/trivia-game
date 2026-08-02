@@ -1,4 +1,3 @@
-import '../../css/client.scss';
 import Join from '../components/Join.vue';
 import Answer from '../components/Answer.vue';
 import Client from '../components/Client.vue';

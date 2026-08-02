@@ -18,7 +18,7 @@ export default {
 </script>
 
 <style lang="scss">
-@use "../../../common/css/colors.scss" as triviacolors;
+@use "../../css/colors" as triviacolors;
 .avatar {
 	border-radius: 5em;
 	display: inline-block;

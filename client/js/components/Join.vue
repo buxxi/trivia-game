@@ -22,16 +22,14 @@
 						<div>
 							<label v-for="avatar in avatars">
 								<input type="radio" name="avatar" v-model="config.avatar" :value="avatar"/>
-								<div class="avatar"><img :src="'../common/img/avatars/' + avatar + '.png'" alt=""/></div>
+								<Avatar :avatar="avatar"/>
 							</label>
 						</div>
 						<button v-on:click.prevent="scrollAvatarsRight"><i class="fa-solid fa-arrow-right"></i></button>
 					</div>
 				</div>
 
-				<div class="message" v-if="message">
-					<div>{{ message }}</div>
-				</div>
+				<ErrorMessage v-if="message">{{ message }}</ErrorMessage>
 
 				<div class="buttons">
 					<button v-on:click.prevent="join" :disabled="!validated"><i class="fas fa-fw fa-sign-in-alt"></i>Join</button>
@@ -43,6 +41,9 @@
 </template>
 
 <script>
+import ErrorMessage from "../../../common/js/components/ErrorMessage.vue";
+import Avatar from "../../../common/js/components/Avatar.vue";
+
 async function resolveBackCamera() {
 	let sources = await navigator.mediaDevices.enumerateDevices();
 	let backCamera = sources.find((source) => {
@@ -56,6 +57,7 @@ async function resolveBackCamera() {
 }
 
 export default {
+	components: {Avatar, ErrorMessage},
 	data: function () {
 		return {
 			config: {
@@ -149,3 +151,62 @@ export default {
 	}
 };
 </script>
+
+<style lang="scss">
+@use "../../../common/css/colors.scss" as triviacolors;
+.join {
+	font-size: 0.75em;
+
+	video {
+		bottom : 0;
+		display : none;
+		left : 0;
+		position : fixed;
+		right : 0;
+		top : 0;
+		z-index : 2;
+	}
+	label {
+		display : inline-block;
+		margin : 0.2em 0;
+		width : 100%;
+		font-size: 2em;
+	}
+	input {
+		background-color : triviacolors.$secondary;
+		border : 0.15em solid triviacolors.$primary;
+		border-radius: 0.5em;
+		box-sizing: border-box;
+		color : triviacolors.$primary;
+		font-weight: bold;
+		height : 2em;
+		padding : 0.1em 0.5em;
+		width : 100%;
+		font-size : 2em;
+		margin-bottom: 0.5em;
+	}
+	#avatar-selector {
+		display : flex;
+		div {
+			font-size: 0.65em;
+			clear : both;
+			overflow-x: scroll;
+			white-space: nowrap;
+
+			label {
+				width : auto;
+			}
+			input {
+				display : none;
+			}
+			input:checked + .avatar {
+				background-color : triviacolors.$primary;
+			}
+		}
+		button {
+			min-width: 2em;
+		}
+	}
+}
+
+</style>

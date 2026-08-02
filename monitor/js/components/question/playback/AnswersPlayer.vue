@@ -1,19 +1,19 @@
 <template>
 	<div class="list-answers" id="player">
 		<ol v-if="playing">
-			<AnswerButton v-for="answer in ['A', 'B', 'C', 'D']" tag="li" :answer="answer">
+			<AnswerIcon v-for="answer in ['A', 'B', 'C', 'D']" tag="li" :answer="answer">
 				{{ answers[answer] }}
-			</AnswerButton>
+			</AnswerIcon>
 		</ol>
 	</div>
 </template>
 
 <script>
 import BlankPlayer from "./BlankPlayer.vue";
-import AnswerButton from "../../../../../common/js/components/AnswerButton.vue";
+import AnswerIcon from "../../../../../common/js/components/AnswerIcon.vue";
 
 export default {
-	components: {AnswerButton},
+	components: {AnswerIcon},
 	data: function () {
 		return {
 			minimizeQuestion: true,

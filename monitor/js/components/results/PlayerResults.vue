@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import Avatar from "../Avatar.vue";
+import Avatar from "../../../../common/js/components/Avatar.vue";
 
 export default {
 	components: {Avatar},
