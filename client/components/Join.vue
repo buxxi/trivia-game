@@ -17,16 +17,7 @@
 				</div>
 				<div>
 					<label for="avatar-selector">Preferred avatar</label>
-					<div id="avatar-selector">
-						<button v-on:click.prevent="scrollAvatarsLeft"><i class="fa-solid fa-arrow-left"></i></button>
-						<div>
-							<label v-for="avatar in avatars">
-								<input type="radio" name="avatar" v-model="config.avatar" :value="avatar"/>
-								<Avatar :avatar="avatar"/>
-							</label>
-						</div>
-						<button v-on:click.prevent="scrollAvatarsRight"><i class="fa-solid fa-arrow-right"></i></button>
-					</div>
+					<AvatarSelector v-model="config.avatar" />
 				</div>
 
 				<ErrorMessage v-if="message">{{ message }}</ErrorMessage>
@@ -42,8 +33,7 @@
 
 <script>
 import ErrorMessage from "../../common/components/ErrorMessage.vue";
-import Avatar from "../../common/components/Avatar.vue";
-import avatars from "../../common/js/avatars.mjs";
+import AvatarSelector from "./AvatarSelector.vue";
 
 async function resolveBackCamera() {
 	let sources = await navigator.mediaDevices.enumerateDevices();
@@ -58,7 +48,7 @@ async function resolveBackCamera() {
 }
 
 export default {
-	components: {Avatar, ErrorMessage},
+	components: {AvatarSelector, ErrorMessage},
 	data: function () {
 		return {
 			config: {
@@ -67,7 +57,6 @@ export default {
 				avatar: this.preferredAvatar
 			},
 			supportsCamera: QCodeDecoder().hasGetUserMedia(),
-			avatars: avatars,
 			message: undefined
 		}
 	},
@@ -80,6 +69,7 @@ export default {
 	methods: {
 		join: async function () {
 			try {
+				console.log(this.config.avatar);
 				let data = await this.connection.connect(this.config.gameId, this.config.name, this.config.avatar);
 				await this.wakelock.acquire();
 				this.clientState.setInProgressGameId(this.config.gameId);
@@ -122,18 +112,6 @@ export default {
 					}
 				}, true);
 			});
-		},
-
-		scrollAvatarsLeft: function () {
-			let selector = document.querySelector("#avatar-selector div");
-			let width = selector.clientWidth;
-			selector.scrollLeft -= width;
-		},
-
-		scrollAvatarsRight: function () {
-			let selector = document.querySelector("#avatar-selector div");
-			let width = selector.clientWidth;
-			selector.scrollLeft += width;
 		}
 	},
 	created: async function () {
@@ -182,28 +160,6 @@ export default {
 		width : 100%;
 		font-size : 2em;
 		margin-bottom: 0.5em;
-	}
-	#avatar-selector {
-		display : flex;
-		div {
-			font-size: 0.65em;
-			clear : both;
-			overflow-x: scroll;
-			white-space: nowrap;
-
-			label {
-				width : auto;
-			}
-			input {
-				display : none;
-			}
-			input:checked + .avatar {
-				background-color : triviacolors.$primary;
-			}
-		}
-		button {
-			min-width: 2em;
-		}
 	}
 }
 
