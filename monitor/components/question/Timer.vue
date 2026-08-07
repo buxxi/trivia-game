@@ -79,7 +79,7 @@ export default {
 .timer-score {
 	float: left;
 	left: 2em;
-	padding: 0.5em 2.5em 0.5em 1em;
+	padding: 0.5em 2.5em 0.5em 1em !important;
 	position: relative;
 }
 
