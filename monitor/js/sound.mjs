@@ -1,4 +1,3 @@
-import * as h from 'howler';
 import backgroundMusicFile from '../sound/background.mp3';
 import clickFile from '../sound/click.mp3';
 import tromboneFile from '../sound/sad.mp3';
@@ -8,41 +7,83 @@ import beepFile from '../sound/beep.mp3';
 
 const RATE_STEPS = [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5];
 
+class Sound {
+	constructor(src, volume, rate) {
+		this._audio = new Audio(src);
+		this._audio.preload = 'auto';
+		this._audio.volume = volume;
+		this._audio.loop = false;
+		this._audio.playbackRate = rate;
+	}
+
+	play(loop) {
+		try {
+			this._audio.loop = loop;
+			if (!loop) {
+				this._audio.currentTime = 0;
+			}
+			return this._audio.play();
+		} catch (e) {
+			return Promise.reject(e);
+		}
+	}
+
+	pause() {
+		try { this._audio.pause(); } catch (e) {}
+	}
+
+	stop() {
+		try {
+			this._audio.pause();
+			this._audio.currentTime = 0;
+		} catch (e) {}
+	}
+
+	get rate() {
+		return this._audio.playbackRate || 1;
+	}
+
+	set rate(value) {
+		this._audio.playbackRate = value;
+	}
+
+	onError(func) {
+		this._audio.addEventListener('error', () => {
+			try { func(); } catch (e) {}
+		});
+	}
+
+	onEnd(func) {
+		this._audio.addEventListener('ended', () => {
+			try { func(); } catch (e) {}
+		});
+	}
+
+	playing() {
+		try {
+			return !this._audio.paused && !this._audio.ended && this._audio.currentTime > 0;
+		} catch (e) { return false; }
+	}
+}
+
+
 class SoundController {
-	constructor() {
-		this._ = h; //No ESM module, keeping reference to avoid auto import to remove it
+    constructor() {
 		this._config = {
 			backgroundMusic : true,
 			soundEffects : true,
 			text2Speech : true
 		};
 
-		let backgroundMusic = new Howl({
-			src: [backgroundMusicFile],
-			volume: 0.20,
-			loop: true
-		});
+		let backgroundMusic = new Sound(backgroundMusicFile, 0.20, 1);
 
-		let click = new Howl({
-			src: [clickFile],
-			volume: 0.2
-		});
+		let click = new Sound(clickFile, 0.20, 1);
 
-		let trombone = new Howl({
-			src: [tromboneFile],
-			volume: 0.5
-		});
+		let trombone = new Sound(tromboneFile, 0.5, 1);
 
-		let applauds = new Howl({
-			src: [applaudsFile],
-			volume: 0.5
-		});
+		let applauds = new Sound(applaudsFile, 0.5, 1);
 
-		let ticktock = new Howl({
-			src: [ticktockFile],
-			volume: 0.5,
-			loop: true
-		});
+		let ticktock = new Sound(ticktockFile, 0.5, 1);
 
 		this._backgroundMusic = backgroundMusic;
 		this._click = click;
@@ -60,13 +101,13 @@ class SoundController {
 		if (this._config.soundEffects) {
 			this._ticktock.stop();
 		}
-		if (this._config.backgroundMusic && this._backgroundMusic.rate() < 1) {
+		if (this._config.backgroundMusic && this._backgroundMusic.rate < 1) {
 			this._stepBackgroundMusicRate(RATE_STEPS.slice().reverse());
 		}
 		if (!this._config.backgroundMusic || this._backgroundMusic.playing()) {
 			return;
 		}
-		this._backgroundMusic.play();
+		this._backgroundMusic.play(true);
 	}
 
 	pauseBackgroundMusic() {
@@ -85,29 +126,25 @@ class SoundController {
 
 	playerGuessed(count) {
 		if (this._config.soundEffects) {
-			new Howl({
-				src: [beepFile],
-				autoplay: true,
-				rate: 1.5 + (0.5 * count)
-			});
+			new Sound(beepFile, 1.0, false, 1.5 + (0.5 * count)).play(false);
 		}
 	}
 
 	maxMultiplierLost() {
 		if (this._config.soundEffects) {
-			this._trombone.play();
+			this._trombone.play(false);
 		}
 	}
 
 	allGuessedCorrect() {
 		if (this._config.soundEffects) {
-			this._applauds.play();
+			this._applauds.play(false);
 		}		
 	}
 
 	celebrateVictory() {
 		if (this._config.soundEffects) {
-			this._applauds.play();
+			this._applauds.play(false);
 		}
 	}
 
@@ -116,7 +153,7 @@ class SoundController {
 			this._stepBackgroundMusicRate(RATE_STEPS);
 		}
 		if (this._config.soundEffects) {
-			this._ticktock.play();
+			this._ticktock.play(true);
 		}
 	}
 
@@ -125,7 +162,7 @@ class SoundController {
 		this._rateEffectsIntervals = [];
 		rateValues.forEach((rate, i) => {
 			this._rateEffectsIntervals.push(setTimeout(() => {
-				this._backgroundMusic.rate(rate);
+				this._backgroundMusic.rate = rate;
 			}, i * 100));
 		});
 	}
@@ -140,18 +177,15 @@ class SoundController {
 
 			let url = new URL("../tts", document.location).toString() + "?gameId=" + gameId + "&ttsId=" + ttsId;
 
-			new Howl({
-				src: [url],
-				format: ['wav'],
-				autoplay: true,
-				onloaderror: () => {
-					reject(new Error("Failed to load text2speech for: " + ttsId));
-				},
-				onend: () => {
-					let elapsedTime = new Date().getTime() - startTime;
-					setTimeout(resolve, Math.max(silenceAfterTime, minimumTime - elapsedTime));
-				}
+			const s = new Sound(url, 1.0, 1.0);
+			s.onError(() => {
+				reject(new Error("Failed to load text2speech for: " + ttsId));
 			});
+			s.onEnd (() => {
+				let elapsedTime = new Date().getTime() - startTime;
+				setTimeout(resolve, Math.max(silenceAfterTime, minimumTime - elapsedTime));
+			});
+			s.play(false);
 		});
 	}
 }
