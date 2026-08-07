@@ -1,12 +1,12 @@
-import Join from '../../components/Join.vue';
-import Answer from '../../components/Answer.vue';
-import Client from '../../components/Client.vue';
-import ClientToServerConnection from '../connection.mjs';
-import WakeLock from '../wakelock.mjs';
-import ClientState from '../clientstate.mjs';
+import Join from '../components/Join.vue';
+import Answer from '../components/Answer.vue';
+import Client from '../components/Client.vue';
+import ClientToServerConnection from './connection.mjs';
+import WakeLock from './wakelock.mjs';
+import ClientState from './clientstate.mjs';
 import {createRouter, createWebHashHistory} from 'vue-router';
 import {createApp} from 'vue';
-import {uuidPolyfill} from "../uuidpolyfill.mjs";
+import {uuidPolyfill} from "./uuidpolyfill.mjs";
 
 function getState(key, defaultValue) {
 	if (key in window.history.state) {

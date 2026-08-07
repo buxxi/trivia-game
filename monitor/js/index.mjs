@@ -1,9 +1,9 @@
-import Lobby from '../../components/lobby/Lobby.vue';
-import Question from '../../components/question/Question.vue';
-import Results from '../../components/results/Results.vue';
-import SoundController from '../sound.mjs';
-import MonitorToServerConnection from '../connection.mjs';
-import Monitor from '../../components/Monitor.vue';
+import Lobby from '../components/lobby/Lobby.vue';
+import Question from '../components/question/Question.vue';
+import Results from '../components/results/Results.vue';
+import SoundController from './sound.mjs';
+import MonitorToServerConnection from './connection.mjs';
+import Monitor from '../components/Monitor.vue';
 import i18next from 'i18next';
 import I18NextVue from 'i18next-vue';
 import {createRouter, createWebHashHistory} from 'vue-router';
