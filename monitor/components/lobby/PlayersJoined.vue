@@ -3,10 +3,8 @@
 		<h1><i class="fas fa-fw fa-users"></i>{{ $t('players.header') }}</h1>
 		<p v-if="Object.entries(players).length === 0">{{ $t('players.none') }}</p>
 		<ul class="playerlist" v-if="Object.entries(players).length > 0">
-			<li v-for="(player, id) in players">
-				<a v-on:click="kickPlayer(id)" class="kick" :title="$t('players.kick')">
-					<Avatar :ping="pings[id]" :score="player.name" :color="player.color" :avatar="player.avatar"/>
-				</a>
+			<li v-for="(player, id) in players" v-on:click="kickPlayer(id)" :title="$t('players.kick')">
+				<Avatar :ping="pings[id]" :score="player.name" :color="player.color" :avatar="player.avatar"/>
 			</li>
 		</ul>
 	</div>
@@ -30,7 +28,7 @@ export default {
 <style lang="scss">
 
 .playerlist {
-	.kick {
+	li {
 		&:hover {
 			cursor: not-allowed;
 			opacity : 0.5;
