@@ -69,7 +69,6 @@ export default {
 	methods: {
 		join: async function () {
 			try {
-				console.log(this.config.avatar);
 				let data = await this.connection.connect(this.config.gameId, this.config.name, this.config.avatar);
 				await this.wakelock.acquire();
 				this.clientState.setInProgressGameId(this.config.gameId);
