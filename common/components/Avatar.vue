@@ -9,7 +9,7 @@
 import avatars from '../js/avatars.mjs';
 let urls = {};
 for (const avatar of avatars) {
-	urls[avatar] = new URL(`../../img/avatars/${avatar}.png`, import.meta.url).href;
+	urls[avatar] = new URL(`../img/avatars/${avatar}.png`, import.meta.url).href;
 }
 
 export default {
