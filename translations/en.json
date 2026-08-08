@@ -172,7 +172,19 @@
                 "turtle": "Turtle",
                 "bee": "Bee",
                 "snail": "Snail",
-                "penguin": "Penguin"
+                "penguin": "Penguin",
+                "raccoon": "Raccoon",
+                "boar": "Boar",
+                "rhinoceros": "Rhinoceros",
+                "koala": "Koala",
+                "sloth": "Sloth",
+                "owl": "Owl",
+                "eagle": "Eagle",
+                "skunk": "Skunk",
+                "chicken": "Chicken",
+                "crab": "Crab",
+                "ladybeetle": "Lady Beetle",
+                "hedgehog": "Hedgehog"
             }
         },
         "quotes": {
