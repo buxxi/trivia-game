@@ -56,7 +56,7 @@ export default {
 				name: this.name,
 				avatar: this.preferredAvatar
 			},
-			supportsCamera: QCodeDecoder().hasGetUserMedia(),
+			supportsCamera: 'mediaDevices' in navigator,
 			message: undefined
 		}
 	},
@@ -67,7 +67,7 @@ export default {
 	},
 	props: ['gameId', 'wakelock', 'clientState', 'connection', 'name', 'preferredAvatar'],
 	methods: {
-		join: async function () {
+		async join() {
 			try {
 				let data = await this.connection.connect(this.config.gameId, this.config.name, this.config.avatar);
 				await this.wakelock.acquire();
@@ -79,37 +79,49 @@ export default {
 			}
 		},
 
-		qrscan: function () {
-			let config = this.config;
-			let decoder = QCodeDecoder();
+		async qrscan() {
 			let video = document.getElementById('camera');
 			video.style.display = 'inline-block';
 
-			resolveBackCamera().then((stream) => {
-				if ("srcObject" in video) {
-					video.srcObject = stream;
-				} else {
-					video.src = window.URL.createObjectURL(stream);
+			let stream = await resolveBackCamera();
+			video.srcObject = stream;
+
+			function stop() {
+				video.style.display = 'none';
+				stream.getTracks()[0].stop();
+			}
+
+			video.addEventListener('click', stop);
+
+			try {
+				let qrData = await this._pollQrCodeFromCamera(video);
+				this.config.gameId = /.*\?gameId=(.*)/.exec(qrData)[1];
+
+				if (!!this.config.name) {
+					await this.join();
 				}
-
-				function stop() {
-					video.style.display = 'none';
-					stream.getTracks()[0].stop();
-				}
-
-				video.addEventListener('click', stop);
-
-				decoder.decodeFromVideo(video, (_, res) => {
-					if (res) {
-						config.gameId = /.*\?gameId=(.*)/.exec(res)[1];
-
-						if (!!config.name) {
-							this.join();
-						}
-
-						stop();
+			} catch (e) {
+				this.message = e.message;
+			}
+			finally {
+				stop();
+			}
+		},
+		_pollQrCodeFromCamera(video) {
+			let barcodeDetector = new window.BarcodeDetector({
+				formats: ['qr_code']
+			});
+			return new Promise((resolve, reject) => {
+				const scanInterval = setInterval(async () => {
+					const barcodes = await barcodeDetector.detect(video);
+					if (barcodes.length > 0) {
+						resolve(barcodes[0].rawValue);
 					}
-				}, true);
+					if (video.style.display === 'none') {
+						clearInterval(scanInterval);
+						reject(new Error('Camera closed'));
+					}
+				}, 100);
 			});
 		}
 	},

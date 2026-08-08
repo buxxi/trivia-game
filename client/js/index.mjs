@@ -7,6 +7,7 @@ import ClientState from './clientstate.mjs';
 import {createRouter, createWebHashHistory} from 'vue-router';
 import {createApp} from 'vue';
 import {uuidPolyfill} from "./uuidpolyfill.mjs";
+import {barcodeDetectorPolyfill} from "./barcodedetectorpolyfill.mjs";
 
 function getState(key, defaultValue) {
 	if (key in window.history.state) {
@@ -17,6 +18,7 @@ function getState(key, defaultValue) {
 
 (async () => {
 	uuidPolyfill();
+	barcodeDetectorPolyfill();
 
 	const connection = new ClientToServerConnection(new URL("..", document.location), () => crypto.randomUUID());
 	const wakelock = new WakeLock();
