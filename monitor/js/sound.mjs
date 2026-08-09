@@ -6,6 +6,7 @@ import ticktockFile from '../sound/ticktock.mp3';
 import beepFile from '../sound/beep.mp3';
 
 const RATE_STEPS = [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5];
+const MAX_BEEP_COUNT = 10;
 
 class Sound {
 	constructor(src, volume, rate) {
@@ -14,6 +15,7 @@ class Sound {
 		this._audio.volume = volume;
 		this._audio.loop = false;
 		this._audio.playbackRate = rate;
+		this._audio.preservesPitch = false;
 	}
 
 	play(loop) {
@@ -85,6 +87,10 @@ class SoundController {
 
 		let ticktock = new Sound(ticktockFile, 0.5, 1);
 
+		this._beeps = Array.from({ length: MAX_BEEP_COUNT }, (_, i) =>
+			new Sound(beepFile, 1.0, 1.5 + (0.5 * (i + 1)))
+		);
+
 		this._backgroundMusic = backgroundMusic;
 		this._click = click;
 		this._trombone = trombone;
@@ -126,7 +132,8 @@ class SoundController {
 
 	playerGuessed(count) {
 		if (this._config.soundEffects) {
-			new Sound(beepFile, 1.0, false, 1.5 + (0.5 * count)).play(false);
+			const beepIndex = Math.min(count - 1, this._beeps.length - 1);
+			this._beeps[beepIndex].play(false);
 		}
 	}
 
