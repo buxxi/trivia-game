@@ -4,10 +4,9 @@ FROM node:24-alpine
 WORKDIR /opt/trivia
 
 # Install dependencies and the project
-COPY package*.json ./
+COPY . .
 RUN npm install
 RUN npm run build
-COPY . .
 
 # Port which the container is listening
 EXPOSE 8080
