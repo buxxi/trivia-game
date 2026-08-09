@@ -113,7 +113,6 @@ class PromisifiedWebSocket {
     }
 
 	onClose(func) {
-		this._closeListener = func;
 	}
 
 	remove(event) {
@@ -141,7 +140,7 @@ class PromisifiedWebSocket {
 
         return {
             then: function(f) {
-				let response = new Promise((resolve, reject) => {
+				return new Promise((resolve, reject) => {
 					let listener = new RequestListener(event, (requestData, id) => {
 						self._sendResponse(event, requestData, id, f).then(resolve).catch((e) => {
 							if (propagateError) {
@@ -151,9 +150,8 @@ class PromisifiedWebSocket {
 							}
 						});
 					});
-					self._listeners.push(listener); 
+					self._listeners.push(listener);
 				});
-				return response;
 			}
         }
     }
@@ -231,9 +229,7 @@ class PromisifiedWebSocket {
 		if ('data' in message) { //Browser
 			message = message.data;
 		}
-		//console.debug("RECEIVE " + message);
-        let obj = JSON.parse(message);
-		return obj;
+		return JSON.parse(message);
 	}
 
     _request(event, id, data) {

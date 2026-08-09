@@ -172,7 +172,19 @@
                 "turtle": "Sköldpadda",
                 "bee": "Bi",
                 "snail": "Snigel",
-                "penguin": "Pingvin"
+                "penguin": "Pingvin",
+                "raccoon": "Tvättbjörn",
+                "boar": "Vildsvin",
+                "rhinoceros": "Noshörning",
+                "koala": "Koala",
+                "sloth": "Sengångare",
+                "owl": "Uggla",
+                "eagle": "Örn",
+                "skunk": "Skunk",
+                "chicken": "Kyckling",
+                "crab": "Krabba",
+                "ladybeetle": "Nyckelpiga",
+                "hedgehog": "Igelkott"
             }
         },
         "quotes": {

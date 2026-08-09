@@ -1,27 +1,14 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" href="css/client.css"/>
 		<link rel="icon" type="image/x-icon" href="../common/img/favicon.ico">
-
-		<script type="importmap">
-			{
-                "imports": {
-                    "vue": "./js/ext/vue.js",
-                    "vue-router": "./js/ext/vue-router.js"
-                }
-            }
-		</script>
-        <script src="js/ext/qcode-decoder.js"></script>
 
 		<title>Trivia Client</title>
 
 		<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
 	</head>
 	<body id="client">
-		<div id="main">
-			<router-view></router-view>
-		</div>
-		<script type="module" src="js/views/client.js"></script>
+		<div id="main"></div>
+		<script type="module" src="js/index.mjs"></script>
 	</body>
 </html>

@@ -26,7 +26,7 @@ class GameRepository {
 	}
 
 	startGame(gameId, monitorConnection) {
-		let game = new Game(this._categories, this._config.avatars);
+		let game = new Game(this._categories);
 		let stats = new GameStatistics(this._config.statsPath, gameId);
 		let tts = new Text2Speech(this._config.tts);
 		let loop = new GameLoop(game, gameId, this._categories, monitorConnection, tts, stats);
@@ -63,7 +63,7 @@ async function loadCategories(config) {
 
 function startServer(config, repository) {
 	logger.info("Starting server");
-	let server = new TriviaServer(8080, config.avatars, config.languages, repository, new HealthCheck(config));
+	let server = new TriviaServer(8080, config.languages, repository, new HealthCheck(config));
 	server.start();
 	return server;
 }
