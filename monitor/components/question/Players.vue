@@ -11,7 +11,7 @@
 import Avatar from "../../../common/components/Avatar.vue";
 
 class PlayerData {
-	constructor(id, player) {
+	constructor(id, player, app) {
 		this.id = id;
 		this.name = player.name;
 		this.color = player.color;
@@ -21,6 +21,7 @@ class PlayerData {
 		this.multiplier = 1;
 		this.guessed = false;
 		this.connected = true;
+		this.app = app;
 	}
 
 	updatePoints(pointChanges) {
@@ -35,9 +36,9 @@ class PlayerData {
 	}
 
 	get avatarOrIcon() {
-		if (this.connected && !this.hidden) {
+		if (this.connected && !this.app.hidden) {
 			return this.avatar;
-		} else if (this.connected && this.hidden) {
+		} else if (this.connected && this.app.hidden) {
 			return 'fa-question';
 		} else {
 			return 'fa-bolt';
@@ -120,7 +121,7 @@ export default {
 		this.showNamesInterval = setInterval(() => {
 			this.showNames = !this.showNames;
 		}, 5000);
-		this.players = Object.entries(this.lobbyPlayers).map(entry => new PlayerData(entry[0], entry[1]));
+		this.players = Object.entries(this.lobbyPlayers).map(entry => new PlayerData(entry[0], entry[1], this));
 	},
 
 	unmounted: function () {
