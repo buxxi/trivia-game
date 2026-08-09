@@ -6,6 +6,7 @@ WORKDIR /opt/trivia
 # Install dependencies and the project
 COPY package*.json ./
 RUN npm install
+RUN npm run build
 COPY . .
 
 # Port which the container is listening
