@@ -147,7 +147,7 @@ export default {
 		border-bottom : 0.1em solid triviacolors.$primary;
 		text-shadow : 0.05em 0.05em 0 triviacolors.$primary;
 		.avatar {
-			font-size: 0.5em !important;
+			font-size: 0.25em !important;
 		}
 	}
 
